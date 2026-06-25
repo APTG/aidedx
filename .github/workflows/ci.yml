@@ -43,6 +43,9 @@ jobs:
       - name: Type-check (svelte-check + tsc)
         run: pnpm run check
 
+      - name: Validate eval set (eval/intents.jsonl)
+        run: pnpm run validate:eval
+
   build:
     name: Build + Unit Tests
     runs-on: ubuntu-latest

@@ -37,6 +37,22 @@ static site (with `BASE_PATH=/aidedx`) and publishes it to GitHub Pages at
 <https://aptg.github.io/aidedx/>. CI (`.github/workflows/ci.yml`) runs format,
 lint, typecheck, unit tests, and a build on every push/PR.
 
+## Eval set
+
+[`eval/intents.jsonl`](eval/intents.jsonl) is a hand-labeled set of ~110
+natural-language queries mapped to the shared
+[`QueryIntent`](src/lib/intent/query-intent.ts) schema. It is the project's
+frozen regression suite — reused by the ASR/NLU spikes and the deterministic
+matcher — covering direct/indirect/conversational phrasing, comparisons, unit
+variety, isotope and total-vs-per-nucleon ambiguity, and inverse queries.
+
+```sh
+pnpm validate:eval   # validate the dataset + print tag coverage
+```
+
+See [`eval/README.md`](eval/README.md) for the schema, labeling conventions,
+and tag taxonomy. The validator also runs in CI and as a Vitest test.
+
 ## Cross-origin isolation (deferred)
 
 In-browser ML backends need `SharedArrayBuffer`, which requires the page to be
