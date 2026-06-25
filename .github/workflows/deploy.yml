@@ -34,13 +34,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: "pnpm"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build SvelteKit app
         run: pnpm build

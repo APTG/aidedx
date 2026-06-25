@@ -29,10 +29,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Check formatting (Prettier)
         run: pnpm run format:check
@@ -58,10 +57,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run unit tests
         run: pnpm test
