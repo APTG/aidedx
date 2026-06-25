@@ -1,0 +1,7 @@
+packages:
+  - "."
+
+# Allow only these dependencies to run install/build scripts (pnpm 10 blocks
+# postinstall scripts by default). Keeps the install reproducible in CI.
+onlyBuiltDependencies:
+  - esbuild

@@ -1,0 +1,7 @@
+.svelte-kit
+node_modules
+build
+coverage
+
+# Lock files are managed by pnpm, not prettier
+**/pnpm-lock.yaml

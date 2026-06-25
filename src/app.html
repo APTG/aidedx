@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>aidedx</title>
+
+    <!--
+      Cross-origin isolation hook (deferred to Spike 3 — runtime/hosting).
+      In-browser ML backends (transformers.js / WebLLM / wllama) need
+      SharedArrayBuffer, which requires the page to be cross-origin isolated
+      (COOP/COEP headers). GitHub Pages can't set those headers, so the
+      planned workaround is `coi-serviceworker`: drop coi-serviceworker.js
+      into static/ and register it here, e.g.:
+        <script src="%sveltekit.assets%/coi-serviceworker.js"></script>
+      Left intentionally inert until the hosting decision is made.
+    -->
+
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
+</html>
