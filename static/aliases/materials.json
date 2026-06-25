@@ -1,0 +1,2101 @@
+[
+  {
+    "id": 1,
+    "name": "Hydrogen",
+    "kind": "element",
+    "aliases": [
+      "h",
+      "hydrogen"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Helium",
+    "kind": "element",
+    "aliases": [
+      "he",
+      "helium"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Lithium",
+    "kind": "element",
+    "aliases": [
+      "li",
+      "lithium"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Beryllium",
+    "kind": "element",
+    "aliases": [
+      "be",
+      "beryllium"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Boron",
+    "kind": "element",
+    "aliases": [
+      "b",
+      "boron"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Carbon",
+    "kind": "element",
+    "aliases": [
+      "c",
+      "carbon"
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Nitrogen",
+    "kind": "element",
+    "aliases": [
+      "n",
+      "nitrogen"
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Oxygen",
+    "kind": "element",
+    "aliases": [
+      "o",
+      "oxygen"
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Fluorine",
+    "kind": "element",
+    "aliases": [
+      "f",
+      "fluorine"
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Neon",
+    "kind": "element",
+    "aliases": [
+      "ne",
+      "neon"
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Sodium",
+    "kind": "element",
+    "aliases": [
+      "na",
+      "sodium"
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Magnesium",
+    "kind": "element",
+    "aliases": [
+      "magnesium",
+      "mg"
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Aluminium",
+    "kind": "element",
+    "aliases": [
+      "al",
+      "aluminium",
+      "aluminum"
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Silicon",
+    "kind": "element",
+    "aliases": [
+      "si",
+      "silicon"
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Phosphorus",
+    "kind": "element",
+    "aliases": [
+      "p",
+      "phosphorus"
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Sulfur",
+    "kind": "element",
+    "aliases": [
+      "s",
+      "sulfur",
+      "sulphur"
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Chlorine",
+    "kind": "element",
+    "aliases": [
+      "chlorine",
+      "cl"
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Argon",
+    "kind": "element",
+    "aliases": [
+      "ar",
+      "argon"
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Potassium",
+    "kind": "element",
+    "aliases": [
+      "k",
+      "potassium"
+    ]
+  },
+  {
+    "id": 20,
+    "name": "Calcium",
+    "kind": "element",
+    "aliases": [
+      "ca",
+      "calcium"
+    ]
+  },
+  {
+    "id": 21,
+    "name": "Scandium",
+    "kind": "element",
+    "aliases": [
+      "sc",
+      "scandium"
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Titanium",
+    "kind": "element",
+    "aliases": [
+      "ti",
+      "titanium"
+    ]
+  },
+  {
+    "id": 23,
+    "name": "Vanadium",
+    "kind": "element",
+    "aliases": [
+      "v",
+      "vanadium"
+    ]
+  },
+  {
+    "id": 24,
+    "name": "Chromium",
+    "kind": "element",
+    "aliases": [
+      "chromium",
+      "cr"
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Manganese",
+    "kind": "element",
+    "aliases": [
+      "manganese",
+      "mn"
+    ]
+  },
+  {
+    "id": 26,
+    "name": "Iron",
+    "kind": "element",
+    "aliases": [
+      "fe",
+      "iron"
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Cobalt",
+    "kind": "element",
+    "aliases": [
+      "co",
+      "cobalt"
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Nickel",
+    "kind": "element",
+    "aliases": [
+      "ni",
+      "nickel"
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Copper",
+    "kind": "element",
+    "aliases": [
+      "copper",
+      "cu"
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Zinc",
+    "kind": "element",
+    "aliases": [
+      "zinc",
+      "zn"
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Gallium",
+    "kind": "element",
+    "aliases": [
+      "ga",
+      "gallium"
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Germanium",
+    "kind": "element",
+    "aliases": [
+      "ge",
+      "germanium"
+    ]
+  },
+  {
+    "id": 33,
+    "name": "Arsenic",
+    "kind": "element",
+    "aliases": [
+      "arsenic",
+      "as"
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Selenium",
+    "kind": "element",
+    "aliases": [
+      "se",
+      "selenium"
+    ]
+  },
+  {
+    "id": 35,
+    "name": "Bromine",
+    "kind": "element",
+    "aliases": [
+      "br",
+      "bromine"
+    ]
+  },
+  {
+    "id": 36,
+    "name": "Krypton",
+    "kind": "element",
+    "aliases": [
+      "kr",
+      "krypton"
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Rubidium",
+    "kind": "element",
+    "aliases": [
+      "rb",
+      "rubidium"
+    ]
+  },
+  {
+    "id": 38,
+    "name": "Strontium",
+    "kind": "element",
+    "aliases": [
+      "sr",
+      "strontium"
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Yttrium",
+    "kind": "element",
+    "aliases": [
+      "y",
+      "yttrium"
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Zirconium",
+    "kind": "element",
+    "aliases": [
+      "zirconium",
+      "zr"
+    ]
+  },
+  {
+    "id": 41,
+    "name": "Niobium",
+    "kind": "element",
+    "aliases": [
+      "nb",
+      "niobium"
+    ]
+  },
+  {
+    "id": 42,
+    "name": "Molybdenum",
+    "kind": "element",
+    "aliases": [
+      "mo",
+      "molybdenum"
+    ]
+  },
+  {
+    "id": 43,
+    "name": "Technetium",
+    "kind": "element",
+    "aliases": [
+      "tc",
+      "technetium"
+    ]
+  },
+  {
+    "id": 44,
+    "name": "Ruthenium",
+    "kind": "element",
+    "aliases": [
+      "ru",
+      "ruthenium"
+    ]
+  },
+  {
+    "id": 45,
+    "name": "Rhodium",
+    "kind": "element",
+    "aliases": [
+      "rh",
+      "rhodium"
+    ]
+  },
+  {
+    "id": 46,
+    "name": "Palladium",
+    "kind": "element",
+    "aliases": [
+      "palladium",
+      "pd"
+    ]
+  },
+  {
+    "id": 47,
+    "name": "Silver",
+    "kind": "element",
+    "aliases": [
+      "ag",
+      "silver"
+    ]
+  },
+  {
+    "id": 48,
+    "name": "Cadmium",
+    "kind": "element",
+    "aliases": [
+      "cadmium",
+      "cd"
+    ]
+  },
+  {
+    "id": 49,
+    "name": "Indium",
+    "kind": "element",
+    "aliases": [
+      "in",
+      "indium"
+    ]
+  },
+  {
+    "id": 50,
+    "name": "Tin",
+    "kind": "element",
+    "aliases": [
+      "sn",
+      "tin"
+    ]
+  },
+  {
+    "id": 51,
+    "name": "Antimony",
+    "kind": "element",
+    "aliases": [
+      "antimony",
+      "sb"
+    ]
+  },
+  {
+    "id": 52,
+    "name": "Tellurium",
+    "kind": "element",
+    "aliases": [
+      "te",
+      "tellurium"
+    ]
+  },
+  {
+    "id": 53,
+    "name": "Iodine",
+    "kind": "element",
+    "aliases": [
+      "i",
+      "iodine"
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Xenon",
+    "kind": "element",
+    "aliases": [
+      "xe",
+      "xenon"
+    ]
+  },
+  {
+    "id": 55,
+    "name": "Caesium",
+    "kind": "element",
+    "aliases": [
+      "caesium",
+      "cesium",
+      "cs"
+    ]
+  },
+  {
+    "id": 56,
+    "name": "Barium",
+    "kind": "element",
+    "aliases": [
+      "ba",
+      "barium"
+    ]
+  },
+  {
+    "id": 57,
+    "name": "Lanthanum",
+    "kind": "element",
+    "aliases": [
+      "la",
+      "lanthanum"
+    ]
+  },
+  {
+    "id": 58,
+    "name": "Cerium",
+    "kind": "element",
+    "aliases": [
+      "ce",
+      "cerium"
+    ]
+  },
+  {
+    "id": 59,
+    "name": "Praseodymium",
+    "kind": "element",
+    "aliases": [
+      "pr",
+      "praseodymium"
+    ]
+  },
+  {
+    "id": 60,
+    "name": "Neodymium",
+    "kind": "element",
+    "aliases": [
+      "nd",
+      "neodymium"
+    ]
+  },
+  {
+    "id": 61,
+    "name": "Promethium",
+    "kind": "element",
+    "aliases": [
+      "pm",
+      "promethium"
+    ]
+  },
+  {
+    "id": 62,
+    "name": "Samarium",
+    "kind": "element",
+    "aliases": [
+      "samarium",
+      "sm"
+    ]
+  },
+  {
+    "id": 63,
+    "name": "Europium",
+    "kind": "element",
+    "aliases": [
+      "eu",
+      "europium"
+    ]
+  },
+  {
+    "id": 64,
+    "name": "Gadolinium",
+    "kind": "element",
+    "aliases": [
+      "gadolinium",
+      "gd"
+    ]
+  },
+  {
+    "id": 65,
+    "name": "Terbium",
+    "kind": "element",
+    "aliases": [
+      "tb",
+      "terbium"
+    ]
+  },
+  {
+    "id": 66,
+    "name": "Dysprosium",
+    "kind": "element",
+    "aliases": [
+      "dy",
+      "dysprosium"
+    ]
+  },
+  {
+    "id": 67,
+    "name": "Holmium",
+    "kind": "element",
+    "aliases": [
+      "ho",
+      "holmium"
+    ]
+  },
+  {
+    "id": 68,
+    "name": "Erbium",
+    "kind": "element",
+    "aliases": [
+      "er",
+      "erbium"
+    ]
+  },
+  {
+    "id": 69,
+    "name": "Thulium",
+    "kind": "element",
+    "aliases": [
+      "thulium",
+      "tm"
+    ]
+  },
+  {
+    "id": 70,
+    "name": "Ytterbium",
+    "kind": "element",
+    "aliases": [
+      "yb",
+      "ytterbium"
+    ]
+  },
+  {
+    "id": 71,
+    "name": "Lutetium",
+    "kind": "element",
+    "aliases": [
+      "lu",
+      "lutetium"
+    ]
+  },
+  {
+    "id": 72,
+    "name": "Hafnium",
+    "kind": "element",
+    "aliases": [
+      "hafnium",
+      "hf"
+    ]
+  },
+  {
+    "id": 73,
+    "name": "Tantalum",
+    "kind": "element",
+    "aliases": [
+      "ta",
+      "tantalum"
+    ]
+  },
+  {
+    "id": 74,
+    "name": "Tungsten",
+    "kind": "element",
+    "aliases": [
+      "tungsten",
+      "w",
+      "wolfram"
+    ]
+  },
+  {
+    "id": 75,
+    "name": "Rhenium",
+    "kind": "element",
+    "aliases": [
+      "re",
+      "rhenium"
+    ]
+  },
+  {
+    "id": 76,
+    "name": "Osmium",
+    "kind": "element",
+    "aliases": [
+      "os",
+      "osmium"
+    ]
+  },
+  {
+    "id": 77,
+    "name": "Iridium",
+    "kind": "element",
+    "aliases": [
+      "ir",
+      "iridium"
+    ]
+  },
+  {
+    "id": 78,
+    "name": "Platinum",
+    "kind": "element",
+    "aliases": [
+      "platinum",
+      "pt"
+    ]
+  },
+  {
+    "id": 79,
+    "name": "Gold",
+    "kind": "element",
+    "aliases": [
+      "au",
+      "gold"
+    ]
+  },
+  {
+    "id": 80,
+    "name": "Mercury",
+    "kind": "element",
+    "aliases": [
+      "hg",
+      "mercury"
+    ]
+  },
+  {
+    "id": 81,
+    "name": "Thallium",
+    "kind": "element",
+    "aliases": [
+      "thallium",
+      "tl"
+    ]
+  },
+  {
+    "id": 82,
+    "name": "Lead",
+    "kind": "element",
+    "aliases": [
+      "lead",
+      "pb"
+    ]
+  },
+  {
+    "id": 83,
+    "name": "Bismuth",
+    "kind": "element",
+    "aliases": [
+      "bi",
+      "bismuth"
+    ]
+  },
+  {
+    "id": 84,
+    "name": "Polonium",
+    "kind": "element",
+    "aliases": [
+      "po",
+      "polonium"
+    ]
+  },
+  {
+    "id": 85,
+    "name": "Astatine",
+    "kind": "element",
+    "aliases": [
+      "astatine",
+      "at"
+    ]
+  },
+  {
+    "id": 86,
+    "name": "Radon",
+    "kind": "element",
+    "aliases": [
+      "radon",
+      "rn"
+    ]
+  },
+  {
+    "id": 87,
+    "name": "Francium",
+    "kind": "element",
+    "aliases": [
+      "fr",
+      "francium"
+    ]
+  },
+  {
+    "id": 88,
+    "name": "Radium",
+    "kind": "element",
+    "aliases": [
+      "ra",
+      "radium"
+    ]
+  },
+  {
+    "id": 89,
+    "name": "Actinium",
+    "kind": "element",
+    "aliases": [
+      "ac",
+      "actinium"
+    ]
+  },
+  {
+    "id": 90,
+    "name": "Thorium",
+    "kind": "element",
+    "aliases": [
+      "th",
+      "thorium"
+    ]
+  },
+  {
+    "id": 91,
+    "name": "Protactinium",
+    "kind": "element",
+    "aliases": [
+      "pa",
+      "protactinium"
+    ]
+  },
+  {
+    "id": 92,
+    "name": "Uranium",
+    "kind": "element",
+    "aliases": [
+      "u",
+      "uranium"
+    ]
+  },
+  {
+    "id": 93,
+    "name": "Neptunium",
+    "kind": "element",
+    "aliases": [
+      "neptunium",
+      "np"
+    ]
+  },
+  {
+    "id": 94,
+    "name": "Plutonium",
+    "kind": "element",
+    "aliases": [
+      "plutonium",
+      "pu"
+    ]
+  },
+  {
+    "id": 95,
+    "name": "Americium",
+    "kind": "element",
+    "aliases": [
+      "am",
+      "americium"
+    ]
+  },
+  {
+    "id": 96,
+    "name": "Curium",
+    "kind": "element",
+    "aliases": [
+      "cm",
+      "curium"
+    ]
+  },
+  {
+    "id": 97,
+    "name": "Berkelium",
+    "kind": "element",
+    "aliases": [
+      "berkelium",
+      "bk"
+    ]
+  },
+  {
+    "id": 98,
+    "name": "Californium",
+    "kind": "element",
+    "aliases": [
+      "californium",
+      "cf"
+    ]
+  },
+  {
+    "id": 99,
+    "name": "A-150 Tissue-Equivalent Plastic",
+    "kind": "compound",
+    "aliases": [
+      "a 150",
+      "a 150 tissue equivalent plastic",
+      "a150"
+    ]
+  },
+  {
+    "id": 103,
+    "name": "Adipose Tissue (ICRP)",
+    "kind": "compound",
+    "aliases": [
+      "adipose",
+      "adipose tissue",
+      "fat"
+    ]
+  },
+  {
+    "id": 104,
+    "name": "Air (dry, near sea level)",
+    "kind": "compound",
+    "aliases": [
+      "air"
+    ]
+  },
+  {
+    "id": 106,
+    "name": "Aluminum Oxide",
+    "kind": "compound",
+    "aliases": [
+      "alumina",
+      "aluminium oxide",
+      "aluminum oxide",
+      "sapphire"
+    ]
+  },
+  {
+    "id": 113,
+    "name": "Barium Fluoride",
+    "kind": "compound",
+    "aliases": [
+      "barium fluoride"
+    ]
+  },
+  {
+    "id": 114,
+    "name": "Barium Sulfate",
+    "kind": "compound",
+    "aliases": [
+      "barium sulfate"
+    ]
+  },
+  {
+    "id": 116,
+    "name": "Beryllium Oxide",
+    "kind": "compound",
+    "aliases": [
+      "beryllium oxide"
+    ]
+  },
+  {
+    "id": 117,
+    "name": "Bismuth Germanium Oxide",
+    "kind": "compound",
+    "aliases": [
+      "bismuth germanium oxide"
+    ]
+  },
+  {
+    "id": 118,
+    "name": "Blood (ICRP)",
+    "kind": "compound",
+    "aliases": [
+      "blood"
+    ]
+  },
+  {
+    "id": 119,
+    "name": "Bone, Compact (ICRU)",
+    "kind": "compound",
+    "aliases": [
+      "bone compact",
+      "compact bone"
+    ]
+  },
+  {
+    "id": 120,
+    "name": "Bone, Cortical (ICRP)",
+    "kind": "compound",
+    "aliases": [
+      "bone",
+      "bone cortical",
+      "cortical bone"
+    ]
+  },
+  {
+    "id": 121,
+    "name": "Boron Carbide",
+    "kind": "compound",
+    "aliases": [
+      "boron carbide"
+    ]
+  },
+  {
+    "id": 122,
+    "name": "Boron Oxide",
+    "kind": "compound",
+    "aliases": [
+      "boron oxide"
+    ]
+  },
+  {
+    "id": 123,
+    "name": "Brain (ICRP)",
+    "kind": "compound",
+    "aliases": [
+      "brain"
+    ]
+  },
+  {
+    "id": 125,
+    "name": "N-Butyl Alcohol",
+    "kind": "compound",
+    "aliases": [
+      "n butyl alcohol"
+    ]
+  },
+  {
+    "id": 127,
+    "name": "Cadmium Telluride",
+    "kind": "compound",
+    "aliases": [
+      "cadmium telluride"
+    ]
+  },
+  {
+    "id": 128,
+    "name": "Cadmium Tungstate",
+    "kind": "compound",
+    "aliases": [
+      "cadmium tungstate"
+    ]
+  },
+  {
+    "id": 129,
+    "name": "Calcium Carbonate",
+    "kind": "compound",
+    "aliases": [
+      "calcium carbonate"
+    ]
+  },
+  {
+    "id": 130,
+    "name": "Calcium Fluoride",
+    "kind": "compound",
+    "aliases": [
+      "calcium fluoride"
+    ]
+  },
+  {
+    "id": 131,
+    "name": "Calcium Oxide",
+    "kind": "compound",
+    "aliases": [
+      "calcium oxide"
+    ]
+  },
+  {
+    "id": 132,
+    "name": "Calcium Sulfate",
+    "kind": "compound",
+    "aliases": [
+      "calcium sulfate"
+    ]
+  },
+  {
+    "id": 133,
+    "name": "Calcium Tungstate",
+    "kind": "compound",
+    "aliases": [
+      "calcium tungstate"
+    ]
+  },
+  {
+    "id": 134,
+    "name": "Carbon Dioxide",
+    "kind": "compound",
+    "aliases": [
+      "carbon dioxide"
+    ]
+  },
+  {
+    "id": 135,
+    "name": "Carbon Tetrachloride",
+    "kind": "compound",
+    "aliases": [
+      "carbon tetrachloride"
+    ]
+  },
+  {
+    "id": 136,
+    "name": "Cellulose Acetate (Cellophane)",
+    "kind": "compound",
+    "aliases": [
+      "cellulose acetate"
+    ]
+  },
+  {
+    "id": 137,
+    "name": "Cellulose Acetate Butyrate",
+    "kind": "compound",
+    "aliases": [
+      "cellulose acetate butyrate"
+    ]
+  },
+  {
+    "id": 138,
+    "name": "Cellulose Nitrate",
+    "kind": "compound",
+    "aliases": [
+      "cellulose nitrate"
+    ]
+  },
+  {
+    "id": 139,
+    "name": "Ceric Sulfate Dosimeter Solution",
+    "kind": "compound",
+    "aliases": [
+      "ceric sulfate dosimeter solution"
+    ]
+  },
+  {
+    "id": 140,
+    "name": "Cesium Fluoride",
+    "kind": "compound",
+    "aliases": [
+      "cesium fluoride"
+    ]
+  },
+  {
+    "id": 141,
+    "name": "Cesium Iodide",
+    "kind": "compound",
+    "aliases": [
+      "cesium iodide",
+      "csi"
+    ]
+  },
+  {
+    "id": 142,
+    "name": "Chlorobenzene",
+    "kind": "compound",
+    "aliases": [
+      "chlorobenzene"
+    ]
+  },
+  {
+    "id": 143,
+    "name": "Chloroform",
+    "kind": "compound",
+    "aliases": [
+      "chloroform"
+    ]
+  },
+  {
+    "id": 144,
+    "name": "Concrete (Portland)",
+    "kind": "compound",
+    "aliases": [
+      "concrete"
+    ]
+  },
+  {
+    "id": 145,
+    "name": "Cyclohexane",
+    "kind": "compound",
+    "aliases": [
+      "cyclohexane"
+    ]
+  },
+  {
+    "id": 146,
+    "name": "Dichlorobenzene",
+    "kind": "compound",
+    "aliases": [
+      "dichlorobenzene"
+    ]
+  },
+  {
+    "id": 147,
+    "name": "Dichlorodiethyl Ether",
+    "kind": "compound",
+    "aliases": [
+      "dichlorodiethyl ether"
+    ]
+  },
+  {
+    "id": 148,
+    "name": "Dichloroethane",
+    "kind": "compound",
+    "aliases": [
+      "dichloroethane"
+    ]
+  },
+  {
+    "id": 149,
+    "name": "Diethyl Ether",
+    "kind": "compound",
+    "aliases": [
+      "diethyl ether"
+    ]
+  },
+  {
+    "id": 150,
+    "name": "N,N-Dimethylformamide",
+    "kind": "compound",
+    "aliases": [
+      "n n dimethylformamide"
+    ]
+  },
+  {
+    "id": 151,
+    "name": "Dimethyl Sulfoxide",
+    "kind": "compound",
+    "aliases": [
+      "dimethyl sulfoxide"
+    ]
+  },
+  {
+    "id": 152,
+    "name": "Ethane",
+    "kind": "compound",
+    "aliases": [
+      "ethane"
+    ]
+  },
+  {
+    "id": 153,
+    "name": "Ethyl Alcohol",
+    "kind": "compound",
+    "aliases": [
+      "ethyl alcohol"
+    ]
+  },
+  {
+    "id": 154,
+    "name": "Ethyl Cellulose",
+    "kind": "compound",
+    "aliases": [
+      "ethyl cellulose"
+    ]
+  },
+  {
+    "id": 155,
+    "name": "Ethylene",
+    "kind": "compound",
+    "aliases": [
+      "ethylene"
+    ]
+  },
+  {
+    "id": 156,
+    "name": "Eye Lens (ICRP)",
+    "kind": "compound",
+    "aliases": [
+      "eye lens"
+    ]
+  },
+  {
+    "id": 157,
+    "name": "Ferric Oxide",
+    "kind": "compound",
+    "aliases": [
+      "ferric oxide"
+    ]
+  },
+  {
+    "id": 159,
+    "name": "Ferrous Oxide",
+    "kind": "compound",
+    "aliases": [
+      "ferrous oxide"
+    ]
+  },
+  {
+    "id": 160,
+    "name": "Ferrous Sulfate Dosimeter Solution",
+    "kind": "compound",
+    "aliases": [
+      "ferrous sulfate dosimeter solution"
+    ]
+  },
+  {
+    "id": 161,
+    "name": "Freon-12",
+    "kind": "compound",
+    "aliases": [
+      "freon 12"
+    ]
+  },
+  {
+    "id": 162,
+    "name": "Freon-12B2",
+    "kind": "compound",
+    "aliases": [
+      "freon 12b2"
+    ]
+  },
+  {
+    "id": 163,
+    "name": "Freon-13",
+    "kind": "compound",
+    "aliases": [
+      "freon 13"
+    ]
+  },
+  {
+    "id": 164,
+    "name": "Freon-13B1",
+    "kind": "compound",
+    "aliases": [
+      "freon 13b1"
+    ]
+  },
+  {
+    "id": 165,
+    "name": "Freon-13I1",
+    "kind": "compound",
+    "aliases": [
+      "freon 13i1"
+    ]
+  },
+  {
+    "id": 166,
+    "name": "Gadolinium Oxysulfide",
+    "kind": "compound",
+    "aliases": [
+      "gadolinium oxysulfide"
+    ]
+  },
+  {
+    "id": 167,
+    "name": "Gallium Arsenide",
+    "kind": "compound",
+    "aliases": [
+      "gallium arsenide"
+    ]
+  },
+  {
+    "id": 168,
+    "name": "Gel in Photographic Emulsion",
+    "kind": "compound",
+    "aliases": [
+      "gel in photographic emulsion"
+    ]
+  },
+  {
+    "id": 169,
+    "name": "Glass (Pyrex)",
+    "kind": "compound",
+    "aliases": [
+      "glass",
+      "pyrex"
+    ]
+  },
+  {
+    "id": 170,
+    "name": "Glass (Lead)",
+    "kind": "compound",
+    "aliases": []
+  },
+  {
+    "id": 171,
+    "name": "Glass (Plate)",
+    "kind": "compound",
+    "aliases": []
+  },
+  {
+    "id": 172,
+    "name": "Glucose",
+    "kind": "compound",
+    "aliases": [
+      "glucose"
+    ]
+  },
+  {
+    "id": 174,
+    "name": "Glycerol",
+    "kind": "compound",
+    "aliases": [
+      "glycerol"
+    ]
+  },
+  {
+    "id": 176,
+    "name": "Gypsum (Plaster of Paris)",
+    "kind": "compound",
+    "aliases": [
+      "gypsum"
+    ]
+  },
+  {
+    "id": 177,
+    "name": "N-Heptane",
+    "kind": "compound",
+    "aliases": [
+      "n heptane"
+    ]
+  },
+  {
+    "id": 178,
+    "name": "N-Hexane",
+    "kind": "compound",
+    "aliases": [
+      "n hexane"
+    ]
+  },
+  {
+    "id": 179,
+    "name": "Kapton Polyimide Film",
+    "kind": "compound",
+    "aliases": [
+      "kapton",
+      "kapton polyimide film"
+    ]
+  },
+  {
+    "id": 180,
+    "name": "Lanthanum Oxybromide",
+    "kind": "compound",
+    "aliases": [
+      "lanthanum oxybromide"
+    ]
+  },
+  {
+    "id": 181,
+    "name": "Lanthanum Oxysulfide",
+    "kind": "compound",
+    "aliases": [
+      "lanthanum oxysulfide"
+    ]
+  },
+  {
+    "id": 182,
+    "name": "Lead Oxide",
+    "kind": "compound",
+    "aliases": [
+      "lead oxide"
+    ]
+  },
+  {
+    "id": 183,
+    "name": "Lithium Amide",
+    "kind": "compound",
+    "aliases": [
+      "lithium amide"
+    ]
+  },
+  {
+    "id": 184,
+    "name": "Lithium Carbonate",
+    "kind": "compound",
+    "aliases": [
+      "lithium carbonate"
+    ]
+  },
+  {
+    "id": 185,
+    "name": "Lithium Fluoride",
+    "kind": "compound",
+    "aliases": [
+      "lif",
+      "lithium fluoride"
+    ]
+  },
+  {
+    "id": 186,
+    "name": "Lithium Hydride",
+    "kind": "compound",
+    "aliases": [
+      "lithium hydride"
+    ]
+  },
+  {
+    "id": 187,
+    "name": "Lithium Iodide",
+    "kind": "compound",
+    "aliases": [
+      "lithium iodide"
+    ]
+  },
+  {
+    "id": 188,
+    "name": "Lithium Oxide",
+    "kind": "compound",
+    "aliases": [
+      "lithium oxide"
+    ]
+  },
+  {
+    "id": 189,
+    "name": "Lithium Tetraborate",
+    "kind": "compound",
+    "aliases": [
+      "lithium tetraborate"
+    ]
+  },
+  {
+    "id": 190,
+    "name": "Lung (ICRP)",
+    "kind": "compound",
+    "aliases": [
+      "lung",
+      "lung tissue"
+    ]
+  },
+  {
+    "id": 192,
+    "name": "Magnesium Carbonate",
+    "kind": "compound",
+    "aliases": [
+      "magnesium carbonate"
+    ]
+  },
+  {
+    "id": 193,
+    "name": "Magnesium Fluoride",
+    "kind": "compound",
+    "aliases": [
+      "magnesium fluoride"
+    ]
+  },
+  {
+    "id": 194,
+    "name": "Magnesium Oxide",
+    "kind": "compound",
+    "aliases": [
+      "magnesium oxide"
+    ]
+  },
+  {
+    "id": 195,
+    "name": "Magnesium Tetraborate",
+    "kind": "compound",
+    "aliases": [
+      "magnesium tetraborate"
+    ]
+  },
+  {
+    "id": 196,
+    "name": "Mercuric Iodide",
+    "kind": "compound",
+    "aliases": [
+      "mercuric iodide"
+    ]
+  },
+  {
+    "id": 200,
+    "name": "MS20 Tissue Substitute",
+    "kind": "compound",
+    "aliases": [
+      "ms20 tissue substitute"
+    ]
+  },
+  {
+    "id": 201,
+    "name": "Muscle, Skeletal",
+    "kind": "compound",
+    "aliases": [
+      "muscle",
+      "muscle skeletal",
+      "muscle tissue",
+      "skeletal muscle"
+    ]
+  },
+  {
+    "id": 202,
+    "name": "Muscle, Striated",
+    "kind": "compound",
+    "aliases": [
+      "muscle striated",
+      "striated muscle"
+    ]
+  },
+  {
+    "id": 203,
+    "name": "Muscle-Equivalent Liquid (with sucrose)",
+    "kind": "compound",
+    "aliases": []
+  },
+  {
+    "id": 204,
+    "name": "Muscle-Equivalent Liquid (without sucrose)",
+    "kind": "compound",
+    "aliases": []
+  },
+  {
+    "id": 208,
+    "name": "Nylon (DuPont Elvamide 8062)",
+    "kind": "compound",
+    "aliases": [
+      "nylon"
+    ]
+  },
+  {
+    "id": 209,
+    "name": "Nylon Type 6 and 6/6",
+    "kind": "compound",
+    "aliases": [
+      "nylon type 6 and 6 6"
+    ]
+  },
+  {
+    "id": 210,
+    "name": "Nylon Type 6-10",
+    "kind": "compound",
+    "aliases": [
+      "nylon type 6 10"
+    ]
+  },
+  {
+    "id": 211,
+    "name": "Nylon Type 11 (Rilsan)",
+    "kind": "compound",
+    "aliases": [
+      "nylon type 11"
+    ]
+  },
+  {
+    "id": 212,
+    "name": "Octane (liquid)",
+    "kind": "compound",
+    "aliases": [
+      "octane"
+    ]
+  },
+  {
+    "id": 213,
+    "name": "Paraffin Wax",
+    "kind": "compound",
+    "aliases": [
+      "paraffin",
+      "paraffin wax"
+    ]
+  },
+  {
+    "id": 214,
+    "name": "N-Pentane",
+    "kind": "compound",
+    "aliases": [
+      "n pentane"
+    ]
+  },
+  {
+    "id": 215,
+    "name": "Photographic Emulsion",
+    "kind": "compound",
+    "aliases": [
+      "photographic emulsion"
+    ]
+  },
+  {
+    "id": 216,
+    "name": "Plastic Scintillator (vinyltoluene-based)",
+    "kind": "compound",
+    "aliases": [
+      "plastic scintillator"
+    ]
+  },
+  {
+    "id": 217,
+    "name": "Plutonium Dioxide",
+    "kind": "compound",
+    "aliases": [
+      "plutonium dioxide"
+    ]
+  },
+  {
+    "id": 218,
+    "name": "Polyacrylonitrile",
+    "kind": "compound",
+    "aliases": [
+      "polyacrylonitrile"
+    ]
+  },
+  {
+    "id": 219,
+    "name": "Polycarbonate (Makrolon/Lexan)",
+    "kind": "compound",
+    "aliases": [
+      "lexan",
+      "makrolon",
+      "polycarbonate"
+    ]
+  },
+  {
+    "id": 220,
+    "name": "Polychlorostyrene",
+    "kind": "compound",
+    "aliases": [
+      "polychlorostyrene"
+    ]
+  },
+  {
+    "id": 221,
+    "name": "Polyethylene",
+    "kind": "compound",
+    "aliases": [
+      "polyethylene"
+    ]
+  },
+  {
+    "id": 222,
+    "name": "Mylar (PET)",
+    "kind": "compound",
+    "aliases": [
+      "mylar",
+      "pet",
+      "polyester"
+    ]
+  },
+  {
+    "id": 223,
+    "name": "PMMA (Plexiglass)",
+    "kind": "compound",
+    "aliases": [
+      "acrylic",
+      "lucite",
+      "perspex",
+      "plexiglas",
+      "plexiglass",
+      "pmma"
+    ]
+  },
+  {
+    "id": 224,
+    "name": "Polyoxymethylene",
+    "kind": "compound",
+    "aliases": [
+      "polyoxymethylene"
+    ]
+  },
+  {
+    "id": 225,
+    "name": "Polypropylene",
+    "kind": "compound",
+    "aliases": [
+      "polypropylene"
+    ]
+  },
+  {
+    "id": 226,
+    "name": "Polystyrene",
+    "kind": "compound",
+    "aliases": [
+      "polystyrene"
+    ]
+  },
+  {
+    "id": 227,
+    "name": "Polytetrafluoroethylene (Teflon)",
+    "kind": "compound",
+    "aliases": [
+      "polytetrafluoroethylene",
+      "ptfe",
+      "teflon"
+    ]
+  },
+  {
+    "id": 228,
+    "name": "Polytrifluorochloroethylene",
+    "kind": "compound",
+    "aliases": [
+      "polytrifluorochloroethylene"
+    ]
+  },
+  {
+    "id": 229,
+    "name": "Polyvinyl Acetate",
+    "kind": "compound",
+    "aliases": [
+      "polyvinyl acetate"
+    ]
+  },
+  {
+    "id": 230,
+    "name": "Polyvinyl Alcohol",
+    "kind": "compound",
+    "aliases": [
+      "polyvinyl alcohol"
+    ]
+  },
+  {
+    "id": 231,
+    "name": "Polyvinyl Butyral",
+    "kind": "compound",
+    "aliases": [
+      "polyvinyl butyral"
+    ]
+  },
+  {
+    "id": 232,
+    "name": "Polyvinyl Chloride (PVC)",
+    "kind": "compound",
+    "aliases": [
+      "polyvinyl chloride",
+      "pvc"
+    ]
+  },
+  {
+    "id": 233,
+    "name": "Saran",
+    "kind": "compound",
+    "aliases": [
+      "saran"
+    ]
+  },
+  {
+    "id": 234,
+    "name": "Polyvinylidene Fluoride",
+    "kind": "compound",
+    "aliases": [
+      "polyvinylidene fluoride"
+    ]
+  },
+  {
+    "id": 235,
+    "name": "Polyvinylpyrrolidone",
+    "kind": "compound",
+    "aliases": [
+      "polyvinylpyrrolidone"
+    ]
+  },
+  {
+    "id": 236,
+    "name": "Potassium Iodide",
+    "kind": "compound",
+    "aliases": [
+      "potassium iodide"
+    ]
+  },
+  {
+    "id": 237,
+    "name": "Potassium Oxide",
+    "kind": "compound",
+    "aliases": [
+      "potassium oxide"
+    ]
+  },
+  {
+    "id": 239,
+    "name": "Propane (liquid)",
+    "kind": "compound",
+    "aliases": [
+      "propane"
+    ]
+  },
+  {
+    "id": 240,
+    "name": "N-Propyl Alcohol",
+    "kind": "compound",
+    "aliases": [
+      "n propyl alcohol"
+    ]
+  },
+  {
+    "id": 242,
+    "name": "Rubber (butyl)",
+    "kind": "compound",
+    "aliases": []
+  },
+  {
+    "id": 243,
+    "name": "Rubber (natural)",
+    "kind": "compound",
+    "aliases": []
+  },
+  {
+    "id": 244,
+    "name": "Rubber (neoprene)",
+    "kind": "compound",
+    "aliases": []
+  },
+  {
+    "id": 245,
+    "name": "Silicon Dioxide",
+    "kind": "compound",
+    "aliases": [
+      "fused silica",
+      "quartz",
+      "silica",
+      "silicon dioxide"
+    ]
+  },
+  {
+    "id": 246,
+    "name": "Silver Bromide",
+    "kind": "compound",
+    "aliases": [
+      "silver bromide"
+    ]
+  },
+  {
+    "id": 247,
+    "name": "Silver Chloride",
+    "kind": "compound",
+    "aliases": [
+      "silver chloride"
+    ]
+  },
+  {
+    "id": 248,
+    "name": "Silver Halides in Photographic Emulsion",
+    "kind": "compound",
+    "aliases": [
+      "silver halides in photographic emulsion"
+    ]
+  },
+  {
+    "id": 249,
+    "name": "Silver Iodide",
+    "kind": "compound",
+    "aliases": [
+      "silver iodide"
+    ]
+  },
+  {
+    "id": 250,
+    "name": "Skin (ICRP)",
+    "kind": "compound",
+    "aliases": [
+      "skin"
+    ]
+  },
+  {
+    "id": 251,
+    "name": "Sodium Carbonate",
+    "kind": "compound",
+    "aliases": [
+      "sodium carbonate"
+    ]
+  },
+  {
+    "id": 252,
+    "name": "Sodium Iodide",
+    "kind": "compound",
+    "aliases": [
+      "nai",
+      "sodium iodide"
+    ]
+  },
+  {
+    "id": 253,
+    "name": "Sodium Monoxide",
+    "kind": "compound",
+    "aliases": [
+      "sodium monoxide"
+    ]
+  },
+  {
+    "id": 254,
+    "name": "Sodium Nitrate",
+    "kind": "compound",
+    "aliases": [
+      "sodium nitrate"
+    ]
+  },
+  {
+    "id": 258,
+    "name": "Testes (ICRP)",
+    "kind": "compound",
+    "aliases": [
+      "testes"
+    ]
+  },
+  {
+    "id": 259,
+    "name": "Tetrachloroethylene",
+    "kind": "compound",
+    "aliases": [
+      "tetrachloroethylene"
+    ]
+  },
+  {
+    "id": 260,
+    "name": "Thallium Chloride",
+    "kind": "compound",
+    "aliases": [
+      "thallium chloride"
+    ]
+  },
+  {
+    "id": 261,
+    "name": "Tissue, Soft (ICRP)",
+    "kind": "compound",
+    "aliases": [
+      "soft tissue",
+      "tissue"
+    ]
+  },
+  {
+    "id": 262,
+    "name": "Tissue, Soft (ICRU four-component)",
+    "kind": "compound",
+    "aliases": []
+  },
+  {
+    "id": 263,
+    "name": "Tissue-Equivalent Gas (methane-based)",
+    "kind": "compound",
+    "aliases": []
+  },
+  {
+    "id": 264,
+    "name": "Tissue-Equivalent Gas (propane-based)",
+    "kind": "compound",
+    "aliases": []
+  },
+  {
+    "id": 265,
+    "name": "Titanium Dioxide",
+    "kind": "compound",
+    "aliases": [
+      "titanium dioxide"
+    ]
+  },
+  {
+    "id": 267,
+    "name": "Trichloroethylene",
+    "kind": "compound",
+    "aliases": [
+      "trichloroethylene"
+    ]
+  },
+  {
+    "id": 268,
+    "name": "Triethyl Phosphate",
+    "kind": "compound",
+    "aliases": [
+      "triethyl phosphate"
+    ]
+  },
+  {
+    "id": 269,
+    "name": "Tungsten Hexafluoride",
+    "kind": "compound",
+    "aliases": [
+      "tungsten hexafluoride"
+    ]
+  },
+  {
+    "id": 270,
+    "name": "Uranium Dicarbide",
+    "kind": "compound",
+    "aliases": [
+      "uranium dicarbide"
+    ]
+  },
+  {
+    "id": 271,
+    "name": "Uranium Monocarbide",
+    "kind": "compound",
+    "aliases": [
+      "uranium monocarbide"
+    ]
+  },
+  {
+    "id": 272,
+    "name": "Uranium Oxide",
+    "kind": "compound",
+    "aliases": [
+      "uranium oxide"
+    ]
+  },
+  {
+    "id": 275,
+    "name": "Viton Fluoroelastomer",
+    "kind": "compound",
+    "aliases": [
+      "viton fluoroelastomer"
+    ]
+  },
+  {
+    "id": 276,
+    "name": "Water (liquid)",
+    "kind": "compound",
+    "aliases": [
+      "h2o",
+      "liquid water",
+      "water"
+    ]
+  },
+  {
+    "id": 277,
+    "name": "Water Vapor",
+    "kind": "compound",
+    "aliases": [
+      "steam",
+      "water vapor",
+      "water vapour"
+    ]
+  },
+  {
+    "id": 906,
+    "name": "Graphite",
+    "kind": "compound",
+    "aliases": [
+      "graphite"
+    ]
+  }
+]

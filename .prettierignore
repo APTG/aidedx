@@ -5,3 +5,6 @@ coverage
 
 # Lock files are managed by pnpm, not prettier
 **/pnpm-lock.yaml
+
+# Generated alias artifacts — owned by scripts/generate-aliases.ts (issue #4)
+static/aliases/

@@ -53,6 +53,23 @@ pnpm validate:eval   # validate the dataset + print tag coverage
 See [`eval/README.md`](eval/README.md) for the schema, labeling conventions,
 and tag taxonomy. The validator also runs in CI and as a Vitest test.
 
+## Alias tables
+
+[`src/lib/aliases/`](src/lib/aliases/) maps natural-language phrases ("PMMA",
+"carbon ions", "lung tissue") to canonical **libdedx** materials and particles —
+the deterministic matcher's accuracy backbone, also reusable by dedx_web's text
+search. `resolveMaterial()` / `resolveParticle()` do exact → normalized → fuzzy
+matching and parse explicit isotopes ("carbon-13", "³He"). Tables are seeded
+from libdedx (via dedx_web) plus the periodic table and shipped as both typed TS
+and JSON ([`static/aliases/`](static/aliases/)).
+
+```sh
+pnpm generate:aliases   # regenerate the JSON artifacts from the TS tables
+```
+
+See [`docs/aliases.md`](docs/aliases.md) for provenance and how to regenerate
+when libdedx updates.
+
 ## Cross-origin isolation (deferred)
 
 In-browser ML backends need `SharedArrayBuffer`, which requires the page to be

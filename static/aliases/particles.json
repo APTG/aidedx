@@ -1,0 +1,1221 @@
+[
+  {
+    "id": 1,
+    "symbol": "H",
+    "name": "Hydrogen",
+    "defaultMassNumber": 1,
+    "aliases": [
+      "1h",
+      "2h",
+      "3h",
+      "d",
+      "deuterium",
+      "deuteron",
+      "deuterons",
+      "h",
+      "hydrogen",
+      "p",
+      "proton",
+      "protons",
+      "t",
+      "tritium",
+      "triton",
+      "tritons"
+    ]
+  },
+  {
+    "id": 2,
+    "symbol": "He",
+    "name": "Helium",
+    "defaultMassNumber": 4,
+    "aliases": [
+      "3he",
+      "4he",
+      "alpha",
+      "alpha particle",
+      "alpha particles",
+      "alphas",
+      "he",
+      "helion",
+      "helium",
+      "α"
+    ]
+  },
+  {
+    "id": 3,
+    "symbol": "Li",
+    "name": "Lithium",
+    "defaultMassNumber": 7,
+    "aliases": [
+      "li",
+      "lithium"
+    ]
+  },
+  {
+    "id": 4,
+    "symbol": "Be",
+    "name": "Beryllium",
+    "defaultMassNumber": 9,
+    "aliases": [
+      "be",
+      "beryllium"
+    ]
+  },
+  {
+    "id": 5,
+    "symbol": "B",
+    "name": "Boron",
+    "defaultMassNumber": 11,
+    "aliases": [
+      "b",
+      "boron"
+    ]
+  },
+  {
+    "id": 6,
+    "symbol": "C",
+    "name": "Carbon",
+    "defaultMassNumber": 12,
+    "aliases": [
+      "c",
+      "carbon"
+    ]
+  },
+  {
+    "id": 7,
+    "symbol": "N",
+    "name": "Nitrogen",
+    "defaultMassNumber": 14,
+    "aliases": [
+      "n",
+      "nitrogen"
+    ]
+  },
+  {
+    "id": 8,
+    "symbol": "O",
+    "name": "Oxygen",
+    "defaultMassNumber": 16,
+    "aliases": [
+      "o",
+      "oxygen"
+    ]
+  },
+  {
+    "id": 9,
+    "symbol": "F",
+    "name": "Fluorine",
+    "defaultMassNumber": 19,
+    "aliases": [
+      "f",
+      "fluorine"
+    ]
+  },
+  {
+    "id": 10,
+    "symbol": "Ne",
+    "name": "Neon",
+    "defaultMassNumber": 20,
+    "aliases": [
+      "ne",
+      "neon"
+    ]
+  },
+  {
+    "id": 11,
+    "symbol": "Na",
+    "name": "Sodium",
+    "defaultMassNumber": 23,
+    "aliases": [
+      "na",
+      "sodium"
+    ]
+  },
+  {
+    "id": 12,
+    "symbol": "Mg",
+    "name": "Magnesium",
+    "defaultMassNumber": 24,
+    "aliases": [
+      "magnesium",
+      "mg"
+    ]
+  },
+  {
+    "id": 13,
+    "symbol": "Al",
+    "name": "Aluminium",
+    "defaultMassNumber": 27,
+    "aliases": [
+      "al",
+      "aluminium",
+      "aluminum"
+    ]
+  },
+  {
+    "id": 14,
+    "symbol": "Si",
+    "name": "Silicon",
+    "defaultMassNumber": 28,
+    "aliases": [
+      "si",
+      "silicon"
+    ]
+  },
+  {
+    "id": 15,
+    "symbol": "P",
+    "name": "Phosphorus",
+    "defaultMassNumber": 31,
+    "aliases": [
+      "phosphorus"
+    ]
+  },
+  {
+    "id": 16,
+    "symbol": "S",
+    "name": "Sulfur",
+    "defaultMassNumber": 32,
+    "aliases": [
+      "s",
+      "sulfur",
+      "sulphur"
+    ]
+  },
+  {
+    "id": 17,
+    "symbol": "Cl",
+    "name": "Chlorine",
+    "defaultMassNumber": 35,
+    "aliases": [
+      "chlorine",
+      "cl"
+    ]
+  },
+  {
+    "id": 18,
+    "symbol": "Ar",
+    "name": "Argon",
+    "defaultMassNumber": 40,
+    "aliases": [
+      "ar",
+      "argon"
+    ]
+  },
+  {
+    "id": 19,
+    "symbol": "K",
+    "name": "Potassium",
+    "defaultMassNumber": 39,
+    "aliases": [
+      "k",
+      "potassium"
+    ]
+  },
+  {
+    "id": 20,
+    "symbol": "Ca",
+    "name": "Calcium",
+    "defaultMassNumber": 40,
+    "aliases": [
+      "ca",
+      "calcium"
+    ]
+  },
+  {
+    "id": 21,
+    "symbol": "Sc",
+    "name": "Scandium",
+    "defaultMassNumber": 45,
+    "aliases": [
+      "sc",
+      "scandium"
+    ]
+  },
+  {
+    "id": 22,
+    "symbol": "Ti",
+    "name": "Titanium",
+    "defaultMassNumber": 48,
+    "aliases": [
+      "ti",
+      "titanium"
+    ]
+  },
+  {
+    "id": 23,
+    "symbol": "V",
+    "name": "Vanadium",
+    "defaultMassNumber": 51,
+    "aliases": [
+      "v",
+      "vanadium"
+    ]
+  },
+  {
+    "id": 24,
+    "symbol": "Cr",
+    "name": "Chromium",
+    "defaultMassNumber": 52,
+    "aliases": [
+      "chromium",
+      "cr"
+    ]
+  },
+  {
+    "id": 25,
+    "symbol": "Mn",
+    "name": "Manganese",
+    "defaultMassNumber": 55,
+    "aliases": [
+      "manganese",
+      "mn"
+    ]
+  },
+  {
+    "id": 26,
+    "symbol": "Fe",
+    "name": "Iron",
+    "defaultMassNumber": 56,
+    "aliases": [
+      "fe",
+      "iron"
+    ]
+  },
+  {
+    "id": 27,
+    "symbol": "Co",
+    "name": "Cobalt",
+    "defaultMassNumber": 59,
+    "aliases": [
+      "co",
+      "cobalt"
+    ]
+  },
+  {
+    "id": 28,
+    "symbol": "Ni",
+    "name": "Nickel",
+    "defaultMassNumber": 58,
+    "aliases": [
+      "ni",
+      "nickel"
+    ]
+  },
+  {
+    "id": 29,
+    "symbol": "Cu",
+    "name": "Copper",
+    "defaultMassNumber": 63,
+    "aliases": [
+      "copper",
+      "cu"
+    ]
+  },
+  {
+    "id": 30,
+    "symbol": "Zn",
+    "name": "Zinc",
+    "defaultMassNumber": 64,
+    "aliases": [
+      "zinc",
+      "zn"
+    ]
+  },
+  {
+    "id": 31,
+    "symbol": "Ga",
+    "name": "Gallium",
+    "defaultMassNumber": 69,
+    "aliases": [
+      "ga",
+      "gallium"
+    ]
+  },
+  {
+    "id": 32,
+    "symbol": "Ge",
+    "name": "Germanium",
+    "defaultMassNumber": 74,
+    "aliases": [
+      "ge",
+      "germanium"
+    ]
+  },
+  {
+    "id": 33,
+    "symbol": "As",
+    "name": "Arsenic",
+    "defaultMassNumber": 75,
+    "aliases": [
+      "arsenic",
+      "as"
+    ]
+  },
+  {
+    "id": 34,
+    "symbol": "Se",
+    "name": "Selenium",
+    "defaultMassNumber": 80,
+    "aliases": [
+      "se",
+      "selenium"
+    ]
+  },
+  {
+    "id": 35,
+    "symbol": "Br",
+    "name": "Bromine",
+    "defaultMassNumber": 79,
+    "aliases": [
+      "br",
+      "bromine"
+    ]
+  },
+  {
+    "id": 36,
+    "symbol": "Kr",
+    "name": "Krypton",
+    "defaultMassNumber": 84,
+    "aliases": [
+      "kr",
+      "krypton"
+    ]
+  },
+  {
+    "id": 37,
+    "symbol": "Rb",
+    "name": "Rubidium",
+    "defaultMassNumber": 85,
+    "aliases": [
+      "rb",
+      "rubidium"
+    ]
+  },
+  {
+    "id": 38,
+    "symbol": "Sr",
+    "name": "Strontium",
+    "defaultMassNumber": 88,
+    "aliases": [
+      "sr",
+      "strontium"
+    ]
+  },
+  {
+    "id": 39,
+    "symbol": "Y",
+    "name": "Yttrium",
+    "defaultMassNumber": 89,
+    "aliases": [
+      "y",
+      "yttrium"
+    ]
+  },
+  {
+    "id": 40,
+    "symbol": "Zr",
+    "name": "Zirconium",
+    "defaultMassNumber": 90,
+    "aliases": [
+      "zirconium",
+      "zr"
+    ]
+  },
+  {
+    "id": 41,
+    "symbol": "Nb",
+    "name": "Niobium",
+    "defaultMassNumber": 93,
+    "aliases": [
+      "nb",
+      "niobium"
+    ]
+  },
+  {
+    "id": 42,
+    "symbol": "Mo",
+    "name": "Molybdenum",
+    "defaultMassNumber": 98,
+    "aliases": [
+      "mo",
+      "molybdenum"
+    ]
+  },
+  {
+    "id": 43,
+    "symbol": "Tc",
+    "name": "Technetium",
+    "defaultMassNumber": 98,
+    "aliases": [
+      "tc",
+      "technetium"
+    ]
+  },
+  {
+    "id": 44,
+    "symbol": "Ru",
+    "name": "Ruthenium",
+    "defaultMassNumber": 102,
+    "aliases": [
+      "ru",
+      "ruthenium"
+    ]
+  },
+  {
+    "id": 45,
+    "symbol": "Rh",
+    "name": "Rhodium",
+    "defaultMassNumber": 103,
+    "aliases": [
+      "rh",
+      "rhodium"
+    ]
+  },
+  {
+    "id": 46,
+    "symbol": "Pd",
+    "name": "Palladium",
+    "defaultMassNumber": 106,
+    "aliases": [
+      "palladium",
+      "pd"
+    ]
+  },
+  {
+    "id": 47,
+    "symbol": "Ag",
+    "name": "Silver",
+    "defaultMassNumber": 107,
+    "aliases": [
+      "ag",
+      "silver"
+    ]
+  },
+  {
+    "id": 48,
+    "symbol": "Cd",
+    "name": "Cadmium",
+    "defaultMassNumber": 114,
+    "aliases": [
+      "cadmium",
+      "cd"
+    ]
+  },
+  {
+    "id": 49,
+    "symbol": "In",
+    "name": "Indium",
+    "defaultMassNumber": 115,
+    "aliases": [
+      "in",
+      "indium"
+    ]
+  },
+  {
+    "id": 50,
+    "symbol": "Sn",
+    "name": "Tin",
+    "defaultMassNumber": 120,
+    "aliases": [
+      "sn",
+      "tin"
+    ]
+  },
+  {
+    "id": 51,
+    "symbol": "Sb",
+    "name": "Antimony",
+    "defaultMassNumber": 121,
+    "aliases": [
+      "antimony",
+      "sb"
+    ]
+  },
+  {
+    "id": 52,
+    "symbol": "Te",
+    "name": "Tellurium",
+    "defaultMassNumber": 130,
+    "aliases": [
+      "te",
+      "tellurium"
+    ]
+  },
+  {
+    "id": 53,
+    "symbol": "I",
+    "name": "Iodine",
+    "defaultMassNumber": 127,
+    "aliases": [
+      "i",
+      "iodine"
+    ]
+  },
+  {
+    "id": 54,
+    "symbol": "Xe",
+    "name": "Xenon",
+    "defaultMassNumber": 132,
+    "aliases": [
+      "xe",
+      "xenon"
+    ]
+  },
+  {
+    "id": 55,
+    "symbol": "Cs",
+    "name": "Caesium",
+    "defaultMassNumber": 133,
+    "aliases": [
+      "caesium",
+      "cesium",
+      "cs"
+    ]
+  },
+  {
+    "id": 56,
+    "symbol": "Ba",
+    "name": "Barium",
+    "defaultMassNumber": 138,
+    "aliases": [
+      "ba",
+      "barium"
+    ]
+  },
+  {
+    "id": 57,
+    "symbol": "La",
+    "name": "Lanthanum",
+    "defaultMassNumber": 139,
+    "aliases": [
+      "la",
+      "lanthanum"
+    ]
+  },
+  {
+    "id": 58,
+    "symbol": "Ce",
+    "name": "Cerium",
+    "defaultMassNumber": 140,
+    "aliases": [
+      "ce",
+      "cerium"
+    ]
+  },
+  {
+    "id": 59,
+    "symbol": "Pr",
+    "name": "Praseodymium",
+    "defaultMassNumber": 141,
+    "aliases": [
+      "pr",
+      "praseodymium"
+    ]
+  },
+  {
+    "id": 60,
+    "symbol": "Nd",
+    "name": "Neodymium",
+    "defaultMassNumber": 142,
+    "aliases": [
+      "nd",
+      "neodymium"
+    ]
+  },
+  {
+    "id": 61,
+    "symbol": "Pm",
+    "name": "Promethium",
+    "defaultMassNumber": 145,
+    "aliases": [
+      "pm",
+      "promethium"
+    ]
+  },
+  {
+    "id": 62,
+    "symbol": "Sm",
+    "name": "Samarium",
+    "defaultMassNumber": 152,
+    "aliases": [
+      "samarium",
+      "sm"
+    ]
+  },
+  {
+    "id": 63,
+    "symbol": "Eu",
+    "name": "Europium",
+    "defaultMassNumber": 153,
+    "aliases": [
+      "eu",
+      "europium"
+    ]
+  },
+  {
+    "id": 64,
+    "symbol": "Gd",
+    "name": "Gadolinium",
+    "defaultMassNumber": 158,
+    "aliases": [
+      "gadolinium",
+      "gd"
+    ]
+  },
+  {
+    "id": 65,
+    "symbol": "Tb",
+    "name": "Terbium",
+    "defaultMassNumber": 159,
+    "aliases": [
+      "tb",
+      "terbium"
+    ]
+  },
+  {
+    "id": 66,
+    "symbol": "Dy",
+    "name": "Dysprosium",
+    "defaultMassNumber": 164,
+    "aliases": [
+      "dy",
+      "dysprosium"
+    ]
+  },
+  {
+    "id": 67,
+    "symbol": "Ho",
+    "name": "Holmium",
+    "defaultMassNumber": 165,
+    "aliases": [
+      "ho",
+      "holmium"
+    ]
+  },
+  {
+    "id": 68,
+    "symbol": "Er",
+    "name": "Erbium",
+    "defaultMassNumber": 166,
+    "aliases": [
+      "er",
+      "erbium"
+    ]
+  },
+  {
+    "id": 69,
+    "symbol": "Tm",
+    "name": "Thulium",
+    "defaultMassNumber": 169,
+    "aliases": [
+      "thulium",
+      "tm"
+    ]
+  },
+  {
+    "id": 70,
+    "symbol": "Yb",
+    "name": "Ytterbium",
+    "defaultMassNumber": 174,
+    "aliases": [
+      "yb",
+      "ytterbium"
+    ]
+  },
+  {
+    "id": 71,
+    "symbol": "Lu",
+    "name": "Lutetium",
+    "defaultMassNumber": 175,
+    "aliases": [
+      "lu",
+      "lutetium"
+    ]
+  },
+  {
+    "id": 72,
+    "symbol": "Hf",
+    "name": "Hafnium",
+    "defaultMassNumber": 180,
+    "aliases": [
+      "hafnium",
+      "hf"
+    ]
+  },
+  {
+    "id": 73,
+    "symbol": "Ta",
+    "name": "Tantalum",
+    "defaultMassNumber": 181,
+    "aliases": [
+      "ta",
+      "tantalum"
+    ]
+  },
+  {
+    "id": 74,
+    "symbol": "W",
+    "name": "Tungsten",
+    "defaultMassNumber": 184,
+    "aliases": [
+      "tungsten",
+      "w",
+      "wolfram"
+    ]
+  },
+  {
+    "id": 75,
+    "symbol": "Re",
+    "name": "Rhenium",
+    "defaultMassNumber": 187,
+    "aliases": [
+      "re",
+      "rhenium"
+    ]
+  },
+  {
+    "id": 76,
+    "symbol": "Os",
+    "name": "Osmium",
+    "defaultMassNumber": 192,
+    "aliases": [
+      "os",
+      "osmium"
+    ]
+  },
+  {
+    "id": 77,
+    "symbol": "Ir",
+    "name": "Iridium",
+    "defaultMassNumber": 193,
+    "aliases": [
+      "ir",
+      "iridium"
+    ]
+  },
+  {
+    "id": 78,
+    "symbol": "Pt",
+    "name": "Platinum",
+    "defaultMassNumber": 195,
+    "aliases": [
+      "platinum",
+      "pt"
+    ]
+  },
+  {
+    "id": 79,
+    "symbol": "Au",
+    "name": "Gold",
+    "defaultMassNumber": 197,
+    "aliases": [
+      "au",
+      "gold"
+    ]
+  },
+  {
+    "id": 80,
+    "symbol": "Hg",
+    "name": "Mercury",
+    "defaultMassNumber": 202,
+    "aliases": [
+      "hg",
+      "mercury"
+    ]
+  },
+  {
+    "id": 81,
+    "symbol": "Tl",
+    "name": "Thallium",
+    "defaultMassNumber": 205,
+    "aliases": [
+      "thallium",
+      "tl"
+    ]
+  },
+  {
+    "id": 82,
+    "symbol": "Pb",
+    "name": "Lead",
+    "defaultMassNumber": 208,
+    "aliases": [
+      "lead",
+      "pb"
+    ]
+  },
+  {
+    "id": 83,
+    "symbol": "Bi",
+    "name": "Bismuth",
+    "defaultMassNumber": 209,
+    "aliases": [
+      "bi",
+      "bismuth"
+    ]
+  },
+  {
+    "id": 84,
+    "symbol": "Po",
+    "name": "Polonium",
+    "defaultMassNumber": 209,
+    "aliases": [
+      "po",
+      "polonium"
+    ]
+  },
+  {
+    "id": 85,
+    "symbol": "At",
+    "name": "Astatine",
+    "defaultMassNumber": 210,
+    "aliases": [
+      "astatine",
+      "at"
+    ]
+  },
+  {
+    "id": 86,
+    "symbol": "Rn",
+    "name": "Radon",
+    "defaultMassNumber": 222,
+    "aliases": [
+      "radon",
+      "rn"
+    ]
+  },
+  {
+    "id": 87,
+    "symbol": "Fr",
+    "name": "Francium",
+    "defaultMassNumber": 223,
+    "aliases": [
+      "fr",
+      "francium"
+    ]
+  },
+  {
+    "id": 88,
+    "symbol": "Ra",
+    "name": "Radium",
+    "defaultMassNumber": 226,
+    "aliases": [
+      "ra",
+      "radium"
+    ]
+  },
+  {
+    "id": 89,
+    "symbol": "Ac",
+    "name": "Actinium",
+    "defaultMassNumber": 227,
+    "aliases": [
+      "ac",
+      "actinium"
+    ]
+  },
+  {
+    "id": 90,
+    "symbol": "Th",
+    "name": "Thorium",
+    "defaultMassNumber": 232,
+    "aliases": [
+      "th",
+      "thorium"
+    ]
+  },
+  {
+    "id": 91,
+    "symbol": "Pa",
+    "name": "Protactinium",
+    "defaultMassNumber": 231,
+    "aliases": [
+      "pa",
+      "protactinium"
+    ]
+  },
+  {
+    "id": 92,
+    "symbol": "U",
+    "name": "Uranium",
+    "defaultMassNumber": 238,
+    "aliases": [
+      "u",
+      "uranium"
+    ]
+  },
+  {
+    "id": 93,
+    "symbol": "Np",
+    "name": "Neptunium",
+    "defaultMassNumber": 237,
+    "aliases": [
+      "neptunium",
+      "np"
+    ]
+  },
+  {
+    "id": 94,
+    "symbol": "Pu",
+    "name": "Plutonium",
+    "defaultMassNumber": 244,
+    "aliases": [
+      "plutonium",
+      "pu"
+    ]
+  },
+  {
+    "id": 95,
+    "symbol": "Am",
+    "name": "Americium",
+    "defaultMassNumber": 243,
+    "aliases": [
+      "am",
+      "americium"
+    ]
+  },
+  {
+    "id": 96,
+    "symbol": "Cm",
+    "name": "Curium",
+    "defaultMassNumber": 247,
+    "aliases": [
+      "cm",
+      "curium"
+    ]
+  },
+  {
+    "id": 97,
+    "symbol": "Bk",
+    "name": "Berkelium",
+    "defaultMassNumber": 247,
+    "aliases": [
+      "berkelium",
+      "bk"
+    ]
+  },
+  {
+    "id": 98,
+    "symbol": "Cf",
+    "name": "Californium",
+    "defaultMassNumber": 251,
+    "aliases": [
+      "californium",
+      "cf"
+    ]
+  },
+  {
+    "id": 99,
+    "symbol": "Es",
+    "name": "Einsteinium",
+    "defaultMassNumber": 252,
+    "aliases": [
+      "einsteinium",
+      "es"
+    ]
+  },
+  {
+    "id": 100,
+    "symbol": "Fm",
+    "name": "Fermium",
+    "defaultMassNumber": 257,
+    "aliases": [
+      "fermium",
+      "fm"
+    ]
+  },
+  {
+    "id": 101,
+    "symbol": "Md",
+    "name": "Mendelevium",
+    "defaultMassNumber": 258,
+    "aliases": [
+      "md",
+      "mendelevium"
+    ]
+  },
+  {
+    "id": 102,
+    "symbol": "No",
+    "name": "Nobelium",
+    "defaultMassNumber": 259,
+    "aliases": [
+      "no",
+      "nobelium"
+    ]
+  },
+  {
+    "id": 103,
+    "symbol": "Lr",
+    "name": "Lawrencium",
+    "defaultMassNumber": 262,
+    "aliases": [
+      "lawrencium",
+      "lr"
+    ]
+  },
+  {
+    "id": 104,
+    "symbol": "Rf",
+    "name": "Rutherfordium",
+    "defaultMassNumber": 267,
+    "aliases": [
+      "rf",
+      "rutherfordium"
+    ]
+  },
+  {
+    "id": 105,
+    "symbol": "Db",
+    "name": "Dubnium",
+    "defaultMassNumber": 268,
+    "aliases": [
+      "db",
+      "dubnium"
+    ]
+  },
+  {
+    "id": 106,
+    "symbol": "Sg",
+    "name": "Seaborgium",
+    "defaultMassNumber": 269,
+    "aliases": [
+      "seaborgium",
+      "sg"
+    ]
+  },
+  {
+    "id": 107,
+    "symbol": "Bh",
+    "name": "Bohrium",
+    "defaultMassNumber": 270,
+    "aliases": [
+      "bh",
+      "bohrium"
+    ]
+  },
+  {
+    "id": 108,
+    "symbol": "Hs",
+    "name": "Hassium",
+    "defaultMassNumber": 269,
+    "aliases": [
+      "hassium",
+      "hs"
+    ]
+  },
+  {
+    "id": 109,
+    "symbol": "Mt",
+    "name": "Meitnerium",
+    "defaultMassNumber": 278,
+    "aliases": [
+      "meitnerium",
+      "mt"
+    ]
+  },
+  {
+    "id": 110,
+    "symbol": "Ds",
+    "name": "Darmstadtium",
+    "defaultMassNumber": 281,
+    "aliases": [
+      "darmstadtium",
+      "ds"
+    ]
+  },
+  {
+    "id": 111,
+    "symbol": "Rg",
+    "name": "Roentgenium",
+    "defaultMassNumber": 282,
+    "aliases": [
+      "rg",
+      "roentgenium"
+    ]
+  },
+  {
+    "id": 112,
+    "symbol": "Cn",
+    "name": "Copernicium",
+    "defaultMassNumber": 285,
+    "aliases": [
+      "cn",
+      "copernicium"
+    ]
+  },
+  {
+    "id": 113,
+    "symbol": "Nh",
+    "name": "Nihonium",
+    "defaultMassNumber": 286,
+    "aliases": [
+      "nh",
+      "nihonium"
+    ]
+  },
+  {
+    "id": 114,
+    "symbol": "Fl",
+    "name": "Flerovium",
+    "defaultMassNumber": 289,
+    "aliases": [
+      "fl",
+      "flerovium"
+    ]
+  },
+  {
+    "id": 115,
+    "symbol": "Mc",
+    "name": "Moscovium",
+    "defaultMassNumber": 290,
+    "aliases": [
+      "mc",
+      "moscovium"
+    ]
+  },
+  {
+    "id": 116,
+    "symbol": "Lv",
+    "name": "Livermorium",
+    "defaultMassNumber": 293,
+    "aliases": [
+      "livermorium",
+      "lv"
+    ]
+  },
+  {
+    "id": 117,
+    "symbol": "Ts",
+    "name": "Tennessine",
+    "defaultMassNumber": 294,
+    "aliases": [
+      "tennessine",
+      "ts"
+    ]
+  },
+  {
+    "id": 118,
+    "symbol": "Og",
+    "name": "Oganesson",
+    "defaultMassNumber": 294,
+    "aliases": [
+      "og",
+      "oganesson"
+    ]
+  },
+  {
+    "id": 1001,
+    "symbol": "e⁻",
+    "name": "Electron",
+    "defaultMassNumber": 0,
+    "aliases": [
+      "beta",
+      "beta minus",
+      "e",
+      "electron",
+      "electrons",
+      "β"
+    ]
+  }
+]

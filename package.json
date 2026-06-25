@@ -18,7 +18,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "validate:eval": "node scripts/validate-intents.ts"
+    "validate:eval": "node scripts/validate-intents.ts",
+    "generate:aliases": "node scripts/generate-aliases.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
