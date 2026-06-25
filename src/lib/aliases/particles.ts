@@ -127,6 +127,19 @@ function buildParticleAliasIndex(): Map<string, ParticleAliasEntry> {
 export const PARTICLE_ALIAS_INDEX: ReadonlyMap<string, ParticleAliasEntry> =
   buildParticleAliasIndex();
 
+const ELEMENT_BY_EXACT_SYMBOL: ReadonlyMap<string, Element> = new Map(
+  ELEMENTS.map((e) => [e.symbol, e]),
+);
+
+/**
+ * Case-sensitive symbol lookup, e.g. "P" → phosphorus. Used to disambiguate an
+ * upper-cased element symbol from a lower-cased named-particle alias ("p" →
+ * proton) before normalization folds the case away.
+ */
+export function elementByExactSymbol(symbol: string): Element | null {
+  return ELEMENT_BY_EXACT_SYMBOL.get(symbol) ?? null;
+}
+
 /** Resolve a normalized symbol or element name to its element, or null. */
 export function elementByNameOrSymbol(normalized: string): Element | null {
   for (const e of ELEMENTS) {

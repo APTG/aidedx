@@ -17,12 +17,13 @@ import {
   MATERIAL_ALIAS_INDEX,
   PARTICLES,
   PARTICLE_ALIAS_INDEX,
+  type MaterialKind,
 } from "../src/lib/aliases/index.ts";
 
 export interface MaterialArtifactEntry {
   id: number;
   name: string;
-  kind: string;
+  kind: MaterialKind;
   aliases: string[];
 }
 

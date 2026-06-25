@@ -22,6 +22,7 @@ import {
 import {
   ELECTRON_ID,
   PARTICLE_ALIAS_INDEX,
+  elementByExactSymbol,
   elementByNameOrSymbol,
   particleById,
   type ParticleAliasEntry,
@@ -68,6 +69,19 @@ const SUFFIX_NOISE = [
   "absorber",
   "medium",
 ];
+
+/**
+ * The phrase reduced to its head token with case preserved: noise words removed
+ * (case-insensitively), the rest rejoined. Used only for the case-sensitive
+ * symbol guard, so "P ion" → "P" while "carbon ions" → "carbon".
+ */
+function coreToken(phrase: string): string {
+  const tokens = phrase
+    .trim()
+    .split(/[\s,]+/)
+    .filter(Boolean);
+  return tokens.filter((t) => !SUFFIX_NOISE.includes(t.toLowerCase())).join(" ");
+}
 
 /** Drop trailing decorative words and a single plural "s". */
 function stripNoise(normalized: string): string {
@@ -176,6 +190,21 @@ function parseIsotope(normalized: string): ParticleAliasEntry | null {
 export function resolveParticle(phrase: string): ParticleMatch | null {
   const norm = normalizeText(phrase);
   if (!norm) return null;
+
+  // Case-sensitive symbol guard: an upper-cased element symbol ("P") resolves to
+  // that element's ion rather than being shadowed by a lower-cased named-particle
+  // alias ("p" → proton). Only fires when the core token carries an uppercase
+  // letter, so "p" still means proton.
+  const core = coreToken(phrase);
+  if (core && core !== core.toLowerCase()) {
+    const el = elementByExactSymbol(core);
+    if (el) {
+      return buildParticleMatch(
+        { id: el.z, massNumber: el.defaultMassNumber, assumed: true },
+        "exact",
+      );
+    }
+  }
 
   const exact = PARTICLE_ALIAS_INDEX.get(norm);
   if (exact) return buildParticleMatch(exact, "exact");

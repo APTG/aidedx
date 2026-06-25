@@ -188,6 +188,14 @@ describe("resolveParticle", () => {
     });
   });
 
+  it("disambiguates the proton/phosphorus symbol clash by case", () => {
+    // Lower-case "p" is the proton; upper-case "P" is the phosphorus symbol.
+    expect(resolveParticle("p")).toMatchObject({ id: 1, isotopeAssumed: false });
+    expect(resolveParticle("protons")).toMatchObject({ id: 1 });
+    expect(resolveParticle("P")).toMatchObject({ id: 15, isotopeAssumed: true });
+    expect(resolveParticle("P ions")).toMatchObject({ id: 15 });
+  });
+
   it("tolerates typos via the fuzzy fallback", () => {
     const p = resolveParticle("protn");
     expect(p?.id).toBe(1);
