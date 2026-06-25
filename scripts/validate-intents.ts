@@ -12,7 +12,7 @@
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { validateEvalDataset } from "../src/lib/intent/query-intent.ts";
+import { parseEvalRecords, validateEvalDataset } from "../src/lib/intent/query-intent.ts";
 
 const datasetPath = fileURLToPath(new URL("../eval/intents.jsonl", import.meta.url));
 const jsonl = readFileSync(datasetPath, "utf-8");
@@ -31,12 +31,10 @@ if (report.count < MIN_EXAMPLES) {
   process.exit(1);
 }
 
-// Coverage summary by tag — handy when extending the set.
+// Coverage summary by tag — handy when extending the set. Reuses the shared
+// parser so comment/header lines are skipped exactly as the validator does.
 const tagCounts = new Map<string, number>();
-for (const raw of jsonl.split("\n")) {
-  const line = raw.trim();
-  if (line.length === 0) continue;
-  const { tags } = JSON.parse(line) as { tags: string[] };
+for (const { tags } of parseEvalRecords(jsonl)) {
   for (const tag of tags) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
 }
 

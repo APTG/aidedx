@@ -244,13 +244,16 @@ export function validateQueryIntent(value: unknown, path = "expected"): string[]
     errors.push(`${path}.confidence: must be a number in [0, 1]`);
   }
 
-  // Inverse queries require a target; forward queries must not carry one.
+  // Inverse queries require a concrete target; forward queries must not carry
+  // one. `target: undefined` counts as "missing" so programmatically-built
+  // objects can't slip an inverse quantity through without a real target.
   const q = value.quantity;
   const needsTarget = q === "energyFromRange" || q === "energyFromStp";
-  if (needsTarget && !("target" in value)) {
+  const hasTarget = "target" in value && value.target !== undefined;
+  if (needsTarget && !hasTarget) {
     errors.push(`${path}.target: required for quantity "${String(q)}"`);
   }
-  if (!needsTarget && "target" in value && value.target !== undefined) {
+  if (!needsTarget && hasTarget) {
     errors.push(`${path}.target: only allowed for inverse quantities`);
   }
 
@@ -301,6 +304,29 @@ export interface ValidationReport {
 }
 
 /**
+ * Whether a raw JSONL line carries a data record. Blank lines and `//`/`#`
+ * comment/header lines are not data. This is the single rule every reader of
+ * the dataset (validator, tests, CLI script) must share so they agree on what
+ * counts as a record.
+ */
+export function isDataLine(rawLine: string): boolean {
+  const line = rawLine.trim();
+  return line.length > 0 && !line.startsWith("//") && !line.startsWith("#");
+}
+
+/**
+ * Parse a JSONL dataset string into records, skipping blank/comment lines.
+ * Assumes well-formed JSON (use `validateEvalDataset` to surface parse errors
+ * with line numbers); throws if a data line is not valid JSON.
+ */
+export function parseEvalRecords(jsonl: string): EvalExample[] {
+  return jsonl
+    .split("\n")
+    .filter(isDataLine)
+    .map((line) => JSON.parse(line.trim()) as EvalExample);
+}
+
+/**
  * Parse and validate a whole JSONL dataset string. Checks per-record schema,
  * id uniqueness, and JSON well-formedness. Blank lines and `//`/`#` comment
  * lines are ignored so the file can carry a header.
@@ -312,8 +338,8 @@ export function validateEvalDataset(jsonl: string): ValidationReport {
 
   const lines = jsonl.split("\n");
   lines.forEach((raw, lineNo) => {
+    if (!isDataLine(raw)) return;
     const line = raw.trim();
-    if (line.length === 0 || line.startsWith("//") || line.startsWith("#")) return;
 
     let parsed: unknown;
     try {
