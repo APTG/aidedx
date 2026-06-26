@@ -159,6 +159,26 @@ function toEnergyUnit(base: string, perNuclSuffix?: string): EnergyUnit {
   return "MeV";
 }
 
+/**
+ * Resolve a raw number + base unit + optional per-nucleon suffix to the schema's
+ * `{ value, unit }`. The only per-nucleon units in the schema are MeV-based
+ * (`MeV/nucl`, `MeV/u`), so a keV/GeV value that carries a per-nucleon suffix is
+ * converted to MeV to preserve magnitude: "500 keV/u" → `{ 0.5, "MeV/u" }`,
+ * "1.2 GeV/nucl" → `{ 1200, "MeV/nucl" }`. A forward (non-per-nucleon) value
+ * keeps its stated unit untouched.
+ */
+function toEnergyValueUnit(
+  rawValue: number,
+  base: string,
+  suffix?: string,
+): { value: number; unit: EnergyUnit } {
+  const unit = toEnergyUnit(base, suffix);
+  if (suffix === undefined) return { value: rawValue, unit };
+  const b = base.toLowerCase();
+  const value = b === "kev" ? rawValue / 1000 : b === "gev" ? rawValue * 1000 : rawValue;
+  return { value: round(value), unit };
+}
+
 const PER_NUCL = "(?:\\s*\\/\\s*(nucleon|nucl|amu|u)|\\s+per\\s+(nucleon|nucl|amu|u))?";
 const ENERGY_RE = new RegExp(`(\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${PER_NUCL}`, "gi");
 // Connector between list members, allowing a serial-comma "X, Y, and Z".
@@ -191,9 +211,11 @@ function extractEnergies(text: string): RawEnergy[] {
     const span = { start, end: start + m[0].length };
     const base = m[2] ?? "mev";
     const suffix = (m[3] ?? m[4])?.toLowerCase();
-    const unit = toEnergyUnit(base, suffix);
-    const values = (m[1] ?? "").split(LIST_SPLIT_RE).filter(Boolean).map(Number);
-    for (const value of values) out.push({ value, unit, perNucleon: suffix !== undefined, span });
+    const rawValues = (m[1] ?? "").split(LIST_SPLIT_RE).filter(Boolean).map(Number);
+    for (const raw of rawValues) {
+      const { value, unit } = toEnergyValueUnit(raw, base, suffix);
+      out.push({ value, unit, perNucleon: suffix !== undefined, span });
+    }
     consumed.push(span);
   }
 
@@ -203,12 +225,8 @@ function extractEnergies(text: string): RawEnergy[] {
     if (consumed.some((s) => span.start < s.end && s.start < span.end)) continue;
     const base = m[2] ?? "mev";
     const suffix = (m[3] ?? m[4])?.toLowerCase();
-    out.push({
-      value: Number(m[1]),
-      unit: toEnergyUnit(base, suffix),
-      perNucleon: suffix !== undefined,
-      span,
-    });
+    const { value, unit } = toEnergyValueUnit(Number(m[1]), base, suffix);
+    out.push({ value, unit, perNucleon: suffix !== undefined, span });
   }
 
   return out.sort((a, b) => a.span.start - b.span.start);

@@ -5,7 +5,7 @@
  * coverage %, a per-tag breakdown, confidence calibration, and the explicit
  * list of misses (the LLM-fallback candidates).
  *
- *   node scripts/coverage-intents.ts            (Node 22.18+ / 24)
+ *   node scripts/coverage-intents.ts            (Node 24, per package.json engines)
  *   pnpm coverage:intents
  *
  * This is a *reported, non-blocking* metric: it always exits 0 so it never gates

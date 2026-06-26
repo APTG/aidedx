@@ -93,6 +93,19 @@ describe("energy + unit parsing", () => {
     expect(intent.assumptions).toContain("1200 MeV taken as total → 100 MeV/nucl");
   });
 
+  it("converts a per-nucleon value to MeV when the base unit is keV or GeV", () => {
+    // The schema's only per-nucleon units are MeV-based, so the magnitude must
+    // be converted, not just relabelled.
+    expect(matchQueryIntent("Range of carbon ions in water at 500 keV/u.").energies[0]).toEqual({
+      value: 0.5,
+      unit: "MeV/u",
+      perNucleonAssumed: true,
+    });
+    expect(
+      matchQueryIntent("Range of carbon ions in water at 1.2 GeV per nucleon.").energies[0],
+    ).toEqual({ value: 1200, unit: "MeV/nucl", perNucleonAssumed: true });
+  });
+
   it("does not flag a bare energy on a named light particle", () => {
     expect(matchQueryIntent("Range of 10 MeV alpha particles in air?").energies[0]).toEqual({
       value: 10,
