@@ -21,3 +21,6 @@ yarn-error.log*
 # Lock files from other package managers — this project uses pnpm
 package-lock.json
 yarn.lock
+
+# Local model weight cache (downloaded by prefetch scripts, not committed)
+/.hf-cache/
