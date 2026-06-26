@@ -107,12 +107,17 @@ export interface LibdedxService {
 
   getVersion(): string;
 
-  /** Stopping power + CSDA range at the given energies (MeV/nucl). */
+  /**
+   * Stopping power + CSDA range at the given energies (MeV/nucl). Pass
+   * `{ computeCsda: false }` to skip the CSDA integrator when only stopping
+   * power is needed; `csdaRanges` is then returned empty.
+   */
   calculate(
     programId: number,
     particleId: number,
     materialId: number,
     energies: number[],
+    options?: { computeCsda?: boolean },
   ): CalculationResult;
 
   /** Same as calculate(), across several programs; one failure does not abort

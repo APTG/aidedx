@@ -79,6 +79,8 @@ export interface ComputeResult {
   libdedxVersion: string;
 }
 
+// Keys are normalized via `normalizeProgramName` (alphanumerics only), so
+// "Bethe ext", "bethe_ext" and "BETHE-EXT" all map to the same program.
 const PROGRAM_NAME_TO_ID: Record<string, number> = {
   ASTAR: PROGRAMS.ASTAR,
   PSTAR: PROGRAMS.PSTAR,
@@ -89,9 +91,14 @@ const PROGRAM_NAME_TO_ID: Record<string, number> = {
   ICRU: PROGRAMS.ICRU49,
   DEFAULT: PROGRAMS.DEFAULT,
   BETHE: PROGRAMS.DEFAULT,
-  "BETHE-EXT": PROGRAMS.BETHE_EXT00,
+  BETHEEXT: PROGRAMS.BETHE_EXT00,
   LIBDEDX: PROGRAMS.DEFAULT,
 };
+
+/** Fold a program name to a key: uppercase, strip everything but A–Z/0–9. */
+function normalizeProgramName(name: string): string {
+  return name.toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
 
 const PROGRAM_ID_TO_NAME: Record<number, string> = {
   [PROGRAMS.ASTAR]: "ASTAR",
@@ -130,7 +137,7 @@ function compareProgramsForParticle(particleId: number): number[] {
 
 function resolveProgramId(intent: QueryIntent, particleId: number): number {
   if (intent.program) {
-    const id = PROGRAM_NAME_TO_ID[intent.program.toUpperCase()];
+    const id = PROGRAM_NAME_TO_ID[normalizeProgramName(intent.program)];
     if (id !== undefined) return id;
   }
   return autoProgramForParticle(particleId);
@@ -232,6 +239,29 @@ function energiesMeVPerNucl(
   return intent.energies.map((e) => energyToMeVPerNucl(e, particle.massNumber, atomicMass));
 }
 
+/**
+ * Check every energy lies within libdedx's supported [min, max] for this
+ * (program, particle). Returns an error message, or null when all are valid.
+ * Validating up front gives a clear per-series error and avoids invoking the
+ * (potentially expensive/recursive) WASM paths on out-of-range input.
+ */
+function energyBoundsError(
+  service: LibdedxService,
+  programId: number,
+  particleId: number,
+  energies: number[],
+): string | null {
+  const min = service.getMinEnergy(programId, particleId);
+  const max = service.getMaxEnergy(programId, particleId);
+  for (const e of energies) {
+    if (!Number.isFinite(e)) return `Energy ${e} is not a finite number`;
+    if (e < min || e > max) {
+      return `Energy ${e} MeV/nucl is outside the valid range [${min}, ${max}] for this program/particle`;
+    }
+  }
+  return null;
+}
+
 /** Build a forward series (stopping power + CSDA range) for one combination. */
 function forwardSeries(
   service: LibdedxService,
@@ -249,18 +279,29 @@ function forwardSeries(
     program: { id: programId, name: programName(programId) },
     points: [],
   };
+  const boundsError = energyBoundsError(service, programId, particle.id, energies);
+  if (boundsError) {
+    base.error = boundsError;
+    return base;
+  }
+  // Stopping-power queries don't need the CSDA integrator; skip it.
+  const computeCsda = quantity !== "stoppingPower";
   try {
-    const result = service.calculate(programId, particle.id, material.id, energies);
+    const result = service.calculate(programId, particle.id, material.id, energies, {
+      computeCsda,
+    });
     // stoppingPowers / csdaRanges are aligned 1:1 with energies by the wrapper.
-    base.points = result.energies.map((e, i) => ({
-      energyMeVPerNucl: e,
-      stoppingPower: result.stoppingPowers[i] ?? Number.NaN,
-      csdaRange: result.csdaRanges[i] ?? Number.NaN,
-    }));
+    base.points = result.energies.map((e, i) => {
+      const point: ComputePoint = {
+        energyMeVPerNucl: e,
+        stoppingPower: result.stoppingPowers[i] ?? Number.NaN,
+      };
+      if (computeCsda) point.csdaRange = result.csdaRanges[i] ?? Number.NaN;
+      return point;
+    });
   } catch (e) {
     base.error = e instanceof Error ? e.message : String(e);
   }
-  void quantity;
   return base;
 }
 

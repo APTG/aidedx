@@ -171,6 +171,53 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(s.error).toBeUndefined();
     expect(req(req(s.points[0]).energy)).toBeCloseTo(100, 0);
   });
+
+  it("stoppingPower queries skip the CSDA integrator (no csdaRange)", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "stoppingPower",
+        particles: [{ match: "protons" }],
+        materials: [{ match: "water" }],
+        energies: [{ value: 100, unit: "MeV" }],
+      }),
+      service,
+    );
+    const point = req(req(result.series[0]).points[0]);
+    expect(point.stoppingPower).toBeGreaterThan(0);
+    expect(point.csdaRange).toBeUndefined();
+  });
+
+  it("reports a per-series error for out-of-range energy instead of throwing", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "csdaRange",
+        particles: [{ match: "protons" }],
+        materials: [{ match: "water" }],
+        // PSTAR tops out at 10 GeV/nucl; 10 TeV is far past it.
+        energies: [{ value: 10_000_000, unit: "MeV" }],
+      }),
+      service,
+    );
+    const s = req(result.series[0]);
+    expect(s.error).toMatch(/outside the valid range/);
+    expect(s.points).toHaveLength(0);
+  });
+
+  it("honors an explicit program name regardless of separators/case", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "csdaRange",
+        particles: [{ match: "protons" }],
+        materials: [{ match: "water" }],
+        energies: [{ value: 150, unit: "MeV" }],
+        program: "bethe ext",
+      }),
+      service,
+    );
+    // "bethe ext" / "bethe_ext" / "BETHE-EXT" all fold to Bethe-ext, not the
+    // auto-selected PSTAR.
+    expect(req(result.series[0]).program.name).toBe("Bethe-ext");
+  });
 });
 
 describe("energyToMeVPerNucl", () => {

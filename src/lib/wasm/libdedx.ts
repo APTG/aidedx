@@ -105,10 +105,15 @@ export class LibdedxServiceImpl implements LibdedxService {
 
         const materials: MaterialEntity[] = [];
         for (const id of readIdList(heap, m._dedx_get_material_list(prog.id))) {
+          // Reset the shared error slot per call; store NaN rather than a
+          // bogus value if libdedx signals a density error for this material.
+          m.HEAP32[errPtr >>> 2] = 0;
+          const density = m._dedx_get_density(id, errPtr);
+          const densityOk = (m.HEAP32[errPtr >>> 2] ?? 0) === 0;
           materials.push({
             id,
             name: toTitleCase(m.UTF8ToString(m._dedx_get_material_name(id))),
-            density: m._dedx_get_density(id, errPtr),
+            density: densityOk ? density : Number.NaN,
             isGasByDefault: m._dedx_target_is_gas(id) !== 0,
           });
         }
@@ -169,18 +174,23 @@ export class LibdedxServiceImpl implements LibdedxService {
     particleId: number,
     materialId: number,
     energies: number[],
+    options?: { computeCsda?: boolean },
   ): CalculationResult {
     const m = this.module;
     const n = energies.length;
+    // CSDA range comes from an adaptive integrator that is much costlier than
+    // the STP table lookup (and can recurse at very low energies); skip it when
+    // the caller only needs stopping power.
+    const wantCsda = options?.computeCsda !== false;
     // energies + stopping powers are float32; CSDA ranges are float64.
     const energiesPtr = m._malloc(n * 4);
     const stpPtr = m._malloc(n * 4);
-    const csdaPtr = m._malloc(n * 8);
+    const csdaPtr = wantCsda ? m._malloc(n * 8) : 0;
     try {
       for (let i = 0; i < n; i++) {
         m.HEAPF32[energiesPtr / 4 + i] = energies[i] ?? 0;
         m.HEAPF32[stpPtr / 4 + i] = 0;
-        m.HEAPF64[csdaPtr / 8 + i] = 0;
+        if (wantCsda) m.HEAPF64[csdaPtr / 8 + i] = 0;
       }
 
       const stpErr = m._dedx_get_stp_table(
@@ -193,6 +203,15 @@ export class LibdedxServiceImpl implements LibdedxService {
       );
       if (stpErr !== 0) throw new LibdedxError(stpErr, "WASM STP calculation failed");
 
+      const stoppingPowers: number[] = [];
+      for (let i = 0; i < n; i++) {
+        stoppingPowers.push(m.HEAPF32[stpPtr / 4 + i] ?? 0);
+      }
+
+      if (!wantCsda) {
+        return { energies: [...energies], stoppingPowers, csdaRanges: [] };
+      }
+
       const csdaErr = m._dedx_get_csda_range_table(
         programId,
         particleId,
@@ -203,17 +222,15 @@ export class LibdedxServiceImpl implements LibdedxService {
       );
       if (csdaErr !== 0) throw new LibdedxError(csdaErr, "WASM CSDA calculation failed");
 
-      const stoppingPowers: number[] = [];
       const csdaRanges: number[] = [];
       for (let i = 0; i < n; i++) {
-        stoppingPowers.push(m.HEAPF32[stpPtr / 4 + i] ?? 0);
         csdaRanges.push(m.HEAPF64[csdaPtr / 8 + i] ?? 0);
       }
       return { energies: [...energies], stoppingPowers, csdaRanges };
     } finally {
       m._free(energiesPtr);
       m._free(stpPtr);
-      m._free(csdaPtr);
+      if (csdaPtr !== 0) m._free(csdaPtr);
     }
   }
 
@@ -308,6 +325,11 @@ export class LibdedxServiceImpl implements LibdedxService {
         const errCode = m.HEAP32[errPtr >>> 2] ?? 0;
         if (errCode !== 0) {
           results.push(new LibdedxError(errCode, `Inverse STP lookup failed for stp=${stp}`));
+        } else if (energy < 0) {
+          // A negative sentinel means no solution on this branch.
+          results.push(
+            new LibdedxError(-1, `Inverse STP returned invalid energy ${energy} for stp=${stp}`),
+          );
         } else {
           results.push({ energy, stoppingPower: stp });
         }

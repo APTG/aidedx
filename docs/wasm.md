@@ -25,8 +25,17 @@ QueryIntent ─▶ src/lib/compute/   ─▶ src/lib/wasm/   ─▶ libdedx.wasm
   §7), auto-selects a program, and fans out over the comparison dimension.
 
 `computeIntent(intent, service)` is the entry point the resolver/NLG layers
-call. The WASM is lazy-loaded via `getService()` (`src/lib/wasm/loader.ts`), so
-the app shell ships zero WASM until a query needs a number.
+call. The WASM is lazy-loaded so the app shell ships zero WASM until a query
+needs a number. The loader is split to keep the core host-agnostic:
+`loader.ts` (`createService` / `loadService(baseUrl)`) has no framework
+dependency, and `sveltekit.ts` (`getService()`) is the only file that imports
+`$app/paths` — app code imports it as `$lib/wasm/sveltekit`.
+
+For efficiency the wrapper's `calculate()` accepts `{ computeCsda: false }`;
+the compute layer passes it for `stoppingPower` queries so they never trigger
+the CSDA integrator. It also validates energies against
+`getMinEnergy`/`getMaxEnergy` before calling into WASM, returning a clear
+per-series error for out-of-range input.
 
 ## Vendored artifacts
 
