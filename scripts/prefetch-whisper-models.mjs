@@ -1,7 +1,11 @@
 /**
  * Pre-fetch Whisper model weights for issue #7 (ASR spike).
- * Downloads tiny/base/small at q8+q4 into the HF hub cache.
- * Run once on fast connection; transformers.js reuses the cache.
+ * Downloads tiny/base/small (already cached) plus large-v3-turbo
+ * into the HF hub cache. Run once on a fast connection.
+ *
+ * Usage:
+ *   node scripts/prefetch-whisper-models.mjs          # all models
+ *   node scripts/prefetch-whisper-models.mjs --new    # large-v3-turbo only
  */
 import { AutoProcessor, WhisperForConditionalGeneration, env } from "@huggingface/transformers";
 import { fileURLToPath } from "url";
@@ -11,7 +15,9 @@ const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 
 env.cacheDir = path.join(PROJECT_ROOT, ".hf-cache");
 env.allowLocalModels = false;
 
-const MODELS = [
+const newOnly = process.argv.includes("--new");
+
+const MODELS_EXISTING = [
   ["onnx-community/whisper-tiny", "q8"],
   ["onnx-community/whisper-tiny", "q4"],
   ["onnx-community/whisper-base", "q8"],
@@ -19,6 +25,15 @@ const MODELS = [
   ["onnx-community/whisper-small", "q8"],
   ["onnx-community/whisper-small", "q4"],
 ];
+
+// New models added after the 30-sentence benchmark (issue #7 comment, 2026-06-26).
+// whisper-large-v3-turbo: distilled from large-v3, much better domain accuracy,
+// designed for fast CPU inference. ~600 MB at q8.
+const MODELS_NEW = [
+  ["onnx-community/whisper-large-v3-turbo", "q8"],
+];
+
+const MODELS = newOnly ? MODELS_NEW : [...MODELS_EXISTING, ...MODELS_NEW];
 
 let failed = false;
 for (const [modelId, dtype] of MODELS) {
