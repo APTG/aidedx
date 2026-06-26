@@ -19,6 +19,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "validate:eval": "node scripts/validate-intents.ts",
+    "coverage:intents": "node scripts/coverage-intents.ts",
     "generate:aliases": "node scripts/generate-aliases.ts"
   },
   "devDependencies": {

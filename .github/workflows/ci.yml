@@ -46,6 +46,13 @@ jobs:
       - name: Validate eval set (eval/intents.jsonl)
         run: pnpm run validate:eval
 
+      # Reported, non-blocking metric: deterministic NLU coverage over the eval
+      # set (issue #5). Surfaces coverage % and the LLM-fallback misses without
+      # gating the build — the script always exits 0.
+      - name: Deterministic NLU coverage (reported, non-blocking)
+        continue-on-error: true
+        run: pnpm run coverage:intents
+
   build:
     name: Build + Unit Tests
     runs-on: ubuntu-latest
