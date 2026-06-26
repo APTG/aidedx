@@ -70,6 +70,28 @@ pnpm generate:aliases   # regenerate the JSON artifacts from the TS tables
 See [`docs/aliases.md`](docs/aliases.md) for provenance and how to regenerate
 when libdedx updates.
 
+## libdedx compute
+
+[`src/lib/wasm/`](src/lib/wasm/) is a thin, dependency-free TypeScript wrapper
+over the vendored **libdedx** WebAssembly module
+([`static/wasm/`](static/wasm/)) — forward stopping power / CSDA range, inverse
+lookups, and entity lists. It is lazy-loaded (`getService()`) so the shell ships
+zero WASM until a query needs a number, and is kept clean of any
+aidedx-specific concept so it can later be extracted as `@aptg/libdedx-wasm`
+(issue #1 §17).
+
+[`src/lib/compute/`](src/lib/compute/) bridges the two worlds:
+`computeIntent(intent, service)` resolves a [`QueryIntent`](src/lib/intent/query-intent.ts)'s
+particle/material phrases via the alias tables, converts energies to MeV/nucl
+(honoring the total-vs-per-nucleon assumption), auto-selects a program, and
+fans out over the comparison dimension — returning **real libdedx numbers,
+never the LLM**. The end-to-end smoke suite
+([`compute.smoke.test.ts`](src/lib/compute/compute.smoke.test.ts)) drives the
+actual WASM under Node for the issue #1 §7 examples.
+
+The binaries are prebuilt and checked in. See [`docs/wasm.md`](docs/wasm.md) for
+the wrapper boundary, provenance, and how to regenerate them.
+
 ## Cross-origin isolation (deferred)
 
 In-browser ML backends need `SharedArrayBuffer`, which requires the page to be

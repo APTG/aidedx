@@ -8,3 +8,6 @@ coverage
 
 # Generated alias artifacts — owned by scripts/generate-aliases.ts (issue #4)
 static/aliases/
+
+# Vendored libdedx WASM artifacts — built by emscripten, not hand-maintained (issue #6)
+static/wasm/

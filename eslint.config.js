@@ -6,7 +6,14 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["node_modules/**", ".svelte-kit/**", "build/**", "coverage/**"],
+    ignores: [
+      "node_modules/**",
+      ".svelte-kit/**",
+      "build/**",
+      "coverage/**",
+      // Vendored Emscripten artifact — generated, not hand-maintained (issue #6).
+      "static/wasm/**",
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.strict,
