@@ -136,16 +136,14 @@ as a spike that *extends* Spike 2, not a commitment.
 
 Spike 1 (#7) requires **≥95 % accuracy on slot-bearing tokens** ("240 keV",
 "MeV/nucl", "PMMA", "Bragg", "neon") and flags domain mis-transcription as the
-top ASR risk. Two GPU-enabled levers:
+top ASR risk. The GPU lever is to **fine-tune `whisper-base` (or `tiny`)** on
+domain audio so it clears the 95 % bar that otherwise needs `whisper-small` —
+shipping a smaller, faster ASR.
 
-- **Fine-tune `whisper-base` (or `tiny`)** on domain audio so it clears the 95 %
-  bar that otherwise needs `whisper-small` — shipping a smaller, faster ASR.
-- **Generate domain audio at scale** with TTS over the eval/synthetic text
-  (many voices/accents/SNRs) to build that fine-tuning corpus cheaply, since
-  #7 otherwise depends on a human recording only ~30 sentences.
-
-Whisper fine-tunes comfortably on one A100 in hours. **Do not** train Whisper
-from scratch (see §4).
+The catch is **data**, not compute: domain audio comes only from human
+recordings (#7 starts with ~30 sentences), so this is **data-limited and lower
+priority** — see §3.3. Whisper fine-tunes comfortably on one A100 in hours when
+the audio exists; **do not** train Whisper from scratch (see §5).
 
 ### 2.5 Quantization calibration / QAT + benchmark sweeps
 
@@ -156,7 +154,73 @@ slot-filling distribution rather than generic text, and to run **hyperparameter
 the frozen eval harness. Sweeps are embarrassingly parallel and a good fit for
 the fleet.
 
-## 3. Can the planned models be made smaller / more efficient?
+## 3. Data availability — the real bottleneck, and it's solvable
+
+The gating fact (see §1, §6) is not compute — it's that the deterministic
+matcher already hits **100 % on eval v0**, so there is nothing to train
+*toward* yet. Data, not GPUs, is what unblocks everything. Two sources are
+available, and the discipline that makes them safe is the same one the eval set
+already assumes: **generate freely for training; reserve human-authored data
+for the held-out test/eval set.** Synthetic data must never leak into the
+regression suite, or the accuracy numbers become circular.
+
+### 3.1 NLU text — LLM-generated, effectively unlimited
+
+This is the strongest lever and it fits the project perfectly. We already own
+the grammar, units grammar, idiom table, and alias tables (`src/lib/intent/`),
+so generate **intent → text**, not text → intent:
+
+1. programmatically emit a gold `QueryIntent` (sampling quantities, compare
+   dims, entities from the alias tables, unit/isotope/per-nucleon variations);
+2. have an LLM paraphrase only the **surface sentence** — indirect idioms,
+   conversational filler, comparison phrasings, free-form units — while the
+   structured label stays fixed.
+
+The label is therefore correct **by construction**, and every row is checked by
+the existing `validateQueryIntent()` so the corpus is clean. This realistically
+yields **tens of thousands** of diverse, schema-valid pairs — the training and
+distillation set that §2.1 and §2.3 depend on. The teacher can be a big model
+hosted on the cluster (offline, no per-token cost) or an external API; Cyfronet's
+advantage is volume at no cost with nothing leaving controlled infrastructure.
+
+**Risk: distribution drift** from how real users actually phrase things.
+Mitigate by seeding paraphrase prompts with the eval taxonomy (`direct` /
+`indirect` / `conversational-filler` / `compare-*` / …) and by measuring the
+synthetic set against a small human-written slice — if a model trained on
+synthetic data underperforms on human queries, the generator, not the model, is
+the thing to fix.
+
+### 3.2 Human data — spend it where it's irreplaceable: the eval set
+
+Humans are the scarce resource, so don't burn them on bulk training. Use them
+for the things synthetic data **cannot** be trusted to provide:
+
+- **The held-out NLU eval / regression suite** — a few hundred genuinely
+  human-written queries that no model ever trains on.
+- **Adversarial eval curation** — an LLM can *propose* hard cases (novel idioms,
+  ambiguous coordination), but a human must **approve** which enter the eval
+  set; otherwise the same model family writes and takes the test.
+- **A realism anchor** — a small labeled human slice used only to check that the
+  synthetic distribution matches reality (§3.1).
+
+### 3.3 ASR data — human-recorded, and the binding constraint
+
+NLU data is cheap; ASR audio is not. Without synthetic speech, domain audio
+comes only from **human recordings** (Spike 1 / #7 starts with ~30 sentences).
+That has two consequences:
+
+- **Whisper fine-tuning (§2.4) is data-limited.** A few dozen-to-hundred clips
+  is enough for a held-out ASR *test* set and light domain adaptation, but not a
+  large from-data domain fine-tune. Treat §2.4 as **lower priority / dependent
+  on recording effort**, and lean first on the non-training mitigations already
+  in #1 §18: Whisper `initial_prompt` vocabulary biasing for the jargon
+  ("MeV/nucl", "PMMA", "Bragg", "neon") plus a text **post-correction** pass
+  (which *can* be trained cheaply on the §3.1 NLU text). If more audio is
+  needed, the lever is **more human recordings**, not more GPU.
+- **The ASR eval stays human.** Slot-token accuracy (#7's 95 % bar) must be
+  measured on real speech; never certify an ASR feature on synthetic audio.
+
+## 4. Can the planned models be made smaller / more efficient?
 
 Yes — and §2 is precisely how. Summary of the efficiency ladder, smallest win
 first:
@@ -176,7 +240,7 @@ the metrics that actually matter here — and several are already implied by the
 Phase 4 plan. None of them require holding capability constant at a *larger*
 model "because we have the GPUs"; the GPUs are spent buying *smallness*.
 
-## 4. Should we train anything from scratch?
+## 5. Should we train anything from scratch?
 
 | Component | From scratch? | Verdict |
 | --- | --- | --- |
@@ -190,7 +254,7 @@ deliberately tiny, narrow tagger — and even there, *fine-tuning a small
 pretrained encoder* wins. The project's narrowness makes small models viable;
 it does **not** make from-scratch pretraining worthwhile.
 
-## 5. What the GPUs do *not* do here
+## 6. What the GPUs do *not* do here
 
 - **They do not serve inference.** Ever. That is the whole privacy thesis
   (#1 §2, §4.1). No "just call our Cyfronet endpoint" shortcut exists in this
@@ -206,7 +270,7 @@ it does **not** make from-scratch pretraining worthwhile.
   §2.5; only §2.2 (teacher-driven synthetic generation) and §2.5 sweeps benefit
   from many nodes. Don't let fleet access inflate scope.
 
-## 6. Recommended sequence
+## 7. Recommended sequence
 
 1. **(No GPU) Build the adversarial eval set** — novel idioms, ambiguous
    coordination, free-form units, conversational filler — extending
@@ -222,15 +286,16 @@ it does **not** make from-scratch pretraining worthwhile.
    real and accuracy holds.
 5. **(GPU, stretch) Distill the tiny tagger** (§2.3) and test whether it can
    shrink or remove the LLM tier on the adversarial set.
-6. **(GPU, parallel track) Domain-fine-tune Whisper** (§2.4) + TTS-generated
-   domain audio so a smaller ASR clears Spike 1's 95 % bar.
+6. **(Human-recorded audio, then GPU) Domain-fine-tune Whisper** (§2.4) once
+   enough recordings exist; until then lean on `initial_prompt` biasing +
+   post-correction (§3.3) to clear Spike 1's 95 % bar.
 7. **(GPU) Quantization calibration + variant sweeps** (§2.5) on the finalists.
 
 Each step is gated by the eval harness, so GPU time is only spent once there's a
 measurable target and a measurable win — consistent with the spike-first,
 pass/fail discipline of #1 §13.
 
-## 7. References
+## 8. References
 
 - `docs/nlu.md` — deterministic matcher + coverage harness (100 % on eval v0)
 - `docs/local-model-cache.md` — model list, quant levels, download sizes
