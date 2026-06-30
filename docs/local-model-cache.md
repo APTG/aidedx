@@ -60,7 +60,7 @@ systematic failures on domain units (MeV/nucl, dE/dx) with whisper-small.
 node scripts/prefetch-moonshine.mjs
 ```
 
-Downloads `moonshine-base` (q8, ~200 MB) — an English-only edge ASR model
+Downloads `moonshine-base-ONNX` (q8, ~200 MB) — an English-only edge ASR model
 to benchmark against Whisper. Run after the Whisper prefetch.
 
 ### LLM NLU models (issue #8 — NLU fallback)
@@ -92,12 +92,12 @@ singleton — set `cacheDir` once before any model is loaded.
 
 ## Disk space
 
-| Spike     | Models                                           | Approx size |
-| --------- | ------------------------------------------------ | ----------- |
-| #7 ASR    | whisper-tiny + base + small, q4 + q8             | ~870 MB     |
-| #7 ASR    | whisper-large-v3-turbo, q8 (new)                 | ~600 MB     |
-| #7 ASR    | moonshine-base, q8 (new)                         | ~200 MB     |
-| #8 NLU    | Qwen2.5-0.5B + 1.5B + Llama-3.2-1B, q4 + q8    | ~7.3 GB     |
-| **Total** |                                                  | **~9.0 GB** |
+| Spike     | Models                                      | Approx size |
+| --------- | ------------------------------------------- | ----------- |
+| #7 ASR    | whisper-tiny + base + small, q4 + q8        | ~870 MB     |
+| #7 ASR    | whisper-large-v3-turbo, q8 (new)            | ~600 MB     |
+| #7 ASR    | moonshine-base, q8 (new)                    | ~200 MB     |
+| #8 NLU    | Qwen2.5-0.5B + 1.5B + Llama-3.2-1B, q4 + q8 | ~7.3 GB     |
+| **Total** |                                             | **~9.0 GB** |
 
 Make sure you have at least **11 GB free** before running all prefetch scripts.

@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 SPEAKER=${1:?Usage: $0 <speaker-tag>}
-mkdir -p eval/audio/$SPEAKER
+if [[ ! "$SPEAKER" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+  echo "Error: speaker tag must contain only letters, digits, hyphens, and underscores" >&2
+  exit 1
+fi
+mkdir -p "eval/audio/$SPEAKER"
 
 while IFS=$'\t' read -r id text <&3; do
   echo ""

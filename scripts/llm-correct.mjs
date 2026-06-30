@@ -18,11 +18,11 @@ const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 
 env.cacheDir = path.join(PROJECT_ROOT, ".hf-cache");
 env.allowLocalModels = false;
 
-const modelArg = process.argv.find(a => a.startsWith("--model="));
+const modelArg = process.argv.find((a) => a.startsWith("--model="));
 const MODEL_ID = modelArg
   ? modelArg.slice("--model=".length)
   : "onnx-community/Qwen2.5-1.5B-Instruct";
-const DTYPE    = "q4";
+const DTYPE = "q4";
 
 const SYSTEM_PROMPT = `\
 You are a TEXT EDITOR, not a question answerer. You will be given a sentence wrapped in
@@ -137,10 +137,7 @@ const FEW_SHOT = [
     "The dE/dx is 2.5 MeV per cm for 200 MeV protons.",
   ],
   // material alias
-  [
-    "Range of 80 MeV protons in lou site.",
-    "Range of 80 MeV protons in Lucite.",
-  ],
+  ["Range of 80 MeV protons in lou site.", "Range of 80 MeV protons in Lucite."],
 ];
 
 // Realistic Whisper error → expected correction pairs.
@@ -172,14 +169,8 @@ const TEST_CASES = [
     "The stopping power is 5 MeV per cm for 100 MeV protons in water.",
   ],
   // --- dE/dx variants ---
-  [
-    "What's the edx of 250 MeV protons in PMMA?",
-    "What's the dE/dx of 250 MeV protons in PMMA?",
-  ],
-  [
-    "De-dx of 3 MeV deuterons in silicon.",
-    "dE/dx of 3 MeV deuterons in silicon.",
-  ],
+  ["What's the edx of 250 MeV protons in PMMA?", "What's the dE/dx of 250 MeV protons in PMMA?"],
+  ["De-dx of 3 MeV deuterons in silicon.", "dE/dx of 3 MeV deuterons in silicon."],
   // --- ASTAR / PSTAR ---
   [
     "Compare the range of 150 MeV protons in water using A-star and P-star.",
@@ -215,7 +206,7 @@ async function llmCorrect(generator, raw) {
     { role: "system", content: SYSTEM_PROMPT },
     // Few-shot examples prime the model on the exact task format.
     ...FEW_SHOT.flatMap(([input, output]) => [
-      { role: "user",      content: userMsg(input) },
+      { role: "user", content: userMsg(input) },
       { role: "assistant", content: output },
     ]),
     { role: "user", content: userMsg(raw) },
@@ -224,11 +215,15 @@ async function llmCorrect(generator, raw) {
     max_new_tokens: 100,
     do_sample: false,
   });
-  return out[0].generated_text.at(-1).content.trim();
+  const generated = out[0].generated_text;
+  // transformers.js may return a string or a chat-message array depending on version/model.
+  if (typeof generated === "string") return generated.trim();
+  const last = generated.at(-1);
+  return (typeof last === "string" ? last : (last.content ?? "")).trim();
 }
 
 // --- CLI mode: correct a single sentence from argv ---
-const singleInput = process.argv.slice(2).find(a => !a.startsWith("--"));
+const singleInput = process.argv.slice(2).find((a) => !a.startsWith("--"));
 
 console.log(`Model  : ${MODEL_ID} [${DTYPE}]`);
 console.log("Loading model (this allocates ~2.7 GB RAM)...");
