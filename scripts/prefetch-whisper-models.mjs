@@ -29,9 +29,7 @@ const MODELS_EXISTING = [
 // New models added after the 30-sentence benchmark (issue #7 comment, 2026-06-26).
 // whisper-large-v3-turbo: distilled from large-v3, much better domain accuracy,
 // designed for fast CPU inference. ~600 MB at q8.
-const MODELS_NEW = [
-  ["onnx-community/whisper-large-v3-turbo", "q8"],
-];
+const MODELS_NEW = [["onnx-community/whisper-large-v3-turbo", "q8"]];
 
 const MODELS = newOnly ? MODELS_NEW : [...MODELS_EXISTING, ...MODELS_NEW];
 

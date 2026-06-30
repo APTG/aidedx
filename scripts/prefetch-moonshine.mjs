@@ -13,9 +13,7 @@ const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 
 env.cacheDir = path.join(PROJECT_ROOT, ".hf-cache");
 env.allowLocalModels = false;
 
-const MODELS = [
-  ["onnx-community/moonshine-base-ONNX", "q8"],
-];
+const MODELS = [["onnx-community/moonshine-base-ONNX", "q8"]];
 
 let failed = false;
 for (const [modelId, dtype] of MODELS) {

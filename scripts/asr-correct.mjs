@@ -35,7 +35,7 @@ export function correct(text) {
   // "60mm proton" → "60 MeV proton" (number + mm/ml before a particle word)
   t = t.replace(
     new RegExp(`(\\d+(?:\\.\\d+)?)\\s*(?:mm|ml)\\s+(${PARTICLE_WORDS})`, "gi"),
-    "$1 MeV $2"
+    "$1 MeV $2",
   );
 
   // --- GeV word-boundary split ("1G EV" → "1 GeV") ---
@@ -49,7 +49,7 @@ export function correct(text) {
   // "tamiya" and similar replacing a unit ("90 tamiya per nucleon" → "90 MeV per nucleon")
   t = t.replace(
     new RegExp(`(\\d+(?:\\.\\d+)?)\\s+tamiya\\s+per\\s+nucleon`, "gi"),
-    "$1 MeV per nucleon"
+    "$1 MeV per nucleon",
   );
 
   // --- ASTAR / PSTAR spacing ---
