@@ -3,17 +3,19 @@
  * Loads the model once and runs all audio files through it.
  *
  * Usage:
- *   node scripts/asr-batch.mjs                                     # whisper-small q8
+ *   node scripts/asr-batch.mjs                                              # whisper-small q8, all speakers
  *   node scripts/asr-batch.mjs onnx-community/whisper-large-v3-turbo q8
  *   node scripts/asr-batch.mjs onnx-community/moonshine-base-ONNX  q8
  *
- * Output: per-file pass/fail + summary counts.
- * Pipe through `--correct` to also show post-correction results:
- *   node scripts/asr-batch.mjs onnx-community/whisper-small q8 --correct
+ * Flags (combinable):
+ *   --correct          show post-correction results alongside raw
+ *   --prompt           inject domain vocabulary hint into Whisper decoder (prompt_ids)
+ *   --speaker <tag>    run only this speaker subdirectory (default: all found)
  */
 import { pipeline, env } from "@huggingface/transformers";
 import { execSync } from "child_process";
 import { fileURLToPath } from "url";
+import { readdirSync, existsSync } from "fs";
 import path from "path";
 import { correct } from "./asr-correct.mjs";
 
@@ -24,6 +26,16 @@ env.allowLocalModels = false;
 const modelId = process.argv[2] ?? "onnx-community/whisper-small";
 const dtype   = process.argv[3] ?? "q8";
 const withCorrection = process.argv.includes("--correct");
+const withPrompt = process.argv.includes("--prompt");
+const speakerIdx = process.argv.indexOf("--speaker");
+const speakerArg = speakerIdx !== -1 ? process.argv[speakerIdx + 1] : null;
+
+// Domain vocabulary hint for Whisper's initial_prompt mechanism.
+// Biases the decoder toward correct spellings of physics units/terms.
+const DOMAIN_PROMPT =
+  "MeV, keV, GeV, MeV/u, MeV/nucl, dE/dx, CSDA, PMMA, ASTAR, PSTAR, " +
+  "nucleon, proton, deuteron, carbon ion, neon ion, oxygen ion, " +
+  "helium-3, carbon-13, stopping power, Lucite, adipose tissue";
 
 // Ground-truth sentences for the 30 recorded eval clips.
 const FILES = [
@@ -70,42 +82,106 @@ function loadAudio(file) {
 console.log(`Model : ${modelId} [${dtype}]`);
 console.log(`Clips : ${FILES.length}`);
 if (withCorrection) console.log("Mode  : ASR + domain correction");
+if (withPrompt) console.log("Prompt: domain vocabulary hint enabled");
 console.log("Loading model...");
 const t0 = Date.now();
 const asr = await pipeline("automatic-speech-recognition", modelId, { dtype });
+
+// Build decoder_input_ids replicating Whisper's prompt_ids mechanism (not in transformers.js v4).
+// Correct structure: [<|startofprev|>, ...prompt_tokens, <|startoftranscript|>, <|en|>, <|transcribe|>, <|notimestamps|>]
+// The <|startofprev|> token tells the decoder the prompt is prior context, not the transcript.
+let promptDecoderIds;
+let promptPrefix = "";
+if (withPrompt) {
+  const gc = asr.model.generation_config;
+  const SOT_PREV     = 50362; // <|startofprev|>
+  const SOT          = Number(gc.decoder_start_token_id); // <|startoftranscript|> = 50258
+  const LANG_EN      = Number(gc.lang_to_id["<|en|>"]);   // 50259
+  const TRANSCRIBE   = Number(gc.task_to_id["transcribe"]); // 50360
+  const NO_TS        = Number(gc.no_timestamps_token_id);  // 50364
+  const encoded = await asr.tokenizer(DOMAIN_PROMPT, { add_special_tokens: false });
+  const promptTokenIds = Array.from(encoded.input_ids.data).map(Number);
+  promptDecoderIds = [SOT_PREV, ...promptTokenIds, SOT, LANG_EN, TRANSCRIBE, NO_TS];
+  // The model echoes the prompt prefix verbatim before the actual transcript.
+  // Decode just the prompt tokens to know exactly what to strip.
+  const { Tensor } = await import("@huggingface/transformers");
+  const decoded = await asr.tokenizer.decode(promptTokenIds, { skip_special_tokens: true });
+  promptPrefix = decoded.trim();
+}
+
 console.log(`Model loaded in ${((Date.now() - t0) / 1000).toFixed(1)}s\n`);
 
-let exactRaw = 0, exactCorrected = 0;
+// Determine which speakers to run
+const audioBase = path.join(PROJECT_ROOT, "eval", "audio");
+const speakers = speakerArg
+  ? [speakerArg]
+  : readdirSync(audioBase, { withFileTypes: true })
+      .filter(d => d.isDirectory())
+      .map(d => d.name)
+      .sort();
 
-for (const [id, expected] of FILES) {
-  const file = path.join(PROJECT_ROOT, "eval", "audio", `${id}.wav`);
-  const audio = loadAudio(file);
+let totalRaw = 0, totalCorrected = 0, totalClips = 0;
+const speakerSummary = [];
 
-  const t1 = Date.now();
-  const result = await asr(audio);
-  const elapsed = ((Date.now() - t1) / 1000).toFixed(1);
+for (const speaker of speakers) {
+  let exactRaw = 0, exactCorrected = 0, clips = 0;
+  console.log(`\n--- Speaker: ${speaker} ---`);
 
-  const raw = result.text.trim();
-  const corrected = withCorrection ? correct(raw) : raw;
+  for (const [id, expected] of FILES) {
+    const file = path.join(audioBase, speaker, `${id}.wav`);
+    if (!existsSync(file)) {
+      console.log(`  (skip) ${id} — file not found`);
+      continue;
+    }
+    clips++;
+    const audio = loadAudio(file);
 
-  const okRaw = raw.toLowerCase() === expected.toLowerCase();
-  const okCorrected = corrected.toLowerCase() === expected.toLowerCase();
-  if (okRaw) exactRaw++;
-  if (withCorrection && okCorrected) exactCorrected++;
+    const t1 = Date.now();
+    let result;
+    try {
+      result = await asr(audio, withPrompt ? { decoder_input_ids: promptDecoderIds, forced_decoder_ids: [] } : {});
+    } catch (err) {
+      console.log(`  ! ${id.padEnd(14)} ERROR: ${err.message}`);
+      continue;
+    }
+    const elapsed = ((Date.now() - t1) / 1000).toFixed(1);
 
-  const mark = okRaw ? "✓" : (withCorrection && okCorrected ? "~" : "✗");
-  console.log(`${mark} ${id.padEnd(14)} (${elapsed}s)`);
-  if (!okRaw) {
-    console.log(`  expected : ${expected}`);
-    console.log(`  raw      : ${raw}`);
-    if (withCorrection && corrected !== raw) {
-      console.log(`  corrected: ${corrected}`);
+    let raw = result.text.trim();
+    if (withPrompt && raw.startsWith(promptPrefix)) {
+      raw = raw.slice(promptPrefix.length).trimStart();
+    }
+    const corrected = withCorrection ? correct(raw) : raw;
+
+    const okRaw = raw.toLowerCase() === expected.toLowerCase();
+    const okCorrected = corrected.toLowerCase() === expected.toLowerCase();
+    if (okRaw) exactRaw++;
+    if (withCorrection && okCorrected) exactCorrected++;
+
+    const mark = okRaw ? "✓" : (withCorrection && okCorrected ? "~" : "✗");
+    console.log(`  ${mark} ${id.padEnd(14)} (${elapsed}s)`);
+    if (!okRaw) {
+      console.log(`    expected : ${expected}`);
+      console.log(`    raw      : ${raw}`);
+      if (withCorrection && corrected !== raw) {
+        console.log(`    corrected: ${corrected}`);
+      }
     }
   }
+
+  console.log(`  => ${exactRaw}/${clips} exact match (raw)${withCorrection ? ` | ${exactCorrected}/${clips} after correction` : ""}`);
+  speakerSummary.push({ speaker, exactRaw, exactCorrected, clips });
+  totalRaw += exactRaw;
+  totalCorrected += exactCorrected;
+  totalClips += clips;
 }
 
-console.log(`\n=== ${exactRaw}/${FILES.length} exact match (raw) ===`);
-if (withCorrection) {
-  console.log(`=== ${exactCorrected}/${FILES.length} exact match (after correction) ===`);
-  console.log("  ~ = wrong raw but fixed by correction layer");
+console.log(`\n${"=".repeat(50)}`);
+console.log("SUMMARY");
+console.log(`${"=".repeat(50)}`);
+for (const { speaker, exactRaw, exactCorrected, clips } of speakerSummary) {
+  const pct = ((exactRaw / clips) * 100).toFixed(0);
+  const line = `  ${speaker}  ${exactRaw}/${clips} (${pct}%)${withCorrection ? `  corrected: ${exactCorrected}/${clips}` : ""}`;
+  console.log(line);
 }
+console.log(`  ALL  ${totalRaw}/${totalClips} (${((totalRaw / totalClips) * 100).toFixed(0)}%)${withCorrection ? `  corrected: ${totalCorrected}/${totalClips}` : ""}`);
+console.log(`${"=".repeat(50)}`);
