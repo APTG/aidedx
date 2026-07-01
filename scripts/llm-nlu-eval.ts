@@ -166,12 +166,16 @@ function extractJson(text: string): unknown | null {
   const trimmed = text.trim();
   try {
     return JSON.parse(trimmed);
-  } catch {}
+  } catch {
+    // fall through to fence/brace extraction
+  }
   const fenceMatch = /```(?:json)?\s*([\s\S]*?)\s*```/.exec(trimmed);
   if (fenceMatch?.[1]) {
     try {
       return JSON.parse(fenceMatch[1]);
-    } catch {}
+    } catch {
+      // fall through to brace extraction
+    }
   }
   const start = trimmed.indexOf("{");
   if (start === -1) return null;
@@ -183,7 +187,9 @@ function extractJson(text: string): unknown | null {
       if (depth === 0) {
         try {
           return JSON.parse(trimmed.slice(start, i + 1));
-        } catch {}
+        } catch {
+          // fall through to return null
+        }
         break;
       }
     }
