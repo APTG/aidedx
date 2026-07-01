@@ -20,6 +20,7 @@
     "test:watch": "vitest",
     "validate:eval": "node scripts/validate-intents.ts",
     "coverage:intents": "node scripts/coverage-intents.ts",
+    "llm:nlu-eval": "node scripts/llm-nlu-eval.ts",
     "generate:aliases": "node scripts/generate-aliases.ts"
   },
   "devDependencies": {
