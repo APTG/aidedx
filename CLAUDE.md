@@ -20,7 +20,7 @@ pnpm test               # Vitest
 pnpm build              # SvelteKit static build
 ```
 
-Run these locally before pushing. Never skip — CI runs exactly the same commands in this order (`static-analysis` job, then `build` job).
+Run these locally before pushing. Never skip — CI runs the same gate commands in this order (`static-analysis` job, then `build` job) and also runs `pnpm run coverage:intents` as a non-blocking metric.
 
 ## Branches CI watches
 
@@ -50,9 +50,9 @@ Pattern: `main`, `claude/**`, `feature/**`, `feat/**`, `fix/**`. Work on spike b
 
 | Failure                                             | Cause                                          | Fix                                                                             |
 | --------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------- |
-| Prettier CI fails despite running `--write` locally | Stale Prettier cache suppresses output         | Run `pnpm prettier --write <file>` (pnpm-invoked prettier bypasses cache)       |
+| Prettier CI fails despite running `--write` locally | Different Prettier version/plugins than CI (global/IDE formatter vs repo-pinned) | Run `pnpm run format` (uses the repo’s Prettier + plugins), then re-run `pnpm run format:check` |
 | `no-empty` ESLint error                             | Empty `catch {}` block                         | Use `catch { /* reason */ }` (optional catch binding + non-empty block)         |
-| `no-unused-vars` on `catch (_e)`                    | Named but unused error variable                | Use bare `catch { }` instead                                                    |
+| `no-unused-vars` on `catch (_e)`                    | Named but unused error variable                | Use `catch { /* intentionally ignored */ }` (no binding + non-empty block)      |
 | Test `includes both §7 stress-test sentences` fails | New examples accidentally tagged `stress-test` | Use `adversarial` tag instead; `stress-test` is for exactly 2 specific examples |
 | `ENOENT` writing result JSON in multi-model eval    | Output dir missing when child writes           | Call `mkdirSync(dir, { recursive: true })` in the orchestrator before spawning  |
 
@@ -71,4 +71,6 @@ When writing GitHub issue comments or instructions for collaborators, use browse
 | `src/lib/wasm/`                  | libdedx WASM wrapper (`getService()`)                        |
 | `src/lib/compute/`               | `computeIntent()` — resolves a `QueryIntent` to real numbers |
 | `eval/intents.jsonl`             | Hand-labeled eval set (~120 examples)                        |
-| `scripts/llm-nlu-eval.ts`        | LLM NLU spike eval harness (Spike 2 / issue #8)              |
+| `scripts/validate-intents.ts`    | `pnpm run validate:eval` entrypoint (schema + tag validation) |
+| `scripts/coverage-intents.ts`    | `pnpm run coverage:intents` deterministic NLU coverage        |
+| `scripts/generate-aliases.ts`    | Regenerates alias tables under `src/lib/aliases/`             |
