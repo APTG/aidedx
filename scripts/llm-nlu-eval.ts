@@ -140,7 +140,12 @@ const QUANTITY_NORMALISER: Array<[RegExp, string]> = [
   [/range|penetrat|depth|csda/i, "csdaRange"],
 ];
 
-const VALID_QUANTITIES = new Set(["stoppingPower", "csdaRange", "energyFromRange", "energyFromStp"]);
+const VALID_QUANTITIES = new Set([
+  "stoppingPower",
+  "csdaRange",
+  "energyFromRange",
+  "energyFromStp",
+]);
 
 function normaliseQuantity(raw: unknown): string | unknown {
   if (typeof raw !== "string") return raw;
@@ -249,7 +254,9 @@ async function evalModel(modelId: string, examples: EvalExample[]): Promise<Mode
       raw = generated.trim();
     } else {
       const last = Array.isArray(generated) ? generated.at(-1) : null;
-      raw = (typeof last === "string" ? last : ((last as { content?: string })?.content ?? "")).trim();
+      raw = (
+        typeof last === "string" ? last : ((last as { content?: string })?.content ?? "")
+      ).trim();
     }
 
     const parsed = normalise(extractJson(raw));
@@ -261,7 +268,8 @@ async function evalModel(modelId: string, examples: EvalExample[]): Promise<Mode
     if (jsonValid && parsed !== null) {
       const predicted = parsed as QueryIntent;
       const v = compareIntent(predicted, example.expected);
-      slotMatch = v.quantity && v.compareDim && v.particles && v.materials && v.energies && v.target;
+      slotMatch =
+        v.quantity && v.compareDim && v.particles && v.materials && v.energies && v.target;
       exactMatch = slotMatch && v.assumptions;
     }
 
@@ -371,17 +379,17 @@ if (isSingleModelChild) {
 
   for (const modelId of modelsToRun) {
     const shortName = modelId.split("/")[1] ?? modelId;
-    const tmpOut = path.join(PROJECT_ROOT, "node_modules", ".cache", `llm-nlu-eval-${shortName}.json`);
+    const tmpOut = path.join(
+      PROJECT_ROOT,
+      "node_modules",
+      ".cache",
+      `llm-nlu-eval-${shortName}.json`,
+    );
 
     console.log(`\nSpawning child for ${shortName}…`);
     const result = spawnSync(
       process.execPath,
-      [
-        fileURLToPath(import.meta.url),
-        `--model=${shortName}`,
-        `--out=${tmpOut}`,
-        ...allArg,
-      ],
+      [fileURLToPath(import.meta.url), `--model=${shortName}`, `--out=${tmpOut}`, ...allArg],
       {
         stdio: "inherit",
         encoding: "utf-8",
@@ -390,7 +398,9 @@ if (isSingleModelChild) {
     );
 
     if (result.status !== 0) {
-      console.error(`\n✗ ${shortName} exited with code ${result.status ?? "signal:" + result.signal}`);
+      console.error(
+        `\n✗ ${shortName} exited with code ${result.status ?? "signal:" + result.signal}`,
+      );
       continue;
     }
 
