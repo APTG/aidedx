@@ -143,6 +143,7 @@ export const EVAL_TAGS = [
   "program-specified",
   // special
   "stress-test",
+  "adversarial",
   "inverse-query",
   "multi-energy",
 ] as const;
