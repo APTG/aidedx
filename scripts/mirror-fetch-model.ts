@@ -1,23 +1,26 @@
 /**
- * Stages the exact files a given model + dtype needs into a local directory
- * laid out for direct upload to an S3-compatible mirror (issue #34 / #9).
+ * Two-phase local staging for an S3-compatible model mirror (issue #34 / #9):
  *
- * `@huggingface/transformers` only fetches the files a given `dtype` needs
- * (e.g. `q8` → `*_quantized.onnx`, not every dtype variant in the repo) —
- * rather than hand-maintain that file list (fragile if the library's
- * dtype→suffix mapping changes), this script drives the real
- * `from_pretrained()` loaders against `.hf-cache/` (same cache prefetch
- * scripts use — already-cached files are not re-downloaded) and stages
- * whatever actually landed on disk.
+ *   Phase 1 — fetch from Hugging Face to local disk (`.hf-cache/`)
+ *   Phase 2 — restage that into the upload-ready layout (`mirror-staging/`)
  *
- * Node's on-disk cache layout is flat (`<org>/<repo>/<file>`, confirmed by
- * inspecting `FileCache.js` and by direct probing) — it does NOT match the
- * remote URL layout the browser will fetch from. `env.remotePathTemplate`
- * defaults to `{model}/resolve/{revision}/`, so the actual browser request
- * is `<remoteHost>/<org>/<repo>/resolve/<revision>/<file>`. This script
- * re-inserts the `resolve/<revision>/` segment when staging, so the staged
- * directory can be uploaded to a bucket root as a byte-for-byte drop-in
- * replacement for huggingface.co (see docs/model-hosting-cyfronet.md).
+ * Phase 1 reuses the exact same mechanism as `scripts/prefetch-whisper-models.mjs`
+ * (`env.cacheDir` + the real `from_pretrained()` loaders), rather than a
+ * hand-maintained file list or plain `curl`/`wget` of guessed URLs — the
+ * dtype→file mapping is transformers.js's own internal logic (e.g. `q8` →
+ * `*_quantized.onnx`, not every dtype variant in the repo) and would silently
+ * drift from a hardcoded list if that mapping ever changes. Already-cached
+ * files are reused, not re-downloaded — safe to re-run.
+ *
+ * Phase 2 exists because Node's on-disk cache layout is flat
+ * (`<org>/<repo>/<file>`, confirmed by inspecting `FileCache.js` and by
+ * direct probing) — it does NOT match the remote URL layout the browser
+ * fetches from. `env.remotePathTemplate` defaults to
+ * `{model}/resolve/{revision}/`, so the actual browser request is
+ * `<remoteHost>/<org>/<repo>/resolve/<revision>/<file>`. Phase 2 copies each
+ * file into that layout so `mirror-staging/` can be `s3cmd sync`'d to a
+ * bucket root as a byte-for-byte drop-in replacement for huggingface.co (see
+ * docs/model-hosting-cyfronet.md).
  *
  * Usage:
  *   node scripts/mirror-fetch-model.ts <repo> <dtype> [options]
@@ -84,7 +87,10 @@ async function main() {
   env.cacheDir = path.join(PROJECT_ROOT, ".hf-cache");
   env.allowLocalModels = false;
 
-  console.log(`Fetching ${repo} @ dtype=${dtype} (kind=${kind}) into ${env.cacheDir} ...`);
+  console.log("=== Phase 1: fetch from Hugging Face -> local .hf-cache/ ===");
+  console.log(`Repo:      ${repo}`);
+  console.log(`Dtype:     ${dtype}`);
+  console.log(`Cache dir: ${env.cacheDir}`);
   console.log("(already-cached files are reused, not re-downloaded)\n");
 
   if (kind === "asr") {
@@ -110,11 +116,17 @@ async function main() {
     process.exit(1);
   }
 
+  let fetchedBytes = 0;
+  for (const file of files) fetchedBytes += statSync(file).size;
+  console.log(`Fetched ${files.length} files, ${formatMB(fetchedBytes)}, now sitting at:`);
+  console.log(`  ${repoRoot}/\n`);
+
+  console.log(`=== Phase 2: restage for upload -> ${outDir} ===\n`);
   const stagingRepoRoot = path.join(outDir, repo, "resolve", revision);
   mkdirSync(stagingRepoRoot, { recursive: true });
 
   let totalBytes = 0;
-  console.log(`\nStaging ${files.length} files to ${stagingRepoRoot}:\n`);
+  console.log(`Copying into ${stagingRepoRoot}:\n`);
   for (const file of files) {
     const relative = path.relative(repoRoot, file);
     const dest = path.join(stagingRepoRoot, relative);
@@ -127,7 +139,7 @@ async function main() {
 
   console.log(`\nTotal: ${files.length} files, ${formatMB(totalBytes)}`);
   console.log(`\nStaged at: ${stagingRepoRoot}`);
-  console.log(`Upload the *contents* of ${outDir} to the bucket root, e.g.:`);
+  console.log(`Upload the *contents* of ${outDir} to the bucket root with s3cmd, e.g.:`);
   console.log(`  scripts/mirror-upload-s3.sh ${outDir}`);
   console.log(
     `\nOnce uploaded, point the app at the mirror by setting env.remoteHost to your bucket's ` +

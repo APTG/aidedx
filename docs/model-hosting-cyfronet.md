@@ -84,57 +84,86 @@ no `resolve/<revision>`) — that's a _local disk cache_ convention, different f
 layout above. `scripts/mirror-fetch-model.ts` (below) re-inserts the `resolve/<revision>/` segment
 when staging, so don't try to upload `.hf-cache/` directly.
 
+Tooling: **s3cmd**, per Cyfronet's own documented CLI
+([guide.s3p.cloud.cyfronet.pl/narzedzia_cli.html](https://guide.s3p.cloud.cyfronet.pl/narzedzia_cli.html)).
+
 ## Step by step
 
-### 1. Stage the files locally
+### 1. Fetch from Hugging Face, then restage for upload
 
 ```sh
 node scripts/mirror-fetch-model.ts onnx-community/whisper-small q8
 ```
 
-Reuses `.hf-cache/` (same cache the `prefetch-*` scripts use — run
-`node scripts/prefetch-whisper-models.mjs` first if you don't already have it, or this script will
-download the ~240 MB itself). Produces `mirror-staging/onnx-community/whisper-small/resolve/main/...`.
+This is two phases, and it prints both so you can see exactly where files land locally at each step:
+
+1. **Fetch** — downloads (or reuses, if already present) into `.hf-cache/` at the project root, same
+   cache `scripts/prefetch-whisper-models.mjs` uses. For this repo the 7 files end up flat at:
+
+   ```
+   .hf-cache/onnx-community/whisper-small/config.json
+   .hf-cache/onnx-community/whisper-small/generation_config.json
+   .hf-cache/onnx-community/whisper-small/preprocessor_config.json
+   .hf-cache/onnx-community/whisper-small/tokenizer_config.json
+   .hf-cache/onnx-community/whisper-small/tokenizer.json
+   .hf-cache/onnx-community/whisper-small/onnx/encoder_model_quantized.onnx
+   .hf-cache/onnx-community/whisper-small/onnx/decoder_model_merged_quantized.onnx
+   ```
+
+   (`.hf-cache/` is git-ignored and won't exist until you run this — see `docs/local-model-cache.md`.)
+
+2. **Restage** — copies those same 7 files into `mirror-staging/onnx-community/whisper-small/resolve/main/...`
+   (the `resolve/main/` segment `.hf-cache/`'s flat layout omits — see "How the mirror works" above).
+   This is the directory that actually gets uploaded.
+
+Re-running is safe/cheap: phase 1 skips already-cached files, phase 2 just re-copies from local disk.
 
 ### 2. Provision a bucket at Cyfronet
 
-Out of scope for this doc to prescribe exact console steps (depends on which Cyfronet S3-compatible
-service you're provisioned on). What you need at the end of this step:
+1. **Get credentials**: sign in at <https://storage-panel.cloud.cyfronet.pl>, go to the Credentials
+   page, pick your PLGrid group and storage region, press "Generate credential". You'll get an
+   `access_key`, `secret_key`, and the region's endpoint:
+   - DC-Nawojki → `s3.cloud.cyfronet.pl`
+   - DC-Podole → `s3p.cloud.cyfronet.pl`
 
-- An S3-compatible endpoint URL (`CYFRONET_S3_ENDPOINT`) and bucket name (`CYFRONET_S3_BUCKET`).
-- Access key / secret key with write access, configured for the AWS CLI (`aws configure`, or a named
-  profile — `scripts/mirror-upload-s3.sh` just calls `aws s3 sync`, so anything `aws` recognizes works).
-- **Public read access** on the bucket (or at least on the prefix we're uploading to) — these are
-  public static model weights, no auth needed to read them. How you grant this (bucket policy vs
-  canned ACL) depends on the backend; ACLs are intentionally **not** set by the upload script since
-  support varies by S3 implementation — do this once, at the bucket level, however your Cyfronet
-  service supports it.
-- **CORS enabled** — see `scripts/cyfronet-cors-policy.json` (allows `GET`/`HEAD` from any origin; the
-  files are public weights, not sensitive, so a wildcard origin is the pragmatic default — tighten to
-  specific origins later if desired):
+2. **Install and configure s3cmd**: copy `scripts/.s3cfg.cyfronet.example` to `~/.s3cfg` and fill in
+   `access_key`/`secret_key` (and `host_base`/`host_bucket` if you're on DC-Podole instead of the
+   default DC-Nawojki in the template).
 
-  ```sh
-  aws s3api put-bucket-cors \
-    --bucket "$CYFRONET_S3_BUCKET" \
-    --cors-configuration file://scripts/cyfronet-cors-policy.json \
-    --endpoint-url "$CYFRONET_S3_ENDPOINT"
-  ```
+3. **Create the bucket**:
 
-  `Content-Length` is on the CORS-safelisted response header list by default (readable cross-origin
-  without `Access-Control-Expose-Headers`), which is what our own download-progress UI (issue #32)
-  and the status panel's disk-cache introspection rely on — but the policy above exposes it (plus
-  `Content-Range`/`ETag`) explicitly anyway, since safelisting isn't obvious and costs nothing to spell
-  out.
+   ```sh
+   s3cmd mb s3://<your-bucket>
+   ```
+
+   (Bucket names: lowercase letters, digits, `-` only, globally unique.)
+
+4. **Enable CORS** — see `scripts/cyfronet-cors-policy.xml` (allows `GET`/`HEAD` from any origin; the
+   files are public weights, not sensitive, so a wildcard origin is the pragmatic default — tighten to
+   specific origins later if desired; scoped to GET/HEAD only, unlike Cyfronet's generic
+   GET/POST/PUT/DELETE example, since this bucket only needs to be publicly _readable_):
+
+   ```sh
+   s3cmd setcors scripts/cyfronet-cors-policy.xml s3://<your-bucket>
+   ```
+
+   `Content-Length` is on the CORS-safelisted response header list by default (readable cross-origin
+   without `Access-Control-Expose-Headers`), which is what our own download-progress UI (issue #32)
+   and the status panel's disk-cache introspection rely on — but the policy above exposes it (plus
+   `Content-Range`/`ETag`) explicitly anyway, since safelisting isn't obvious and costs nothing to
+   spell out.
+
+5. **Public read access** — Cyfronet's docs don't cover a specific bucket-policy mechanism for this, so
+   the upload step below passes s3cmd's `--acl-public` flag per-object at sync time instead of doing it
+   as separate one-time bucket setup.
 
 ### 3. Upload
 
 ```sh
-CYFRONET_S3_ENDPOINT=https://<your-endpoint> \
-CYFRONET_S3_BUCKET=<your-bucket> \
-  scripts/mirror-upload-s3.sh mirror-staging
+CYFRONET_S3_BUCKET=<your-bucket> scripts/mirror-upload-s3.sh mirror-staging
 ```
 
-Prints a per-model local-vs-remote file count check after syncing.
+Runs `s3cmd sync --acl-public`, then prints a per-model local-vs-remote file count check.
 
 ### 4. Verify it's actually a working mirror
 
@@ -144,7 +173,7 @@ alone**, with nothing falling back to huggingface.co:
 ```sh
 node --input-type=module -e '
   import("@huggingface/transformers").then(async ({ AutoProcessor, WhisperForConditionalGeneration, env }) => {
-    env.remoteHost = "https://<your-bucket-base-url>/";
+    env.remoteHost = "https://<your-bucket>.<host_base>/"; // e.g. https://aidedx-models.s3.cloud.cyfronet.pl/
     env.cacheDir = "/tmp/mirror-verify-cache"; // fresh dir — force a real fetch, not the local cache
     env.allowLocalModels = false;
     await AutoProcessor.from_pretrained("onnx-community/whisper-small");

@@ -1,0 +1,24 @@
+# Template for ~/.s3cfg — Cyfronet Object Storage (S3-compatible).
+# Copy to ~/.s3cfg and fill in access_key/secret_key/host_base/host_bucket.
+#
+# Get credentials at https://storage-panel.cloud.cyfronet.pl -> Credentials
+# page -> pick your PLGrid group + storage region -> "Generate credential".
+#
+# Endpoint depends on the region you generated credentials for:
+#   DC-Nawojki -> s3.cloud.cyfronet.pl
+#   DC-Podole  -> s3p.cloud.cyfronet.pl
+#
+# Reference: https://guide.s3p.cloud.cyfronet.pl/narzedzia_cli.html
+
+[default]
+access_key = REPLACE_ME
+secret_key = REPLACE_ME
+bucket_location = us-east-1
+check_ssl_certificate = True
+check_ssl_hostname = True
+enable_multipart = True
+host_base = s3.cloud.cyfronet.pl
+host_bucket = %(bucket)s.s3.cloud.cyfronet.pl
+multipart_chunk_size_mb = 256
+use_https = True
+signurl_use_https = True
