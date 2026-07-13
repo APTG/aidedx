@@ -12,9 +12,11 @@
  *
  * Known limitation (issue #32 open question 2): transformers.js does not
  * expose a way to abort a load already in flight for a given file. Cancel
- * here stops emitting progress and lets the caller move on; any in-flight
- * fetch for the *current* file finishes in the background and lands in the
- * cache anyway (harmless — just an early write to the model cache).
+ * therefore races the in-flight `downloadEntry()` promise against the abort
+ * signal (see `raceAbort`) so the *caller* moves on immediately instead of
+ * waiting for the current file to finish — but the underlying fetch for
+ * that file isn't actually interrupted; it keeps running in the background
+ * and lands in the cache anyway (harmless — just an early write).
  */
 import { MODEL_MANIFEST, type ModelManifestEntry } from "./manifest.ts";
 
@@ -81,10 +83,31 @@ async function downloadEntry(
   }
 }
 
+/** Rejects with `DownloadCancelledError` as soon as `signal` aborts, whichever comes first. */
+function raceAbort<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> {
+  if (!signal) return promise;
+  if (signal.aborted) return Promise.reject(new DownloadCancelledError());
+  return new Promise<T>((resolve, reject) => {
+    const onAbort = () => reject(new DownloadCancelledError());
+    signal.addEventListener("abort", onAbort, { once: true });
+    promise.then(
+      (value) => {
+        signal.removeEventListener("abort", onAbort);
+        resolve(value);
+      },
+      (error: unknown) => {
+        signal.removeEventListener("abort", onAbort);
+        reject(error as Error);
+      },
+    );
+  });
+}
+
 /**
  * Downloads every model in `manifest` sequentially, reporting per-file
- * progress via `onProgress`. Checked-between-files cancellation only — see
- * the module-level known-limitation note.
+ * progress via `onProgress`. Cancellation via `signal` takes effect
+ * immediately from the caller's perspective, even mid-file — see the
+ * module-level known-limitation note.
  */
 export async function downloadModelWeights(
   onProgress: DownloadProgressListener,
@@ -93,7 +116,7 @@ export async function downloadModelWeights(
 ): Promise<void> {
   for (const entry of manifest) {
     if (signal?.aborted) throw new DownloadCancelledError();
-    await downloadEntry(entry, onProgress);
+    await raceAbort(downloadEntry(entry, onProgress), signal);
   }
   if (signal?.aborted) throw new DownloadCancelledError();
 }
