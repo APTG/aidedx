@@ -13,7 +13,9 @@ function stubCaches(names: string[], filesByCache: Record<string, string[]>) {
     keys: vi.fn().mockResolvedValue(names),
     open: vi.fn().mockImplementation(async (name: string) => ({
       keys: vi.fn().mockResolvedValue((filesByCache[name] ?? []).map((url) => ({ url }))),
-      match: vi.fn().mockResolvedValue({ blob: async () => ({ size: 1024 * 1024 }) }),
+      match: vi.fn().mockResolvedValue({
+        headers: { get: (header: string) => (header === "content-length" ? "1048576" : null) },
+      }),
       delete: vi.fn(),
     })),
     delete: vi.fn(),

@@ -31,7 +31,16 @@ async function resolveModelCacheNames(): Promise<string[]> {
   return names.filter((name) => KNOWN_CACHE_NAME_PATTERN.test(name));
 }
 
-/** Lists every cached model file across all matching Cache Storage buckets. */
+/**
+ * Lists every cached model file across all matching Cache Storage buckets.
+ *
+ * Reads the `content-length` response header rather than materializing each
+ * response body via `.blob()` — these are multi-hundred-MB model files, and
+ * this runs on every `modelStatus.init()`, so buffering full bodies just to
+ * read `.size` would spike memory/CPU for no reason. A response without a
+ * usable `content-length` is reported as 0 MB (unknown) rather than paying
+ * that cost to find out.
+ */
 export async function listCacheEntries(): Promise<CacheFileEntry[]> {
   const names = await resolveModelCacheNames();
   const entries: CacheFileEntry[] = [];
@@ -40,8 +49,11 @@ export async function listCacheEntries(): Promise<CacheFileEntry[]> {
     const requests = await cache.keys();
     for (const request of requests) {
       const response = await cache.match(request);
-      const blob = await response?.blob();
-      entries.push({ url: request.url, sizeMB: (blob?.size ?? 0) / (1024 * 1024) });
+      const sizeBytes = Number(response?.headers.get("content-length") ?? 0);
+      entries.push({
+        url: request.url,
+        sizeMB: Number.isFinite(sizeBytes) ? sizeBytes / (1024 * 1024) : 0,
+      });
     }
   }
   return entries;

@@ -16,3 +16,13 @@ export function formatEta(loadedMB: number, totalMB: number, elapsedMs: number):
   if (remainingSec < 60) return `≈${remainingSec} sec remaining`;
   return `≈${Math.round(remainingSec / 60)} min remaining`;
 }
+
+/**
+ * Formats the download source line ("huggingface.co/onnx-community") from
+ * the manifest's repo ids, instead of hardcoding an org that could drift
+ * from the actual manifest.
+ */
+export function formatSourceLabel(repos: string[]): string {
+  const orgs = Array.from(new Set(repos.map((repo) => repo.split("/")[0]).filter(Boolean)));
+  return orgs.length > 0 ? `huggingface.co/${orgs.join(", ")}` : "huggingface.co";
+}

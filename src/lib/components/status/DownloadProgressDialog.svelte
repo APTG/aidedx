@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ModelManifestEntry } from "$lib/models/manifest.ts";
   import type { FileProgress } from "$lib/models/download.ts";
-  import { formatMegabytes } from "$lib/format.ts";
+  import { formatMegabytes, formatSourceLabel } from "$lib/format.ts";
 
   interface Props {
     open: boolean;
@@ -14,10 +14,19 @@
 
   let { open, manifest, fileProgress, aggregatePercent, etaLabel, onCancel }: Props = $props();
 
+  const sourceLabel = $derived(formatSourceLabel(manifest.map((entry) => entry.repo)));
+
   function percentFor(entry: ModelManifestEntry): number {
     const progress = fileProgress[entry.id];
     if (!progress || progress.totalMB <= 0) return 0;
     return Math.min(100, Math.round((progress.loadedMB / progress.totalMB) * 100));
+  }
+
+  // Prefer the real size transformers.js reports once a file's download has
+  // started; fall back to the manifest's estimate beforehand.
+  function sizeLabelFor(entry: ModelManifestEntry): string {
+    const progress = fileProgress[entry.id];
+    return formatMegabytes(progress?.totalMB ?? entry.sizeMB);
   }
 </script>
 
@@ -34,7 +43,7 @@
       <div>
         <p id="download-progress-title" class="text-sm font-bold">Downloading model weights</p>
         <p class="text-[11px] text-muted-foreground">
-          huggingface.co/onnx-community · {etaLabel}
+          {sourceLabel} · {etaLabel}
         </p>
       </div>
 
@@ -50,7 +59,7 @@
           <div class="flex flex-col gap-1">
             <div class="flex justify-between text-[11.5px]">
               <span>{entry.label}</span>
-              <span class="text-muted-foreground">{formatMegabytes(entry.sizeMB)}</span>
+              <span class="text-muted-foreground">{sizeLabelFor(entry)}</span>
             </div>
             <div class="h-1 overflow-hidden rounded-full bg-muted">
               <div

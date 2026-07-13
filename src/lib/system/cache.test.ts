@@ -12,7 +12,11 @@ function makeFakeCache(entries: FakeCacheEntry[]) {
     match: vi.fn().mockImplementation(async (request: { url: string }) => {
       const entry = entries.find((e) => e.url === request.url);
       if (!entry) return undefined;
-      return { blob: async () => ({ size: entry.sizeBytes }) };
+      return {
+        headers: {
+          get: (name: string) => (name === "content-length" ? String(entry.sizeBytes) : null),
+        },
+      };
     }),
     delete: vi.fn().mockResolvedValue(true),
   };
@@ -68,6 +72,48 @@ describe("system/cache", () => {
       expect(await listCacheEntries()).toEqual([
         { url: "https://cdn/onnx-community/x/model.onnx", sizeMB: 0 },
       ]);
+    });
+
+    it("reads content-length instead of materializing the response body", async () => {
+      const blob = vi.fn();
+      const cache = {
+        keys: vi.fn().mockResolvedValue([{ url: "https://cdn/onnx-community/x/model.onnx" }]),
+        match: vi.fn().mockResolvedValue({
+          headers: { get: (name: string) => (name === "content-length" ? "104857600" : null) },
+          blob,
+        }),
+        delete: vi.fn(),
+      };
+      vi.stubGlobal("caches", {
+        keys: vi.fn().mockResolvedValue(["transformers-cache"]),
+        open: vi.fn().mockResolvedValue(cache),
+        delete: vi.fn(),
+      });
+
+      const entries = await listCacheEntries();
+      expect(entries).toEqual([{ url: "https://cdn/onnx-community/x/model.onnx", sizeMB: 100 }]);
+      expect(blob).not.toHaveBeenCalled();
+    });
+
+    it("reports 0 MB when content-length is missing, rather than reading the body", async () => {
+      const blob = vi.fn();
+      const cache = {
+        keys: vi.fn().mockResolvedValue([{ url: "https://cdn/onnx-community/x/model.onnx" }]),
+        match: vi.fn().mockResolvedValue({
+          headers: { get: () => null },
+          blob,
+        }),
+        delete: vi.fn(),
+      };
+      vi.stubGlobal("caches", {
+        keys: vi.fn().mockResolvedValue(["transformers-cache"]),
+        open: vi.fn().mockResolvedValue(cache),
+        delete: vi.fn(),
+      });
+
+      const entries = await listCacheEntries();
+      expect(entries).toEqual([{ url: "https://cdn/onnx-community/x/model.onnx", sizeMB: 0 }]);
+      expect(blob).not.toHaveBeenCalled();
     });
   });
 

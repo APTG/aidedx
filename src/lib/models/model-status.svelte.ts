@@ -119,14 +119,26 @@ class ModelStatusStore {
     this.cacheBreakdown = groupCacheBreakdown(entries);
   }
 
-  /** Runs the one-time detection pass. Safe to call more than once; only the first call does work. */
+  /**
+   * Runs the one-time detection pass. Safe to call more than once; only the
+   * first call does work. On failure, falls back to the safe "fresh" state
+   * (still prompts for consent before downloading) and un-marks itself as
+   * initialized so a later `init()` call can retry, rather than leaving the
+   * store stuck in "checking" forever.
+   */
   async init(): Promise<void> {
     if (this.#initialized) return;
     this.#initialized = true;
-    this.ramMB = getMemoryEstimateMB();
-    this.hardware = await detectHardware();
-    await this.#refreshDiskUsage();
-    this.phase = (await areModelsCached()) ? "ready" : "fresh";
+    try {
+      this.ramMB = getMemoryEstimateMB();
+      this.hardware = await detectHardware();
+      await this.#refreshDiskUsage();
+      this.phase = (await areModelsCached()) ? "ready" : "fresh";
+    } catch (error) {
+      this.#initialized = false;
+      this.errorMessage = error instanceof Error ? error.message : String(error);
+      this.phase = "fresh";
+    }
   }
 
   togglePanel(): void {

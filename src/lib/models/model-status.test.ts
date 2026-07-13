@@ -88,6 +88,22 @@ describe("modelStatus store", () => {
     expect(mocks.detectHardware).toHaveBeenCalledTimes(1);
   });
 
+  it("falls back to fresh and allows a retry when detection throws (regression)", async () => {
+    mocks.detectHardware.mockRejectedValueOnce(new Error("adapter request failed"));
+    const store = await loadStore();
+
+    await store.init();
+    expect(store.phase).toBe("fresh");
+    expect(store.errorMessage).toBe("adapter request failed");
+
+    // A stuck `#initialized` flag would make this second call a silent
+    // no-op, leaving the store stranded — it should retry instead.
+    mocks.detectHardware.mockResolvedValue(CPU_HARDWARE);
+    await store.init();
+    expect(mocks.detectHardware).toHaveBeenCalledTimes(2);
+    expect(store.phase).toBe("fresh");
+  });
+
   it("dismissing the prompt shows the banner instead", async () => {
     const store = await loadStore();
     await store.init();

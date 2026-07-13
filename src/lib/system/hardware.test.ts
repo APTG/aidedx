@@ -4,6 +4,10 @@ import { detectHardware } from "./hardware.ts";
 describe("detectHardware", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    // vi.unstubAllGlobals() doesn't restore vi.spyOn() spies (e.g. the
+    // HTMLCanvasElement.prototype.getContext spy below) — restore those too
+    // so they don't leak into later tests.
+    vi.restoreAllMocks();
     // @ts-expect-error -- cleaning up a test-only property
     delete (navigator as Navigator & { gpu?: unknown }).gpu;
   });
