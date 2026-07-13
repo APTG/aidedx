@@ -64,9 +64,8 @@ async function downloadEntry(
   const progress_callback = makeProgressCallback(entry, onProgress);
 
   if (entry.kind === "speech-to-text") {
-    const { AutoProcessor, WhisperForConditionalGeneration } = await import(
-      "@huggingface/transformers"
-    );
+    const { AutoProcessor, WhisperForConditionalGeneration } =
+      await import("@huggingface/transformers");
     await AutoProcessor.from_pretrained(entry.repo, { progress_callback });
     await WhisperForConditionalGeneration.from_pretrained(entry.repo, {
       dtype: entry.dtype,

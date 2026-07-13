@@ -3,6 +3,8 @@
   // backends (transformers.js / WebLLM / wllama) are dynamic-imported in a
   // later phase so this shell loads instantly and ships zero ML in the
   // initial bundle.
+  import ModelDownloadBanner from "$lib/components/status/ModelDownloadBanner.svelte";
+
   let query = $state("");
 
   function handleSubmit(event: SubmitEvent) {
@@ -53,6 +55,8 @@
       Search
     </button>
   </form>
+
+  <ModelDownloadBanner />
 
   <p class="text-center text-sm text-muted-foreground">
     🔒 Runs entirely on your machine — your questions never leave the browser.

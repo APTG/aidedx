@@ -32,7 +32,8 @@ function getGpu(): MinimalGPU | undefined {
 function detectWebGlRenderer(): string | null {
   if (typeof document === "undefined") return null;
   const canvas = document.createElement("canvas");
-  const gl = (canvas.getContext("webgl2") ?? canvas.getContext("webgl")) as WebGLRenderingContext | null;
+  const gl = (canvas.getContext("webgl2") ??
+    canvas.getContext("webgl")) as WebGLRenderingContext | null;
   if (!gl) return null;
   const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
   if (!debugInfo) return null;
