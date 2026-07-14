@@ -10,7 +10,7 @@
  * Message contract (see `worker-client.ts`, the only other file that should
  * import this contract):
  *   in:  { type: "transcribe", pcm: Float32Array }
- *   out: { type: "partial", text: string } (zero or more)
+ *   out: { type: "token", count: number } (zero or more)
  *      | { type: "done", text: string }
  *      | { type: "error", message: string }
  */
@@ -23,7 +23,7 @@ function post(message: WorkerResponse): void {
 
 self.onmessage = (event: MessageEvent<WorkerRequest>) => {
   const { pcm } = event.data;
-  transcribe(pcm, { onPartial: (text) => post({ type: "partial", text }) })
+  transcribe(pcm, { onToken: (count) => post({ type: "token", count }) })
     .then((text) => post({ type: "done", text }))
     .catch((error: unknown) => {
       post({ type: "error", message: error instanceof Error ? error.message : String(error) });

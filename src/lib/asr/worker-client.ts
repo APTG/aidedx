@@ -9,21 +9,21 @@ import type { WorkerRequest, WorkerResponse } from "./worker-protocol.ts";
 
 export interface TranscribeWorkerClient {
   /** Transfers `pcm`'s buffer to the worker; `pcm` must not be used after calling this. */
-  transcribe(pcm: Float32Array, onPartial: (textSoFar: string) => void): Promise<string>;
+  transcribe(pcm: Float32Array, onToken: (tokensSoFar: number) => void): Promise<string>;
   terminate(): void;
 }
 
 class WorkerTranscribeClient implements TranscribeWorkerClient {
   #worker: Worker;
   #pending: { resolve: (text: string) => void; reject: (error: Error) => void } | null = null;
-  #onPartial: ((textSoFar: string) => void) | null = null;
+  #onToken: ((tokensSoFar: number) => void) | null = null;
 
   constructor() {
     this.#worker = new Worker(new URL("./asr.worker.ts", import.meta.url), { type: "module" });
     this.#worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
       const message = event.data;
-      if (message.type === "partial") {
-        this.#onPartial?.(message.text);
+      if (message.type === "token") {
+        this.#onToken?.(message.count);
       } else if (message.type === "done") {
         this.#resolve(message.text);
       } else {
@@ -35,20 +35,20 @@ class WorkerTranscribeClient implements TranscribeWorkerClient {
     };
   }
 
-  /** Settles the in-flight promise and clears both it and `#onPartial`, so a late/stray worker message after settling can't invoke a stale callback. */
+  /** Settles the in-flight promise and clears both it and `#onToken`, so a late/stray worker message after settling can't invoke a stale callback. */
   #resolve(text: string): void {
     this.#pending?.resolve(text);
     this.#pending = null;
-    this.#onPartial = null;
+    this.#onToken = null;
   }
 
   #reject(error: Error): void {
     this.#pending?.reject(error);
     this.#pending = null;
-    this.#onPartial = null;
+    this.#onToken = null;
   }
 
-  transcribe(pcm: Float32Array, onPartial: (textSoFar: string) => void): Promise<string> {
+  transcribe(pcm: Float32Array, onToken: (tokensSoFar: number) => void): Promise<string> {
     if (this.#pending) {
       return Promise.reject(
         new Error(
@@ -56,7 +56,7 @@ class WorkerTranscribeClient implements TranscribeWorkerClient {
         ),
       );
     }
-    this.#onPartial = onPartial;
+    this.#onToken = onToken;
     return new Promise((resolve, reject) => {
       this.#pending = { resolve, reject };
       const request: WorkerRequest = { type: "transcribe", pcm };

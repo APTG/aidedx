@@ -32,26 +32,33 @@
  * `@huggingface/transformers` bumps its own pinned `onnxruntime-web` past
  * the fix.
  *
- * Live word-by-word progress (issue #44, `docs/whisper-progress-feedback.md`):
- * an optional `onPartial` callback wires a `WhisperTextStreamer` into the
- * `generate()` call — `docs/whisper-progress-feedback.md` §1 traced that
- * `streamer.put()` fires once per real decoded token, so this is genuine
- * incremental progress, not a fake animation. `skip_prompt: true` is load
- * -bearing, not cosmetic: `generate()` flushes the *entire* supplied
- * `decoder_input_ids` (the whole `DOMAIN_PROMPT` list) through the streamer
- * as one callback before the first real answer token — confirmed empirically
- * against local eval audio during this issue's investigation — so without
- * `skip_prompt`, the UI would flash the raw domain-prompt vocabulary list
- * before the actual transcript. Only word-level streaming is wired: the
+ * Token-count decode progress (issue #46, `docs/whisper-progress-feedback.md`
+ * "Outcome (issue #46 implementation)"): an optional `onToken` callback
+ * wires a `WhisperTextStreamer`'s `token_callback_function` into the
+ * `generate()` call — fires once per real decoded token (`streamer.put()`
+ * is called once per generated token, §1 of the doc above), so a running
+ * token count is genuine decode progress, not a fake animation. This
+ * replaces issue #44's word-by-word `callback_function`/`onPartial` text
+ * preview, which is deliberately no longer wired up: a monotonic token
+ * count is a strictly better progress *signal* (see `transcribe-progress.ts`
+ * for how it's turned into a 0-100% bar) than streamed partial text, and
+ * showing the raw in-progress transcript to the user turned out not to be
+ * something worth keeping once a real progress bar existed instead.
+ * `skip_prompt: true` is still load-bearing, not cosmetic: `generate()`
+ * flushes the *entire* supplied `decoder_input_ids` (the whole
+ * `DOMAIN_PROMPT` list) through the streamer as one callback before the
+ * first real answer token — confirmed empirically against local eval audio
+ * during issue #44's investigation — so without `skip_prompt`, the token
+ * count would start inflated by the ~40-token domain prompt. The
  * timestamp-gated `on_chunk_start`/`on_chunk_end` seconds-processed signal
- * (`return_timestamps: true`) was evaluated and deliberately *not* shipped —
- * measured against local eval audio, those events fire once at t=0 and once
- * just before the final word for this app's typical 5-15 word queries (one
- * segment, not a sweep), so a "seconds processed" bar built on it would sit
- * at 0% and then jump to ~100% right as transcription finishes — no more
- * informative than the word stream this module already provides, for
- * meaningfully more decoder-config risk (`docs/whisper-progress-feedback.md`
- * §3.2). Revisit only if this app ever supports longer-form recording.
+ * (`return_timestamps: true`) was separately evaluated and deliberately
+ * *not* shipped — measured against local eval audio, those events fire once
+ * at t=0 and once just before the final word for this app's typical 5-15
+ * word queries (one segment, not a sweep), so a "seconds processed" bar
+ * built on it would sit at 0% and then jump to ~100% right as transcription
+ * finishes — no more informative than token counting, for meaningfully more
+ * decoder-config risk (`docs/whisper-progress-feedback.md` §3.2). Revisit
+ * only if this app ever supports longer-form recording.
  */
 import { MODEL_MANIFEST } from "../models/manifest.ts";
 import { MODEL_MIRROR_HOST } from "../models/remote.ts";
@@ -89,7 +96,7 @@ export interface AsrPipelineLike {
 interface StreamerCtor {
   new (
     tokenizer: AsrPipelineLike["tokenizer"],
-    options: { skip_prompt: boolean; callback_function: (text: string) => void },
+    options: { skip_prompt: boolean; token_callback_function: () => void },
   ): unknown;
 }
 
@@ -155,8 +162,8 @@ async function buildDomainPromptOptions(
 }
 
 export interface TranscribeOptions {
-  /** Fires with the accumulated transcript so far as each word is decoded (issue #44). */
-  onPartial?: (textSoFar: string) => void;
+  /** Fires with the running decoder-token count as each token is generated (issue #46). */
+  onToken?: (tokensSoFar: number) => void;
 }
 
 /** Transcribes 16 kHz mono PCM audio, stripping the domain-prompt prefix Whisper otherwise echoes back into the output. */
@@ -168,14 +175,14 @@ export async function transcribe(
   const { genOpts, promptPrefix } = await buildDomainPromptOptions(asr);
 
   let streamer: unknown;
-  if (options.onPartial) {
-    let accumulated = "";
+  if (options.onToken) {
+    let tokenCount = 0;
     streamer = new WhisperTextStreamer(asr.tokenizer, {
       // skip_prompt=true is required, not cosmetic — see module comment.
       skip_prompt: true,
-      callback_function: (text: string) => {
-        accumulated += text;
-        options.onPartial?.(accumulated.trim());
+      token_callback_function: () => {
+        tokenCount += 1;
+        options.onToken?.(tokenCount);
       },
     });
   }

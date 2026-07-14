@@ -13,7 +13,7 @@ describe("MicButton", () => {
         phase: "idle",
         errorMessage: null,
         elapsedLabel: null,
-        partialTranscript: "",
+        transcribeProgress: null,
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
@@ -31,7 +31,7 @@ describe("MicButton", () => {
         phase: "idle",
         errorMessage: null,
         elapsedLabel: null,
-        partialTranscript: "",
+        transcribeProgress: null,
         onStart,
         onStop: vi.fn(),
       },
@@ -47,7 +47,7 @@ describe("MicButton", () => {
         phase: "recording",
         errorMessage: null,
         elapsedLabel: "3 s",
-        partialTranscript: "",
+        transcribeProgress: null,
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
@@ -65,7 +65,7 @@ describe("MicButton", () => {
         phase: "recording",
         errorMessage: null,
         elapsedLabel: null,
-        partialTranscript: "",
+        transcribeProgress: null,
         onStart: vi.fn(),
         onStop,
       },
@@ -75,36 +75,87 @@ describe("MicButton", () => {
     expect(onStop).toHaveBeenCalledTimes(1);
   });
 
-  it("shows a disabled Transcribing indicator distinct from the recording state", () => {
+  it("shows a disabled 'Warming up' indicator before any progress estimate arrives", () => {
     const { getByRole } = render(MicButton, {
       props: {
         phase: "transcribing",
         errorMessage: null,
-        elapsedLabel: "5 s",
-        partialTranscript: "",
+        elapsedLabel: "1 s",
+        transcribeProgress: null,
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
     });
 
-    const button = getByRole("button", { name: /transcribing/i });
+    const button = getByRole("button", { name: /warming up/i });
     expect(button).toBeDisabled();
-    expect(getByRole("status")).toHaveTextContent("Transcribing… 5 s");
+    expect(getByRole("status")).toHaveTextContent("Warming up… 1 s");
   });
 
-  it("shows the live partial transcript instead of a bare 'Transcribing…' once words arrive (issue #44)", () => {
+  it("shows the prefill stage with a low, growing progress bar (issue #46)", () => {
     const { getByRole } = render(MicButton, {
       props: {
         phase: "transcribing",
         errorMessage: null,
-        elapsedLabel: "12 s",
-        partialTranscript: "range of protons in",
+        elapsedLabel: "1 s",
+        transcribeProgress: { stage: "prefill", fraction: 0.1 },
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
     });
 
-    expect(getByRole("status")).toHaveTextContent("“range of protons in…” 12 s");
+    expect(getByRole("status")).toHaveTextContent("Warming up… 1 s");
+    const bar = getByRole("progressbar");
+    expect(bar).toHaveAttribute("aria-valuenow", "10");
+    expect(bar.firstElementChild).toHaveClass("bg-muted-foreground");
+    expect(bar.firstElementChild).not.toHaveClass("bg-accent");
+  });
+
+  it("switches to the decode stage's 'Processing' label and accent-colored bar once tokens arrive (issue #46)", () => {
+    const { getByRole } = render(MicButton, {
+      props: {
+        phase: "transcribing",
+        errorMessage: null,
+        elapsedLabel: "2 s",
+        transcribeProgress: { stage: "decode", fraction: 0.65 },
+        onStart: vi.fn(),
+        onStop: vi.fn(),
+      },
+    });
+
+    const button = getByRole("button", { name: /processing/i });
+    expect(button).toBeDisabled();
+    expect(getByRole("status")).toHaveTextContent("Processing… 2 s");
+    const bar = getByRole("progressbar");
+    expect(bar).toHaveAttribute("aria-valuenow", "65");
+    expect(bar.firstElementChild).toHaveClass("bg-accent");
+    expect(bar.firstElementChild).not.toHaveClass("bg-muted-foreground");
+  });
+
+  it("does not regress the displayed percentage across a prefill->decode transition", () => {
+    const { getByRole, rerender } = render(MicButton, {
+      props: {
+        phase: "transcribing",
+        errorMessage: null,
+        elapsedLabel: "1 s",
+        transcribeProgress: { stage: "prefill", fraction: 0.2 },
+        onStart: vi.fn(),
+        onStop: vi.fn(),
+      },
+    });
+    const prefillPercent = Number(getByRole("progressbar").getAttribute("aria-valuenow"));
+
+    rerender({
+      phase: "transcribing",
+      errorMessage: null,
+      elapsedLabel: "2 s",
+      transcribeProgress: { stage: "decode", fraction: 0.3 },
+      onStart: vi.fn(),
+      onStop: vi.fn(),
+    });
+    const decodePercent = Number(getByRole("progressbar").getAttribute("aria-valuenow"));
+
+    expect(decodePercent).toBeGreaterThanOrEqual(prefillPercent);
   });
 
   it("shows the error message with a retry hint, and Start is clickable again", async () => {
@@ -114,7 +165,7 @@ describe("MicButton", () => {
         phase: "error",
         errorMessage: "Microphone access was denied.",
         elapsedLabel: null,
-        partialTranscript: "",
+        transcribeProgress: null,
         onStart,
         onStop: vi.fn(),
       },
@@ -135,7 +186,7 @@ describe("MicButton", () => {
         phase: "done",
         errorMessage: null,
         elapsedLabel: null,
-        partialTranscript: "",
+        transcribeProgress: null,
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
@@ -150,7 +201,7 @@ describe("MicButton", () => {
         phase: "idle",
         errorMessage: null,
         elapsedLabel: null,
-        partialTranscript: "",
+        transcribeProgress: null,
         disabled: true,
         disabledReason: "Download the speech model first",
         onStart: vi.fn(),

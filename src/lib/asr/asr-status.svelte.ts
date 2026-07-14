@@ -8,14 +8,21 @@
  *
  * Inference runs in a Web Worker (issue #44 Phase B) via `worker-client.ts`,
  * not inline — `decodeToMono16k` still runs here since it needs
- * `AudioContext`, which only exists on the main thread. `partialTranscript`
- * mirrors the worker's live word-by-word callbacks (issue #44 Phase A) so
- * the UI can show real progress on a multi-second CPU transcription instead
- * of a bare spinner.
+ * `AudioContext`, which only exists on the main thread. `tokensSoFar` mirrors
+ * the worker's per-token callbacks (issue #46 — supersedes issue #44's
+ * word-by-word `partialTranscript` preview) so the UI can show real
+ * prefill/decode progress on a multi-second CPU transcription instead of a
+ * bare spinner; see `transcribe-progress.ts` for how a token count becomes a
+ * progress fraction. This store only tracks the raw signal (token count +
+ * timestamps for calibration) — turning it into a displayable fraction needs
+ * a live clock during prefill (no tokens yet), which `+page.svelte` already
+ * owns for `elapsedLabel`, so that derivation stays there rather than
+ * duplicating a ticking timer here.
  */
 import { MicRecorder } from "./recorder.ts";
 import { decodeToMono16k } from "./pcm.ts";
 import { createTranscribeWorkerClient, type TranscribeWorkerClient } from "./worker-client.ts";
+import { recordCompletedTranscription } from "./transcribe-progress.ts";
 
 export type AsrPhase = "idle" | "recording" | "transcribing" | "done" | "error";
 
@@ -34,8 +41,8 @@ function describeError(error: unknown): string {
 class AsrStore {
   phase: AsrPhase = $state("idle");
   transcript = $state("");
-  /** Live running transcript as the worker decodes words (issue #44); cleared on start()/reset(). */
-  partialTranscript = $state("");
+  /** Decoder tokens generated so far while transcribing (issue #46); cleared on start()/reset(). */
+  tokensSoFar = $state(0);
   errorMessage: string | null = $state(null);
   recordingStartedAt: number | null = $state(null);
   transcribingStartedAt: number | null = $state(null);
@@ -63,7 +70,7 @@ class AsrStore {
     if (this.isBusy) return;
     this.errorMessage = null;
     this.transcript = "";
-    this.partialTranscript = "";
+    this.tokensSoFar = 0;
     try {
       await this.#recorder.start();
       this.phase = "recording";
@@ -78,14 +85,31 @@ class AsrStore {
     if (this.phase !== "recording") return;
     this.recordingStartedAt = null;
     this.phase = "transcribing";
-    this.transcribingStartedAt = Date.now();
+    const transcribingStartedAt = Date.now();
+    this.transcribingStartedAt = transcribingStartedAt;
+    this.tokensSoFar = 0;
+    // Local (non-reactive) bookkeeping for calibration only — the UI reads
+    // tokensSoFar + its own live clock, not these raw timestamps directly.
+    let firstTokenAt: number | null = null;
+    let lastTokenAt: number | null = null;
     try {
       const blob = await this.#recorder.stop();
       const pcm = await decodeToMono16k(await blob.arrayBuffer());
-      this.transcript = await this.#getWorkerClient().transcribe(pcm, (textSoFar) => {
-        this.partialTranscript = textSoFar;
+      this.transcript = await this.#getWorkerClient().transcribe(pcm, (tokensSoFar) => {
+        const now = Date.now();
+        firstTokenAt ??= now;
+        lastTokenAt = now;
+        this.tokensSoFar = tokensSoFar;
       });
       this.phase = "done";
+      if (firstTokenAt !== null && lastTokenAt !== null) {
+        recordCompletedTranscription({
+          transcribingStartedAt,
+          firstTokenAt,
+          lastTokenAt,
+          totalTokens: this.tokensSoFar,
+        });
+      }
     } catch (error) {
       this.errorMessage = describeError(error);
       this.phase = "error";
@@ -98,7 +122,7 @@ class AsrStore {
   reset(): void {
     this.phase = "idle";
     this.transcript = "";
-    this.partialTranscript = "";
+    this.tokensSoFar = 0;
     this.errorMessage = null;
     this.recordingStartedAt = null;
     this.transcribingStartedAt = null;

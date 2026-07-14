@@ -69,19 +69,19 @@ describe("worker-client", () => {
     await expect(promise).resolves.toBe("range of protons");
   });
 
-  it("invokes onPartial for each 'partial' message without resolving the promise", async () => {
+  it("invokes onToken for each 'token' message without resolving the promise", async () => {
     const { createTranscribeWorkerClient } = await import("./worker-client.ts");
     const client = createTranscribeWorkerClient();
 
-    const partials: string[] = [];
-    const promise = client.transcribe(new Float32Array(), (text) => partials.push(text));
+    const tokenCounts: number[] = [];
+    const promise = client.transcribe(new Float32Array(), (count) => tokenCounts.push(count));
 
-    lastWorker()?.emit({ type: "partial", text: "range" });
-    lastWorker()?.emit({ type: "partial", text: "range of" });
+    lastWorker()?.emit({ type: "token", count: 1 });
+    lastWorker()?.emit({ type: "token", count: 2 });
     lastWorker()?.emit({ type: "done", text: "range of protons" });
 
     await promise;
-    expect(partials).toEqual(["range", "range of"]);
+    expect(tokenCounts).toEqual([1, 2]);
   });
 
   it("rejects on an 'error' message", async () => {
@@ -145,22 +145,22 @@ describe("worker-client", () => {
     expect(() => client.terminate()).not.toThrow();
   });
 
-  it("stops forwarding partials to a stale onPartial after the transcription settles (Copilot review)", async () => {
+  it("stops forwarding tokens to a stale onToken after the transcription settles (Copilot review)", async () => {
     const { createTranscribeWorkerClient } = await import("./worker-client.ts");
     const client = createTranscribeWorkerClient();
 
-    const firstPartials: string[] = [];
+    const firstTokenCounts: number[] = [];
     await Promise.all([
-      client.transcribe(new Float32Array(), (text) => firstPartials.push(text)),
+      client.transcribe(new Float32Array(), (count) => firstTokenCounts.push(count)),
       (async () => {
-        lastWorker()?.emit({ type: "partial", text: "range" });
+        lastWorker()?.emit({ type: "token", count: 1 });
         lastWorker()?.emit({ type: "done", text: "range of protons" });
       })(),
     ]);
 
-    // A late/stray 'partial' arriving after 'done' must not invoke the
+    // A late/stray 'token' arriving after 'done' must not invoke the
     // now-stale callback from the finished call.
-    lastWorker()?.emit({ type: "partial", text: "leaked" });
-    expect(firstPartials).toEqual(["range"]);
+    lastWorker()?.emit({ type: "token", count: 99 });
+    expect(firstTokenCounts).toEqual([1]);
   });
 });

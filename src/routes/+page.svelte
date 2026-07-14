@@ -11,6 +11,7 @@
   import { answerStatus } from "$lib/answer/answer-status.svelte.ts";
   import { modelStatus } from "$lib/models/model-status.svelte.ts";
   import { formatElapsedSeconds } from "$lib/format.ts";
+  import { estimateProgress, type ProgressEstimate } from "$lib/asr/transcribe-progress.ts";
 
   let query = $state("");
   let now = $state(Date.now());
@@ -44,6 +45,21 @@
     if (startedAt === null) return null;
     const elapsedMs = now - startedAt;
     return elapsedMs >= 1000 ? formatElapsedSeconds(elapsedMs) : null;
+  });
+
+  // Drives MicButton's prefill/decode progress bar (issue #46). Computed
+  // here rather than in asrStatus itself, since it needs the same live
+  // `now` tick elapsedLabel already uses above — there's no token signal at
+  // all during prefill, so wall-clock elapsed time is the only progress
+  // proxy until the first token lands.
+  const transcribeProgress: ProgressEstimate | null = $derived.by(() => {
+    if (asrStatus.phase !== "transcribing" || asrStatus.transcribingStartedAt === null) {
+      return null;
+    }
+    return estimateProgress({
+      tokensSoFar: asrStatus.tokensSoFar,
+      elapsedMs: now - asrStatus.transcribingStartedAt,
+    });
   });
 
   const micDisabledReason = $derived(
@@ -86,7 +102,7 @@
         phase={asrStatus.phase}
         errorMessage={asrStatus.errorMessage}
         {elapsedLabel}
-        partialTranscript={asrStatus.partialTranscript}
+        {transcribeProgress}
         disabled={modelStatus.phase !== "ready"}
         disabledReason={micDisabledReason}
         onStart={() => asrStatus.start()}

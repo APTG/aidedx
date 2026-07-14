@@ -6,6 +6,6 @@ export interface WorkerRequest {
 }
 
 export type WorkerResponse =
-  | { type: "partial"; text: string }
+  | { type: "token"; count: number }
   | { type: "done"; text: string }
   | { type: "error"; message: string };

@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => ({
 class FakeWhisperTextStreamer {
   constructor(
     _tokenizer: unknown,
-    public options: { skip_prompt: boolean; callback_function: (text: string) => void },
+    public options: { skip_prompt: boolean; token_callback_function: () => void },
   ) {}
 }
 
@@ -151,7 +151,7 @@ describe("transcribe", () => {
     expect(mocks.pipeline).toHaveBeenCalledTimes(1);
   });
 
-  it("does not construct a streamer when onPartial isn't passed (no per-call overhead for typed-query answers)", async () => {
+  it("does not construct a streamer when onToken isn't passed (no per-call overhead for typed-query answers)", async () => {
     const asr = makeAsr({ resultText: `${PROMPT_PREFIX_TEXT} test` });
     mocks.pipeline.mockResolvedValue(asr);
 
@@ -164,26 +164,29 @@ describe("transcribe", () => {
     );
   });
 
-  it("wires a skip_prompt streamer and reports the accumulated partial transcript as words stream in (issue #44)", async () => {
+  it("wires a skip_prompt streamer and reports the running token count as tokens are generated (issue #46)", async () => {
     // skip_prompt=true is load-bearing: generate() flushes the whole
     // decoder_input_ids (the DOMAIN_PROMPT vocabulary list) through the
-    // streamer as its first callback — without skip_prompt, onPartial would
-    // momentarily show the raw prompt list instead of the transcript.
+    // streamer as its first callback — without skip_prompt, the token count
+    // would start inflated by the ~40-token domain prompt instead of
+    // counting only real answer tokens.
     const asr = makeAsr({ resultText: `${PROMPT_PREFIX_TEXT} what is the range` });
     asr.mockImplementation(async (_pcm, opts = {}) => {
       const streamer = opts.streamer as FakeWhisperTextStreamer | undefined;
-      streamer?.options.callback_function("what ");
-      streamer?.options.callback_function("is ");
-      streamer?.options.callback_function("the range");
+      streamer?.options.token_callback_function();
+      streamer?.options.token_callback_function();
+      streamer?.options.token_callback_function();
       return { text: `${PROMPT_PREFIX_TEXT} what is the range` };
     });
     mocks.pipeline.mockResolvedValue(asr);
 
-    const partials: string[] = [];
+    const tokenCounts: number[] = [];
     const { transcribe } = await import("./transcribe.ts");
-    await transcribe(new Float32Array([0, 0, 0]), { onPartial: (text) => partials.push(text) });
+    await transcribe(new Float32Array([0, 0, 0]), {
+      onToken: (count) => tokenCounts.push(count),
+    });
 
-    expect(partials).toEqual(["what", "what is", "what is the range"]);
+    expect(tokenCounts).toEqual([1, 2, 3]);
     expect(asr).toHaveBeenCalledWith(
       expect.any(Float32Array),
       expect.objectContaining({ streamer: expect.any(FakeWhisperTextStreamer) }),
