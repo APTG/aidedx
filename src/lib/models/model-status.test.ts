@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { HardwareInfo } from "$lib/system/hardware.ts";
 import type { FileProgress } from "./download.ts";
+import { TOTAL_DOWNLOAD_SIZE_MB } from "./manifest.ts";
 
 const mocks = vi.hoisted(() => ({
   downloadModelWeights: vi.fn(),
@@ -145,6 +146,37 @@ describe("modelStatus store", () => {
 
     expect(store.phase).toBe("fresh");
     expect(store.errorMessage).toBeNull();
+  });
+
+  it("keeps aggregatePercent's denominator fixed at the manifest size instead of a partial per-file total (regression)", async () => {
+    // download.ts's `progress.totalMB` is a running sum across only the
+    // files an entry has reported so far — it starts as one small file's
+    // total (e.g. config.json) and later balloons once a large file (e.g.
+    // the encoder .onnx) registers. Using it as the percent denominator
+    // made the bar spike near 100% on the small file, then crater once the
+    // large file's total got added. `aggregatePercent` must instead always
+    // divide by the manifest's fixed `sizeMB` estimate.
+    let onProgress!: (id: string, progress: FileProgress) => void;
+    mocks.downloadModelWeights.mockImplementation(
+      async (cb: (id: string, progress: FileProgress) => void) => {
+        onProgress = cb;
+        await new Promise(() => {}); // never resolves; we inspect state mid-download
+      },
+    );
+
+    const store = await loadStore();
+    await store.init();
+    void store.startDownload();
+
+    // Only config.json (tiny) has reported so far.
+    onProgress("whisper", { loadedMB: 0.002, totalMB: 0.002, done: false });
+    expect(store.aggregatePercent).toBe(0);
+
+    // The encoder .onnx registers and inflates the running total by ~88 MB;
+    // a small additional loaded amount must not make the percent collapse
+    // relative to the fixed manifest denominator.
+    onProgress("whisper", { loadedMB: 0.5, totalMB: 88, done: false });
+    expect(store.aggregatePercent).toBe(Math.round((0.5 / TOTAL_DOWNLOAD_SIZE_MB) * 100));
   });
 
   it("reverts to fresh and records the error message when the download fails", async () => {

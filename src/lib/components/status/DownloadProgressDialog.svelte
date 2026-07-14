@@ -17,17 +17,19 @@
 
   const sourceLabel = formatSourceLabel(MODEL_MIRROR_HOST);
 
+  // Denominator is always the manifest's fixed `sizeMB` estimate, never
+  // `progress.totalMB` — that field is a running sum across only the files
+  // that have reported so far (see `makeProgressCallback` in `download.ts`),
+  // so using it here made the bar spike toward 100% on the first small file,
+  // then crater once a large file registered and inflated the total.
   function percentFor(entry: ModelManifestEntry): number {
     const progress = fileProgress[entry.id];
-    if (!progress || progress.totalMB <= 0) return 0;
-    return Math.min(100, Math.round((progress.loadedMB / progress.totalMB) * 100));
+    if (!progress) return 0;
+    return Math.min(100, Math.round((progress.loadedMB / entry.sizeMB) * 100));
   }
 
-  // Prefer the real size transformers.js reports once a file's download has
-  // started; fall back to the manifest's estimate beforehand.
   function sizeLabelFor(entry: ModelManifestEntry): string {
-    const progress = fileProgress[entry.id];
-    return formatMegabytes(progress?.totalMB ?? entry.sizeMB);
+    return formatMegabytes(entry.sizeMB);
   }
 </script>
 

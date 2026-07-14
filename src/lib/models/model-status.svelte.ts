@@ -107,13 +107,21 @@ class ModelStatusStore {
     return this.phase === "fresh" && this.promptDismissed;
   }
 
+  /**
+   * `total` always sums the manifest's fixed `sizeMB` estimates, never
+   * `progress.totalMB` — that field is a running sum across only the files
+   * of an entry that have reported *so far* (see `makeProgressCallback` in
+   * `download.ts`), so it starts small (whichever file fires its first
+   * `progress` event first) and grows as more files register. Using it as
+   * the denominator here made the bar spike toward 100% on the first tiny
+   * file, then crater once a large file registered and inflated the total.
+   */
   #aggregateBytes(): { loaded: number; total: number } {
     let loaded = 0;
     let total = 0;
     for (const entry of AVAILABLE_MODEL_MANIFEST) {
-      const progress = this.fileProgress[entry.id];
-      loaded += progress?.loadedMB ?? 0;
-      total += progress?.totalMB ?? entry.sizeMB;
+      loaded += this.fileProgress[entry.id]?.loadedMB ?? 0;
+      total += entry.sizeMB;
     }
     return { loaded, total };
   }
