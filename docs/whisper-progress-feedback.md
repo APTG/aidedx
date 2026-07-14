@@ -523,6 +523,30 @@ going relative to an audio-length estimate. Total expected tokens for the denomi
 need its own estimate (e.g. a self-calibrated median, or extrapolating from the growing word count
 mid-transcription) — this is the open design question left to issue #46.
 
+## Full-corpus regression check: PR #45 changes decode latency slightly, output not at all
+
+The spot-checks above (8-89 clips depending on section) all used the domain-prompt decode path,
+which PR #45 doesn't modify — only whether a `WhisperTextStreamer` observes it. To settle "no
+quality lost" definitively rather than by spot-check, ran the **full 89-clip corpus** (all speakers
+× all ids in `eval/audio/`) through the exact same `decoder_input_ids` construction twice: once
+exactly as the pre-#45 code path (no streamer — `eval/results/asr-2026-07-05/small-q8-prompt-fixed.json`,
+the committed baseline these numbers have referenced throughout this doc) and once with a
+`skip_prompt: true` `WhisperTextStreamer` attached exactly as `transcribe.ts` does when `onPartial`
+is passed — which it always is in production, via the worker
+(`eval/results/asr-2026-07-14/small-q8-prompt-streamer.json`).
+
+**Result: all 89 raw transcripts are byte-identical between the two runs**, including the one
+clip (`lg/stress-002`) that hits the pre-existing empty-output-under-prompt decode bug in both runs
+identically. `scripts/asr-score-slots.mjs --ext` on both files produces the exact same report:
+95.6% raw / 98.7% corrected slot-token accuracy, same 5 failing clips after correction. This
+confirms empirically, not just by reasoning about the mechanism, that attaching a streamer purely as
+an observer of already-generated tokens cannot perturb decoding — `streamer.put()` is called with
+tokens `generate()` already committed to, after the fact.
+
+The only measurable difference is latency: median inference time rose from 2.8s to 3.0s (89-clip
+corpus, Linux CPU) — a small, expected cost from the per-token callback bookkeeping, not a quality
+regression.
+
 ## Related
 
 - `docs/voice-pipeline-feasibility.md` §2.4 — the domain-prompt-biasing fix whose
