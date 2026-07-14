@@ -22,6 +22,7 @@ import type { CompareDim, Quantity, QueryIntent } from "../intent/query-intent.t
 import { resolveMaterial, resolveParticle } from "../aliases/lookup.ts";
 import { PROGRAMS, ELECTRON_ID } from "../wasm/libdedx.ts";
 import { LibdedxError, type LibdedxService } from "../wasm/types.ts";
+import { formatEnergyPerNucleon } from "../format.ts";
 
 /** Raised when an intent cannot be mapped to a libdedx computation. */
 export class ComputeError extends Error {
@@ -65,6 +66,14 @@ export interface ComputeSeries {
   material: ResolvedMaterial;
   program: { id: number; name: string };
   points: ComputePoint[];
+  /**
+   * Material density in g/cm³ from `service.getDensity()`, when available.
+   * Lets the NLG layer convert libdedx's native mass-normalized units
+   * (MeV·cm²/g, g/cm²) to physical ones (keV/µm, a length) for display —
+   * see `render.ts`'s `valueText()`. Undefined when the lookup failed for
+   * this material; callers fall back to the native unit in that case.
+   */
+  density?: number;
   /** Set when this series failed (e.g. energy out of range); points may be empty. */
   error?: string;
 }
@@ -113,6 +122,18 @@ const PROGRAM_ID_TO_NAME: Record<number, string> = {
 
 function programName(id: number): string {
   return PROGRAM_ID_TO_NAME[id] ?? `program ${id}`;
+}
+
+/**
+ * Sets `series.density` only when defined. `ComputeSeries.density` is
+ * optional under `exactOptionalPropertyTypes`, which treats an explicit
+ * `undefined` assignment as an error — a missing density (getDensity()
+ * failed for that material) must be an absent key, not a key holding
+ * `undefined`.
+ */
+function withDensity(series: ComputeSeries, density: number | undefined): ComputeSeries {
+  if (density !== undefined) series.density = density;
+  return series;
 }
 
 /**
@@ -244,6 +265,11 @@ function energiesMeVPerNucl(
  * (program, particle). Returns an error message, or null when all are valid.
  * Validating up front gives a clear per-series error and avoids invoking the
  * (potentially expensive/recursive) WASM paths on out-of-range input.
+ *
+ * `min`/`max` come back from libdedx as raw MeV/nucl floats (e.g.
+ * `0.0002500000118743628`) — `formatEnergyPerNucleon` auto-scales each bound
+ * to whichever of keV/MeV/GeV/nucl reads best, so the message is a readable
+ * "valid range is X to Y" rather than a bracket of raw floats (issue #42 §4).
  */
 function energyBoundsError(
   service: LibdedxService,
@@ -256,7 +282,7 @@ function energyBoundsError(
   for (const e of energies) {
     if (!Number.isFinite(e)) return `Energy ${e} is not a finite number`;
     if (e < min || e > max) {
-      return `Energy ${e} MeV/nucl is outside the valid range [${min}, ${max}] for this program/particle`;
+      return `Energy ${formatEnergyPerNucleon(e)} is outside the valid range ${formatEnergyPerNucleon(min)} to ${formatEnergyPerNucleon(max)} for this program/particle`;
     }
   }
   return null;
@@ -279,6 +305,7 @@ function forwardSeries(
     program: { id: programId, name: programName(programId) },
     points: [],
   };
+  withDensity(base, service.getDensity(material.id));
   const boundsError = energyBoundsError(service, programId, particle.id, energies);
   if (boundsError) {
     base.error = boundsError;
@@ -315,6 +342,7 @@ function inverseSeries(
   programId: number,
   label: string,
 ): ComputeSeries {
+  const density = service.getDensity(material.id);
   const base: ComputeSeries = {
     label,
     particle,
@@ -322,11 +350,11 @@ function inverseSeries(
     program: { id: programId, name: programName(programId) },
     points: [],
   };
+  withDensity(base, density);
   if (!intent.target) {
     base.error = `Inverse quantity "${quantity}" requires a target value`;
     return base;
   }
-  const density = service.getDensity(material.id);
   try {
     if (quantity === "energyFromRange") {
       const range = rangeTargetToGcm2(intent.target, density);

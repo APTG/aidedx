@@ -108,6 +108,8 @@ Deeper write-ups live in [`docs/`](docs/):
   regeneration.
 - [`docs/wasm.md`](docs/wasm.md) — the libdedx WASM wrapper boundary and how to rebuild the
   binaries.
+- [`docs/answer-pipeline.md`](docs/answer-pipeline.md) — matcher → compute → NLG → UI state, the
+  layer after Whisper: unit conversion, error-message formatting, input validation.
 - [`docs/local-model-cache.md`](docs/local-model-cache.md) — the Node-side `.hf-cache/` prefetch
   convention used by the benchmark scripts.
 - [`docs/model-hosting-cyfronet.md`](docs/model-hosting-cyfronet.md) — mirroring model weights to

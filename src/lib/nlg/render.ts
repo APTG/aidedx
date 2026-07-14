@@ -18,6 +18,12 @@
  */
 import type { QueryIntent, Quantity } from "../intent/query-intent.ts";
 import type { ComputePoint, ComputeResult, ComputeSeries } from "../compute/compute.ts";
+import {
+  csdaRangeToCm,
+  formatLengthCm,
+  formatSignificant,
+  stoppingPowerToKevPerUm,
+} from "../format.ts";
 
 const QUANTITY_PHRASE: Record<Quantity, string> = {
   stoppingPower: "stopping power",
@@ -26,6 +32,8 @@ const QUANTITY_PHRASE: Record<Quantity, string> = {
   energyFromStp: "energy",
 };
 
+/** Native libdedx units, used when a series carries no density to convert
+ * with (e.g. `getDensity()` failed for that material). */
 const FORWARD_UNIT: Record<"stoppingPower" | "csdaRange", string> = {
   stoppingPower: "MeV·cm²/g",
   csdaRange: "g/cm²",
@@ -33,9 +41,7 @@ const FORWARD_UNIT: Record<"stoppingPower" | "csdaRange", string> = {
 
 /** Renders a physics value to 4 significant figures, e.g. 1.42899 -> "1.429". */
 export function formatNumber(value: number): string {
-  if (!Number.isFinite(value)) return "n/a";
-  if (value === 0) return "0";
-  return Number(value.toPrecision(4)).toString();
+  return formatSignificant(value);
 }
 
 function capitalize(s: string): string {
@@ -73,8 +79,18 @@ function targetPhrase(intent: QueryIntent): string {
  * `Number.NaN` rather than leaving it `undefined` (see `forwardSeries`), so
  * `NaN` is treated the same as "no value" here — otherwise it would render as
  * a literal "n/a g/cm²" instead of the intended "couldn't compute" fallback.
+ *
+ * Forward quantities convert from libdedx's native mass-normalized units
+ * (MeV·cm²/g, g/cm²) to the physical units dedx_web displays (keV/µm, an
+ * auto-scaled length) whenever the series carries a usable `density`
+ * (issue #42 §2/§3). Without one — `getDensity()` failed for that material —
+ * this falls back to the native unit rather than fabricating a conversion.
  */
-function valueText(quantity: Quantity, point: ComputePoint | undefined): string | null {
+function valueText(
+  quantity: Quantity,
+  point: ComputePoint | undefined,
+  density: number | undefined,
+): string | null {
   if (!point) return null;
   if (isInverse(quantity)) {
     return point.energy === undefined || !Number.isFinite(point.energy)
@@ -82,9 +98,13 @@ function valueText(quantity: Quantity, point: ComputePoint | undefined): string 
       : `${formatNumber(point.energy)} MeV/nucl`;
   }
   const raw = quantity === "stoppingPower" ? point.stoppingPower : point.csdaRange;
-  return raw === undefined || !Number.isFinite(raw)
-    ? null
-    : `${formatNumber(raw)} ${FORWARD_UNIT[quantity]}`;
+  if (raw === undefined || !Number.isFinite(raw)) return null;
+  if (density !== undefined && density > 0) {
+    return quantity === "stoppingPower"
+      ? `${formatNumber(stoppingPowerToKevPerUm(raw, density))} keV/µm`
+      : formatLengthCm(csdaRangeToCm(raw, density));
+  }
+  return `${formatNumber(raw)} ${FORWARD_UNIT[quantity]}`;
 }
 
 /** One "- label: value (program)" comparison-list line, or an inline error line. */
@@ -95,7 +115,7 @@ function compareLine(
   pointIndex: number,
 ): string {
   if (series.error) return `- ${label}: couldn't compute (${series.error})`;
-  const value = valueText(quantity, series.points[pointIndex]);
+  const value = valueText(quantity, series.points[pointIndex], series.density);
   if (value === null) return `- ${label}: couldn't compute`;
   return `- ${label}: ${value} (${series.program.name})`;
 }
@@ -111,7 +131,7 @@ function singleSentence(intent: QueryIntent, quantity: Quantity, series: Compute
       : `Couldn't compute the ${QUANTITY_PHRASE[quantity]} of ${energyLabel(intent, 0)} ${particle} in ${material}: ${series.error}`;
   }
 
-  const value = valueText(quantity, series.points[0]);
+  const value = valueText(quantity, series.points[0], series.density);
   if (value === null) return "Couldn't compute an answer for that query.";
 
   if (isInverse(quantity)) {

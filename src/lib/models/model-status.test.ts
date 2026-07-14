@@ -63,13 +63,16 @@ describe("modelStatus store", () => {
     return modelStatus;
   }
 
-  it("starts in the checking phase and resolves to fresh when nothing is cached", async () => {
+  it("starts in the checking phase and resolves to fresh, showing the banner rather than a blocking popup", async () => {
     const store = await loadStore();
     expect(store.phase).toBe("checking");
 
     await store.init();
     expect(store.phase).toBe("fresh");
-    expect(store.showBlockingPrompt).toBe(true);
+    // issue #42 §1: a first-time visitor must not see an unsolicited
+    // blocking modal — the non-blocking banner is the default instead.
+    expect(store.showBlockingPrompt).toBe(false);
+    expect(store.showBanner).toBe(true);
     expect(store.modelLabel).toBe("Not downloaded");
   });
 
@@ -80,6 +83,7 @@ describe("modelStatus store", () => {
     await store.init();
     expect(store.phase).toBe("ready");
     expect(store.showBlockingPrompt).toBe(false);
+    expect(store.showBanner).toBe(false);
   });
 
   it("only runs detection once even if init() is called again", async () => {
@@ -105,18 +109,23 @@ describe("modelStatus store", () => {
     expect(store.phase).toBe("fresh");
   });
 
-  it("dismissing the prompt shows the banner instead", async () => {
+  it("the banner's Download button opens the blocking confirm dialog, and 'Not now' returns to the banner", async () => {
     const store = await loadStore();
     await store.init();
 
-    expect(store.showBanner).toBe(false);
-    store.dismissPrompt();
-    expect(store.showBlockingPrompt).toBe(false);
+    // Default first-load state: banner, not the blocking modal.
     expect(store.showBanner).toBe(true);
+    expect(store.showBlockingPrompt).toBe(false);
 
+    // ModelDownloadBanner's "Download" button calls undismissPrompt().
     store.undismissPrompt();
     expect(store.showBlockingPrompt).toBe(true);
     expect(store.showBanner).toBe(false);
+
+    // DownloadPromptDialog's "Not now" button calls dismissPrompt().
+    store.dismissPrompt();
+    expect(store.showBlockingPrompt).toBe(false);
+    expect(store.showBanner).toBe(true);
   });
 
   it("moves to ready and refreshes disk usage after a successful download", async () => {
@@ -213,7 +222,7 @@ describe("modelStatus store", () => {
     void downloadPromise;
   });
 
-  it("clearing the cache resets to fresh and un-dismisses the prompt", async () => {
+  it("clearing the cache resets to fresh and shows the banner, not a blocking popup", async () => {
     mocks.areModelsCached.mockResolvedValue(true);
     const store = await loadStore();
     await store.init();
@@ -226,7 +235,9 @@ describe("modelStatus store", () => {
     expect(mocks.clearModelCache).toHaveBeenCalledTimes(1);
     expect(store.clearCacheOpen).toBe(false);
     expect(store.phase).toBe("fresh");
-    expect(store.promptDismissed).toBe(false);
+    expect(store.promptDismissed).toBe(true);
+    expect(store.showBanner).toBe(true);
+    expect(store.showBlockingPrompt).toBe(false);
   });
 
   it("renders '—' for RAM when no estimate is available", async () => {

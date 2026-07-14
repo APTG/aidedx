@@ -161,6 +161,12 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+/** Energies and target values are physical magnitudes — zero and negative
+ * readings are not valid queries (issue #42 §5). */
+function isPositiveFiniteNumber(value: unknown): value is number {
+  return isFiniteNumber(value) && value > 0;
+}
+
 /**
  * Validate a value against the QueryIntent schema. Returns a list of
  * human-readable error messages; an empty list means the value is valid.
@@ -209,8 +215,8 @@ export function validateQueryIntent(value: unknown, path = "expected"): string[]
         errors.push(`${path}.energies[${i}]: must be an object`);
         return;
       }
-      if (!isFiniteNumber(e.value)) {
-        errors.push(`${path}.energies[${i}].value: must be a finite number`);
+      if (!isPositiveFiniteNumber(e.value)) {
+        errors.push(`${path}.energies[${i}].value: must be a positive finite number`);
       }
       if (!ENERGY_UNITS.includes(e.unit as EnergyUnit)) {
         errors.push(`${path}.energies[${i}].unit: must be one of ${ENERGY_UNITS.join(" | ")}`);
@@ -225,11 +231,13 @@ export function validateQueryIntent(value: unknown, path = "expected"): string[]
     const t = value.target;
     if (
       !isPlainObject(t) ||
-      !isFiniteNumber(t.value) ||
+      !isPositiveFiniteNumber(t.value) ||
       typeof t.unit !== "string" ||
       t.unit.length === 0
     ) {
-      errors.push(`${path}.target: must be { value: number, unit: non-empty string } when present`);
+      errors.push(
+        `${path}.target: must be { value: positive number, unit: non-empty string } when present`,
+      );
     }
   }
 

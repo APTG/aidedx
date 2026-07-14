@@ -94,6 +94,24 @@ describe("validateQueryIntent", () => {
     expect(errors.some((e) => e.includes("unit"))).toBe(true);
   });
 
+  it("rejects a negative or zero energy value", () => {
+    const negative = validateQueryIntent({ ...valid, energies: [{ value: -40, unit: "MeV" }] });
+    expect(negative.some((e) => e.includes("energies[0].value"))).toBe(true);
+
+    const zero = validateQueryIntent({ ...valid, energies: [{ value: 0, unit: "MeV" }] });
+    expect(zero.some((e) => e.includes("energies[0].value"))).toBe(true);
+  });
+
+  it("rejects a negative or zero target value", () => {
+    const errors = validateQueryIntent({
+      ...valid,
+      quantity: "energyFromRange",
+      energies: [],
+      target: { value: -10, unit: "cm" },
+    });
+    expect(errors.some((e) => e.includes("target"))).toBe(true);
+  });
+
   it("requires a target for inverse quantities", () => {
     const errors = validateQueryIntent({ ...valid, quantity: "energyFromRange", energies: [] });
     expect(errors.some((e) => e.includes("target"))).toBe(true);

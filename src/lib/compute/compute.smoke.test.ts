@@ -203,6 +203,37 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(s.points).toHaveLength(0);
   });
 
+  it("threads material density through a forward series so render.ts can convert units", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "csdaRange",
+        particles: [{ match: "protons" }],
+        materials: [{ match: "water" }],
+        energies: [{ value: 100, unit: "MeV" }],
+      }),
+      service,
+    );
+    const s = req(result.series[0]);
+    // NIST liquid water density is 1 g/cm³.
+    expect(req(s.density)).toBeCloseTo(1, 2);
+  });
+
+  it("formats the out-of-range energy error with scaled units instead of raw floats", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "csdaRange",
+        particles: [{ match: "protons" }],
+        materials: [{ match: "water" }],
+        energies: [{ value: 10_000_000, unit: "MeV" }],
+      }),
+      service,
+    );
+    const s = req(result.series[0]);
+    expect(s.error).toMatch(/outside the valid range .+ to .+ for this program\/particle/);
+    expect(s.error).toMatch(/\d (?:ke|Me|Ge)V\/nucl/);
+    expect(s.error).not.toMatch(/\[[\d.]/); // no more raw "[0.00025, 250]" bracket
+  });
+
   it("honors an explicit program name regardless of separators/case", () => {
     const result = computeIntent(
       intent({

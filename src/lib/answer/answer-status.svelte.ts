@@ -25,8 +25,8 @@ export type AnswerPhase = "idle" | "computing" | "answered" | "unmatched" | "err
 const CONFIDENCE_THRESHOLD = 0.55;
 
 const UNMATCHED_MESSAGE =
-  "Sorry, I couldn't understand that as a stopping-power or range question. " +
-  'Try something like "stopping power of 100 MeV protons in water".';
+  "Sorry, I couldn't understand that as a range or stopping-power question. " +
+  'Try something like "range of 100 MeV protons in water".';
 
 class AnswerStore {
   phase: AnswerPhase = $state("idle");

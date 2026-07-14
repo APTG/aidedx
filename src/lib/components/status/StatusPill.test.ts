@@ -42,6 +42,17 @@ describe("StatusPill", () => {
     expect(getByRole("button", { name: "Clear" })).toBeInTheDocument();
   });
 
+  it("truncates a long hardware renderer string and exposes the full text via a title tooltip", () => {
+    const longLabel =
+      "CPU only (render: ANGLE (Intel, Intel(R) UHD Graphics 620 (0x00003EA0) Direct3D11 vs_5_0 ps_5_0, D3D11))";
+    const { getByText } = render(StatusPill, {
+      props: { ...baseProps, open: true, hardwareLabel: longLabel },
+    });
+    const value = getByText(longLabel);
+    expect(value).toHaveClass("truncate");
+    expect(value).toHaveAttribute("title", longLabel);
+  });
+
   it("hides the Clear button when there's nothing to clear", () => {
     const { queryByRole } = render(StatusPill, {
       props: { ...baseProps, open: true, showClear: false },

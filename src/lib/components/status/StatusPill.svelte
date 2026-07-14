@@ -65,9 +65,9 @@
           <span class="text-muted-foreground">Memory (RAM)</span>
           <span class="font-semibold">{ramLabel}</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-muted-foreground">Hardware</span>
-          <span class="font-semibold">{hardwareLabel}</span>
+        <div class="flex items-center justify-between gap-2">
+          <span class="shrink-0 text-muted-foreground">Hardware</span>
+          <span class="min-w-0 truncate font-semibold" title={hardwareLabel}>{hardwareLabel}</span>
         </div>
       </div>
     </div>

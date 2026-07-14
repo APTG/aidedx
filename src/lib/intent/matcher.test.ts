@@ -112,6 +112,20 @@ describe("energy + unit parsing", () => {
       unit: "MeV",
     });
   });
+
+  it("drops a negative energy instead of silently treating it as positive", () => {
+    const { intent, incomplete } = matchIntent("Range of -100 MeV protons in water.");
+    expect(intent.energies).toEqual([]);
+    expect(incomplete).toBe(true);
+    expect(intent.confidence).toBeLessThan(0.55);
+  });
+
+  it("does not let a dropped negative energy leak into material matching", () => {
+    // "MeV" from the rejected "-100 MeV" span must not be re-mined as a
+    // material now that it's no longer consumed by a valid energy slot.
+    const intent = matchQueryIntent("Range of -100 MeV protons in water.");
+    expect(intent.materials).toEqual([{ match: "water" }]);
+  });
 });
 
 describe("isotope resolution", () => {

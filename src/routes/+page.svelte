@@ -59,14 +59,16 @@
 <svelte:head>
   <meta
     name="description"
-    content="aidedx — ask about stopping power, answered entirely in your browser."
+    content="aidedx — ask for particle range or stopping power, answered entirely in your browser."
   />
 </svelte:head>
 
 <section class="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-8 px-4 py-16">
   <header class="flex flex-col gap-2 text-center">
     <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">aidedx</h1>
-    <p class="text-lg text-muted-foreground">Ask about stopping power, in plain language.</p>
+    <p class="text-lg text-muted-foreground">
+      Ask for particle range or stopping power, by text or voice.
+    </p>
   </header>
 
   <form class="flex flex-col gap-3" onsubmit={handleSubmit}>
@@ -75,7 +77,7 @@
         type="text"
         name="query"
         bind:value={query}
-        placeholder="e.g. stopping power of protons in water at 100 MeV"
+        placeholder="e.g. range of 5 MeV alpha particles in PMMA"
         autocomplete="off"
         class="flex-1 rounded-md border border-input bg-card px-4 py-3 text-base shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
         aria-label="Type your question"

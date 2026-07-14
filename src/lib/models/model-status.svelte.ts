@@ -26,7 +26,14 @@ export type ModelPhase = "checking" | "fresh" | "downloading" | "ready";
 class ModelStatusStore {
   phase: ModelPhase = $state("checking");
   panelOpen = $state(false);
-  promptDismissed = $state(false);
+  /**
+   * Starts `true` so a first-time visitor (or a post-clear-cache "fresh"
+   * state) sees the non-blocking `ModelDownloadBanner`, not an unsolicited
+   * blocking `DownloadPromptDialog` popup (issue #42 §1). The blocking
+   * dialog stays reachable as a confirm step once the user actually clicks
+   * "Download" on the banner (see `undismissPrompt()`).
+   */
+  promptDismissed = $state(true);
   clearCacheOpen = $state(false);
   fileProgress: Record<string, FileProgress> = $state({});
   cacheBreakdown: CacheBreakdownItem[] = $state([]);
@@ -178,7 +185,9 @@ class ModelStatusStore {
     await clearModelCache();
     this.clearCacheOpen = false;
     this.phase = "fresh";
-    this.promptDismissed = false;
+    // Back to the banner, not the blocking modal — same reasoning as the
+    // `promptDismissed` default above (issue #42 §1).
+    this.promptDismissed = true;
     this.fileProgress = {};
     await this.#refreshDiskUsage();
   }

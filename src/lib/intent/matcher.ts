@@ -197,9 +197,29 @@ interface RawEnergy {
   unit: EnergyUnit;
   perNucleon: boolean;
   span: Span;
+  /**
+   * True when a "-" sign sits directly before this match. The number grammar
+   * (`\d+`) never captures a leading sign, so without this check "-100 MeV"
+   * silently parses as "100 MeV" — the sign is simply dropped rather than
+   * producing an error. Flagging it here lets the caller drop the value
+   * instead of treating it as a normal positive energy.
+   */
+  negative: boolean;
 }
 
-/** Extract every "<number> <unit>[/nucleon]" energy, in reading order. */
+/** True when a "-" (a sign the number grammar can't capture) sits directly
+ * before `matchStart`, ignoring intervening whitespace — "-100" and "- 100"
+ * both count. */
+function isNegativeAt(text: string, matchStart: number): boolean {
+  let i = matchStart - 1;
+  while (i >= 0 && /\s/.test(text[i] ?? "")) i--;
+  return i >= 0 && text[i] === "-";
+}
+
+/** Extract every "<number> <unit>[/nucleon]" energy, in reading order.
+ * Entries with `negative: true` are still returned (so their span can be
+ * excluded from later material matching) but must not be used as a slot
+ * value — see `isNegativeAt`. */
 function extractEnergies(text: string): RawEnergy[] {
   const out: RawEnergy[] = [];
   const consumed: Span[] = [];
@@ -209,12 +229,13 @@ function extractEnergies(text: string): RawEnergy[] {
   for (const m of text.matchAll(ENERGY_LIST_RE)) {
     const start = m.index ?? 0;
     const span = { start, end: start + m[0].length };
+    const negative = isNegativeAt(text, start);
     const base = m[2] ?? "mev";
     const suffix = (m[3] ?? m[4])?.toLowerCase();
     const rawValues = (m[1] ?? "").split(LIST_SPLIT_RE).filter(Boolean).map(Number);
     for (const raw of rawValues) {
       const { value, unit } = toEnergyValueUnit(raw, base, suffix);
-      out.push({ value, unit, perNucleon: suffix !== undefined, span });
+      out.push({ value, unit, perNucleon: suffix !== undefined, span, negative });
     }
     consumed.push(span);
   }
@@ -226,7 +247,13 @@ function extractEnergies(text: string): RawEnergy[] {
     const base = m[2] ?? "mev";
     const suffix = (m[3] ?? m[4])?.toLowerCase();
     const { value, unit } = toEnergyValueUnit(Number(m[1]), base, suffix);
-    out.push({ value, unit, perNucleon: suffix !== undefined, span });
+    out.push({
+      value,
+      unit,
+      perNucleon: suffix !== undefined,
+      span,
+      negative: isNegativeAt(text, start),
+    });
   }
 
   return out.sort((a, b) => a.span.start - b.span.start);
@@ -549,6 +576,7 @@ export function matchIntent(text: string): MatchResult {
 
   // Inverse queries carry no energy slot — only a target.
   let rawEnergies: RawEnergy[] = [];
+  let negativeEnergySpans: Span[] = [];
   let target: TargetSlot | undefined;
   let targetSpan: Span | undefined;
   if (quantity === "energyFromRange") {
@@ -558,13 +586,21 @@ export function matchIntent(text: string): MatchResult {
     const t = extractStpTarget(text);
     if (t) ({ slot: target, span: targetSpan } = t);
   } else {
-    rawEnergies = extractEnergies(text);
+    // A non-positive energy (issue #42 §5) is dropped rather than filled in
+    // as a slot — its span is still excluded from material matching below —
+    // so the query reads as missing its energy and falls through the usual
+    // `incomplete` / low-confidence path instead of silently going through
+    // with the sign stripped off.
+    const allEnergies = extractEnergies(text);
+    rawEnergies = allEnergies.filter((e) => !e.negative);
+    negativeEnergySpans = allEnergies.filter((e) => e.negative).map((e) => e.span);
   }
 
   // 3. Materials — over the spans not already claimed by particles/energies.
   const consumedSpans: Span[] = [
     ...rawParticles.map((p) => p.span),
     ...rawEnergies.map((e) => e.span),
+    ...negativeEnergySpans,
   ];
   if (targetSpan) consumedSpans.push(targetSpan);
   const rawMaterials = extractMaterials(text, consumedSpans);

@@ -92,6 +92,65 @@ describe("renderAnswer — single (compareDim: none)", () => {
     ]);
   });
 
+  it("renders stopping power in keV/µm when the series carries a density (issue #42 §2)", () => {
+    const i = intent({
+      quantity: "stoppingPower",
+      particles: [{ match: "proton" }],
+      materials: [{ match: "water" }],
+      energies: [{ value: 100, unit: "MeV" }],
+    });
+    const r = result({
+      quantity: "stoppingPower",
+      series: [series({ density: 1, points: [{ energyMeVPerNucl: 100, stoppingPower: 7.289 }] })],
+    });
+
+    expect(renderAnswer(i, r)).toEqual([
+      "The stopping power of 100 MeV proton in water is 0.7289 keV/µm (PSTAR).",
+    ]);
+  });
+
+  it("renders CSDA range auto-scaled to a physical length when the series carries a density (issue #42 §3)", () => {
+    const i = intent({
+      quantity: "csdaRange",
+      particles: [{ match: "protons" }],
+      materials: [{ match: "PMMA" }],
+      energies: [{ value: 40, unit: "MeV" }],
+    });
+    const r = result({
+      quantity: "csdaRange",
+      series: [
+        series({
+          density: 1.19,
+          points: [{ energyMeVPerNucl: 40, csdaRange: 1.529, stoppingPower: 14.48 }],
+        }),
+      ],
+    });
+
+    expect(renderAnswer(i, r)).toEqual([
+      "The CSDA range of 40 MeV protons in PMMA is 1.285 cm (PSTAR).",
+    ]);
+  });
+
+  it("falls back to native libdedx units (MeV·cm²/g, g/cm²) when no density is available", () => {
+    const i = intent({
+      quantity: "csdaRange",
+      particles: [{ match: "protons" }],
+      materials: [{ match: "PMMA" }],
+      energies: [{ value: 40, unit: "MeV" }],
+    });
+    const r = result({
+      quantity: "csdaRange",
+      // No `density` override — the series() helper's base omits the key
+      // entirely, matching a real getDensity() lookup that failed for this
+      // material (exactOptionalPropertyTypes forbids an explicit `undefined`).
+      series: [series({ points: [{ energyMeVPerNucl: 40, csdaRange: 1.529 }] })],
+    });
+
+    expect(renderAnswer(i, r)).toEqual([
+      "The CSDA range of 40 MeV protons in PMMA is 1.529 g/cm² (PSTAR).",
+    ]);
+  });
+
   it("renders an energyFromRange sentence, echoing the target as given", () => {
     const i = intent({
       quantity: "energyFromRange",
@@ -218,6 +277,40 @@ describe("renderAnswer — comparisons", () => {
       "Stopping power of 100 MeV/nucl neon ions, by material:",
       "- water: 8.5 MeV·cm²/g (MSTAR)",
       "- air: 6.1 MeV·cm²/g (MSTAR)",
+    ]);
+  });
+
+  it("renders a by-material comparison in keV/µm using each series' own density", () => {
+    const i = intent({
+      quantity: "stoppingPower",
+      compareDim: "material",
+      particles: [{ match: "neon ions", isotopeAssumed: "²⁰Ne" }],
+      materials: [{ match: "water" }, { match: "air" }],
+      energies: [{ value: 100, unit: "MeV/nucl", perNucleonAssumed: true }],
+    });
+    const r = result({
+      quantity: "stoppingPower",
+      compareDim: "material",
+      series: [
+        series({
+          density: 1,
+          material: { id: 276, name: "Water, Liquid" },
+          program: { id: 16, name: "MSTAR" },
+          points: [{ energyMeVPerNucl: 100, stoppingPower: 8.5 }],
+        }),
+        series({
+          density: 1.2,
+          material: { id: 104, name: "Air, Dry" },
+          program: { id: 16, name: "MSTAR" },
+          points: [{ energyMeVPerNucl: 100, stoppingPower: 6.1 }],
+        }),
+      ],
+    });
+
+    expect(renderAnswer(i, r)).toEqual([
+      "Stopping power of 100 MeV/nucl neon ions, by material:",
+      "- water: 0.85 keV/µm (MSTAR)",
+      "- air: 0.732 keV/µm (MSTAR)",
     ]);
   });
 

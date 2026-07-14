@@ -20,7 +20,7 @@
   <footer class="border-t bg-card">
     <div class="mx-auto w-full max-w-3xl px-4 py-4">
       <p class="text-center text-xs text-muted-foreground">
-        aidedx — AI-assisted stopping-power queries · runs in your browser
+        aidedx — AI-assisted range and stopping-power queries · runs in your browser
       </p>
     </div>
   </footer>
