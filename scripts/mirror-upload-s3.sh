@@ -5,13 +5,16 @@
 # https://guide.s3p.cloud.cyfronet.pl/narzedzia_cli.html
 #
 # Prerequisites:
-#   1. `s3cmd` installed (e.g. `apt install s3cmd` / `pip install s3cmd`).
-#   2. `~/.s3cfg` configured — copy scripts/.s3cfg.cyfronet.example, fill in
-#      the access_key/secret_key from https://storage-panel.cloud.cyfronet.pl
-#      (Credentials page -> pick your PLGrid group + region -> "Generate
-#      credential"), and set host_base/host_bucket to your region's endpoint
-#      (s3.cloud.cyfronet.pl for DC-Nawojki, s3p.cloud.cyfronet.pl for
-#      DC-Podole).
+#   1. `s3cmd` installed — either system-wide, or via the project-local venv
+#      (`python3 -m venv .venv && .venv/bin/pip install s3cmd`), which this
+#      script prefers automatically if present.
+#   2. Credentials configured — either `~/.s3cfg`, or a project-local
+#      `.s3cmd` file (git-ignored, preferred automatically if present) —
+#      copy scripts/.s3cfg.cyfronet.example, fill in the access_key/secret_key
+#      from https://storage-panel.cloud.cyfronet.pl (Credentials page -> pick
+#      your PLGrid group + region -> "Generate credential"), and set
+#      host_base/host_bucket to your region's endpoint (s3.cloud.cyfronet.pl
+#      for DC-Nawojki, s3p.cloud.cyfronet.pl for DC-Podole).
 #   3. The bucket exists (`s3cmd mb s3://<bucket>`) and CORS is set — see
 #      docs/model-hosting-cyfronet.md and scripts/cyfronet-cors-policy.xml
 #      (one-time setup, not done by this script).
@@ -28,13 +31,27 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 STAGING_DIR="${1:?Usage: $0 <staging-dir>}"
 : "${CYFRONET_S3_BUCKET:?Set CYFRONET_S3_BUCKET to the target bucket name}"
 
-if ! command -v s3cmd >/dev/null 2>&1; then
+if [ -x "$PROJECT_ROOT/.venv/bin/s3cmd" ]; then
+  S3CMD_BIN="$PROJECT_ROOT/.venv/bin/s3cmd"
+elif command -v s3cmd >/dev/null 2>&1; then
+  S3CMD_BIN="s3cmd"
+else
   echo "error: s3cmd not found — install it first (see script header)" >&2
   exit 1
 fi
+
+S3CMD_CONFIG_ARGS=()
+if [ -f "$PROJECT_ROOT/.s3cmd" ]; then
+  S3CMD_CONFIG_ARGS=(-c "$PROJECT_ROOT/.s3cmd")
+fi
+
+s3cmd() { "$S3CMD_BIN" "${S3CMD_CONFIG_ARGS[@]}" "$@"; }
 
 if [ ! -d "$STAGING_DIR" ]; then
   echo "error: staging dir '$STAGING_DIR' does not exist" >&2

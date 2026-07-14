@@ -4,6 +4,22 @@ Companion to issue #9 (runtime/hosting spike) and issue #34 (this mirror). `@hug
 fetches model weights from `https://huggingface.co/` by default; this doc covers mirroring them to an
 S3-compatible bucket at Cyfronet instead, as a candidate self-hosting solution.
 
+## Status: live
+
+`onnx-community/whisper-small` (dtype `q8`, the 7 files / ~241 MB described below) is uploaded and
+verified publicly reachable at:
+
+```
+https://aidedx-models.s3p.cloud.cyfronet.pl/onnx-community/whisper-small/resolve/main/
+```
+
+Bucket: `aidedx-models`, DC-Podole (`s3p.cloud.cyfronet.pl`), CORS applied via
+`scripts/cyfronet-cors-policy.xml`. Uploaded 2026-07-14; local-vs-remote object count verified by
+`scripts/mirror-upload-s3.sh` (7/7) and spot-checked with `curl -I` (200, `content-length: 2227` on
+`config.json`). To point the app at this mirror, set `env.remoteHost =
+"https://aidedx-models.s3p.cloud.cyfronet.pl/"` — no other code changes needed (see "How the mirror
+works" below). Wiring that switch into the app itself is still a follow-up (not done here).
+
 ## Why
 
 Issue #9's hosting decision is **GitHub Pages (+ `coi-serviceworker`)** vs **Cyfronet (native
