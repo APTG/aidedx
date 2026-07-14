@@ -212,11 +212,9 @@ bucket — was used to validate the staging layout before writing this doc.)
 ## Debugging download progress
 
 `src/lib/models/download.ts`'s `logProgressEvent()` prints every raw `progress_callback` event
-transformers.js fires (tagged `[aidedx:model-download]`), including `status`, `file`, `loaded`, `total`,
-and — for the `progress_total` status — the aggregate across all files in that `from_pretrained()` call.
-This is temporary diagnostic instrumentation for a suspected bug: the per-model progress bar (fed by
-`fileProgress[entry.id]` in `model-status.svelte.ts`) is expected to grow monotonically, but has been
-observed jumping backward instead.
+transformers.js fires (tagged `[aidedx:model-download]`), including `status`, `file`, `loaded`, and
+`total`. Useful if the progress bar ever looks wrong again — see the "fixed: non-monotonic progress
+bar" note below for how to read the log.
 
 To see it:
 
@@ -227,19 +225,25 @@ To see it:
 3. Filter the console by `aidedx:model-download` to isolate these lines.
 4. Click "Download now" and watch the stream of events for the `whisper` entry.
 
-Working theory (see the comment above `logProgressEvent` in `download.ts`): a speech-to-text manifest
-entry loads 7 files across two `from_pretrained()` calls, and `WhisperForConditionalGeneration`'s
-encoder + decoder `.onnx` files download concurrently (`constructSessions` uses `Promise.all` — see
+### Fixed: non-monotonic progress bar
+
+Root cause: a speech-to-text manifest entry loads several files across two `from_pretrained()` calls
+(`AutoProcessor`: config/tokenizer; `WhisperForConditionalGeneration`: encoder + decoder `.onnx`), and
+the encoder + decoder download concurrently (`constructSessions` uses `Promise.all` — see
 `node_modules/@huggingface/transformers/src/models/modeling_utils.js`). Each raw `progress` event is
-scoped to one file's `loaded`/`total`, but the code currently writes every event straight into the same
-`fileProgress[entry.id]` slot regardless of which file it came from — so if the encoder and decoder
-interleave chunks, the reported progress alternates between two different files' byte counts. transformers.js
-already computes a same-call aggregate via `DefaultProgressCallback` (`status: 'progress_total'`, see
-`node_modules/@huggingface/transformers/src/utils/core.js`), which this code currently discards (the
-status filter in `makeProgressCallback` only keeps `'progress'`/`'done'`). If the console output confirms
-interleaved `file` values under `status: 'progress'`, switching to `progress_total` (and separately
-aggregating across the processor vs. model `from_pretrained()` calls, since each gets its own
-`DefaultProgressCallback` instance) is the likely fix.
+scoped to one file's `loaded`/`total`, but the code used to write every event straight into a single
+`fileProgress[entry.id]` slot regardless of which file it came from — so as the encoder and decoder
+interleaved chunks, the reported progress alternated between two different files' byte counts, which
+read as the bar jumping backward.
+
+Fix (`makeProgressCallback` in `download.ts`): track loaded/total per `event.file` in a `Map` local to
+each entry's callback, and report the _sum_ across every file seen so far for that entry. The sum only
+grows as files fill in, so the aggregate is monotonic no matter how the underlying chunks interleave.
+This intentionally doesn't use transformers.js's own `progress_total` aggregate
+(`DefaultProgressCallback`, see `node_modules/@huggingface/transformers/src/utils/core.js`) — that
+aggregate only covers files within a single `from_pretrained()` call, so processor-loaded files and
+model-loaded files would still need combining by hand, and the file-keyed `Map` here already does that
+uniformly for both calls.
 
 ## Cost / growth note
 

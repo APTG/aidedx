@@ -51,45 +51,52 @@ interface ProgressEventLike {
   total?: number;
 }
 
-function toFileProgress(event: ProgressEventLike, fallbackTotalMB: number): FileProgress {
-  const totalBytes = event.total ?? fallbackTotalMB * 1024 * 1024;
-  const loadedBytes = event.loaded ?? (event.status === "done" ? totalBytes : 0);
-  return {
-    loadedMB: loadedBytes / (1024 * 1024),
-    totalMB: totalBytes / (1024 * 1024),
-    done: event.status === "done",
-  };
-}
-
-/**
- * Temporary diagnostic logging (see docs/model-hosting-cyfronet.md "Debugging
- * download progress"). transformers.js's `progress_callback` fires once per
- * *file*, not once per model — a speech-to-text entry loads 7 files across
- * two `from_pretrained()` calls (AutoProcessor: config/tokenizer files;
- * WhisperForConditionalGeneration: encoder + decoder .onnx), and the encoder
- * and decoder download concurrently (`constructSessions` uses `Promise.all`,
- * see node_modules/@huggingface/transformers/src/models/modeling_utils.js).
- * Every `event.file`'s progress currently overwrites the single
- * `fileProgress[entry.id]` slot, so if the encoder and decoder interleave
- * their chunks, the reported loaded/total for "whisper" alternates between
- * two different files' byte counts — which looks like the progress bar
- * jumping backward rather than growing monotonically. Log every raw event
- * (including `progress_total`, which transformers.js's own
- * `DefaultProgressCallback` already aggregates across all files in a single
- * `from_pretrained()` call, but which this code currently discards via the
- * status filter below) to confirm that in practice before changing the
- * aggregation.
- */
 function logProgressEvent(entryId: string, event: ProgressEventLike): void {
   if (typeof console === "undefined") return;
   console.debug("[aidedx:model-download]", entryId, event);
 }
 
+/**
+ * Confirmed root cause of the non-monotonic progress bar: a manifest entry
+ * can load several files (e.g. a speech-to-text entry's encoder + decoder
+ * `.onnx` files, downloaded concurrently — see `constructSessions`'s
+ * `Promise.all` in `node_modules/@huggingface/transformers/src/models/
+ * modeling_utils.js`), but `progress_callback` fires once per *file*. Keying
+ * a single `fileProgress[entry.id]` slot off the latest raw event meant the
+ * reported loaded/total alternated between two different files' byte
+ * counts as their chunks interleaved.
+ *
+ * Fix: track loaded/total per `event.file` (falling back to `entry.id` for
+ * callbacks that never set `file`, e.g. tokenizer/config loads) and report
+ * the *sum* across every file seen so far for this entry. That sum only
+ * grows, so the bar is monotonic regardless of how many files interleave.
+ */
 function makeProgressCallback(entry: ModelManifestEntry, onProgress: DownloadProgressListener) {
+  const files = new Map<string, FileProgress>();
+
   return (event: ProgressEventLike): void => {
     logProgressEvent(entry.id, event);
     if (event.status !== "progress" && event.status !== "done") return;
-    onProgress(entry.id, toFileProgress(event, entry.sizeMB));
+
+    const fileKey = event.file ?? entry.id;
+    const fallbackTotalMB = files.get(fileKey)?.totalMB ?? entry.sizeMB;
+    const totalBytes = event.total ?? fallbackTotalMB * 1024 * 1024;
+    const loadedBytes = event.loaded ?? (event.status === "done" ? totalBytes : 0);
+    files.set(fileKey, {
+      loadedMB: loadedBytes / (1024 * 1024),
+      totalMB: totalBytes / (1024 * 1024),
+      done: event.status === "done",
+    });
+
+    let loadedMB = 0;
+    let totalMB = 0;
+    let done = true;
+    for (const file of files.values()) {
+      loadedMB += file.loadedMB;
+      totalMB += file.totalMB;
+      done &&= file.done;
+    }
+    onProgress(entry.id, { loadedMB, totalMB, done });
   };
 }
 

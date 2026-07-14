@@ -106,6 +106,60 @@ describe("downloadModelWeights", () => {
     expect(events).toContainEqual(["a", { loadedMB: 10, totalMB: 10, done: true }]);
   });
 
+  it("aggregates interleaved progress from concurrently downloading files instead of overwriting (regression)", async () => {
+    // Mirrors transformers.js downloading a speech-to-text entry's encoder and
+    // decoder .onnx files concurrently (`constructSessions`'s `Promise.all`):
+    // their raw per-file `progress` events interleave. Reported loaded/total
+    // must be the sum across both files and must never decrease, or the
+    // progress bar jumps backward.
+    mocks.whisperFromPretrained.mockImplementation(
+      async (_repo: string, opts: { progress_callback?: ProgressCallback }) => {
+        const cb = opts.progress_callback;
+        cb?.({
+          status: "progress",
+          file: "encoder_model.onnx",
+          loaded: 2 * 1024 * 1024,
+          total: 8 * 1024 * 1024,
+        });
+        cb?.({
+          status: "progress",
+          file: "decoder_model.onnx",
+          loaded: 1 * 1024 * 1024,
+          total: 12 * 1024 * 1024,
+        });
+        cb?.({
+          status: "progress",
+          file: "encoder_model.onnx",
+          loaded: 8 * 1024 * 1024,
+          total: 8 * 1024 * 1024,
+        });
+        cb?.({ status: "done", file: "encoder_model.onnx" });
+        cb?.({
+          status: "progress",
+          file: "decoder_model.onnx",
+          loaded: 12 * 1024 * 1024,
+          total: 12 * 1024 * 1024,
+        });
+        cb?.({ status: "done", file: "decoder_model.onnx" });
+      },
+    );
+
+    const events: Array<{ loadedMB: number; totalMB: number; done: boolean }> = [];
+    await downloadModelWeights((_fileId, progress) => events.push(progress), undefined, [
+      SPEECH_ENTRY,
+    ]);
+
+    const totals = events.map((e) => e.totalMB);
+    expect(totals).toEqual([8, 20, 20, 20, 20, 20]);
+
+    const loaded = events.map((e) => e.loadedMB);
+    for (let i = 1; i < loaded.length; i++) {
+      expect(loaded[i]).toBeGreaterThanOrEqual(loaded[i - 1] as number);
+    }
+    expect(loaded.at(-1)).toBe(20);
+    expect(events.at(-1)).toEqual({ loadedMB: 20, totalMB: 20, done: true });
+  });
+
   it("processes every manifest entry in order", async () => {
     await downloadModelWeights(() => {}, undefined, FAKE_MANIFEST);
     expect(mocks.whisperFromPretrained).toHaveBeenCalledTimes(1);
