@@ -40,25 +40,10 @@
   });
 
   const elapsedLabel = $derived.by(() => {
-    // Only used for the recording ("Listening…") state now — transcribing
-    // shows an estimated progress bar instead of a raw counter (issue #44
-    // follow-up: watching a number climb to an unknown target isn't useful).
-    const startedAt = asrStatus.recordingStartedAt;
+    const startedAt = asrStatus.recordingStartedAt ?? asrStatus.transcribingStartedAt;
     if (startedAt === null) return null;
     const elapsedMs = now - startedAt;
     return elapsedMs >= 1000 ? formatElapsedSeconds(elapsedMs) : null;
-  });
-
-  // Estimated 0-1 fraction through transcription, from asrStatus's
-  // self-calibrating ETA (see transcribe-eta.ts) — capped below 1 since the
-  // estimate is never exact and a bar stuck at 100% before it's actually
-  // done reads as broken; it jumps to done once the transcript arrives.
-  const transcribeProgress = $derived.by(() => {
-    if (asrStatus.phase !== "transcribing") return null;
-    const startedAt = asrStatus.transcribingStartedAt;
-    const estimatedMs = asrStatus.estimatedTranscribeMs;
-    if (startedAt === null || estimatedMs === null || estimatedMs <= 0) return null;
-    return Math.min(0.95, (now - startedAt) / estimatedMs);
   });
 
   const micDisabledReason = $derived(
@@ -102,7 +87,6 @@
         errorMessage={asrStatus.errorMessage}
         {elapsedLabel}
         partialTranscript={asrStatus.partialTranscript}
-        progress={transcribeProgress}
         disabled={modelStatus.phase !== "ready"}
         disabledReason={micDisabledReason}
         onStart={() => asrStatus.start()}

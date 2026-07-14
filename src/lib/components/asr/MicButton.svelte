@@ -8,8 +8,6 @@
     elapsedLabel: string | null;
     /** Live running transcript while transcribing (issue #44), or "" before the first word lands. */
     partialTranscript: string;
-    /** Estimated 0-1 fraction through transcription, or null when unknown (see transcribe-eta.ts). */
-    progress: number | null;
     disabled?: boolean;
     disabledReason?: string | undefined;
     onStart: () => void;
@@ -21,7 +19,6 @@
     errorMessage,
     elapsedLabel,
     partialTranscript,
-    progress,
     disabled = false,
     disabledReason,
     onStart,
@@ -85,19 +82,13 @@
       Listening…{elapsedLabel ? ` ${elapsedLabel}` : ""}
     </p>
   {:else if isTranscribing}
-    <div class="flex flex-col gap-1" role="status">
-      <p class="truncate text-xs text-muted-foreground">
-        {partialTranscript ? `“${partialTranscript}…”` : "Transcribing…"}
-      </p>
-      {#if progress !== null}
-        <div class="h-1 overflow-hidden rounded-full bg-muted">
-          <div
-            class="h-full rounded-full bg-accent transition-[width] duration-200 ease-linear"
-            style={`width: ${Math.round(progress * 100)}%`}
-          ></div>
-        </div>
+    <p class="truncate text-xs text-muted-foreground" role="status">
+      {#if partialTranscript}
+        “{partialTranscript}…”{elapsedLabel ? ` ${elapsedLabel}` : ""}
+      {:else}
+        Transcribing…{elapsedLabel ? ` ${elapsedLabel}` : ""}
       {/if}
-    </div>
+    </p>
   {:else if phase === "error" && errorMessage}
     <p class="text-xs text-danger" role="alert">{errorMessage} Click Start to try again.</p>
   {/if}

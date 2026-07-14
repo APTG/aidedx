@@ -14,7 +14,6 @@ describe("MicButton", () => {
         errorMessage: null,
         elapsedLabel: null,
         partialTranscript: "",
-        progress: null,
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
@@ -33,7 +32,6 @@ describe("MicButton", () => {
         errorMessage: null,
         elapsedLabel: null,
         partialTranscript: "",
-        progress: null,
         onStart,
         onStop: vi.fn(),
       },
@@ -50,7 +48,6 @@ describe("MicButton", () => {
         errorMessage: null,
         elapsedLabel: "3 s",
         partialTranscript: "",
-        progress: null,
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
@@ -69,7 +66,6 @@ describe("MicButton", () => {
         errorMessage: null,
         elapsedLabel: null,
         partialTranscript: "",
-        progress: null,
         onStart: vi.fn(),
         onStop,
       },
@@ -86,7 +82,6 @@ describe("MicButton", () => {
         errorMessage: null,
         elapsedLabel: "5 s",
         partialTranscript: "",
-        progress: null,
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
@@ -94,7 +89,7 @@ describe("MicButton", () => {
 
     const button = getByRole("button", { name: /transcribing/i });
     expect(button).toBeDisabled();
-    expect(getByRole("status")).toHaveTextContent("Transcribing…");
+    expect(getByRole("status")).toHaveTextContent("Transcribing… 5 s");
   });
 
   it("shows the live partial transcript instead of a bare 'Transcribing…' once words arrive (issue #44)", () => {
@@ -104,52 +99,12 @@ describe("MicButton", () => {
         errorMessage: null,
         elapsedLabel: "12 s",
         partialTranscript: "range of protons in",
-        progress: null,
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
     });
 
-    expect(getByRole("status")).toHaveTextContent("“range of protons in…”");
-  });
-
-  it("renders an estimated progress bar while transcribing (issue #44 follow-up)", () => {
-    const { getByRole, container } = render(MicButton, {
-      props: {
-        phase: "transcribing",
-        errorMessage: null,
-        elapsedLabel: "5 s",
-        partialTranscript: "",
-        progress: 0.4,
-        onStart: vi.fn(),
-        onStop: vi.fn(),
-      },
-    });
-
-    const status = getByRole("status");
-    const bar = status.querySelector(".bg-accent");
-    expect(bar).toHaveStyle({ width: "40%" });
-    // The elapsed-seconds counter is gone in favor of the bar — watching a
-    // number climb toward an unknown target wasn't useful (user feedback).
-    expect(status).not.toHaveTextContent("5 s");
-    expect(container.querySelectorAll('[role="status"]')).toHaveLength(1);
-  });
-
-  it("omits the progress bar when the estimate is unavailable (falls back to text-only)", () => {
-    const { getByRole } = render(MicButton, {
-      props: {
-        phase: "transcribing",
-        errorMessage: null,
-        elapsedLabel: null,
-        partialTranscript: "",
-        progress: null,
-        onStart: vi.fn(),
-        onStop: vi.fn(),
-      },
-    });
-
-    const status = getByRole("status");
-    expect(status.querySelector("div")).toBeNull();
+    expect(getByRole("status")).toHaveTextContent("“range of protons in…” 12 s");
   });
 
   it("shows the error message with a retry hint, and Start is clickable again", async () => {
@@ -160,7 +115,6 @@ describe("MicButton", () => {
         errorMessage: "Microphone access was denied.",
         elapsedLabel: null,
         partialTranscript: "",
-        progress: null,
         onStart,
         onStop: vi.fn(),
       },
@@ -182,7 +136,6 @@ describe("MicButton", () => {
         errorMessage: null,
         elapsedLabel: null,
         partialTranscript: "",
-        progress: null,
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
@@ -198,7 +151,6 @@ describe("MicButton", () => {
         errorMessage: null,
         elapsedLabel: null,
         partialTranscript: "",
-        progress: null,
         disabled: true,
         disabledReason: "Download the speech model first",
         onStart: vi.fn(),

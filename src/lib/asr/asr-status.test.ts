@@ -7,8 +7,6 @@ const mocks = vi.hoisted(() => ({
   workerTranscribe: vi.fn(),
   workerTerminate: vi.fn(),
   createTranscribeWorkerClient: vi.fn(),
-  estimateTranscribeMs: vi.fn(),
-  recordRealTimeFactorSample: vi.fn(),
 }));
 
 vi.mock("./recorder.ts", () => ({
@@ -17,25 +15,14 @@ vi.mock("./recorder.ts", () => ({
     stop = mocks.recorderStop;
   },
 }));
-vi.mock("./pcm.ts", () => ({
-  decodeToMono16k: mocks.decodeToMono16k,
-  WHISPER_SAMPLE_RATE: 16000,
-}));
+vi.mock("./pcm.ts", () => ({ decodeToMono16k: mocks.decodeToMono16k }));
 // asr-status talks to Whisper through the worker-client boundary (issue #44
 // Phase B), not transcribe.ts directly — that's the seam mocked here.
 vi.mock("./worker-client.ts", () => ({
   createTranscribeWorkerClient: mocks.createTranscribeWorkerClient,
 }));
-// transcribe-eta.ts's own calibration math is covered by transcribe-eta.test.ts;
-// mocked here so this file only asserts asr-status calls it with the right args.
-vi.mock("./transcribe-eta.ts", () => ({
-  estimateTranscribeMs: mocks.estimateTranscribeMs,
-  recordRealTimeFactorSample: mocks.recordRealTimeFactorSample,
-}));
 
 const FAKE_BLOB = { arrayBuffer: async () => new ArrayBuffer(0) } as Blob;
-/** 5s of 16kHz mono PCM — a representative decoded-recording length for tests that care about duration/ETA. */
-const FIVE_SECOND_PCM = new Float32Array(16000 * 5);
 
 async function loadStore() {
   const { asrStatus } = await import("./asr-status.svelte.ts");
@@ -54,8 +41,6 @@ describe("asrStatus", () => {
       transcribe: mocks.workerTranscribe,
       terminate: mocks.workerTerminate,
     });
-    mocks.estimateTranscribeMs.mockReset().mockImplementation((secs: number) => secs * 1000 * 2);
-    mocks.recordRealTimeFactorSample.mockReset();
   });
 
   afterEach(() => {
@@ -154,66 +139,6 @@ describe("asrStatus", () => {
 
     await store.start();
     expect(store.partialTranscript).toBe("");
-  });
-
-  it("computes recordingDurationSeconds from the decoded PCM length and exposes an estimated transcribe time", async () => {
-    mocks.decodeToMono16k.mockResolvedValue(FIVE_SECOND_PCM);
-
-    const store = await loadStore();
-    expect(store.estimatedTranscribeMs).toBeNull();
-
-    await store.start();
-    await store.stop();
-
-    expect(store.recordingDurationSeconds).toBe(5);
-    expect(store.estimatedTranscribeMs).toBe(10000);
-    expect(mocks.estimateTranscribeMs).toHaveBeenCalledWith(5);
-  });
-
-  it("records a real-time-factor calibration sample from inference time alone after a successful transcription", async () => {
-    mocks.decodeToMono16k.mockResolvedValue(FIVE_SECOND_PCM);
-    mocks.workerTranscribe.mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve("done"), 5)),
-    );
-
-    const store = await loadStore();
-    await store.start();
-    await store.stop();
-
-    expect(mocks.recordRealTimeFactorSample).toHaveBeenCalledTimes(1);
-    const [processingSeconds, audioSeconds] = mocks.recordRealTimeFactorSample.mock.calls[0] as [
-      number,
-      number,
-    ];
-    expect(audioSeconds).toBe(5);
-    expect(processingSeconds).toBeGreaterThanOrEqual(0);
-  });
-
-  it("does not record a calibration sample when transcription fails", async () => {
-    mocks.decodeToMono16k.mockResolvedValue(FIVE_SECOND_PCM);
-    mocks.workerTranscribe.mockRejectedValue(new Error("decode failed"));
-
-    const store = await loadStore();
-    await store.start();
-    await store.stop();
-
-    expect(mocks.recordRealTimeFactorSample).not.toHaveBeenCalled();
-  });
-
-  it("clears recordingDurationSeconds on the next start() and on reset()", async () => {
-    mocks.decodeToMono16k.mockResolvedValue(FIVE_SECOND_PCM);
-    const store = await loadStore();
-    await store.start();
-    await store.stop();
-    expect(store.recordingDurationSeconds).toBe(5);
-
-    await store.start();
-    expect(store.recordingDurationSeconds).toBeNull();
-
-    await store.stop();
-    expect(store.recordingDurationSeconds).toBe(5);
-    store.reset();
-    expect(store.recordingDurationSeconds).toBeNull();
   });
 
   it("moves to the error state if transcription fails", async () => {
