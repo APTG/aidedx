@@ -7,7 +7,7 @@
     /** Pre-formatted elapsed time (e.g. "3 s"), or null to hide it. */
     elapsedLabel: string | null;
     disabled?: boolean;
-    disabledReason?: string;
+    disabledReason?: string | undefined;
     onStart: () => void;
     onStop: () => void;
   }

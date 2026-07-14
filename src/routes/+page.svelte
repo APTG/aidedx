@@ -1,11 +1,48 @@
 <script lang="ts">
-  // Landing shell only — intentionally no ML. The heavy in-browser model
-  // backends (transformers.js / WebLLM / wllama) are dynamic-imported in a
-  // later phase so this shell loads instantly and ships zero ML in the
-  // initial bundle.
+  // Landing shell — intentionally no NLU/answer wiring yet (issue #37 is
+  // ASR-only: mic -> transcript). The heavy in-browser model backend
+  // (transformers.js) is dynamic-imported inside asr-status.svelte.ts's
+  // transcribe() call, not from this page, so the shell still loads
+  // instantly and ships zero ML in the initial bundle — it's only pulled in
+  // once a recording actually finishes.
   import ModelDownloadBanner from "$lib/components/status/ModelDownloadBanner.svelte";
+  import MicButton from "$lib/components/asr/MicButton.svelte";
+  import { asrStatus } from "$lib/asr/asr-status.svelte.ts";
+  import { modelStatus } from "$lib/models/model-status.svelte.ts";
+  import { formatElapsedSeconds } from "$lib/format.ts";
 
   let query = $state("");
+  let now = $state(Date.now());
+
+  // Ticks while a recording/transcription is in flight so the status line's
+  // elapsed-time readout updates; torn down as soon as neither is active.
+  $effect(() => {
+    if (asrStatus.phase !== "recording" && asrStatus.phase !== "transcribing") return;
+    const interval = setInterval(() => {
+      now = Date.now();
+    }, 250);
+    return () => clearInterval(interval);
+  });
+
+  // Once transcription finishes, drop the transcript into the same field
+  // the user could otherwise type into — wiring it to an answer is a
+  // separate follow-up (see issue #37's scope note).
+  $effect(() => {
+    if (asrStatus.phase === "done" && asrStatus.transcript) {
+      query = asrStatus.transcript;
+    }
+  });
+
+  const elapsedLabel = $derived.by(() => {
+    const startedAt = asrStatus.recordingStartedAt ?? asrStatus.transcribingStartedAt;
+    if (startedAt === null) return null;
+    const elapsedMs = now - startedAt;
+    return elapsedMs >= 1000 ? formatElapsedSeconds(elapsedMs) : null;
+  });
+
+  const micDisabledReason = $derived(
+    modelStatus.phase === "ready" ? undefined : "Download the speech model first",
+  );
 
   function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
@@ -37,15 +74,15 @@
         class="flex-1 rounded-md border border-input bg-card px-4 py-3 text-base shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
         aria-label="Type your question"
       />
-      <button
-        type="button"
-        disabled
-        aria-disabled="true"
-        title="Voice input is coming soon"
-        class="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-card px-4 py-3 text-base font-medium opacity-50"
-      >
-        <span aria-hidden="true">🎤</span> Ask
-      </button>
+      <MicButton
+        phase={asrStatus.phase}
+        errorMessage={asrStatus.errorMessage}
+        {elapsedLabel}
+        disabled={modelStatus.phase !== "ready"}
+        disabledReason={micDisabledReason}
+        onStart={() => asrStatus.start()}
+        onStop={() => asrStatus.stop()}
+      />
     </div>
 
     <button
