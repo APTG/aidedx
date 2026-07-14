@@ -11,11 +11,16 @@
  * `AudioContext`, which only exists on the main thread. `partialTranscript`
  * mirrors the worker's live word-by-word callbacks (issue #44 Phase A) so
  * the UI can show real progress on a multi-second CPU transcription instead
- * of a bare spinner.
+ * of a bare spinner. `estimatedTranscribeMs` (backed by `transcribe-eta.ts`)
+ * turns that elapsed time into a 0-100% progress bar instead of a raw
+ * seconds counter — see `transcribe-eta.ts`'s module comment for why this
+ * estimates from recording length rather than a literal Whisper progress
+ * signal.
  */
 import { MicRecorder } from "./recorder.ts";
-import { decodeToMono16k } from "./pcm.ts";
+import { decodeToMono16k, WHISPER_SAMPLE_RATE } from "./pcm.ts";
 import { createTranscribeWorkerClient, type TranscribeWorkerClient } from "./worker-client.ts";
+import { estimateTranscribeMs, recordRealTimeFactorSample } from "./transcribe-eta.ts";
 
 export type AsrPhase = "idle" | "recording" | "transcribing" | "done" | "error";
 
@@ -39,6 +44,8 @@ class AsrStore {
   errorMessage: string | null = $state(null);
   recordingStartedAt: number | null = $state(null);
   transcribingStartedAt: number | null = $state(null);
+  /** Length of the recorded audio, once decoded — the basis for `estimatedTranscribeMs`. */
+  recordingDurationSeconds: number | null = $state(null);
 
   #recorder = new MicRecorder();
   #workerClient: TranscribeWorkerClient | null = null;
@@ -59,11 +66,19 @@ class AsrStore {
     return this.phase === "recording" || this.phase === "transcribing";
   }
 
+  /** Estimated total transcription time in ms, or `null` until the recording's length is known (see `transcribe-eta.ts`). */
+  get estimatedTranscribeMs(): number | null {
+    return this.recordingDurationSeconds === null
+      ? null
+      : estimateTranscribeMs(this.recordingDurationSeconds);
+  }
+
   async start(): Promise<void> {
     if (this.isBusy) return;
     this.errorMessage = null;
     this.transcript = "";
     this.partialTranscript = "";
+    this.recordingDurationSeconds = null;
     try {
       await this.#recorder.start();
       this.phase = "recording";
@@ -82,9 +97,18 @@ class AsrStore {
     try {
       const blob = await this.#recorder.stop();
       const pcm = await decodeToMono16k(await blob.arrayBuffer());
+      this.recordingDurationSeconds = pcm.length / WHISPER_SAMPLE_RATE;
+      const inferenceStartedAt = Date.now();
       this.transcript = await this.#getWorkerClient().transcribe(pcm, (textSoFar) => {
         this.partialTranscript = textSoFar;
       });
+      // Calibrate off inference time alone (excludes the decode step above),
+      // so the real-time factor reflects Whisper's actual speed on this
+      // device, not incidental Web Audio decoding overhead.
+      recordRealTimeFactorSample(
+        (Date.now() - inferenceStartedAt) / 1000,
+        this.recordingDurationSeconds,
+      );
       this.phase = "done";
     } catch (error) {
       this.errorMessage = describeError(error);
@@ -102,6 +126,7 @@ class AsrStore {
     this.errorMessage = null;
     this.recordingStartedAt = null;
     this.transcribingStartedAt = null;
+    this.recordingDurationSeconds = null;
   }
 }
 
