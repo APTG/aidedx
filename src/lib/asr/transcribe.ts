@@ -17,6 +17,20 @@
  * hardcoding it — this module ports that approach (reference:
  * `scripts/asr-transcribe.mjs`) rather than shipping the naive no-prompt
  * path and fixing it later.
+ *
+ * `onnxruntime-web` pin (package.json's `pnpm.overrides`): `@huggingface/
+ * transformers@4.2.0` bundles an `onnxruntime-web` dev snapshot
+ * (`1.26.0-dev.20260416-*`) that predates a fix for a real bug —
+ * `whisper-*` merged/quantized decoder sessions fail with `Can't create a
+ * session ... TransposeDQWeightsForMatMulNBits Missing required scale:
+ * model.decoder.embed_tokens.weight_merged_0_scale` (microsoft/onnxruntime
+ * #28306, fixed by onnxruntime PR #28326 on 2026-05-12; also reported
+ * against transformers.js as huggingface/transformers.js#1707, where the
+ * maintainer said it'll ship in transformers.js v4.3.0 — not yet published
+ * on npm). `onnxruntime-web@1.27.0` (published 2026-06-19, well after the
+ * upstream fix) does not have this bug. The override can be dropped once
+ * `@huggingface/transformers` bumps its own pinned `onnxruntime-web` past
+ * the fix.
  */
 import { MODEL_MANIFEST } from "../models/manifest.ts";
 import { MODEL_MIRROR_HOST } from "../models/remote.ts";

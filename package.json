@@ -49,5 +49,10 @@
   },
   "dependencies": {
     "@huggingface/transformers": "^4.2.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "onnxruntime-web": "1.27.0"
+    }
   }
 }
