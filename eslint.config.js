@@ -13,6 +13,8 @@ export default tseslint.config(
       "coverage/**",
       // Vendored Emscripten artifact — generated, not hand-maintained (issue #6).
       "static/wasm/**",
+      // Design mockup vendored from issue #32 + its generated support runtime — not hand-maintained.
+      "docs/status-panel-mockup/**",
     ],
   },
   js.configs.recommended,

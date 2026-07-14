@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<style>
+  body{margin:0;background:#f2f0eb;font-family:system-ui,-apple-system,sans-serif}
+  .dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+  .dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}
+  .dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+  .dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}
+  .dv-intro{max-width:760px;margin:0 0 24px;font:13px/1.6 system-ui,sans-serif;color:rgba(0,0,0,.6)}
+  .dv-opts{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+  .dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}
+  .dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+  .dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11.5px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.6);max-width:380px}
+  .dv-opt:target .dv-oid{background:#2a5fd6;color:#fff}
+  .dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+  .jump-btn{padding:5px 9px;border-radius:6px;border:1px solid rgba(0,0,0,.15);background:#fff;font-size:10.5px;cursor:pointer;color:#1a1a1a}
+  .jump-btn:hover{background:#f2f2f2}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">aidedx — model status &amp; download flow, 3 directions</span></div>
+  <p class="dv-intro">Same hero (title, input, disabled mic, search) across all three — the variation is where system status lives (model download state · disk cache with Clear · RAM · GPU/CPU) and how the "download weights" decision is presented. Each card has a dark-mode toggle and state-jump buttons underneath so you can click through Fresh → Downloading → Ready → Clear-cache states.</p>
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Always-on status strip above hero · inline download prompt card</div>
+      <div style="display:inline-flex;gap:2px;padding:2px;border-radius:8px;background:rgba(0,0,0,.06);">
+        <button onClick="{{ o1a.setMobile }}" style="padding:4px 10px;border-radius:6px;border:none;font-size:10.5px;font-weight:600;cursor:pointer;background:{{ o1a.mobileBtnBg }};color:{{ o1a.mobileBtnColor }};">Mobile</button>
+        <button onClick="{{ o1a.setDesktop }}" style="padding:4px 10px;border-radius:6px;border:none;font-size:10.5px;font-weight:600;cursor:pointer;background:{{ o1a.desktopBtnBg }};color:{{ o1a.desktopBtnColor }};">Desktop</button>
+      </div>
+      <div style="width:{{ o1a.cardWidth }};border-radius:20px;overflow:hidden;border:1px solid {{ o1a.theme.border }};background:{{ o1a.theme.bg }};box-shadow:0 1px 3px rgba(0,0,0,.1);position:relative;">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:20px;height:20px;border-radius:6px;background:{{ o1a.theme.accent }};display:inline-flex;align-items:center;justify-content:center;flex:none;">
+              <span style="width:6px;height:6px;border-radius:50%;background:{{ o1a.theme.card }};display:inline-block;"></span>
+            </span>
+            <span style="font-size:15px;font-weight:700;color:{{ o1a.theme.text }};letter-spacing:-0.01em;">aidedx</span>
+          </div>
+          <div onClick="{{ o1a.toggleDark }}" role="button" aria-label="Toggle dark mode" tabIndex="0" style="width:38px;height:21px;border-radius:11px;background:{{ o1a.trackBg }};position:relative;cursor:pointer;flex:none;">
+            <span style="position:absolute;top:2px;left:{{ o1a.thumbX }};width:17px;height:17px;border-radius:50%;background:{{ o1a.theme.card }};"></span>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:{{ o1a.gridCols }};gap:1px;background:{{ o1a.theme.border }};margin:{{ o1a.stripMargin }};border-radius:10px;overflow:hidden;border:1px solid {{ o1a.theme.border }};">
+          <div style="padding:{{ o1a.tilePad }};background:{{ o1a.theme.card2 }};display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:50%;background:{{ o1a.modelDot }};display:inline-block;flex:none;"></span><span style="font-size:10px;letter-spacing:.03em;color:{{ o1a.theme.muted }};">MODEL</span></div>
+            <span style="font-size:12.5px;font-weight:600;color:{{ o1a.theme.text }};">{{ o1a.modelLabel }}</span>
+          </div>
+          <div style="padding:{{ o1a.tilePad }};background:{{ o1a.theme.card2 }};display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:10px;letter-spacing:.03em;color:{{ o1a.theme.muted }};">DISK CACHE</span>
+              <sc-if value="{{ o1a.showClear }}" hint-placeholder-val="{{ false }}"><span onClick="{{ o1a.setCacheFull }}" role="button" tabIndex="0" style="font-size:10.5px;font-weight:700;color:{{ o1a.theme.accent }};cursor:pointer;">Clear</span></sc-if>
+            </div>
+            <span style="font-size:12.5px;font-weight:600;color:{{ o1a.cacheColor }};">{{ o1a.cacheLabel }}</span>
+          </div>
+          <div style="padding:{{ o1a.tilePad }};background:{{ o1a.theme.card2 }};display:flex;flex-direction:column;gap:3px;">
+            <span style="font-size:10px;letter-spacing:.03em;color:{{ o1a.theme.muted }};">MEMORY (RAM)</span>
+            <span style="font-size:12.5px;font-weight:600;color:{{ o1a.theme.text }};">{{ o1a.ramLabel }}</span>
+          </div>
+          <div style="padding:{{ o1a.tilePad }};background:{{ o1a.theme.card2 }};display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:50%;background:{{ o1a.theme.success }};display:inline-block;flex:none;"></span><span style="font-size:10px;letter-spacing:.03em;color:{{ o1a.theme.muted }};">HARDWARE</span></div>
+            <span style="font-size:12.5px;font-weight:600;color:{{ o1a.theme.text }};">GPU · WebGPU</span>
+          </div>
+        </div>
+
+        <div style="padding:{{ o1a.heroPadding }};display:flex;justify-content:center;text-align:center;">
+        <div style="width:100%;max-width:{{ o1a.contentMaxWidth }};margin:0 auto;display:flex;flex-direction:column;gap:14px;align-items:center;">
+          <p style="margin:0;font-size:13px;color:{{ o1a.theme.muted }};">Ask about stopping power, in plain language.</p>
+          <div style="display:flex;flex-direction:{{ o1a.heroDirection }};gap:8px;width:100%;box-sizing:border-box;">
+            <input placeholder="e.g. stopping power of protons in water at 100 MeV" aria-label="Type your question" style="flex:1;min-width:0;box-sizing:border-box;padding:12px 14px;border-radius:10px;border:1px solid {{ o1a.theme.border }};background:{{ o1a.theme.inputBg }};color:{{ o1a.theme.text }};font-size:13.5px;" />
+            <button disabled aria-label="Voice input, coming soon" title="Voice input — coming soon" style="flex:none;padding:12px 16px;border-radius:10px;border:1px solid {{ o1a.theme.border }};background:{{ o1a.theme.card2 }};color:{{ o1a.theme.muted }};font-size:13.5px;font-weight:600;opacity:.6;cursor:not-allowed;">Voice</button>
+            <button onClick="{{ o1a.onSearch }}" style="flex:{{ o1a.searchFlex }};padding:12px 16px;border-radius:10px;border:none;background:{{ o1a.theme.primaryBg }};color:{{ o1a.theme.primaryText }};font-size:13.5px;font-weight:700;cursor:pointer;">Search</button>
+          </div>
+          <p style="margin:0;font-size:11px;color:{{ o1a.theme.muted }};">Runs entirely on your machine — your questions never leave the browser.</p>
+
+          <sc-if value="{{ o1a.isFresh }}" hint-placeholder-val="{{ true }}">
+            <div style="width:100%;box-sizing:border-box;padding:14px;border-radius:12px;border:1px solid {{ o1a.theme.border }};background:{{ o1a.theme.card2 }};text-align:left;display:flex;flex-direction:column;gap:8px;">
+              <p style="margin:0;font-size:12.5px;font-weight:700;color:{{ o1a.theme.text }};">Model weights required</p>
+              <p style="margin:0;font-size:11.5px;color:{{ o1a.theme.muted }};line-height:1.5;">aidedx needs ~1.1 GB of model weights to answer questions fully in your browser. This may take a while on mobile data.</p>
+              <button onClick="{{ o1a.setDownloading }}" style="align-self:flex-start;margin-top:2px;padding:9px 14px;border-radius:9px;border:none;background:{{ o1a.theme.accent }};color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;">Download now (1.1 GB)</button>
+            </div>
+          </sc-if>
+        </div>
+        </div>
+
+        <sc-if value="{{ o1a.isDownloading }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:{{ o1a.theme.backdrop }};display:flex;align-items:{{ o1a.modalAlign }};justify-content:center;">
+            <div style="width:{{ o1a.modalWidth }};box-sizing:border-box;background:{{ o1a.theme.card }};border-radius:{{ o1a.modalRadius }};padding:18px;display:flex;flex-direction:column;gap:12px;max-height:85%;overflow:auto;">
+              <div>
+                <p style="margin:0 0 2px;font-size:14px;font-weight:700;color:{{ o1a.theme.text }};">Downloading model weights</p>
+                <p style="margin:0;font-size:11px;color:{{ o1a.theme.muted }};">huggingface.co/onnx-community · ≈2 min remaining</p>
+              </div>
+              <div style="height:6px;border-radius:3px;background:{{ o1a.theme.border }};overflow:hidden;"><div style="height:100%;width:46%;background:{{ o1a.theme.accent }};"></div></div>
+              <sc-for list="{{ o1a.files }}" as="f" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <div style="display:flex;justify-content:space-between;font-size:11.5px;color:{{ o1a.theme.text }};"><span>{{ f.name }}</span><span style="color:{{ o1a.theme.muted }};">{{ f.size }}</span></div>
+                  <div style="height:4px;border-radius:2px;background:{{ o1a.theme.border }};overflow:hidden;"><div style="height:100%;width:{{ f.pct }}%;background:{{ o1a.theme.muted }};"></div></div>
+                </div>
+              </sc-for>
+              <div style="display:flex;gap:8px;margin-top:4px;">
+                <button onClick="{{ o1a.setFresh }}" style="flex:1;padding:10px;border-radius:9px;border:1px solid {{ o1a.theme.border }};background:none;color:{{ o1a.theme.text }};font-size:12.5px;font-weight:600;cursor:pointer;">Cancel</button>
+                <button onClick="{{ o1a.setReady }}" style="flex:1;padding:10px;border-radius:9px;border:none;background:{{ o1a.theme.primaryBg }};color:{{ o1a.theme.primaryText }};font-size:12.5px;font-weight:600;cursor:pointer;">Skip to ready (demo)</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ o1a.isCacheFull }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:{{ o1a.theme.backdrop }};display:flex;align-items:center;justify-content:center;padding:20px;">
+            <div style="width:340px;max-width:100%;box-sizing:border-box;background:{{ o1a.theme.card }};border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;">
+              <p style="margin:0;font-size:14px;font-weight:700;color:{{ o1a.theme.text }};">Clear cache?</p>
+              <p style="margin:0;font-size:11.5px;color:{{ o1a.theme.muted }};line-height:1.5;">This frees {{ o1a.totalCache }} of disk space. You'll need to re-download model weights before your next question.</p>
+              <sc-for list="{{ o1a.cacheFiles }}" as="f" hint-placeholder-count="4">
+                <div style="display:flex;justify-content:space-between;font-size:11.5px;color:{{ o1a.theme.text }};"><span>{{ f.name }}</span><span style="color:{{ o1a.theme.muted }};">{{ f.size }}</span></div>
+              </sc-for>
+              <div style="display:flex;gap:8px;margin-top:6px;">
+                <button onClick="{{ o1a.setReady }}" style="flex:1;padding:10px;border-radius:9px;border:1px solid {{ o1a.theme.border }};background:none;color:{{ o1a.theme.text }};font-size:12.5px;font-weight:600;cursor:pointer;">Cancel</button>
+                <button onClick="{{ o1a.setFresh }}" style="flex:1;padding:10px;border-radius:9px;border:none;background:{{ o1a.theme.danger }};color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;">Clear cache</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="jump-btn" onClick="{{ o1a.setFresh }}">Fresh</button>
+        <button class="jump-btn" onClick="{{ o1a.setDownloading }}">Downloading</button>
+        <button class="jump-btn" onClick="{{ o1a.setReady }}">Ready</button>
+        <button class="jump-btn" onClick="{{ o1a.setCacheFull }}">Clear-cache confirm</button>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Collapsed status pill, expands to a panel · centered blocking download modal (dismissible)</div>
+      <div style="display:inline-flex;gap:2px;padding:2px;border-radius:8px;background:rgba(0,0,0,.06);">
+        <button onClick="{{ o1b.setMobile }}" style="padding:4px 10px;border-radius:6px;border:none;font-size:10.5px;font-weight:600;cursor:pointer;background:{{ o1b.mobileBtnBg }};color:{{ o1b.mobileBtnColor }};">Mobile</button>
+        <button onClick="{{ o1b.setDesktop }}" style="padding:4px 10px;border-radius:6px;border:none;font-size:10.5px;font-weight:600;cursor:pointer;background:{{ o1b.desktopBtnBg }};color:{{ o1b.desktopBtnColor }};">Desktop</button>
+      </div>
+      <div style="width:{{ o1b.cardWidth }};border-radius:20px;overflow:hidden;border:1px solid {{ o1b.theme.border }};background:{{ o1b.theme.bg }};box-shadow:0 1px 3px rgba(0,0,0,.1);position:relative;">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:20px;height:20px;border-radius:6px;background:{{ o1b.theme.accent }};display:inline-flex;align-items:center;justify-content:center;flex:none;">
+              <span style="width:6px;height:6px;border-radius:50%;background:{{ o1b.theme.card }};display:inline-block;"></span>
+            </span>
+            <span style="font-size:15px;font-weight:700;color:{{ o1b.theme.text }};letter-spacing:-0.01em;">aidedx</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div onClick="{{ o1b.togglePill }}" role="button" aria-expanded="false" aria-label="System status" tabIndex="0" style="display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid {{ o1b.theme.border }};background:{{ o1b.theme.card2 }};cursor:pointer;">
+              <span style="width:6px;height:6px;border-radius:50%;background:{{ o1b.modelDot }};display:inline-block;flex:none;"></span>
+              <span style="font-size:10.5px;font-weight:600;color:{{ o1b.theme.text }};white-space:nowrap;">{{ o1b.pillSummary }}</span>
+            </div>
+            <div onClick="{{ o1b.toggleDark }}" role="button" aria-label="Toggle dark mode" tabIndex="0" style="width:34px;height:19px;border-radius:10px;background:{{ o1b.trackBg }};position:relative;cursor:pointer;flex:none;">
+              <span style="position:absolute;top:2px;left:{{ o1b.thumbX }};width:15px;height:15px;border-radius:50%;background:{{ o1b.theme.card }};"></span>
+            </div>
+          </div>
+        </div>
+
+        <sc-if value="{{ o1b.pillOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="margin:0 16px 12px;padding:10px 12px;border-radius:10px;border:1px solid {{ o1b.theme.border }};background:{{ o1b.theme.card2 }};display:flex;flex-direction:column;gap:9px;">
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;"><span style="color:{{ o1b.theme.muted }};">Model</span><span style="font-weight:600;color:{{ o1b.theme.text }};">{{ o1b.modelLabel }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;align-items:center;">
+              <span style="color:{{ o1b.theme.muted }};">Disk cache</span>
+              <span style="display:flex;align-items:center;gap:8px;">
+                <span style="font-weight:600;color:{{ o1b.cacheColor }};">{{ o1b.cacheLabel }}</span>
+                <sc-if value="{{ o1b.showClear }}" hint-placeholder-val="{{ false }}"><span onClick="{{ o1b.setCacheFull }}" role="button" tabIndex="0" style="font-weight:700;color:{{ o1b.theme.accent }};cursor:pointer;">Clear</span></sc-if>
+              </span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;"><span style="color:{{ o1b.theme.muted }};">Memory (RAM)</span><span style="font-weight:600;color:{{ o1b.theme.text }};">{{ o1b.ramLabel }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;"><span style="color:{{ o1b.theme.muted }};">Hardware</span><span style="font-weight:600;color:{{ o1b.theme.text }};">GPU · WebGPU</span></div>
+          </div>
+        </sc-if>
+
+        <div style="padding:{{ o1b.heroPadding }};display:flex;justify-content:center;text-align:center;">
+        <div style="width:100%;max-width:{{ o1b.contentMaxWidth }};margin:0 auto;display:flex;flex-direction:column;gap:14px;align-items:center;">
+          <p style="margin:0;font-size:13px;color:{{ o1b.theme.muted }};">Ask about stopping power, in plain language.</p>
+          <div style="display:flex;flex-direction:{{ o1b.heroDirection }};gap:8px;width:100%;box-sizing:border-box;">
+            <input placeholder="e.g. stopping power of protons in water at 100 MeV" aria-label="Type your question" style="flex:1;min-width:0;box-sizing:border-box;padding:12px 14px;border-radius:10px;border:1px solid {{ o1b.theme.border }};background:{{ o1b.theme.inputBg }};color:{{ o1b.theme.text }};font-size:13.5px;" />
+            <button disabled aria-label="Voice input, coming soon" title="Voice input — coming soon" style="flex:none;padding:12px 16px;border-radius:10px;border:1px solid {{ o1b.theme.border }};background:{{ o1b.theme.card2 }};color:{{ o1b.theme.muted }};font-size:13.5px;font-weight:600;opacity:.6;cursor:not-allowed;">Voice</button>
+            <button onClick="{{ o1b.onSearch }}" style="flex:{{ o1b.searchFlex }};padding:12px 16px;border-radius:10px;border:none;background:{{ o1b.theme.primaryBg }};color:{{ o1b.theme.primaryText }};font-size:13.5px;font-weight:700;cursor:pointer;">Search</button>
+          </div>
+          <p style="margin:0;font-size:11px;color:{{ o1b.theme.muted }};">Runs entirely on your machine — your questions never leave the browser.</p>
+
+          <sc-if value="{{ o1b.showBanner }}" hint-placeholder-val="{{ false }}">
+            <div style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:10px;border:1px solid {{ o1b.theme.border }};background:{{ o1b.theme.card2 }};display:flex;align-items:center;justify-content:space-between;gap:10px;">
+              <span style="font-size:11.5px;color:{{ o1b.theme.muted }};text-align:left;">Model weights not downloaded</span>
+              <button onClick="{{ o1b.undismiss }}" style="flex:none;padding:6px 10px;border-radius:7px;border:none;background:{{ o1b.theme.accent }};color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Download</button>
+            </div>
+          </sc-if>
+        </div>
+        </div>
+
+        <sc-if value="{{ o1b.showBlockingModal }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;inset:0;background:{{ o1b.theme.backdrop }};display:flex;align-items:center;justify-content:center;padding:24px;">
+            <div style="background:{{ o1b.theme.card }};border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;">
+              <p style="margin:0;font-size:14px;font-weight:700;color:{{ o1b.theme.text }};">Download model weights?</p>
+              <p style="margin:0;font-size:11.5px;color:{{ o1b.theme.muted }};line-height:1.5;">aidedx needs ~1.1 GB to run fully offline in your browser. This may take a while on mobile data.</p>
+              <div style="display:flex;gap:8px;margin-top:4px;">
+                <button onClick="{{ o1b.dismiss }}" style="flex:1;padding:10px;border-radius:9px;border:1px solid {{ o1b.theme.border }};background:none;color:{{ o1b.theme.text }};font-size:12.5px;font-weight:600;cursor:pointer;">Not now</button>
+                <button onClick="{{ o1b.setDownloading }}" style="flex:1;padding:10px;border-radius:9px;border:none;background:{{ o1b.theme.accent }};color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;">Download now</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ o1b.isDownloading }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:{{ o1b.theme.backdrop }};display:flex;align-items:{{ o1b.modalAlign }};justify-content:center;">
+            <div style="width:{{ o1b.modalWidth }};box-sizing:border-box;background:{{ o1b.theme.card }};border-radius:{{ o1b.modalRadius }};padding:18px;display:flex;flex-direction:column;gap:12px;max-height:85%;overflow:auto;">
+              <div>
+                <p style="margin:0 0 2px;font-size:14px;font-weight:700;color:{{ o1b.theme.text }};">Downloading model weights</p>
+                <p style="margin:0;font-size:11px;color:{{ o1b.theme.muted }};">huggingface.co/onnx-community · ≈2 min remaining</p>
+              </div>
+              <div style="height:6px;border-radius:3px;background:{{ o1b.theme.border }};overflow:hidden;"><div style="height:100%;width:46%;background:{{ o1b.theme.accent }};"></div></div>
+              <sc-for list="{{ o1b.files }}" as="f" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <div style="display:flex;justify-content:space-between;font-size:11.5px;color:{{ o1b.theme.text }};"><span>{{ f.name }}</span><span style="color:{{ o1b.theme.muted }};">{{ f.size }}</span></div>
+                  <div style="height:4px;border-radius:2px;background:{{ o1b.theme.border }};overflow:hidden;"><div style="height:100%;width:{{ f.pct }}%;background:{{ o1b.theme.muted }};"></div></div>
+                </div>
+              </sc-for>
+              <div style="display:flex;gap:8px;margin-top:4px;">
+                <button onClick="{{ o1b.setFresh }}" style="flex:1;padding:10px;border-radius:9px;border:1px solid {{ o1b.theme.border }};background:none;color:{{ o1b.theme.text }};font-size:12.5px;font-weight:600;cursor:pointer;">Cancel</button>
+                <button onClick="{{ o1b.setReady }}" style="flex:1;padding:10px;border-radius:9px;border:none;background:{{ o1b.theme.primaryBg }};color:{{ o1b.theme.primaryText }};font-size:12.5px;font-weight:600;cursor:pointer;">Skip to ready (demo)</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ o1b.isCacheFull }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:{{ o1b.theme.backdrop }};display:flex;align-items:center;justify-content:center;padding:20px;">
+            <div style="width:340px;max-width:100%;box-sizing:border-box;background:{{ o1b.theme.card }};border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;">
+              <p style="margin:0;font-size:14px;font-weight:700;color:{{ o1b.theme.text }};">Clear cache?</p>
+              <p style="margin:0;font-size:11.5px;color:{{ o1b.theme.muted }};line-height:1.5;">This frees {{ o1b.totalCache }} of disk space. You'll need to re-download model weights before your next question.</p>
+              <sc-for list="{{ o1b.cacheFiles }}" as="f" hint-placeholder-count="4">
+                <div style="display:flex;justify-content:space-between;font-size:11.5px;color:{{ o1b.theme.text }};"><span>{{ f.name }}</span><span style="color:{{ o1b.theme.muted }};">{{ f.size }}</span></div>
+              </sc-for>
+              <div style="display:flex;gap:8px;margin-top:6px;">
+                <button onClick="{{ o1b.setReady }}" style="flex:1;padding:10px;border-radius:9px;border:1px solid {{ o1b.theme.border }};background:none;color:{{ o1b.theme.text }};font-size:12.5px;font-weight:600;cursor:pointer;">Cancel</button>
+                <button onClick="{{ o1b.setFresh }}" style="flex:1;padding:10px;border-radius:9px;border:none;background:{{ o1b.theme.danger }};color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;">Clear cache</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="jump-btn" onClick="{{ o1b.setFresh }}">Fresh</button>
+        <button class="jump-btn" onClick="{{ o1b.setDownloading }}">Downloading</button>
+        <button class="jump-btn" onClick="{{ o1b.setReady }}">Ready</button>
+        <button class="jump-btn" onClick="{{ o1b.setCacheFull }}">Clear-cache confirm</button>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Minimal "System" link opens a drawer · non-blocking, decision modal appears only when you search</div>
+      <div style="display:inline-flex;gap:2px;padding:2px;border-radius:8px;background:rgba(0,0,0,.06);">
+        <button onClick="{{ o1c.setMobile }}" style="padding:4px 10px;border-radius:6px;border:none;font-size:10.5px;font-weight:600;cursor:pointer;background:{{ o1c.mobileBtnBg }};color:{{ o1c.mobileBtnColor }};">Mobile</button>
+        <button onClick="{{ o1c.setDesktop }}" style="padding:4px 10px;border-radius:6px;border:none;font-size:10.5px;font-weight:600;cursor:pointer;background:{{ o1c.desktopBtnBg }};color:{{ o1c.desktopBtnColor }};">Desktop</button>
+      </div>
+      <div style="width:{{ o1c.cardWidth }};border-radius:20px;overflow:hidden;border:1px solid {{ o1c.theme.border }};background:{{ o1c.theme.bg }};box-shadow:0 1px 3px rgba(0,0,0,.1);position:relative;">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:20px;height:20px;border-radius:6px;background:{{ o1c.theme.accent }};display:inline-flex;align-items:center;justify-content:center;flex:none;">
+              <span style="width:6px;height:6px;border-radius:50%;background:{{ o1c.theme.card }};display:inline-block;"></span>
+            </span>
+            <span style="font-size:15px;font-weight:700;color:{{ o1c.theme.text }};letter-spacing:-0.01em;">aidedx</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span onClick="{{ o1c.toggleDrawer }}" role="button" aria-label="System status" tabIndex="0" style="display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:{{ o1c.theme.text }};cursor:pointer;">
+              <span style="width:6px;height:6px;border-radius:50%;background:{{ o1c.modelDot }};display:inline-block;flex:none;"></span>System
+            </span>
+            <div onClick="{{ o1c.toggleDark }}" role="button" aria-label="Toggle dark mode" tabIndex="0" style="width:34px;height:19px;border-radius:10px;background:{{ o1c.trackBg }};position:relative;cursor:pointer;flex:none;">
+              <span style="position:absolute;top:2px;left:{{ o1c.thumbX }};width:15px;height:15px;border-radius:50%;background:{{ o1c.theme.card }};"></span>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:{{ o1c.heroPadding }};display:flex;justify-content:center;text-align:center;">
+        <div style="width:100%;max-width:{{ o1c.contentMaxWidth }};margin:0 auto;display:flex;flex-direction:column;gap:14px;align-items:center;">
+          <p style="margin:0;font-size:13px;color:{{ o1c.theme.muted }};">Ask about stopping power, in plain language.</p>
+          <div style="display:flex;flex-direction:{{ o1c.heroDirection }};gap:8px;width:100%;box-sizing:border-box;">
+            <input placeholder="e.g. stopping power of protons in water at 100 MeV" aria-label="Type your question" style="flex:1;min-width:0;box-sizing:border-box;padding:12px 14px;border-radius:10px;border:1px solid {{ o1c.theme.border }};background:{{ o1c.theme.inputBg }};color:{{ o1c.theme.text }};font-size:13.5px;" />
+            <button disabled aria-label="Voice input, coming soon" title="Voice input — coming soon" style="flex:none;padding:12px 16px;border-radius:10px;border:1px solid {{ o1c.theme.border }};background:{{ o1c.theme.card2 }};color:{{ o1c.theme.muted }};font-size:13.5px;font-weight:600;opacity:.6;cursor:not-allowed;">Voice</button>
+            <button onClick="{{ o1c.onSearch }}" style="flex:{{ o1c.searchFlex }};padding:12px 16px;border-radius:10px;border:none;background:{{ o1c.theme.primaryBg }};color:{{ o1c.theme.primaryText }};font-size:13.5px;font-weight:700;cursor:pointer;">Search</button>
+          </div>
+          <sc-if value="{{ o1c.isFresh }}" hint-placeholder-val="{{ true }}">
+            <p style="margin:0;font-size:11px;color:{{ o1c.theme.muted }};">Model weights not downloaded yet — <span onClick="{{ o1c.onSearch }}" role="button" tabIndex="0" style="color:{{ o1c.theme.accent }};font-weight:600;cursor:pointer;text-decoration:underline;">download weights</span> or ask a question to be prompted.</p>
+          </sc-if>
+          <sc-if value="{{ o1c.isFresh }}" hint-placeholder-val="{{ false }}">
+            <span></span>
+          </sc-if>
+          <p style="margin:0;font-size:11px;color:{{ o1c.theme.muted }};">Runs entirely on your machine — your questions never leave the browser.</p>
+        </div>
+        </div>
+
+        <sc-if value="{{ o1c.showBlockingModal }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:{{ o1c.theme.backdrop }};display:flex;align-items:center;justify-content:center;padding:24px;">
+            <div style="background:{{ o1c.theme.card }};border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;">
+              <p style="margin:0;font-size:14px;font-weight:700;color:{{ o1c.theme.text }};">Download model weights to continue?</p>
+              <p style="margin:0;font-size:11.5px;color:{{ o1c.theme.muted }};line-height:1.5;">aidedx needs ~1.1 GB to answer this. This may take a while on mobile data.</p>
+              <div style="display:flex;gap:8px;margin-top:4px;">
+                <button onClick="{{ o1c.promptNotNow }}" style="flex:1;padding:10px;border-radius:9px;border:1px solid {{ o1c.theme.border }};background:none;color:{{ o1c.theme.text }};font-size:12.5px;font-weight:600;cursor:pointer;">Not now</button>
+                <button onClick="{{ o1c.promptConfirm }}" style="flex:1;padding:10px;border-radius:9px;border:none;background:{{ o1c.theme.accent }};color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;">Download now</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ o1c.isDownloading }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:{{ o1c.theme.backdrop }};display:flex;align-items:{{ o1c.modalAlign }};justify-content:center;">
+            <div style="width:{{ o1c.modalWidth }};box-sizing:border-box;background:{{ o1c.theme.card }};border-radius:{{ o1c.modalRadius }};padding:18px;display:flex;flex-direction:column;gap:12px;max-height:85%;overflow:auto;">
+              <div>
+                <p style="margin:0 0 2px;font-size:14px;font-weight:700;color:{{ o1c.theme.text }};">Downloading model weights</p>
+                <p style="margin:0;font-size:11px;color:{{ o1c.theme.muted }};">huggingface.co/onnx-community · ≈2 min remaining</p>
+              </div>
+              <div style="height:6px;border-radius:3px;background:{{ o1c.theme.border }};overflow:hidden;"><div style="height:100%;width:46%;background:{{ o1c.theme.accent }};"></div></div>
+              <sc-for list="{{ o1c.files }}" as="f" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <div style="display:flex;justify-content:space-between;font-size:11.5px;color:{{ o1c.theme.text }};"><span>{{ f.name }}</span><span style="color:{{ o1c.theme.muted }};">{{ f.size }}</span></div>
+                  <div style="height:4px;border-radius:2px;background:{{ o1c.theme.border }};overflow:hidden;"><div style="height:100%;width:{{ f.pct }}%;background:{{ o1c.theme.muted }};"></div></div>
+                </div>
+              </sc-for>
+              <div style="display:flex;gap:8px;margin-top:4px;">
+                <button onClick="{{ o1c.setFresh }}" style="flex:1;padding:10px;border-radius:9px;border:1px solid {{ o1c.theme.border }};background:none;color:{{ o1c.theme.text }};font-size:12.5px;font-weight:600;cursor:pointer;">Cancel</button>
+                <button onClick="{{ o1c.setReady }}" style="flex:1;padding:10px;border-radius:9px;border:none;background:{{ o1c.theme.primaryBg }};color:{{ o1c.theme.primaryText }};font-size:12.5px;font-weight:600;cursor:pointer;">Skip to ready (demo)</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ o1c.isCacheFull }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:{{ o1c.theme.backdrop }};display:flex;align-items:center;justify-content:center;padding:20px;">
+            <div style="width:340px;max-width:100%;box-sizing:border-box;background:{{ o1c.theme.card }};border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;">
+              <p style="margin:0;font-size:14px;font-weight:700;color:{{ o1c.theme.text }};">Clear cache?</p>
+              <p style="margin:0;font-size:11.5px;color:{{ o1c.theme.muted }};line-height:1.5;">This frees {{ o1c.totalCache }} of disk space. You'll need to re-download model weights before your next question.</p>
+              <sc-for list="{{ o1c.cacheFiles }}" as="f" hint-placeholder-count="4">
+                <div style="display:flex;justify-content:space-between;font-size:11.5px;color:{{ o1c.theme.text }};"><span>{{ f.name }}</span><span style="color:{{ o1c.theme.muted }};">{{ f.size }}</span></div>
+              </sc-for>
+              <div style="display:flex;gap:8px;margin-top:6px;">
+                <button onClick="{{ o1c.setReady }}" style="flex:1;padding:10px;border-radius:9px;border:1px solid {{ o1c.theme.border }};background:none;color:{{ o1c.theme.text }};font-size:12.5px;font-weight:600;cursor:pointer;">Cancel</button>
+                <button onClick="{{ o1c.setFresh }}" style="flex:1;padding:10px;border-radius:9px;border:none;background:{{ o1c.theme.danger }};color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;">Clear cache</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ o1c.drawerOpen }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ o1c.toggleDrawer }}" style="position:absolute;inset:0;background:{{ o1c.theme.backdrop }};"></div>
+          <div style="position:absolute;top:0;right:0;bottom:0;width:{{ o1c.drawerWidth }};background:{{ o1c.theme.card }};box-shadow:-6px 0 18px rgba(0,0,0,.18);padding:18px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <p style="margin:0;font-size:13px;font-weight:700;color:{{ o1c.theme.text }};">System status</p>
+              <span onClick="{{ o1c.toggleDrawer }}" role="button" aria-label="Close" tabIndex="0" style="font-size:16px;line-height:1;color:{{ o1c.theme.muted }};cursor:pointer;">×</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;"><span style="color:{{ o1c.theme.muted }};">Model</span><span style="font-weight:600;color:{{ o1c.theme.text }};">{{ o1c.modelLabel }}</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;align-items:center;">
+                <span style="color:{{ o1c.theme.muted }};">Disk cache</span>
+                <span style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-weight:600;color:{{ o1c.cacheColor }};">{{ o1c.cacheLabel }}</span>
+                  <sc-if value="{{ o1c.showClear }}" hint-placeholder-val="{{ false }}"><span onClick="{{ o1c.setCacheFull }}" role="button" tabIndex="0" style="font-weight:700;color:{{ o1c.theme.accent }};cursor:pointer;">Clear</span></sc-if>
+                </span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;"><span style="color:{{ o1c.theme.muted }};">Memory (RAM)</span><span style="font-weight:600;color:{{ o1c.theme.text }};">{{ o1c.ramLabel }}</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;"><span style="color:{{ o1c.theme.muted }};">Hardware</span><span style="font-weight:600;color:{{ o1c.theme.text }};">GPU · WebGPU</span></div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="jump-btn" onClick="{{ o1c.setFresh }}">Fresh</button>
+        <button class="jump-btn" onClick="{{ o1c.setDownloading }}">Downloading</button>
+        <button class="jump-btn" onClick="{{ o1c.setReady }}">Ready</button>
+        <button class="jump-btn" onClick="{{ o1c.setCacheFull }}">Clear-cache confirm</button>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Try next: "combine <a class="dv-oid" href="#1a">1a</a>'s status strip with <a class="dv-oid" href="#1c">1c</a>'s non-blocking download" · "make <a class="dv-oid" href="#1b">1b</a> the base design, full page" · "show CPU-only hardware state"</p>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    view: { a: 'fresh', b: 'fresh', c: 'fresh' },
+    dark: { a: false, b: false, c: false },
+    device: { a: 'mobile', b: 'mobile', c: 'mobile' },
+    pillOpen: { a: false, b: false, c: false },
+    drawerOpen: { a: false, b: false, c: false },
+    dismissed: { a: false, b: false, c: false },
+    promptOpen: { a: false, b: false, c: false }
+  };
+
+  theme(dark) {
+    return dark
+      ? {
+          bg: 'oklch(0.16 0 0)',
+          card: 'oklch(0.205 0 0)',
+          card2: 'oklch(0.25 0 0)',
+          border: 'oklch(1 0 0 / 12%)',
+          text: 'oklch(0.985 0 0)',
+          muted: 'oklch(0.72 0 0)',
+          primaryBg: 'oklch(0.93 0 0)',
+          primaryText: 'oklch(0.18 0 0)',
+          inputBg: 'oklch(0.22 0 0)',
+          accent: 'oklch(0.7 0.14 258)',
+          success: 'oklch(0.72 0.14 150)',
+          warn: 'oklch(0.78 0.14 80)',
+          danger: 'oklch(0.7 0.16 25)',
+          backdrop: 'oklch(0 0 0 / 55%)'
+        }
+      : {
+          bg: 'oklch(1 0 0)',
+          card: 'oklch(1 0 0)',
+          card2: 'oklch(0.97 0 0)',
+          border: 'oklch(0.9 0 0)',
+          text: 'oklch(0.145 0 0)',
+          muted: 'oklch(0.44 0 0)',
+          primaryBg: 'oklch(0.205 0 0)',
+          primaryText: 'oklch(0.985 0 0)',
+          inputBg: 'oklch(1 0 0)',
+          accent: 'oklch(0.55 0.16 258)',
+          success: 'oklch(0.5 0.14 150)',
+          warn: 'oklch(0.58 0.15 80)',
+          danger: 'oklch(0.55 0.18 25)',
+          backdrop: 'oklch(0 0 0 / 40%)'
+        };
+  }
+
+  setView(key, v) {
+    this.setState((s) => ({ view: { ...s.view, [key]: v } }));
+  }
+  toggleDark(key) {
+    this.setState((s) => ({ dark: { ...s.dark, [key]: !s.dark[key] } }));
+  }
+  togglePill(key) {
+    this.setState((s) => ({ pillOpen: { ...s.pillOpen, [key]: !s.pillOpen[key] } }));
+  }
+  toggleDrawer(key) {
+    this.setState((s) => ({ drawerOpen: { ...s.drawerOpen, [key]: !s.drawerOpen[key] } }));
+  }
+  setDismissed(key, v) {
+    this.setState((s) => ({ dismissed: { ...s.dismissed, [key]: v } }));
+  }
+  setPromptOpen(key, v) {
+    this.setState((s) => ({ promptOpen: { ...s.promptOpen, [key]: v } }));
+  }
+  setDevice(key, v) {
+    this.setState((s) => ({ device: { ...s.device, [key]: v } }));
+  }
+
+  buildOption(key) {
+    const dark = this.state.dark[key];
+    const view = this.state.view[key];
+    const th = this.theme(dark);
+
+    const modelLabel =
+      view === 'fresh' ? 'Not downloaded' : view === 'downloading' ? 'Downloading… 46%' : 'Ready';
+    const modelDot = view === 'fresh' ? th.muted : view === 'downloading' ? th.warn : th.success;
+    const cacheLabel =
+      view === 'fresh'
+        ? '0 MB'
+        : view === 'downloading'
+          ? '310 MB'
+          : view === 'cachefull'
+            ? '1.92 GB'
+            : '1.13 GB';
+    const cacheColor = view === 'cachefull' ? th.danger : th.text;
+    const ramLabel = view === 'fresh' ? 'Idle' : view === 'downloading' ? '180 MB' : '340 MB';
+
+    const files = [
+      { name: 'Whisper · speech-to-text', size: '92 MB', pct: 70 },
+      { name: 'Qwen2.5-0.5B · language understanding', size: '380 MB', pct: 52 },
+      { name: 'Llama-3.2-1B · answer generation', size: '660 MB', pct: 31 }
+    ];
+    const cacheFiles = [
+      { name: 'Whisper · speech-to-text', size: '92 MB' },
+      { name: 'Qwen2.5-0.5B · language understanding', size: '380 MB' },
+      { name: 'Llama-3.2-1B · answer generation', size: '660 MB' },
+      { name: 'Browser cache · WASM & assets', size: '790 MB' }
+    ];
+
+    const setFresh = () => {
+      this.setView(key, 'fresh');
+      this.setDismissed(key, false);
+      this.setPromptOpen(key, false);
+    };
+    const setDownloading = () => this.setView(key, 'downloading');
+    const setReady = () => this.setView(key, 'ready');
+    const setCacheFull = () => this.setView(key, 'cachefull');
+
+    let onSearch = () => {};
+    if (key === 'c') {
+      onSearch = view === 'fresh' ? () => this.setPromptOpen(key, true) : () => {};
+    }
+
+    const showBlockingModal =
+      key === 'b'
+        ? view === 'fresh' && !this.state.dismissed[key]
+        : key === 'c'
+          ? view === 'fresh' && this.state.promptOpen[key]
+          : false;
+
+    const promptNotNow = key === 'c' ? () => this.setPromptOpen(key, false) : () => {};
+    const promptConfirm =
+      key === 'c'
+        ? () => {
+            this.setPromptOpen(key, false);
+            setDownloading();
+          }
+        : () => {};
+
+    const isDesktop = this.state.device[key] === 'desktop';
+
+    return {
+      key,
+      theme: th,
+      dark,
+      toggleDark: () => this.toggleDark(key),
+      trackBg: dark ? th.accent : th.border,
+      thumbX: dark ? '18px' : '2px',
+      isDesktop,
+      isMobileDevice: !isDesktop,
+      setMobile: () => this.setDevice(key, 'mobile'),
+      setDesktop: () => this.setDevice(key, 'desktop'),
+      mobileBtnBg: isDesktop ? 'transparent' : '#1a1a1a',
+      mobileBtnColor: isDesktop ? '#1a1a1a' : '#fff',
+      desktopBtnBg: isDesktop ? '#1a1a1a' : 'transparent',
+      desktopBtnColor: isDesktop ? '#fff' : '#1a1a1a',
+      cardWidth: isDesktop ? '900px' : '380px',
+      gridCols: isDesktop ? 'repeat(4,1fr)' : '1fr 1fr',
+      stripMargin: isDesktop ? '0 28px 20px' : '0 16px 14px',
+      tilePad: isDesktop ? '12px 16px' : '9px 11px',
+      heroPadding: isDesktop ? '8px 60px 44px' : '6px 20px 22px',
+      contentMaxWidth: isDesktop ? '600px' : '100%',
+      heroDirection: isDesktop ? 'row' : 'column',
+      searchFlex: isDesktop ? '0 0 150px' : '1',
+      modalAlign: isDesktop ? 'center' : 'flex-end',
+      modalWidth: isDesktop ? '440px' : '100%',
+      modalRadius: isDesktop ? '16px' : '18px 18px 0 0',
+      drawerWidth: isDesktop ? '320px' : '78%',
+      view,
+      isFresh: view === 'fresh',
+      isDownloading: view === 'downloading',
+      isReady: view === 'ready',
+      isCacheFull: view === 'cachefull',
+      showClear: view === 'ready' || view === 'cachefull',
+      modelLabel,
+      modelDot,
+      cacheLabel,
+      cacheColor,
+      ramLabel,
+      pillSummary: modelLabel + ' · ' + cacheLabel,
+      files,
+      cacheFiles,
+      totalCache: view === 'cachefull' ? '1.92 GB' : '1.13 GB',
+      setFresh,
+      setDownloading,
+      setReady,
+      setCacheFull,
+      onSearch,
+      pillOpen: this.state.pillOpen[key],
+      togglePill: () => this.togglePill(key),
+      drawerOpen: this.state.drawerOpen[key],
+      toggleDrawer: () => this.toggleDrawer(key),
+      dismissed: this.state.dismissed[key],
+      dismiss: () => this.setDismissed(key, true),
+      undismiss: () => this.setDismissed(key, false),
+      showBanner: view === 'fresh' && this.state.dismissed[key],
+      showBlockingModal,
+      promptNotNow,
+      promptConfirm
+    };
+  }
+
+  renderVals() {
+    return {
+      o1a: this.buildOption('a'),
+      o1b: this.buildOption('b'),
+      o1c: this.buildOption('c')
+    };
+  }
+}
+
+</script>
+</body>
+</html>

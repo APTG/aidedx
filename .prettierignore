@@ -11,3 +11,7 @@ static/aliases/
 
 # Vendored libdedx WASM artifacts — built by emscripten, not hand-maintained (issue #6)
 static/wasm/
+
+# Design mockup vendored from issue #32's comment attachment, plus its generated support
+# runtime ("do not edit" per its own header) — not hand-maintained, see docs/status-panel-design.md
+docs/status-panel-mockup/

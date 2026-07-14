@@ -4,10 +4,12 @@ AI-assisted, in-browser front-end for stopping-power (dE/dx) queries. Ask a
 question in plain language and get an answer computed **entirely on your
 machine** — nothing is sent to a server.
 
-> **Status:** Phase 1 scaffold. This is the app skeleton + continuous GitHub
-> Pages deploy only. **No ML yet** — the heavy in-browser model backends
-> (transformers.js / WebLLM / wllama) are dynamic-imported in a later phase so
-> the shell loads instantly and ships zero ML in the initial bundle.
+> **Status:** Voice input is live — press the mic, speak, and see a transcript
+> (Whisper via transformers.js, lazy-imported so the shell still ships zero ML
+> in the initial bundle). Wiring that transcript through the deterministic NLU
+> matcher to a computed, on-screen answer is in progress (issue #39). Model
+> weights download on first use with explicit consent and a visible status
+> panel — see [`docs/status-panel-design.md`](docs/status-panel-design.md).
 
 ## Stack
 
@@ -91,6 +93,27 @@ actual WASM under Node for the issue #1 §7 examples.
 
 The binaries are prebuilt and checked in. See [`docs/wasm.md`](docs/wasm.md) for
 the wrapper boundary, provenance, and how to regenerate them.
+
+## Documentation
+
+Deeper write-ups live in [`docs/`](docs/):
+
+- [`docs/design.md`](docs/design.md) — the original design & prototyping plan (issue #1):
+  architecture, the `QueryIntent` schema, and phasing.
+- [`docs/voice-pipeline-feasibility.md`](docs/voice-pipeline-feasibility.md) — 2026-07-05 audit of
+  the ASR/NLU spikes' findings, with a revised architecture and measured numbers.
+- [`docs/apple-silicon-benchmark.md`](docs/apple-silicon-benchmark.md) — the same benchmarks
+  re-run on Apple Silicon (M5): ASR latency, LLM-NLU-fallback viability, KV-cache reuse.
+- [`docs/aliases.md`](docs/aliases.md) — material/particle alias table provenance and
+  regeneration.
+- [`docs/wasm.md`](docs/wasm.md) — the libdedx WASM wrapper boundary and how to rebuild the
+  binaries.
+- [`docs/local-model-cache.md`](docs/local-model-cache.md) — the Node-side `.hf-cache/` prefetch
+  convention used by the benchmark scripts.
+- [`docs/model-hosting-cyfronet.md`](docs/model-hosting-cyfronet.md) — mirroring model weights to
+  Cyfronet S3 instead of Hugging Face's CDN.
+- [`docs/status-panel-design.md`](docs/status-panel-design.md) — the model-status header,
+  download-consent, and clear-cache UX.
 
 ## Cross-origin isolation (deferred)
 

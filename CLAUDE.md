@@ -80,6 +80,14 @@ Call `mkdirSync(dir, { recursive: true })` in the orchestrator before spawning.
 When writing GitHub issue comments or instructions for collaborators, use browser/UI-based steps. Do
 **not** reference the `gh` CLI — collaborators may not have it installed.
 
+**Research/spike issues must land findings in a committed doc before closing.** If an issue's job is
+to answer a question (a "Spike N", a benchmark run, an investigation) rather than ship a feature,
+its conclusion must go into a new or updated `docs/*.md` file — not just a closing comment. A comment
+thread is easy to miss, isn't linked from code, and isn't part of the durable project record the way
+`docs/*.md` is. `docs/voice-pipeline-feasibility.md` and `docs/apple-silicon-benchmark.md` are the
+model to follow: audit what prior comments found, correct anything that doesn't hold up, and leave a
+self-contained report the next reader doesn't have to reconstruct from issue history.
+
 ## Key source files
 
 - `src/lib/intent/query-intent.ts` — `QueryIntent` schema, `EVAL_TAGS`, `validateQueryIntent()`
