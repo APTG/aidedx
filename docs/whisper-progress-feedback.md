@@ -477,6 +477,52 @@ real data instead of source-reading alone:
   `MicButton.svelte` shows the live growing transcript (with the elapsed counter alongside it)
   instead of a bare "Transcribing…" once the first word lands.
 
+## Follow-up: a wall-clock ETA bar was tried and reverted; token-count is the better signal (see issue #46)
+
+A same-session follow-up replaced the elapsed-seconds counter with a progress bar estimated from
+`recordingDurationSeconds × a self-calibrating real-time factor` (persisted in `localStorage`,
+mirroring `format.ts`'s `formatEta` for model downloads). It worked and was verified live in a
+browser, but was reverted before merging in favor of a better-grounded approach: estimating progress
+from **decoder tokens generated so far**, not wall-clock time against an audio-duration proxy.
+
+Measured directly (`WhisperTextStreamer`'s `token_callback_function`, `skip_prompt: true`, 8 real
+eval clips, this app's actual domain-prompt decoder setup, local `.hf-cache` — Linux CPU, no GPU):
+
+| clip           | audio (s) | total (ms) | tokens | first-token (ms) | median inter-token (ms) |
+| -------------- | --------: | ---------: | -----: | ---------------: | ----------------------: |
+| km/sp-005      |      5.38 |       2044 |     14 |             1457 |                      47 |
+| km/rng-002     |      5.38 |       1917 |     16 |             1302 |                      45 |
+| km/cmp-mat-001 |      5.38 |       2270 |     14 |             1671 |                      47 |
+| mn/pernuc-001  |      5.25 |       1864 |     14 |             1336 |                      40 |
+| lg/stress-001  |      8.58 |       2311 |     17 |             1687 |                      38 |
+| km/unit-001    |      6.14 |       1736 |     11 |             1318 |                      41 |
+| km/conv-008    |      7.17 |       2451 |     19 |             1756 |                      40 |
+| mn/iso-002     |      5.89 |       2003 |     18 |             1337 |                      42 |
+| **median**     |           |            | **16** |         **1457** |                  **42** |
+
+Two things this reveals that the RTF-vs-audio-duration model didn't capture:
+
+1. **Total time splits into a near-constant prefill phase + a token-proportional decode phase**,
+   not one number proportional to recording length. First-token latency (1.3-1.8s, median 1.46s)
+   doesn't track audio length the way total time roughly does (5.4s audio and 8.6s audio both land
+   in the same ~1.3-1.8s prefill band) — consistent with `modeling_whisper.js`'s encoder always
+   running over a fixed 30s-equivalent padded mel segment (§3.2's citations) regardless of the
+   actual speech length, plus the constant ~40-token domain prompt. Audio duration mostly predicts
+   how much silence gets padded, not how long the encoder pass takes.
+2. **Per-token decode interval is remarkably stable** — 38-47ms across all 8 clips, a much tighter
+   spread than the tokens-per-audio-second ratio (1.79-3.06, no tight median) that an audio-duration
+   -based model would have to rely on. That stability is what makes it a good self-calibrating
+   signal: a session's first few tokens already estimate this device's real per-token cost well.
+
+Proposed (not implemented) model: `estimatedMs ≈ prefillMs + tokensGeneratedSoFar × perTokenMs`,
+both `prefillMs` and `perTokenMs` self-calibrated the same way `transcribe-eta.ts`'s reverted
+real-time-factor was (EMA, `localStorage`-persisted), but `tokensGeneratedSoFar` comes from real,
+exact progress (`token_callback_function`'s call count) rather than an elapsed-time proxy — so the
+bar tracks actual decode work done, not a guess about how fast this transcription happens to be
+going relative to an audio-length estimate. Total expected tokens for the denominator would still
+need its own estimate (e.g. a self-calibrated median, or extrapolating from the growing word count
+mid-transcription) — this is the open design question left to issue #46.
+
 ## Related
 
 - `docs/voice-pipeline-feasibility.md` §2.4 — the domain-prompt-biasing fix whose
