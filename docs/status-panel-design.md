@@ -18,8 +18,9 @@ scope is the Basic/Advanced toggle itself, if that's still wanted.
 ## What it looks like
 
 - A compact **status pill** in the header — a colored dot + one-line summary (e.g.
-  `Ready · 1.13 GB`) — that expands into a panel on click/tap. Sits next to a dark-mode toggle that
-  persists to `localStorage`.
+  `Ready · 240 MB`, today's total for the one currently-mirrored model, whisper-small — it'll grow
+  once qwen/llama are mirrored too, see `src/lib/models/manifest.ts`) — that expands into a panel on
+  click/tap. Sits next to a dark-mode toggle that persists to `localStorage`.
 - The panel has four rows: **Model** (Not downloaded / Downloading… NN% / Ready), **Disk cache**
   (size + an inline Clear action once non-zero), **Memory (RAM)**, **Hardware** (`GPU · WebGPU` or
   `CPU only`).
@@ -97,6 +98,13 @@ that shipped. `support.js` is a generated third-party rendering runtime for that
 `{{ }}`-templated format, not aidedx code — see the "do not edit" header in the file itself; both
 are excluded from Prettier/ESLint (`.prettierignore`, `eslint.config.js`) as vendored, not
 hand-maintained.
+
+**Not fully offline.** "Vendored" here means the repo doesn't depend on GitHub's attachment hosting
+for the file itself — it does **not** mean the mockup is self-contained. Opening the HTML fetches
+and executes React, ReactDOM, and Babel Standalone from `unpkg.com` at runtime (specific versions
+pinned via SRI hashes, but still a live third-party fetch). This is fine for a developer-only design
+reference that's never loaded by an aidedx user, but worth knowing before opening the file on an
+untrusted or offline network.
 
 ## Related
 
