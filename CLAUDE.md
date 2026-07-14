@@ -88,6 +88,9 @@ When writing GitHub issue comments or instructions for collaborators, use browse
 - `src/lib/aliases/` — material + particle alias tables for libdedx
 - `src/lib/wasm/` — libdedx WASM wrapper (`getService()`)
 - `src/lib/compute/` — `computeIntent()` — resolves a `QueryIntent` to real numbers
+- `src/lib/nlg/render.ts` — `renderAnswer()` — templated `ComputeResult` → plain-text answer lines
+- `src/lib/answer/answer-status.svelte.ts` — reactive store wiring query text → matcher → compute →
+  NLG (`answerStatus.submit()`), shared by the typed query and the mic transcript (issue #39)
 - `eval/intents.jsonl` — hand-labeled eval set (~120 examples)
 - `scripts/validate-intents.ts` — `pnpm run validate:eval` entrypoint (schema + tag validation)
 - `scripts/coverage-intents.ts` — `pnpm run coverage:intents` deterministic NLU coverage

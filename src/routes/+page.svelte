@@ -1,13 +1,14 @@
 <script lang="ts">
-  // Landing shell — intentionally no NLU/answer wiring yet (issue #37 is
-  // ASR-only: mic -> transcript). The heavy in-browser model backend
-  // (transformers.js) is dynamic-imported inside asr-status.svelte.ts's
-  // transcribe() call, not from this page, so the shell still loads
-  // instantly and ships zero ML in the initial bundle — it's only pulled in
-  // once a recording actually finishes.
+  // The heavy in-browser model backends (transformers.js for ASR, the
+  // libdedx WASM module for compute) are both dynamic-imported from inside
+  // asr-status.svelte.ts / answer-status.svelte.ts, not from this page, so
+  // the shell still loads instantly and ships zero ML/WASM in the initial
+  // bundle — each is only pulled in once it's actually needed.
   import ModelDownloadBanner from "$lib/components/status/ModelDownloadBanner.svelte";
   import MicButton from "$lib/components/asr/MicButton.svelte";
+  import AnswerCard from "$lib/components/answer/AnswerCard.svelte";
   import { asrStatus } from "$lib/asr/asr-status.svelte.ts";
+  import { answerStatus } from "$lib/answer/answer-status.svelte.ts";
   import { modelStatus } from "$lib/models/model-status.svelte.ts";
   import { formatElapsedSeconds } from "$lib/format.ts";
 
@@ -25,13 +26,16 @@
   });
 
   // Once transcription finishes, drop the transcript into the same field
-  // the user could otherwise type into — wiring it to an answer is a
-  // separate follow-up (see issue #37's scope note). Set query even when
-  // the transcript is empty (e.g. silence) so a stale previous query
-  // doesn't linger and read as if it were the result of this recording.
+  // the user could otherwise type into, and run it through the same
+  // answer pipeline as a typed submit (issue #39 — no separate code path
+  // for typed vs. spoken input). Set query even when the transcript is
+  // empty (e.g. silence) so a stale previous query doesn't linger and read
+  // as if it were the result of this recording; an empty transcript resets
+  // the answer instead of running the matcher against nothing.
   $effect(() => {
     if (asrStatus.phase === "done") {
       query = asrStatus.transcript;
+      void answerStatus.submit(asrStatus.transcript);
     }
   });
 
@@ -48,7 +52,7 @@
 
   function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
-    // No-op for now: wiring the query to a model backend comes later.
+    void answerStatus.submit(query);
   }
 </script>
 
@@ -94,6 +98,12 @@
       Search
     </button>
   </form>
+
+  <AnswerCard
+    phase={answerStatus.phase}
+    lines={answerStatus.lines}
+    message={answerStatus.message}
+  />
 
   <ModelDownloadBanner />
 
