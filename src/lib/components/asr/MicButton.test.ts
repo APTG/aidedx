@@ -137,6 +137,9 @@ describe("MicButton", () => {
 
     const button = getByRole("button", { name: /start/i });
     expect(button).toBeDisabled();
-    expect(button).toHaveAttribute("title", "Download the speech model first");
+    // title lives on the wrapper, not the disabled button itself — disabled
+    // controls don't reliably trigger the native tooltip (see MicButton.svelte).
+    expect(button).not.toHaveAttribute("title");
+    expect(button.parentElement).toHaveAttribute("title", "Download the speech model first");
   });
 });

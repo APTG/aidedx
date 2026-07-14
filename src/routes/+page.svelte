@@ -26,9 +26,11 @@
 
   // Once transcription finishes, drop the transcript into the same field
   // the user could otherwise type into — wiring it to an answer is a
-  // separate follow-up (see issue #37's scope note).
+  // separate follow-up (see issue #37's scope note). Set query even when
+  // the transcript is empty (e.g. silence) so a stale previous query
+  // doesn't linger and read as if it were the result of this recording.
   $effect(() => {
-    if (asrStatus.phase === "done" && asrStatus.transcript) {
+    if (asrStatus.phase === "done") {
       query = asrStatus.transcript;
     }
   });
