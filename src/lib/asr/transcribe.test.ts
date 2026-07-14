@@ -6,9 +6,18 @@ const mocks = vi.hoisted(() => ({
   env: {} as { remoteHost?: string },
 }));
 
+/** Mirrors the real class closely enough for `transcribe.ts`'s usage: constructed with (tokenizer, options), exposes nothing else. */
+class FakeWhisperTextStreamer {
+  constructor(
+    _tokenizer: unknown,
+    public options: { skip_prompt: boolean; callback_function: (text: string) => void },
+  ) {}
+}
+
 vi.mock("@huggingface/transformers", () => ({
   pipeline: mocks.pipeline,
   env: mocks.env,
+  WhisperTextStreamer: FakeWhisperTextStreamer,
 }));
 
 const GENERATION_CONFIG = {
@@ -32,7 +41,9 @@ function makeTokenizer(startOfPrevIds: number[], promptIds: number[]) {
 
 function makeAsr(options: { startOfPrevIds?: number[]; promptIds?: number[]; resultText: string }) {
   const { startOfPrevIds = [50361], promptIds = [10, 11], resultText } = options;
-  const call = vi.fn(async () => ({ text: resultText }));
+  const call = vi.fn(async (_pcm?: Float32Array, _opts?: Record<string, unknown>) => ({
+    text: resultText,
+  }));
   return Object.assign(call, {
     model: { generation_config: GENERATION_CONFIG },
     tokenizer: makeTokenizer(startOfPrevIds, promptIds),
@@ -138,5 +149,47 @@ describe("transcribe", () => {
     await transcribe(new Float32Array([0, 0, 0]));
 
     expect(mocks.pipeline).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not construct a streamer when onPartial isn't passed (no per-call overhead for typed-query answers)", async () => {
+    const asr = makeAsr({ resultText: `${PROMPT_PREFIX_TEXT} test` });
+    mocks.pipeline.mockResolvedValue(asr);
+
+    const { transcribe } = await import("./transcribe.ts");
+    await transcribe(new Float32Array([0, 0, 0]));
+
+    expect(asr).toHaveBeenCalledWith(
+      expect.any(Float32Array),
+      expect.not.objectContaining({ streamer: expect.anything() }),
+    );
+  });
+
+  it("wires a skip_prompt streamer and reports the accumulated partial transcript as words stream in (issue #44)", async () => {
+    // skip_prompt=true is load-bearing: generate() flushes the whole
+    // decoder_input_ids (the DOMAIN_PROMPT vocabulary list) through the
+    // streamer as its first callback — without skip_prompt, onPartial would
+    // momentarily show the raw prompt list instead of the transcript.
+    const asr = makeAsr({ resultText: `${PROMPT_PREFIX_TEXT} what is the range` });
+    asr.mockImplementation(async (_pcm, opts = {}) => {
+      const streamer = opts.streamer as FakeWhisperTextStreamer | undefined;
+      streamer?.options.callback_function("what ");
+      streamer?.options.callback_function("is ");
+      streamer?.options.callback_function("the range");
+      return { text: `${PROMPT_PREFIX_TEXT} what is the range` };
+    });
+    mocks.pipeline.mockResolvedValue(asr);
+
+    const partials: string[] = [];
+    const { transcribe } = await import("./transcribe.ts");
+    await transcribe(new Float32Array([0, 0, 0]), { onPartial: (text) => partials.push(text) });
+
+    expect(partials).toEqual(["what", "what is", "what is the range"]);
+    expect(asr).toHaveBeenCalledWith(
+      expect.any(Float32Array),
+      expect.objectContaining({ streamer: expect.any(FakeWhisperTextStreamer) }),
+    );
+    const constructedStreamer = (asr.mock.calls[0]?.[1] as Record<string, unknown>)
+      .streamer as FakeWhisperTextStreamer;
+    expect(constructedStreamer.options.skip_prompt).toBe(true);
   });
 });

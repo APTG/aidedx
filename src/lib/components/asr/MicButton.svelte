@@ -6,6 +6,8 @@
     errorMessage: string | null;
     /** Pre-formatted elapsed time (e.g. "3 s"), or null to hide it. */
     elapsedLabel: string | null;
+    /** Live running transcript while transcribing (issue #44), or "" before the first word lands. */
+    partialTranscript: string;
     disabled?: boolean;
     disabledReason?: string | undefined;
     onStart: () => void;
@@ -16,6 +18,7 @@
     phase,
     errorMessage,
     elapsedLabel,
+    partialTranscript,
     disabled = false,
     disabledReason,
     onStart,
@@ -79,8 +82,12 @@
       Listening…{elapsedLabel ? ` ${elapsedLabel}` : ""}
     </p>
   {:else if isTranscribing}
-    <p class="text-xs text-muted-foreground" role="status">
-      Transcribing…{elapsedLabel ? ` ${elapsedLabel}` : ""}
+    <p class="truncate text-xs text-muted-foreground" role="status">
+      {#if partialTranscript}
+        “{partialTranscript}…”{elapsedLabel ? ` ${elapsedLabel}` : ""}
+      {:else}
+        Transcribing…{elapsedLabel ? ` ${elapsedLabel}` : ""}
+      {/if}
     </p>
   {:else if phase === "error" && errorMessage}
     <p class="text-xs text-danger" role="alert">{errorMessage} Click Start to try again.</p>

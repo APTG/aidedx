@@ -5,10 +5,17 @@
  * (decode/inference failure). A single instance is used by whichever UI
  * component renders the mic button, mirroring `model-status.svelte.ts`'s
  * single-shared-store pattern.
+ *
+ * Inference runs in a Web Worker (issue #44 Phase B) via `worker-client.ts`,
+ * not inline — `decodeToMono16k` still runs here since it needs
+ * `AudioContext`, which only exists on the main thread. `partialTranscript`
+ * mirrors the worker's live word-by-word callbacks (issue #44 Phase A) so
+ * the UI can show real progress on a multi-second CPU transcription instead
+ * of a bare spinner.
  */
 import { MicRecorder } from "./recorder.ts";
 import { decodeToMono16k } from "./pcm.ts";
-import { transcribe } from "./transcribe.ts";
+import { createTranscribeWorkerClient, type TranscribeWorkerClient } from "./worker-client.ts";
 
 export type AsrPhase = "idle" | "recording" | "transcribing" | "done" | "error";
 
@@ -27,11 +34,26 @@ function describeError(error: unknown): string {
 class AsrStore {
   phase: AsrPhase = $state("idle");
   transcript = $state("");
+  /** Live running transcript as the worker decodes words (issue #44); cleared on start()/reset(). */
+  partialTranscript = $state("");
   errorMessage: string | null = $state(null);
   recordingStartedAt: number | null = $state(null);
   transcribingStartedAt: number | null = $state(null);
 
   #recorder = new MicRecorder();
+  #workerClient: TranscribeWorkerClient | null = null;
+
+  /**
+   * Created lazily, not as a field initializer — `new Worker(...)` must
+   * never run during SSR/prerendering, and this store is instantiated as a
+   * module-level singleton that DOES get imported by prerendered pages.
+   * Lazy creation here mirrors why `#recorder` (a plain class, side-effect
+   * -free to construct) can safely be a field initializer while this can't.
+   */
+  #getWorkerClient(): TranscribeWorkerClient {
+    this.#workerClient ??= createTranscribeWorkerClient();
+    return this.#workerClient;
+  }
 
   get isBusy(): boolean {
     return this.phase === "recording" || this.phase === "transcribing";
@@ -41,6 +63,7 @@ class AsrStore {
     if (this.isBusy) return;
     this.errorMessage = null;
     this.transcript = "";
+    this.partialTranscript = "";
     try {
       await this.#recorder.start();
       this.phase = "recording";
@@ -59,7 +82,9 @@ class AsrStore {
     try {
       const blob = await this.#recorder.stop();
       const pcm = await decodeToMono16k(await blob.arrayBuffer());
-      this.transcript = await transcribe(pcm);
+      this.transcript = await this.#getWorkerClient().transcribe(pcm, (textSoFar) => {
+        this.partialTranscript = textSoFar;
+      });
       this.phase = "done";
     } catch (error) {
       this.errorMessage = describeError(error);
@@ -73,6 +98,7 @@ class AsrStore {
   reset(): void {
     this.phase = "idle";
     this.transcript = "";
+    this.partialTranscript = "";
     this.errorMessage = null;
     this.recordingStartedAt = null;
     this.transcribingStartedAt = null;

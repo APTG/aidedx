@@ -86,6 +86,7 @@
         phase={asrStatus.phase}
         errorMessage={asrStatus.errorMessage}
         {elapsedLabel}
+        partialTranscript={asrStatus.partialTranscript}
         disabled={modelStatus.phase !== "ready"}
         disabledReason={micDisabledReason}
         onStart={() => asrStatus.start()}

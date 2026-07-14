@@ -31,6 +31,27 @@
  * upstream fix) does not have this bug. The override can be dropped once
  * `@huggingface/transformers` bumps its own pinned `onnxruntime-web` past
  * the fix.
+ *
+ * Live word-by-word progress (issue #44, `docs/whisper-progress-feedback.md`):
+ * an optional `onPartial` callback wires a `WhisperTextStreamer` into the
+ * `generate()` call — `docs/whisper-progress-feedback.md` §1 traced that
+ * `streamer.put()` fires once per real decoded token, so this is genuine
+ * incremental progress, not a fake animation. `skip_prompt: true` is load
+ * -bearing, not cosmetic: `generate()` flushes the *entire* supplied
+ * `decoder_input_ids` (the whole `DOMAIN_PROMPT` list) through the streamer
+ * as one callback before the first real answer token — confirmed empirically
+ * against local eval audio during this issue's investigation — so without
+ * `skip_prompt`, the UI would flash the raw domain-prompt vocabulary list
+ * before the actual transcript. Only word-level streaming is wired: the
+ * timestamp-gated `on_chunk_start`/`on_chunk_end` seconds-processed signal
+ * (`return_timestamps: true`) was evaluated and deliberately *not* shipped —
+ * measured against local eval audio, those events fire once at t=0 and once
+ * just before the final word for this app's typical 5-15 word queries (one
+ * segment, not a sweep), so a "seconds processed" bar built on it would sit
+ * at 0% and then jump to ~100% right as transcription finishes — no more
+ * informative than the word stream this module already provides, for
+ * meaningfully more decoder-config risk (`docs/whisper-progress-feedback.md`
+ * §3.2). Revisit only if this app ever supports longer-form recording.
  */
 import { MODEL_MANIFEST } from "../models/manifest.ts";
 import { MODEL_MIRROR_HOST } from "../models/remote.ts";
@@ -65,16 +86,31 @@ export interface AsrPipelineLike {
   };
 }
 
-let pipelinePromise: Promise<AsrPipelineLike> | null = null;
+interface StreamerCtor {
+  new (
+    tokenizer: AsrPipelineLike["tokenizer"],
+    options: { skip_prompt: boolean; callback_function: (text: string) => void },
+  ): unknown;
+}
 
-function loadPipeline(): Promise<AsrPipelineLike> {
+interface LoadedPipeline {
+  asr: AsrPipelineLike;
+  WhisperTextStreamer: StreamerCtor;
+}
+
+let pipelinePromise: Promise<LoadedPipeline> | null = null;
+
+function loadPipeline(): Promise<LoadedPipeline> {
   pipelinePromise ??= (async () => {
-    const { pipeline, env } = await import("@huggingface/transformers");
+    const { pipeline, env, WhisperTextStreamer } = await import("@huggingface/transformers");
     env.remoteHost = MODEL_MIRROR_HOST;
     const asr = await pipeline("automatic-speech-recognition", WHISPER_REPO, {
       dtype: WHISPER_DTYPE,
     });
-    return asr as unknown as AsrPipelineLike;
+    return {
+      asr: asr as unknown as AsrPipelineLike,
+      WhisperTextStreamer: WhisperTextStreamer as unknown as StreamerCtor,
+    };
   })();
   return pipelinePromise;
 }
@@ -118,11 +154,33 @@ async function buildDomainPromptOptions(
   };
 }
 
+export interface TranscribeOptions {
+  /** Fires with the accumulated transcript so far as each word is decoded (issue #44). */
+  onPartial?: (textSoFar: string) => void;
+}
+
 /** Transcribes 16 kHz mono PCM audio, stripping the domain-prompt prefix Whisper otherwise echoes back into the output. */
-export async function transcribe(pcm: Float32Array): Promise<string> {
-  const asr = await loadPipeline();
+export async function transcribe(
+  pcm: Float32Array,
+  options: TranscribeOptions = {},
+): Promise<string> {
+  const { asr, WhisperTextStreamer } = await loadPipeline();
   const { genOpts, promptPrefix } = await buildDomainPromptOptions(asr);
-  const result = await asr(pcm, genOpts);
+
+  let streamer: unknown;
+  if (options.onPartial) {
+    let accumulated = "";
+    streamer = new WhisperTextStreamer(asr.tokenizer, {
+      // skip_prompt=true is required, not cosmetic — see module comment.
+      skip_prompt: true,
+      callback_function: (text: string) => {
+        accumulated += text;
+        options.onPartial?.(accumulated.trim());
+      },
+    });
+  }
+
+  const result = await asr(pcm, streamer ? { ...genOpts, streamer } : genOpts);
   let text = result.text.trim();
   if (promptPrefix && text.startsWith(promptPrefix)) {
     text = text.slice(promptPrefix.length).trimStart();

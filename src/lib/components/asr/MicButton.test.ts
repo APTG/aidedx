@@ -13,6 +13,7 @@ describe("MicButton", () => {
         phase: "idle",
         errorMessage: null,
         elapsedLabel: null,
+        partialTranscript: "",
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
@@ -30,6 +31,7 @@ describe("MicButton", () => {
         phase: "idle",
         errorMessage: null,
         elapsedLabel: null,
+        partialTranscript: "",
         onStart,
         onStop: vi.fn(),
       },
@@ -45,6 +47,7 @@ describe("MicButton", () => {
         phase: "recording",
         errorMessage: null,
         elapsedLabel: "3 s",
+        partialTranscript: "",
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
@@ -62,6 +65,7 @@ describe("MicButton", () => {
         phase: "recording",
         errorMessage: null,
         elapsedLabel: null,
+        partialTranscript: "",
         onStart: vi.fn(),
         onStop,
       },
@@ -77,6 +81,7 @@ describe("MicButton", () => {
         phase: "transcribing",
         errorMessage: null,
         elapsedLabel: "5 s",
+        partialTranscript: "",
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
@@ -87,6 +92,21 @@ describe("MicButton", () => {
     expect(getByRole("status")).toHaveTextContent("Transcribing… 5 s");
   });
 
+  it("shows the live partial transcript instead of a bare 'Transcribing…' once words arrive (issue #44)", () => {
+    const { getByRole } = render(MicButton, {
+      props: {
+        phase: "transcribing",
+        errorMessage: null,
+        elapsedLabel: "12 s",
+        partialTranscript: "range of protons in",
+        onStart: vi.fn(),
+        onStop: vi.fn(),
+      },
+    });
+
+    expect(getByRole("status")).toHaveTextContent("“range of protons in…” 12 s");
+  });
+
   it("shows the error message with a retry hint, and Start is clickable again", async () => {
     const onStart = vi.fn();
     const { getByRole } = render(MicButton, {
@@ -94,6 +114,7 @@ describe("MicButton", () => {
         phase: "error",
         errorMessage: "Microphone access was denied.",
         elapsedLabel: null,
+        partialTranscript: "",
         onStart,
         onStop: vi.fn(),
       },
@@ -114,6 +135,7 @@ describe("MicButton", () => {
         phase: "done",
         errorMessage: null,
         elapsedLabel: null,
+        partialTranscript: "",
         onStart: vi.fn(),
         onStop: vi.fn(),
       },
@@ -128,6 +150,7 @@ describe("MicButton", () => {
         phase: "idle",
         errorMessage: null,
         elapsedLabel: null,
+        partialTranscript: "",
         disabled: true,
         disabledReason: "Download the speech model first",
         onStart: vi.fn(),
