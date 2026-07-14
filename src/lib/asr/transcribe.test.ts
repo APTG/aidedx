@@ -151,6 +151,30 @@ describe("transcribe", () => {
     expect(mocks.pipeline).toHaveBeenCalledTimes(1);
   });
 
+  it("warmup() loads the pipeline so a later transcribe() doesn't pay the load cost again (issue #46 follow-up)", async () => {
+    const asr = makeAsr({ resultText: `${PROMPT_PREFIX_TEXT} test` });
+    mocks.pipeline.mockResolvedValue(asr);
+
+    const { transcribe, warmup } = await import("./transcribe.ts");
+    await warmup();
+    expect(mocks.pipeline).toHaveBeenCalledTimes(1);
+
+    await transcribe(new Float32Array([0, 0, 0]));
+    expect(mocks.pipeline).toHaveBeenCalledTimes(1);
+  });
+
+  it("retries pipeline loading on the next call after a failure instead of staying permanently broken", async () => {
+    const asr = makeAsr({ resultText: `${PROMPT_PREFIX_TEXT} test` });
+    mocks.pipeline.mockRejectedValueOnce(new Error("network blip")).mockResolvedValue(asr);
+
+    const { transcribe, warmup } = await import("./transcribe.ts");
+    await expect(warmup()).rejects.toThrow("network blip");
+
+    const text = await transcribe(new Float32Array([0, 0, 0]));
+    expect(text).toBe("test");
+    expect(mocks.pipeline).toHaveBeenCalledTimes(2);
+  });
+
   it("does not construct a streamer when onToken isn't passed (no per-call overhead for typed-query answers)", async () => {
     const asr = makeAsr({ resultText: `${PROMPT_PREFIX_TEXT} test` });
     mocks.pipeline.mockResolvedValue(asr);

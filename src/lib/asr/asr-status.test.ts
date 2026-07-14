@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   recorderStop: vi.fn(),
   decodeToMono16k: vi.fn(),
   workerTranscribe: vi.fn(),
+  workerWarm: vi.fn(),
   workerTerminate: vi.fn(),
   createTranscribeWorkerClient: vi.fn(),
   recordCompletedTranscription: vi.fn(),
@@ -43,9 +44,11 @@ describe("asrStatus", () => {
     mocks.recorderStop.mockReset().mockResolvedValue(FAKE_BLOB);
     mocks.decodeToMono16k.mockReset().mockResolvedValue(new Float32Array());
     mocks.workerTranscribe.mockReset().mockResolvedValue("hello world");
+    mocks.workerWarm.mockReset();
     mocks.workerTerminate.mockReset();
     mocks.createTranscribeWorkerClient.mockReset().mockReturnValue({
       transcribe: mocks.workerTranscribe,
+      warm: mocks.workerWarm,
       terminate: mocks.workerTerminate,
     });
     mocks.recordCompletedTranscription.mockReset();
@@ -209,7 +212,7 @@ describe("asrStatus", () => {
     expect(store.transcribingStartedAt).toBeNull();
   });
 
-  it("creates the worker client lazily on first use and reuses it across repeated recordings", async () => {
+  it("creates the worker client lazily on first start() and reuses it across repeated recordings", async () => {
     const store = await loadStore();
     expect(mocks.createTranscribeWorkerClient).not.toHaveBeenCalled();
 
@@ -219,5 +222,24 @@ describe("asrStatus", () => {
     await store.stop();
 
     expect(mocks.createTranscribeWorkerClient).toHaveBeenCalledTimes(1);
+  });
+
+  it("warms the worker's pipeline on start(), overlapping load time with recording instead of stacking it after stop()", async () => {
+    const store = await loadStore();
+
+    await store.start();
+
+    expect(mocks.workerWarm).toHaveBeenCalledTimes(1);
+    expect(mocks.workerTranscribe).not.toHaveBeenCalled();
+  });
+
+  it("still warms on start() even if the recorder subsequently fails to start", async () => {
+    mocks.recorderStart.mockRejectedValue(new DOMException("denied", "NotAllowedError"));
+    const store = await loadStore();
+
+    await store.start();
+
+    expect(mocks.workerWarm).toHaveBeenCalledTimes(1);
+    expect(store.phase).toBe("error");
   });
 });

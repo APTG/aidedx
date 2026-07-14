@@ -71,6 +71,15 @@ class AsrStore {
     this.errorMessage = null;
     this.transcript = "";
     this.tokensSoFar = 0;
+    // Kick off pipeline loading (Cache Storage read + ONNX Runtime Web
+    // session creation) now, in parallel with the recording the user is
+    // about to make, instead of waiting for stop() to request it. That cost
+    // is the dominant, uncalibrated part of the first "Warming up…" state
+    // (see transcribe-progress.ts's module comment); overlapping it with
+    // mic recording time hides most or all of it instead of stacking it
+    // after the user finishes speaking. Safe to call on every start() — the
+    // worker's own loadPipeline() memoizes the load after the first time.
+    this.#getWorkerClient().warm();
     try {
       await this.#recorder.start();
       this.phase = "recording";

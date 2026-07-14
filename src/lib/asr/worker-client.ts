@@ -10,6 +10,8 @@ import type { WorkerRequest, WorkerResponse } from "./worker-protocol.ts";
 export interface TranscribeWorkerClient {
   /** Transfers `pcm`'s buffer to the worker; `pcm` must not be used after calling this. */
   transcribe(pcm: Float32Array, onToken: (tokensSoFar: number) => void): Promise<string>;
+  /** Fire-and-forget: asks the worker to start loading the pipeline now. Safe to call repeatedly — the worker's own loadPipeline() memoizes it. */
+  warm(): void;
   terminate(): void;
 }
 
@@ -62,6 +64,11 @@ class WorkerTranscribeClient implements TranscribeWorkerClient {
       const request: WorkerRequest = { type: "transcribe", pcm };
       this.#worker.postMessage(request, [pcm.buffer]);
     });
+  }
+
+  warm(): void {
+    const request: WorkerRequest = { type: "warm" };
+    this.#worker.postMessage(request);
   }
 
   terminate(): void {

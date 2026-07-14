@@ -104,6 +104,19 @@ describe("worker-client", () => {
     await expect(promise).rejects.toThrow("script error");
   });
 
+  it("warm() posts a 'warm' message and doesn't touch #pending", async () => {
+    const { createTranscribeWorkerClient } = await import("./worker-client.ts");
+    const client = createTranscribeWorkerClient();
+
+    client.warm();
+
+    expect(lastWorker()?.posted).toEqual([{ type: "warm" }]);
+
+    // A later 'done' with no matching transcribe() call must not throw or
+    // resolve anything — warm() has no pending promise to settle.
+    expect(() => lastWorker()?.emit({ type: "done", text: "unrelated" })).not.toThrow();
+  });
+
   it("terminate() delegates to the underlying Worker", async () => {
     const { createTranscribeWorkerClient } = await import("./worker-client.ts");
     const client = createTranscribeWorkerClient();

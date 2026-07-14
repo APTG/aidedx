@@ -10,11 +10,19 @@
  * Message contract (see `worker-client.ts`, the only other file that should
  * import this contract):
  *   in:  { type: "transcribe", pcm: Float32Array }
+ *      | { type: "warm" }
  *   out: { type: "token", count: number } (zero or more)
  *      | { type: "done", text: string }
  *      | { type: "error", message: string }
+ *
+ * `"warm"` loads the pipeline (Cache Storage read + ONNX Runtime Web session
+ * creation) ahead of the first real `"transcribe"` request, so that cost
+ * overlaps with the user recording instead of stacking onto the "Warming
+ * up…" state after they stop — see `transcribe.ts`'s `warmup()`. It has no
+ * response; a failed prewarm surfaces instead through the next real
+ * `"transcribe"` request, which retries the load itself.
  */
-import { transcribe } from "./transcribe.ts";
+import { transcribe, warmup } from "./transcribe.ts";
 import type { WorkerRequest, WorkerResponse } from "./worker-protocol.ts";
 
 function post(message: WorkerResponse): void {
@@ -22,8 +30,15 @@ function post(message: WorkerResponse): void {
 }
 
 self.onmessage = (event: MessageEvent<WorkerRequest>) => {
-  const { pcm } = event.data;
-  transcribe(pcm, { onToken: (count) => post({ type: "token", count }) })
+  const message = event.data;
+  if (message.type === "warm") {
+    // Errors are swallowed here on purpose — loadPipeline() resets its
+    // memoized promise on failure, so the next "transcribe" request just
+    // retries and reports the error through its normal path.
+    warmup().catch(() => undefined);
+    return;
+  }
+  transcribe(message.pcm, { onToken: (count) => post({ type: "token", count }) })
     .then((text) => post({ type: "done", text }))
     .catch((error: unknown) => {
       post({ type: "error", message: error instanceof Error ? error.message : String(error) });

@@ -109,17 +109,31 @@ let pipelinePromise: Promise<LoadedPipeline> | null = null;
 
 function loadPipeline(): Promise<LoadedPipeline> {
   pipelinePromise ??= (async () => {
-    const { pipeline, env, WhisperTextStreamer } = await import("@huggingface/transformers");
-    env.remoteHost = MODEL_MIRROR_HOST;
-    const asr = await pipeline("automatic-speech-recognition", WHISPER_REPO, {
-      dtype: WHISPER_DTYPE,
-    });
-    return {
-      asr: asr as unknown as AsrPipelineLike,
-      WhisperTextStreamer: WhisperTextStreamer as unknown as StreamerCtor,
-    };
+    try {
+      const { pipeline, env, WhisperTextStreamer } = await import("@huggingface/transformers");
+      env.remoteHost = MODEL_MIRROR_HOST;
+      const asr = await pipeline("automatic-speech-recognition", WHISPER_REPO, {
+        dtype: WHISPER_DTYPE,
+      });
+      return {
+        asr: asr as unknown as AsrPipelineLike,
+        WhisperTextStreamer: WhisperTextStreamer as unknown as StreamerCtor,
+      };
+    } catch (error) {
+      // Reset so a later call (the real transcribe(), or another warmup())
+      // retries instead of being permanently stuck on one transient failure
+      // (e.g. a network blip during prewarming) for the rest of the worker's
+      // lifetime — a bare `??=` would otherwise memoize the rejection too.
+      pipelinePromise = null;
+      throw error;
+    }
   })();
   return pipelinePromise;
+}
+
+/** Triggers pipeline loading (weight read + ONNX Runtime Web session creation) without transcribing anything, so the worker's warmup cost overlaps with the user's recording instead of stacking after they stop (issue #46 follow-up). */
+export async function warmup(): Promise<void> {
+  await loadPipeline();
 }
 
 async function tokenIdsFor(asr: AsrPipelineLike, text: string): Promise<number[]> {
