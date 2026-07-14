@@ -25,20 +25,37 @@ class WorkerTranscribeClient implements TranscribeWorkerClient {
       if (message.type === "partial") {
         this.#onPartial?.(message.text);
       } else if (message.type === "done") {
-        this.#pending?.resolve(message.text);
-        this.#pending = null;
+        this.#resolve(message.text);
       } else {
-        this.#pending?.reject(new Error(message.message));
-        this.#pending = null;
+        this.#reject(new Error(message.message));
       }
     };
     this.#worker.onerror = (event: ErrorEvent) => {
-      this.#pending?.reject(new Error(event.message || "ASR worker crashed"));
-      this.#pending = null;
+      this.#reject(new Error(event.message || "ASR worker crashed"));
     };
   }
 
+  /** Settles the in-flight promise and clears both it and `#onPartial`, so a late/stray worker message after settling can't invoke a stale callback. */
+  #resolve(text: string): void {
+    this.#pending?.resolve(text);
+    this.#pending = null;
+    this.#onPartial = null;
+  }
+
+  #reject(error: Error): void {
+    this.#pending?.reject(error);
+    this.#pending = null;
+    this.#onPartial = null;
+  }
+
   transcribe(pcm: Float32Array, onPartial: (textSoFar: string) => void): Promise<string> {
+    if (this.#pending) {
+      return Promise.reject(
+        new Error(
+          "TranscribeWorkerClient.transcribe() called while a previous call is still pending",
+        ),
+      );
+    }
     this.#onPartial = onPartial;
     return new Promise((resolve, reject) => {
       this.#pending = { resolve, reject };
@@ -48,6 +65,7 @@ class WorkerTranscribeClient implements TranscribeWorkerClient {
   }
 
   terminate(): void {
+    this.#reject(new Error("ASR worker terminated"));
     this.#worker.terminate();
   }
 }

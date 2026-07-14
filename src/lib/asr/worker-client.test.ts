@@ -112,4 +112,55 @@ describe("worker-client", () => {
 
     expect(lastWorker()?.terminated).toBe(true);
   });
+
+  it("rejects a concurrent transcribe() call instead of silently overwriting the pending one (Copilot review)", async () => {
+    const { createTranscribeWorkerClient } = await import("./worker-client.ts");
+    const client = createTranscribeWorkerClient();
+
+    const first = client.transcribe(new Float32Array(), () => {});
+    const second = client.transcribe(new Float32Array(), () => {});
+
+    await expect(second).rejects.toThrow(/still pending/);
+
+    // The first call is unaffected — it still resolves normally off the
+    // original request, proving the second call didn't clobber #pending.
+    lastWorker()?.emit({ type: "done", text: "range of protons" });
+    await expect(first).resolves.toBe("range of protons");
+  });
+
+  it("terminate() rejects an in-flight transcription instead of leaving it unsettled (Copilot review)", async () => {
+    const { createTranscribeWorkerClient } = await import("./worker-client.ts");
+    const client = createTranscribeWorkerClient();
+
+    const promise = client.transcribe(new Float32Array(), () => {});
+    client.terminate();
+
+    await expect(promise).rejects.toThrow(/terminated/);
+  });
+
+  it("terminate() with no in-flight transcription doesn't throw or create an unhandled rejection", async () => {
+    const { createTranscribeWorkerClient } = await import("./worker-client.ts");
+    const client = createTranscribeWorkerClient();
+
+    expect(() => client.terminate()).not.toThrow();
+  });
+
+  it("stops forwarding partials to a stale onPartial after the transcription settles (Copilot review)", async () => {
+    const { createTranscribeWorkerClient } = await import("./worker-client.ts");
+    const client = createTranscribeWorkerClient();
+
+    const firstPartials: string[] = [];
+    await Promise.all([
+      client.transcribe(new Float32Array(), (text) => firstPartials.push(text)),
+      (async () => {
+        lastWorker()?.emit({ type: "partial", text: "range" });
+        lastWorker()?.emit({ type: "done", text: "range of protons" });
+      })(),
+    ]);
+
+    // A late/stray 'partial' arriving after 'done' must not invoke the
+    // now-stale callback from the finished call.
+    lastWorker()?.emit({ type: "partial", text: "leaked" });
+    expect(firstPartials).toEqual(["range"]);
+  });
 });
