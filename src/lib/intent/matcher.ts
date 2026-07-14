@@ -207,13 +207,22 @@ interface RawEnergy {
   negative: boolean;
 }
 
-/** True when a "-" (a sign the number grammar can't capture) sits directly
+/**
+ * True when a "-" (a sign the number grammar can't capture) sits directly
  * before `matchStart`, ignoring intervening whitespace — "-100" and "- 100"
- * both count. */
+ * both count. Excludes a "-" that is itself preceded by a digit (skipping
+ * whitespace), since that's a hyphenated range/compound like "100-200 MeV"
+ * or "100 - 200 MeV" — the "-" separates two numbers rather than negating
+ * one, so treating it as a sign would incorrectly drop "200 MeV" and mark
+ * the query incomplete.
+ */
 function isNegativeAt(text: string, matchStart: number): boolean {
   let i = matchStart - 1;
   while (i >= 0 && /\s/.test(text[i] ?? "")) i--;
-  return i >= 0 && text[i] === "-";
+  if (i < 0 || text[i] !== "-") return false;
+  let j = i - 1;
+  while (j >= 0 && /\s/.test(text[j] ?? "")) j--;
+  return !(j >= 0 && /\d/.test(text[j] ?? ""));
 }
 
 /** Extract every "<number> <unit>[/nucleon]" energy, in reading order.

@@ -126,6 +126,21 @@ describe("energy + unit parsing", () => {
     const intent = matchQueryIntent("Range of -100 MeV protons in water.");
     expect(intent.materials).toEqual([{ match: "water" }]);
   });
+
+  it("does not mistake a hyphenated range's dash for a negative sign", () => {
+    // The "-" here separates two numbers ("100-200") rather than negating
+    // one; only "200 MeV" matches the number grammar, and it must be kept
+    // as a real energy, not dropped as if it were "-200 MeV".
+    const { intent, incomplete } = matchIntent("Stopping power of 100-200 MeV protons in water.");
+    expect(intent.energies).toEqual([{ value: 200, unit: "MeV" }]);
+    expect(incomplete).toBe(false);
+  });
+
+  it("does not mistake a spaced hyphenated range's dash for a negative sign", () => {
+    const { intent, incomplete } = matchIntent("Stopping power of 100 - 200 MeV protons in water.");
+    expect(intent.energies).toEqual([{ value: 200, unit: "MeV" }]);
+    expect(incomplete).toBe(false);
+  });
 });
 
 describe("isotope resolution", () => {
