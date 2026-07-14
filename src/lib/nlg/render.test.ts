@@ -152,6 +152,23 @@ describe("renderAnswer — single (compareDim: none)", () => {
     ]);
   });
 
+  it("treats a NaN value as absent instead of printing 'n/a'", () => {
+    // compute.ts's forwardSeries fills a missing wrapper value with
+    // `Number.NaN` (not `undefined`) when there's no series-level error.
+    const i = intent({
+      quantity: "csdaRange",
+      particles: [{ match: "protons" }],
+      materials: [{ match: "water" }],
+      energies: [{ value: 40, unit: "MeV" }],
+    });
+    const r = result({
+      quantity: "csdaRange",
+      series: [series({ points: [{ energyMeVPerNucl: 40, csdaRange: Number.NaN }] })],
+    });
+
+    expect(renderAnswer(i, r)).toEqual(["Couldn't compute an answer for that query."]);
+  });
+
   it("appends a note line when the intent carries assumptions", () => {
     const i = intent({
       quantity: "csdaRange",
@@ -341,6 +358,30 @@ describe("renderAnswer — comparisons", () => {
     expect(renderAnswer(i, r)).toEqual([
       "CSDA range of protons in water, by energy:",
       "- couldn't compute: Energy 10000000 MeV/nucl is outside the valid range",
+    ]);
+  });
+
+  it("marks a leg 'couldn't compute' when its value is NaN, even without a series error", () => {
+    const i = intent({
+      quantity: "stoppingPower",
+      compareDim: "material",
+      particles: [{ match: "protons" }],
+      materials: [{ match: "water" }, { match: "air" }],
+      energies: [{ value: 100, unit: "MeV" }],
+    });
+    const r = result({
+      quantity: "stoppingPower",
+      compareDim: "material",
+      series: [
+        series({ points: [{ energyMeVPerNucl: 100, stoppingPower: 7.289 }] }),
+        series({ points: [{ energyMeVPerNucl: 100, stoppingPower: Number.NaN }] }),
+      ],
+    });
+
+    expect(renderAnswer(i, r)).toEqual([
+      "Stopping power of 100 MeV protons, by material:",
+      "- water: 7.289 MeV·cm²/g (PSTAR)",
+      "- air: couldn't compute",
     ]);
   });
 });

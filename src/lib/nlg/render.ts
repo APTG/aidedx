@@ -67,14 +67,24 @@ function targetPhrase(intent: QueryIntent): string {
   return `a ${kind} of ${formatNumber(t.value)} ${t.unit}`;
 }
 
-/** The forward (stoppingPower/csdaRange) or inverse (energy) value at one point, or null when absent. */
+/**
+ * The forward (stoppingPower/csdaRange) or inverse (energy) value at one
+ * point, or null when absent. compute.ts fills a missing wrapper value with
+ * `Number.NaN` rather than leaving it `undefined` (see `forwardSeries`), so
+ * `NaN` is treated the same as "no value" here — otherwise it would render as
+ * a literal "n/a g/cm²" instead of the intended "couldn't compute" fallback.
+ */
 function valueText(quantity: Quantity, point: ComputePoint | undefined): string | null {
   if (!point) return null;
   if (isInverse(quantity)) {
-    return point.energy === undefined ? null : `${formatNumber(point.energy)} MeV/nucl`;
+    return point.energy === undefined || !Number.isFinite(point.energy)
+      ? null
+      : `${formatNumber(point.energy)} MeV/nucl`;
   }
   const raw = quantity === "stoppingPower" ? point.stoppingPower : point.csdaRange;
-  return raw === undefined ? null : `${formatNumber(raw)} ${FORWARD_UNIT[quantity]}`;
+  return raw === undefined || !Number.isFinite(raw)
+    ? null
+    : `${formatNumber(raw)} ${FORWARD_UNIT[quantity]}`;
 }
 
 /** One "- label: value (program)" comparison-list line, or an inline error line. */

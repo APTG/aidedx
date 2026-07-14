@@ -34,6 +34,18 @@ class AnswerStore {
   message: string | null = $state(null);
 
   /**
+   * Bumped by every submit()/reset() call and captured locally at the start
+   * of submit(). getService() is a cached promise, so a slower call already
+   * in flight (e.g. Enter + a follow-up click, or the mic transcript landing
+   * mid-request) can resolve *after* a newer call — the guard after the only
+   * await in submit() drops that stale continuation instead of letting it
+   * overwrite the current answer. Everything before that await is fully
+   * synchronous (matchIntent() included), so no other call can interleave
+   * there and no earlier guard is needed.
+   */
+  #requestId = 0;
+
+  /**
    * Runs text -> intent -> compute -> text end to end. Called directly from
    * the query form's submit handler and from the mic-transcript effect once
    * a transcript lands (issue #39 acceptance criteria: no separate code path
@@ -46,6 +58,7 @@ class AnswerStore {
       return;
     }
 
+    const requestId = ++this.#requestId;
     this.phase = "computing";
     this.message = null;
     this.lines = [];
@@ -59,10 +72,12 @@ class AnswerStore {
 
     try {
       const service = await getService();
+      if (requestId !== this.#requestId) return; // superseded by a newer submit()/reset()
       const result = computeIntent(intent, service);
       this.lines = renderAnswer(intent, result);
       this.phase = "answered";
     } catch (error) {
+      if (requestId !== this.#requestId) return;
       this.phase = "error";
       this.message = error instanceof Error ? error.message : String(error);
     }
@@ -70,6 +85,7 @@ class AnswerStore {
 
   /** Returns to idle and clears the previous answer/error — used when the query field is cleared. */
   reset(): void {
+    this.#requestId++;
     this.phase = "idle";
     this.lines = [];
     this.message = null;

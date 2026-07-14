@@ -2,6 +2,12 @@ import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render } from "@testing-library/svelte";
 import AnswerCard from "./AnswerCard.svelte";
 
+const DUPLICATE_LINES = [
+  "Stopping power of protons in water, by energy:",
+  "- 100 MeV: 7.29 MeV·cm²/g (PSTAR)",
+  "- 100 MeV: 7.29 MeV·cm²/g (PSTAR)",
+];
+
 describe("AnswerCard", () => {
   afterEach(() => {
     cleanup();
@@ -54,6 +60,25 @@ describe("AnswerCard", () => {
     expect(items).toHaveLength(2);
     expect(items[0]).toHaveTextContent("water: 8.5 MeV·cm²/g (MSTAR)");
     expect(items[1]).toHaveTextContent("air: 6.1 MeV·cm²/g (MSTAR)");
+  });
+
+  it("keeps every item when consecutive comparison lines are textually identical", () => {
+    // Two requested energies can legitimately format to the same line (e.g.
+    // "compare … at 100 and 100 MeV"). List items are keyed by index, not by
+    // their own text, specifically so this doesn't collide.
+    const { getAllByRole, rerender } = render(AnswerCard, {
+      props: { phase: "answered", lines: DUPLICATE_LINES, message: null },
+    });
+    expect(getAllByRole("listitem")).toHaveLength(2);
+
+    // Re-render with the same duplicate-text list to exercise Svelte's keyed
+    // `{#each}` diffing path (a text-keyed collision only misbehaves on update,
+    // not on first mount).
+    rerender({ phase: "answered", lines: DUPLICATE_LINES, message: null });
+    const items = getAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    expect(items[0]).toHaveTextContent("100 MeV: 7.29 MeV·cm²/g (PSTAR)");
+    expect(items[1]).toHaveTextContent("100 MeV: 7.29 MeV·cm²/g (PSTAR)");
   });
 
   it("de-emphasizes a trailing assumptions note", () => {

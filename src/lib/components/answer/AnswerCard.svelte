@@ -51,7 +51,7 @@
     {#each blocks as block, i (i)}
       {#if block.kind === "list"}
         <ul class="list-disc space-y-1 pl-5 text-sm">
-          {#each block.items as item (item)}
+          {#each block.items as item, j (j)}
             <li>{item}</li>
           {/each}
         </ul>
