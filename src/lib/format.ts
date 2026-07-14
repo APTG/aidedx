@@ -17,6 +17,12 @@ export function formatEta(loadedMB: number, totalMB: number, elapsedMs: number):
   return `≈${Math.round(remainingSec / 60)} min remaining`;
 }
 
+/** Formats elapsed recording/transcribing time for the mic status line, e.g. "3 s". */
+export function formatElapsedSeconds(elapsedMs: number): string {
+  const seconds = Math.floor(Math.max(0, elapsedMs) / 1000);
+  return `${seconds} s`;
+}
+
 /**
  * Formats the download source line (e.g. "aidedx-models.s3p.cloud.cyfronet.pl")
  * from a remote host URL — just the hostname, since the progress dialog only

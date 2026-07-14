@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatEta, formatMegabytes, formatSourceLabel } from "./format.ts";
+import { formatElapsedSeconds, formatEta, formatMegabytes, formatSourceLabel } from "./format.ts";
 
 describe("formatMegabytes", () => {
   it("renders zero and negative values as 0 MB", () => {
@@ -39,6 +39,17 @@ describe("formatEta", () => {
   it("switches to minutes once remaining time is a minute or more", () => {
     // 10 MB loaded in 10s => 1 MB/s; 110 MB remaining => 110s => rounds to 2 min
     expect(formatEta(10, 120, 10_000)).toBe("≈2 min remaining");
+  });
+});
+
+describe("formatElapsedSeconds", () => {
+  it("floors to whole seconds", () => {
+    expect(formatElapsedSeconds(2999)).toBe("2 s");
+    expect(formatElapsedSeconds(3000)).toBe("3 s");
+  });
+
+  it("clamps negative durations to 0 s", () => {
+    expect(formatElapsedSeconds(-500)).toBe("0 s");
   });
 });
 
