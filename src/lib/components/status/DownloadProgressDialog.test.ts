@@ -10,6 +10,7 @@ const WHISPER: ModelManifestEntry = {
   repo: "onnx-community/whisper-tiny",
   dtype: "q8",
   kind: "speech-to-text",
+  available: true,
 };
 const LLAMA: ModelManifestEntry = {
   id: "llama",
@@ -18,6 +19,7 @@ const LLAMA: ModelManifestEntry = {
   repo: "onnx-community/Llama-3.2-1B-Instruct",
   dtype: "q8",
   kind: "causal-lm",
+  available: false,
 };
 
 describe("DownloadProgressDialog", () => {
@@ -25,7 +27,7 @@ describe("DownloadProgressDialog", () => {
     cleanup();
   });
 
-  it("derives the source label from the manifest's repo orgs", () => {
+  it("shows the Cyfronet S3 mirror host as the source label", () => {
     const { getByText } = render(DownloadProgressDialog, {
       props: {
         open: true,
@@ -37,7 +39,7 @@ describe("DownloadProgressDialog", () => {
       },
     });
 
-    expect(getByText("huggingface.co/onnx-community · estimating…")).toBeInTheDocument();
+    expect(getByText("aidedx-models.s3p.cloud.cyfronet.pl · estimating…")).toBeInTheDocument();
   });
 
   it("shows the manifest's size estimate before a file's download has started", () => {

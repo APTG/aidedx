@@ -18,11 +18,14 @@ export function formatEta(loadedMB: number, totalMB: number, elapsedMs: number):
 }
 
 /**
- * Formats the download source line ("huggingface.co/onnx-community") from
- * the manifest's repo ids, instead of hardcoding an org that could drift
- * from the actual manifest.
+ * Formats the download source line (e.g. "aidedx-models.s3p.cloud.cyfronet.pl")
+ * from a remote host URL — just the hostname, since the progress dialog only
+ * needs to say roughly where the bytes are coming from.
  */
-export function formatSourceLabel(repos: string[]): string {
-  const orgs = Array.from(new Set(repos.map((repo) => repo.split("/")[0]).filter(Boolean)));
-  return orgs.length > 0 ? `huggingface.co/${orgs.join(", ")}` : "huggingface.co";
+export function formatSourceLabel(remoteHost: string): string {
+  try {
+    return new URL(remoteHost).host;
+  } catch {
+    return remoteHost;
+  }
 }

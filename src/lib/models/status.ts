@@ -4,11 +4,16 @@
  * already?" check and the clear-cache breakdown list.
  */
 import { listCacheEntries, type CacheFileEntry } from "$lib/system/cache.ts";
-import { MODEL_MANIFEST, type ModelManifestEntry } from "./manifest.ts";
+import { AVAILABLE_MODEL_MANIFEST, MODEL_MANIFEST, type ModelManifestEntry } from "./manifest.ts";
 
-/** True only if every manifest entry has at least one matching cached file. */
+/**
+ * True only if every manifest entry has at least one matching cached file.
+ * Defaults to `AVAILABLE_MODEL_MANIFEST` — entries not yet mirrored to S3
+ * are never downloaded, so requiring them here would keep the app stuck
+ * showing "not downloaded" forever.
+ */
 export async function areModelsCached(
-  manifest: ModelManifestEntry[] = MODEL_MANIFEST,
+  manifest: ModelManifestEntry[] = AVAILABLE_MODEL_MANIFEST,
 ): Promise<boolean> {
   const entries = await listCacheEntries();
   if (entries.length === 0) return false;

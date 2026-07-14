@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { areModelsCached, groupCacheBreakdown } from "./status.ts";
-import { MODEL_MANIFEST, type ModelManifestEntry } from "./manifest.ts";
+import { AVAILABLE_MODEL_MANIFEST, MODEL_MANIFEST, type ModelManifestEntry } from "./manifest.ts";
 
 function manifestEntryAt(index: number): ModelManifestEntry {
   const entry = MODEL_MANIFEST[index];
@@ -22,6 +22,25 @@ function stubCaches(names: string[], filesByCache: Record<string, string[]>) {
   });
 }
 
+const FAKE_A: ModelManifestEntry = {
+  id: "a",
+  label: "A",
+  sizeMB: 1,
+  repo: "org/a",
+  dtype: "q8",
+  kind: "speech-to-text",
+  available: true,
+};
+const FAKE_B: ModelManifestEntry = {
+  id: "b",
+  label: "B",
+  sizeMB: 1,
+  repo: "org/b",
+  dtype: "q8",
+  kind: "causal-lm",
+  available: true,
+};
+
 describe("areModelsCached", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -32,19 +51,27 @@ describe("areModelsCached", () => {
     expect(await areModelsCached()).toBe(false);
   });
 
-  it("is false when only some manifest entries are cached", async () => {
-    const first = manifestEntryAt(0);
+  it("is false when only some entries of a given manifest are cached", async () => {
     stubCaches(["transformers-cache"], {
-      "transformers-cache": [`https://cdn.example/${first.repo}/resolve/main/onnx/model.onnx`],
+      "transformers-cache": [`https://cdn.example/${FAKE_A.repo}/resolve/main/onnx/model.onnx`],
     });
-    expect(await areModelsCached()).toBe(false);
+    expect(await areModelsCached([FAKE_A, FAKE_B])).toBe(false);
   });
 
-  it("is true once every manifest entry has a matching cached file", async () => {
+  it("is true once every entry of a given manifest has a matching cached file", async () => {
     stubCaches(["transformers-cache"], {
-      "transformers-cache": MODEL_MANIFEST.map(
+      "transformers-cache": [FAKE_A, FAKE_B].map(
         (entry) => `https://cdn.example/${entry.repo}/resolve/main/onnx/model.onnx`,
       ),
+    });
+    expect(await areModelsCached([FAKE_A, FAKE_B])).toBe(true);
+  });
+
+  it("defaults to requiring only available entries (whisper), not the whole manifest", async () => {
+    const whisper = AVAILABLE_MODEL_MANIFEST[0];
+    if (!whisper) throw new Error("expected at least one available entry");
+    stubCaches(["transformers-cache"], {
+      "transformers-cache": [`https://cdn.example/${whisper.repo}/resolve/main/onnx/model.onnx`],
     });
     expect(await areModelsCached()).toBe(true);
   });

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DownloadCancelledError, downloadModelWeights } from "./download.ts";
+import { MODEL_MIRROR_HOST } from "./remote.ts";
 import type { ModelManifestEntry } from "./manifest.ts";
 
 const mocks = vi.hoisted(() => ({
@@ -7,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   whisperFromPretrained: vi.fn(),
   autoTokenizerFromPretrained: vi.fn(),
   causalLMFromPretrained: vi.fn(),
+  env: {} as { remoteHost?: string },
 }));
 
 vi.mock("@huggingface/transformers", () => ({
@@ -14,6 +16,7 @@ vi.mock("@huggingface/transformers", () => ({
   WhisperForConditionalGeneration: { from_pretrained: mocks.whisperFromPretrained },
   AutoTokenizer: { from_pretrained: mocks.autoTokenizerFromPretrained },
   AutoModelForCausalLM: { from_pretrained: mocks.causalLMFromPretrained },
+  env: mocks.env,
 }));
 
 const SPEECH_ENTRY: ModelManifestEntry = {
@@ -23,6 +26,7 @@ const SPEECH_ENTRY: ModelManifestEntry = {
   repo: "org/a",
   dtype: "q8",
   kind: "speech-to-text",
+  available: true,
 };
 const CAUSAL_ENTRY: ModelManifestEntry = {
   id: "b",
@@ -31,6 +35,7 @@ const CAUSAL_ENTRY: ModelManifestEntry = {
   repo: "org/b",
   dtype: "q8",
   kind: "causal-lm",
+  available: true,
 };
 const FAKE_MANIFEST: ModelManifestEntry[] = [SPEECH_ENTRY, CAUSAL_ENTRY];
 
@@ -43,6 +48,7 @@ type ProgressCallback = (event: {
 
 describe("downloadModelWeights", () => {
   beforeEach(() => {
+    delete mocks.env.remoteHost;
     mocks.autoProcessorFromPretrained.mockReset().mockResolvedValue(undefined);
     mocks.autoTokenizerFromPretrained.mockReset().mockResolvedValue(undefined);
     mocks.whisperFromPretrained
@@ -104,6 +110,22 @@ describe("downloadModelWeights", () => {
     await downloadModelWeights(() => {}, undefined, FAKE_MANIFEST);
     expect(mocks.whisperFromPretrained).toHaveBeenCalledTimes(1);
     expect(mocks.causalLMFromPretrained).toHaveBeenCalledTimes(1);
+  });
+
+  it("points env.remoteHost at the Cyfronet S3 mirror before loading a speech-to-text entry", async () => {
+    await downloadModelWeights(() => {}, undefined, [SPEECH_ENTRY]);
+    expect(mocks.env.remoteHost).toBe(MODEL_MIRROR_HOST);
+  });
+
+  it("points env.remoteHost at the Cyfronet S3 mirror before loading a causal-lm entry", async () => {
+    await downloadModelWeights(() => {}, undefined, [CAUSAL_ENTRY]);
+    expect(mocks.env.remoteHost).toBe(MODEL_MIRROR_HOST);
+  });
+
+  it("only downloads available entries by default (whisper only, until qwen/llama are mirrored)", async () => {
+    await downloadModelWeights(() => {});
+    expect(mocks.whisperFromPretrained).toHaveBeenCalledTimes(1);
+    expect(mocks.causalLMFromPretrained).not.toHaveBeenCalled();
   });
 
   it("throws DownloadCancelledError immediately when the signal is already aborted", async () => {

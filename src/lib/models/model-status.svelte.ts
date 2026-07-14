@@ -5,7 +5,11 @@
  * `ModelDownloadBanner.svelte` (mounted in the page), since both need to
  * read and drive the same download state machine.
  */
-import { MODEL_MANIFEST, TOTAL_DOWNLOAD_SIZE_MB, type ModelManifestEntry } from "./manifest.ts";
+import {
+  AVAILABLE_MODEL_MANIFEST,
+  TOTAL_DOWNLOAD_SIZE_MB,
+  type ModelManifestEntry,
+} from "./manifest.ts";
 import { downloadModelWeights, DownloadCancelledError, type FileProgress } from "./download.ts";
 import { areModelsCached, groupCacheBreakdown, type CacheBreakdownItem } from "./status.ts";
 import {
@@ -35,8 +39,9 @@ class ModelStatusStore {
   #abortController: AbortController | null = null;
   #initialized = false;
 
+  /** Only entries actually mirrored to S3 — see `AVAILABLE_MODEL_MANIFEST`. */
   get manifest(): ModelManifestEntry[] {
-    return MODEL_MANIFEST;
+    return AVAILABLE_MODEL_MANIFEST;
   }
 
   get totalSizeLabel(): string {
@@ -105,7 +110,7 @@ class ModelStatusStore {
   #aggregateBytes(): { loaded: number; total: number } {
     let loaded = 0;
     let total = 0;
-    for (const entry of MODEL_MANIFEST) {
+    for (const entry of AVAILABLE_MODEL_MANIFEST) {
       const progress = this.fileProgress[entry.id];
       loaded += progress?.loadedMB ?? 0;
       total += progress?.totalMB ?? entry.sizeMB;

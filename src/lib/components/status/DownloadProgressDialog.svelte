@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ModelManifestEntry } from "$lib/models/manifest.ts";
   import type { FileProgress } from "$lib/models/download.ts";
+  import { MODEL_MIRROR_HOST } from "$lib/models/remote.ts";
   import { formatMegabytes, formatSourceLabel } from "$lib/format.ts";
 
   interface Props {
@@ -14,7 +15,7 @@
 
   let { open, manifest, fileProgress, aggregatePercent, etaLabel, onCancel }: Props = $props();
 
-  const sourceLabel = $derived(formatSourceLabel(manifest.map((entry) => entry.repo)));
+  const sourceLabel = formatSourceLabel(MODEL_MIRROR_HOST);
 
   function percentFor(entry: ModelManifestEntry): number {
     const progress = fileProgress[entry.id];

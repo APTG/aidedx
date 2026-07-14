@@ -43,29 +43,13 @@ describe("formatEta", () => {
 });
 
 describe("formatSourceLabel", () => {
-  it("derives the org from a single repo", () => {
-    expect(formatSourceLabel(["onnx-community/whisper-tiny"])).toBe(
-      "huggingface.co/onnx-community",
+  it("extracts the hostname from a remote host URL", () => {
+    expect(formatSourceLabel("https://aidedx-models.s3p.cloud.cyfronet.pl/")).toBe(
+      "aidedx-models.s3p.cloud.cyfronet.pl",
     );
   });
 
-  it("dedupes orgs shared across multiple repos", () => {
-    expect(
-      formatSourceLabel([
-        "onnx-community/whisper-tiny",
-        "onnx-community/Qwen2.5-0.5B-Instruct",
-        "onnx-community/Llama-3.2-1B-Instruct",
-      ]),
-    ).toBe("huggingface.co/onnx-community");
-  });
-
-  it("lists every distinct org when the manifest spans more than one", () => {
-    expect(formatSourceLabel(["onnx-community/whisper-tiny", "some-other-org/model-x"])).toBe(
-      "huggingface.co/onnx-community, some-other-org",
-    );
-  });
-
-  it("falls back to the bare host when given no repos", () => {
-    expect(formatSourceLabel([])).toBe("huggingface.co");
+  it("falls back to the raw string when it isn't a valid URL", () => {
+    expect(formatSourceLabel("not-a-url")).toBe("not-a-url");
   });
 });

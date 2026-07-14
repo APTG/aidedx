@@ -2,8 +2,8 @@
  * Framework-free model-weight downloader for the consent flow in issue #32.
  *
  * Deliberately has no SvelteKit dependency (same split as `src/lib/wasm/`)
- * and dynamic-imports `@huggingface/transformers` itself, so the ~1.1 GB
- * download path never enters the landing page's initial bundle.
+ * and dynamic-imports `@huggingface/transformers` itself, so the download
+ * path never enters the landing page's initial bundle.
  *
  * Progress comes from transformers.js's own `progress_callback` — see
  * `ProgressInfo` in `@huggingface/transformers/src/utils/core.js` — rather
@@ -17,8 +17,17 @@
  * waiting for the current file to finish — but the underlying fetch for
  * that file isn't actually interrupted; it keeps running in the background
  * and lands in the cache anyway (harmless — just an early write).
+ *
+ * Every entry is fetched from the Cyfronet S3 mirror (`MODEL_MIRROR_HOST`,
+ * see `docs/model-hosting-cyfronet.md`) rather than huggingface.co — set via
+ * `env.remoteHost` before the first `from_pretrained` call. Browser
+ * transformers.js caches responses in Cache Storage keyed by the request URL
+ * (see `$lib/system/cache.ts`), so any later load of the same repo (e.g. a
+ * future ASR inference module) must set the same `env.remoteHost` to hit
+ * that cache instead of re-fetching.
  */
-import { MODEL_MANIFEST, type ModelManifestEntry } from "./manifest.ts";
+import { AVAILABLE_MODEL_MANIFEST, type ModelManifestEntry } from "./manifest.ts";
+import { MODEL_MIRROR_HOST } from "./remote.ts";
 
 export interface FileProgress {
   loadedMB: number;
@@ -66,15 +75,17 @@ async function downloadEntry(
   const progress_callback = makeProgressCallback(entry, onProgress);
 
   if (entry.kind === "speech-to-text") {
-    const { AutoProcessor, WhisperForConditionalGeneration } =
+    const { AutoProcessor, WhisperForConditionalGeneration, env } =
       await import("@huggingface/transformers");
+    env.remoteHost = MODEL_MIRROR_HOST;
     await AutoProcessor.from_pretrained(entry.repo, { progress_callback });
     await WhisperForConditionalGeneration.from_pretrained(entry.repo, {
       dtype: entry.dtype,
       progress_callback,
     });
   } else {
-    const { AutoTokenizer, AutoModelForCausalLM } = await import("@huggingface/transformers");
+    const { AutoTokenizer, AutoModelForCausalLM, env } = await import("@huggingface/transformers");
+    env.remoteHost = MODEL_MIRROR_HOST;
     await AutoTokenizer.from_pretrained(entry.repo, { progress_callback });
     await AutoModelForCausalLM.from_pretrained(entry.repo, {
       dtype: entry.dtype,
@@ -108,11 +119,14 @@ function raceAbort<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> {
  * progress via `onProgress`. Cancellation via `signal` takes effect
  * immediately from the caller's perspective, even mid-file — see the
  * module-level known-limitation note.
+ *
+ * Defaults to `AVAILABLE_MODEL_MANIFEST`, i.e. only entries actually mirrored
+ * to S3 — entries not yet mirrored (`available: false`) are never fetched.
  */
 export async function downloadModelWeights(
   onProgress: DownloadProgressListener,
   signal?: AbortSignal,
-  manifest: ModelManifestEntry[] = MODEL_MANIFEST,
+  manifest: ModelManifestEntry[] = AVAILABLE_MODEL_MANIFEST,
 ): Promise<void> {
   for (const entry of manifest) {
     if (signal?.aborted) throw new DownloadCancelledError();

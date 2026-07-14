@@ -18,7 +18,15 @@ Bucket: `aidedx-models`, DC-Podole (`s3p.cloud.cyfronet.pl`), CORS applied via
 `scripts/mirror-upload-s3.sh` (7/7) and spot-checked with `curl -I` (200, `content-length: 2227` on
 `config.json`). To point the app at this mirror, set `env.remoteHost =
 "https://aidedx-models.s3p.cloud.cyfronet.pl/"` — no other code changes needed (see "How the mirror
-works" below). Wiring that switch into the app itself is still a follow-up (not done here).
+works" below).
+
+**Wired into the app**: `src/lib/models/remote.ts` exports `MODEL_MIRROR_HOST`, and
+`src/lib/models/download.ts` sets `env.remoteHost` to it before every `from_pretrained` call. The
+consent-flow manifest (`src/lib/models/manifest.ts`) marks each entry `available: true`/`false`
+depending on whether it's actually been mirrored yet — only `whisper` (now `whisper-small` q8, matching
+this mirror) is `available: true` today, so it's the only entry the download flow, cache-check, and
+progress dialog act on. `qwen`/`llama` stay listed but inert until they get their own
+`mirror-fetch-model.ts` + `mirror-upload-s3.sh` run.
 
 ## Why
 
@@ -67,10 +75,9 @@ was run once against a clean cache to get the ground truth (not a guess):
 | `onnx/decoder_model_merged_quantized.onnx` | 149.49 MB |
 
 **7 files, ~240 MB total.** Source: Hugging Face Hub, repo `onnx-community/whisper-small`, revision
-`main`. (Note: this is real ONNX weight data, ~2.6× the design mock's placeholder "92 MB" number in
-`src/lib/models/manifest.ts` from issue #32, which currently ships `whisper-tiny` as a UI placeholder —
-that manifest needs updating to `whisper-small` separately once ASR is actually wired into the app;
-out of scope here.)
+`main`. (This is real ONNX weight data, ~2.6× the design mock's original placeholder "92 MB"
+`whisper-tiny` entry in `src/lib/models/manifest.ts` from issue #32 — that manifest now ships
+`whisper-small` to match this mirror.)
 
 ## How the mirror works
 
