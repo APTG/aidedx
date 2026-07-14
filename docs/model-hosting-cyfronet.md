@@ -209,6 +209,38 @@ node --input-type=module -e '
 (This exact check — model load succeeding against a local static file server standing in for the
 bucket — was used to validate the staging layout before writing this doc.)
 
+## Debugging download progress
+
+`src/lib/models/download.ts`'s `logProgressEvent()` prints every raw `progress_callback` event
+transformers.js fires (tagged `[aidedx:model-download]`), including `status`, `file`, `loaded`, `total`,
+and — for the `progress_total` status — the aggregate across all files in that `from_pretrained()` call.
+This is temporary diagnostic instrumentation for a suspected bug: the per-model progress bar (fed by
+`fileProgress[entry.id]` in `model-status.svelte.ts`) is expected to grow monotonically, but has been
+observed jumping backward instead.
+
+To see it:
+
+1. `pnpm run dev`, open the app in a browser, open devtools → Console.
+2. Chrome/Edge: click the log-level dropdown (usually labeled "Default levels") and make sure "Verbose"
+   is checked — `console.debug` is filtered out of the default view. Firefox shows `console.debug` under
+   the "Debug" level, also togglable in the console's level filter.
+3. Filter the console by `aidedx:model-download` to isolate these lines.
+4. Click "Download now" and watch the stream of events for the `whisper` entry.
+
+Working theory (see the comment above `logProgressEvent` in `download.ts`): a speech-to-text manifest
+entry loads 7 files across two `from_pretrained()` calls, and `WhisperForConditionalGeneration`'s
+encoder + decoder `.onnx` files download concurrently (`constructSessions` uses `Promise.all` — see
+`node_modules/@huggingface/transformers/src/models/modeling_utils.js`). Each raw `progress` event is
+scoped to one file's `loaded`/`total`, but the code currently writes every event straight into the same
+`fileProgress[entry.id]` slot regardless of which file it came from — so if the encoder and decoder
+interleave chunks, the reported progress alternates between two different files' byte counts. transformers.js
+already computes a same-call aggregate via `DefaultProgressCallback` (`status: 'progress_total'`, see
+`node_modules/@huggingface/transformers/src/utils/core.js`), which this code currently discards (the
+status filter in `makeProgressCallback` only keeps `'progress'`/`'done'`). If the console output confirms
+interleaved `file` values under `status: 'progress'`, switching to `progress_total` (and separately
+aggregating across the processor vs. model `from_pretrained()` calls, since each gets its own
+`DefaultProgressCallback` instance) is the likely fix.
+
 ## Cost / growth note
 
 ~240 MB today (whisper-small q8 only). If large-v3-turbo is confirmed for the WebGPU tier (issue #9)

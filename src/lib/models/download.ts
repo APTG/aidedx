@@ -61,8 +61,33 @@ function toFileProgress(event: ProgressEventLike, fallbackTotalMB: number): File
   };
 }
 
+/**
+ * Temporary diagnostic logging (see docs/model-hosting-cyfronet.md "Debugging
+ * download progress"). transformers.js's `progress_callback` fires once per
+ * *file*, not once per model — a speech-to-text entry loads 7 files across
+ * two `from_pretrained()` calls (AutoProcessor: config/tokenizer files;
+ * WhisperForConditionalGeneration: encoder + decoder .onnx), and the encoder
+ * and decoder download concurrently (`constructSessions` uses `Promise.all`,
+ * see node_modules/@huggingface/transformers/src/models/modeling_utils.js).
+ * Every `event.file`'s progress currently overwrites the single
+ * `fileProgress[entry.id]` slot, so if the encoder and decoder interleave
+ * their chunks, the reported loaded/total for "whisper" alternates between
+ * two different files' byte counts — which looks like the progress bar
+ * jumping backward rather than growing monotonically. Log every raw event
+ * (including `progress_total`, which transformers.js's own
+ * `DefaultProgressCallback` already aggregates across all files in a single
+ * `from_pretrained()` call, but which this code currently discards via the
+ * status filter below) to confirm that in practice before changing the
+ * aggregation.
+ */
+function logProgressEvent(entryId: string, event: ProgressEventLike): void {
+  if (typeof console === "undefined") return;
+  console.debug("[aidedx:model-download]", entryId, event);
+}
+
 function makeProgressCallback(entry: ModelManifestEntry, onProgress: DownloadProgressListener) {
   return (event: ProgressEventLike): void => {
+    logProgressEvent(entry.id, event);
     if (event.status !== "progress" && event.status !== "done") return;
     onProgress(entry.id, toFileProgress(event, entry.sizeMB));
   };

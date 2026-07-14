@@ -68,8 +68,8 @@ describe("areModelsCached", () => {
   });
 
   it("defaults to requiring only available entries (whisper), not the whole manifest", async () => {
-    const whisper = AVAILABLE_MODEL_MANIFEST[0];
-    if (!whisper) throw new Error("expected at least one available entry");
+    const whisper = AVAILABLE_MODEL_MANIFEST.find((entry) => entry.id === "whisper");
+    if (!whisper) throw new Error("expected an available entry with id 'whisper'");
     stubCaches(["transformers-cache"], {
       "transformers-cache": [`https://cdn.example/${whisper.repo}/resolve/main/onnx/model.onnx`],
     });
