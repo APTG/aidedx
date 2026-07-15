@@ -104,3 +104,5 @@ self-contained report the next reader doesn't have to reconstruct from issue his
 - `scripts/coverage-intents.ts` — `pnpm run coverage:intents` deterministic NLU coverage
 - `scripts/generate-aliases.ts` — regenerates alias tables under `src/lib/aliases/`
 - `scripts/llm-nlu-eval.ts` — LLM NLU spike eval harness (Spike 2 / issue #8)
+- `scripts/asr-browser-benchmark.mjs` — Playwright real-browser ASR timing benchmark (needs a running
+  `pnpm dev`/`pnpm preview`); see `docs/whisper-progress-feedback.md`'s "Real-browser verification"

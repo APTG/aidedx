@@ -5,23 +5,42 @@
  * section has the full rationale).
  *
  * Real per-query wall-clock time splits into two phases with very different
- * shapes, per 8 real eval clips measured against this app's actual
- * domain-prompt decoder setup (`docs/whisper-progress-feedback.md`'s
- * "Follow-up" section):
- *   - **prefill**: a near-constant ~1.3-1.8s from decode start to the first
+ * shapes:
+ *   - **prefill**: a near-constant span from decode start to the first
  *     answer token (encoder pass over a fixed 30s-equivalent mel segment,
  *     plus the ~40-token domain prompt) — doesn't track audio length.
- *   - **decode**: token-proportional, ~38-47ms/token, remarkably stable
- *     across clips.
+ *   - **decode**: token-proportional, stable ms/token across clips.
  * There is no token signal at all during prefill (`tokensSoFar` is
  * necessarily 0), so `estimateProgress()` blends two sub-models into one
  * monotonically-increasing 0..1 fraction: elapsed-time-vs-calibrated-prefill
  * while waiting for the first token, then tokens-vs-calibrated-total-tokens
  * once decoding starts. Both calibrations self-adjust via an EMA persisted
  * to `localStorage`, the same idea `format.ts`'s `formatEta` uses for
- * model-download ETAs — seeded from the measured medians above rather than
- * starting from zero, so the very first transcription already gets a
- * reasonable estimate.
+ * model-download ETAs — seeded from real measurements rather than starting
+ * from zero, so the very first transcription already gets a reasonable
+ * estimate.
+ *
+ * **The seed below is from a real-browser Playwright benchmark
+ * (`scripts/asr-browser-benchmark.mjs`), not the Node numbers this module
+ * originally shipped with.** `docs/whisper-progress-feedback.md`'s original
+ * "Follow-up" section measured prefill at ~1.3-1.8s and decode at
+ * ~38-47ms/token — but that was `scripts/asr-transcribe.mjs` running in
+ * Node, backed by `onnxruntime-node` (native, multi-threaded). The browser
+ * ships `onnxruntime-web` (WASM) and this app has no COOP/COEP headers (see
+ * `app.html`), so there's no `SharedArrayBuffer` and WASM runs
+ * single-threaded — a real-browser measurement (8 clips: 5 varied + 3
+ * same-session repeats, `docs/whisper-progress-feedback.md`'s "Real-browser
+ * verification" section has the full table) found prefill at a stable
+ * ~7.6-8.5s (mean ~7.9s) and decode at ~62-68ms/token (mean ~65ms) — prefill
+ * ~5x slower, decode ~1.5x slower, and neither improves across repeated
+ * recordings in the same session (only the one-time pipeline load —
+ * `asr-status.svelte.ts`'s `warmupDebug()` — is memoized; each utterance's
+ * encoder pass is paid in full, every time). The EMA would have eventually
+ * corrected a wrong seed on its own, but only after ~8-10 real
+ * transcriptions (each sample moves the estimate 30% closer); reseeding here
+ * means the progress bar is accurate from a user's very first recording
+ * instead of visibly stuck near the top of an undersized prefill band for
+ * several uses first.
  */
 
 export type DecodeStage = "prefill" | "decode";
@@ -40,11 +59,11 @@ export interface ProgressCalibration {
 
 const STORAGE_KEY = "aidedx:asr-progress-calibration-v1";
 
-/** Seeded from docs/whisper-progress-feedback.md's measured medians (8 real eval clips), not zero. */
+/** Seeded from a real-browser measurement (see module comment above), not zero and not the Node-side numbers this used to ship with. */
 const DEFAULT_CALIBRATION: ProgressCalibration = {
-  prefillMsEma: 1457,
-  perTokenMsEma: 42,
-  totalTokensEma: 16,
+  prefillMsEma: 7900,
+  perTokenMsEma: 65,
+  totalTokensEma: 15,
 };
 
 /** Weight given to each new real sample; same constant shape as a standard EMA, tuned to adapt within a handful of queries without being noisy on any single outlier. */

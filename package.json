@@ -21,7 +21,8 @@
     "validate:eval": "node scripts/validate-intents.ts",
     "coverage:intents": "node scripts/coverage-intents.ts",
     "llm:nlu-eval": "node scripts/llm-nlu-eval.ts",
-    "generate:aliases": "node scripts/generate-aliases.ts"
+    "generate:aliases": "node scripts/generate-aliases.ts",
+    "bench:asr-browser": "node scripts/asr-browser-benchmark.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -37,6 +38,7 @@
     "eslint-plugin-svelte": "^3.17.1",
     "globals": "^17.6.0",
     "jsdom": "^29.1.1",
+    "playwright": "^1.61.1",
     "prettier": "^3.5.3",
     "prettier-plugin-svelte": "^4.0.1",
     "svelte": "^5.56.3",

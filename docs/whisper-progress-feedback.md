@@ -604,6 +604,86 @@ it replaces was proven to work. What's _not_ verified here, and needs a real `pn
   both are dispatched from the same `TextStreamer.put()` early-return, but that assumption is
   unverified against the real pinned `@huggingface/transformers@4.2.0` build in this session.
 
+**Resolved by "Real-browser verification" below**: a later session had both Cyfronet S3 access and a
+real headless-Chromium environment, so the real-model check this section flagged as outstanding has
+now been done — and it overturned the "Follow-up" section's timing numbers (§ below), though not the
+`skip_prompt`/cadence assumptions, which held up.
+
+## Real-browser verification (Playwright, onnxruntime-web/WASM)
+
+A follow-up session had Cyfronet S3 access and could drive the real app in headless Chromium
+(`scripts/asr-browser-benchmark.mjs` — Playwright, `--use-file-for-fake-audio-capture` feeding real
+eval clips as the mic input, a monkey-patched `Worker` constructor tapping raw `{ type: "token" }`
+messages for exact per-token timestamps, and DOM sampling of the progress bar's `aria-label` for the
+"Warming up…"/"Processing…" stage transitions). This is the check the "Verification caveat" section
+above flagged as outstanding, prompted by a user noticing the real "Warming up…" state ran ~8s — far
+longer than the bar's calibration seed implied it should.
+
+**Finding: the "Follow-up" section's numbers (prefill 1.3-1.8s, decode 38-47ms/token) do not hold in
+the browser — they're ~5x and ~1.5x too fast respectively.** Root cause: that table was measured by
+`scripts/asr-transcribe.mjs` running in **Node**, which resolves `@huggingface/transformers` to
+`onnxruntime-node` (native, multi-threaded). The browser resolves the same package to
+`onnxruntime-web` (WASM) instead, and this app has no COOP/COEP response headers (`app.html`'s
+cross-origin-isolation comment, GitHub Pages can't set them — issue #9), so there's no
+`SharedArrayBuffer` and WASM runs single-threaded. §4 point 3 of this doc predicted exactly this gap
+("Node and the browser use different ONNX Runtime backends entirely") but it was never quantified
+until now.
+
+Eight real-browser samples — five different eval clips (fresh page load each, pipeline explicitly
+warmed first via the debug button from issue #46's follow-up) plus three repeats of the same clip in
+one page session (no relaunch, testing whether prefill drops after the first transcription):
+
+| clip / run           | audio (s) | prefill (ms) | tokens | inter-token (ms) |
+| -------------------- | --------: | -----------: | -----: | ---------------: |
+| km/sp-005            |      5.38 |         7658 |     15 |             61.9 |
+| km/rng-002           |      5.38 |         7693 |     16 |             66.4 |
+| km/cmp-mat-001       |      5.38 |         7558 |     14 |             62.7 |
+| mn/pernuc-001        |      5.25 |         8013 |     14 |             65.8 |
+| lg/stress-001        |      8.58 |         8359 |     18 |             67.9 |
+| sp-005 repeat, run 1 |      5.38 |         8032 |     15 |             63.7 |
+| sp-005 repeat, run 2 |      5.38 |         7580 |     15 |             64.4 |
+| sp-005 repeat, run 3 |      5.38 |         8522 |     15 |             68.9 |
+| **mean**             |           |     **7927** |        |         **65.2** |
+
+Three things this confirms or corrects relative to the Node-side "Follow-up" table:
+
+1. **Prefill is still near-constant regardless of audio length** (5.25-8.58s audio all land in the
+   ~7.6-8.5s band) — the "fixed 30s-equivalent encoder pass" explanation holds. What's wrong is only
+   the absolute number: ~7.9s in-browser vs. ~1.5s in Node, a larger gap than decode's, consistent
+   with the encoder's forward pass being a large batched matmul workload that benefits heavily from
+   multi-threading, while single-token autoregressive decode steps are already latency-bound by their
+   sequential dependency chain and have less to gain from it.
+2. **Prefill does not drop after the first transcription in a session.** The three same-session
+   repeat runs (8032ms, 7580ms, 8522ms) are statistically indistinguishable from the five
+   fresh-page-load runs. This directly answers the question that prompted this investigation: the
+   one-time cost that _is_ memoized per page load is pipeline loading (Cache Storage read + ONNX
+   Runtime Web session creation, ~2.4-2.6s, confirmed via the issue #46-follow-up debug button and
+   `asr-status.svelte.ts`'s `warmupDebug()`) — but the ~7.9s encoder-pass prefill is paid in full,
+   fresh, on _every_ recording, because it's genuine per-utterance inference work, not a cacheable
+   load. There is currently no way to avoid this short of enabling WASM threading (needs COOP/COEP,
+   issue #9) or a smaller/faster model.
+3. **Decode's ms/token is far more stable than prefill's slowdown ratio** — 65.2ms mean here vs.
+   42ms in Node, only ~1.5x, tight spread (61.9-68.9ms) just like the Node numbers were tight
+   (38-47ms). Total tokens per typical 5-15 word query (14-18, mean 15.25) also roughly matches the
+   Node table's median of 16 — token count is backend-independent (same tokenizer, same decoded
+   text), only wall-clock-per-token differs.
+
+**Action taken**: `transcribe-progress.ts`'s `DEFAULT_CALIBRATION` was reseeded from this table
+(`prefillMsEma: 7900, perTokenMsEma: 65, totalTokensEma: 15`, replacing `1457/42/16`) rather than
+left for the EMA (α=0.3) to correct on its own. Left alone, the EMA would have needed ~8-10 real
+transcriptions to converge within 5% of the true value from a seed this far off — during that ramp,
+`estimateProgress()`'s prefill fraction (`elapsedMs / prefillMsEma`, capped at 0.95) would hit its
+cap after only ~1.4s of a ~7.9s real wait and then sit visibly stuck there for the remaining ~6.5s,
+which is the exact "long stall then a burst of fast progress" pattern that prompted this
+investigation. Reseeding makes the bar reasonably accurate from a user's very first recording.
+
+**Not re-litigated**: the `skip_prompt: true` / `token_callback_function` cadence assumptions from §4
+and the "Outcome (issue #46 implementation)" section held up in this real-browser run — tokens
+streamed in one at a time as expected, not batched at the end, and the transcripts themselves were
+correct/domain-appropriate (e.g. "stopping power for 80 MeV per nucleon, carbon ions in water"),
+confirming the pipeline itself works correctly and the ~7.9s is genuine compute time, not an error
+path or a retry loop.
+
 ## Related
 
 - `docs/voice-pipeline-feasibility.md` §2.4 — the domain-prompt-biasing fix whose
@@ -619,3 +699,6 @@ it replaces was proven to work. What's _not_ verified here, and needs a real `pn
   word-by-word preview; see "Outcome (issue #46 implementation)" above for what shipped.
 - `src/lib/asr/transcribe-progress.ts` — the self-calibrating EMA + prefill/decode fraction model
   issue #46's "Outcome" section describes.
+- `scripts/asr-browser-benchmark.mjs` — the Playwright real-browser benchmark "Real-browser
+  verification" above describes; rerun it if the model, dtype, or ONNX Runtime Web version changes,
+  since the calibration seed could drift out of date the same way the Node-derived one did.

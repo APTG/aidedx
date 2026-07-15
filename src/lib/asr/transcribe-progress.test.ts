@@ -7,9 +7,9 @@ import {
 } from "./transcribe-progress.ts";
 
 const DEFAULTS: ProgressCalibration = {
-  prefillMsEma: 1457,
-  perTokenMsEma: 42,
-  totalTokensEma: 16,
+  prefillMsEma: 7900,
+  perTokenMsEma: 65,
+  totalTokensEma: 15,
 };
 
 describe("transcribe-progress", () => {
@@ -47,13 +47,16 @@ describe("transcribe-progress", () => {
 
       // prefillMs=2000, perTokenMs=500/10=50, totalTokens=11 — EMA (alpha=0.3) from the seeded defaults.
       const updated = loadCalibration();
-      expect(updated.prefillMsEma).toBeCloseTo(1457 + 0.3 * (2000 - 1457), 5);
-      expect(updated.perTokenMsEma).toBeCloseTo(42 + 0.3 * (50 - 42), 5);
-      expect(updated.totalTokensEma).toBeCloseTo(16 + 0.3 * (11 - 16), 5);
+      expect(updated.prefillMsEma).toBeCloseTo(7900 + 0.3 * (2000 - 7900), 5);
+      expect(updated.perTokenMsEma).toBeCloseTo(65 + 0.3 * (50 - 65), 5);
+      expect(updated.totalTokensEma).toBeCloseTo(15 + 0.3 * (11 - 15), 5);
     });
 
     it("converges toward repeated real samples over multiple calls", () => {
-      for (let i = 0; i < 20; i++) {
+      // 40, not 20: needs enough iterations for (1-alpha)^n * (seed - sample)
+      // to fall under the assertions' precision regardless of how far the
+      // seeded default is from the sample value.
+      for (let i = 0; i < 40; i++) {
         recordCompletedTranscription({
           transcribingStartedAt: 0,
           firstTokenAt: 1000,
