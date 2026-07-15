@@ -28,7 +28,13 @@ export function threadCountForCores(cores: number | undefined): number {
 }
 
 export interface CpuInfo {
-  /** `navigator.hardwareConcurrency`, or `null` if the browser doesn't report it. */
+  /**
+   * `navigator.hardwareConcurrency`, or `null` if the browser doesn't report
+   * it — including the edge case where it reports a non-positive value
+   * (e.g. `0`), which some implementations use to mean "unknown" rather
+   * than a real core count. Normalized here so callers never have to
+   * special-case it themselves.
+   */
   logicalCores: number | null;
   /** WASM threads actually usable right now, per `threadCountForCores()`. */
   threadsUsed: number;
@@ -46,8 +52,9 @@ export interface CpuInfo {
  * in that case rather than the policy value.
  */
 export function detectCpuThreads(): CpuInfo {
+  const rawCores = typeof navigator !== "undefined" ? navigator.hardwareConcurrency : undefined;
   const logicalCores =
-    typeof navigator !== "undefined" ? (navigator.hardwareConcurrency ?? null) : null;
+    typeof rawCores === "number" && Number.isFinite(rawCores) && rawCores > 0 ? rawCores : null;
   const crossOriginIsolated =
     typeof globalThis !== "undefined" && Boolean(globalThis.crossOriginIsolated);
   const threadsUsed = crossOriginIsolated ? threadCountForCores(logicalCores ?? undefined) : 1;

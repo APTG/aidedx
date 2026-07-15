@@ -64,4 +64,19 @@ describe("detectCpuThreads", () => {
       crossOriginIsolated: true,
     });
   });
+
+  it("normalizes hardwareConcurrency=0 to null instead of reporting '1 of 0' (review fix)", () => {
+    // Some implementations report 0 to mean "unknown" rather than a real
+    // core count — threadCountForCores() already treats non-positive values
+    // as unknown, so logicalCores must match instead of leaking a bogus 0
+    // through to the UI.
+    Object.defineProperty(navigator, "hardwareConcurrency", { configurable: true, value: 0 });
+    Object.defineProperty(globalThis, "crossOriginIsolated", { configurable: true, value: true });
+
+    expect(detectCpuThreads()).toEqual({
+      logicalCores: null,
+      threadsUsed: 2,
+      crossOriginIsolated: true,
+    });
+  });
 });

@@ -30,7 +30,7 @@
   let hardwareConcurrency = $state(0);
   let ready = $state(false);
 
-  // Same policy resolveThreadCount() in transcribe.ts applies — what "off" resolves to.
+  // Same policy as resolveThreadCount() in transcribe.ts applies — what "off" resolves to.
   const policyThreads = $derived(
     threadCountForCores(hardwareConcurrency > 0 ? hardwareConcurrency : undefined),
   );
