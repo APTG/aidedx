@@ -126,6 +126,13 @@
     </p>
   </header>
 
+  <ExampleQueries
+    examples={EXAMPLE_QUERIES}
+    open={examplesOpen}
+    onToggle={() => (examplesOpen = !examplesOpen)}
+    onSelect={selectExample}
+  />
+
   <form class="flex flex-col gap-3" onsubmit={handleSubmit}>
     <div class="flex flex-col gap-2 sm:flex-row">
       <input
@@ -156,13 +163,6 @@
       Search
     </button>
   </form>
-
-  <ExampleQueries
-    examples={EXAMPLE_QUERIES}
-    open={examplesOpen}
-    onToggle={() => (examplesOpen = !examplesOpen)}
-    onSelect={selectExample}
-  />
 
   <AnswerCard
     phase={answerStatus.phase}
