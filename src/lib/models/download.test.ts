@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   whisperFromPretrained: vi.fn(),
   autoTokenizerFromPretrained: vi.fn(),
   causalLMFromPretrained: vi.fn(),
+  disposeModel: vi.fn(),
   env: {} as { remoteHost?: string },
 }));
 
@@ -49,6 +50,7 @@ type ProgressCallback = (event: {
 describe("downloadModelWeights", () => {
   beforeEach(() => {
     delete mocks.env.remoteHost;
+    mocks.disposeModel.mockReset().mockResolvedValue(undefined);
     mocks.autoProcessorFromPretrained.mockReset().mockResolvedValue(undefined);
     mocks.autoTokenizerFromPretrained.mockReset().mockResolvedValue(undefined);
     mocks.whisperFromPretrained
@@ -60,11 +62,13 @@ describe("downloadModelWeights", () => {
           total: 10 * 1024 * 1024,
         });
         opts.progress_callback?.({ status: "done" });
+        return { dispose: mocks.disposeModel };
       });
     mocks.causalLMFromPretrained
       .mockReset()
       .mockImplementation(async (_repo: string, opts: { progress_callback?: ProgressCallback }) => {
         opts.progress_callback?.({ status: "done" });
+        return { dispose: mocks.disposeModel };
       });
   });
 
@@ -141,6 +145,7 @@ describe("downloadModelWeights", () => {
           total: 12 * 1024 * 1024,
         });
         cb?.({ status: "done", file: "decoder_model.onnx" });
+        return { dispose: mocks.disposeModel };
       },
     );
 
@@ -193,11 +198,11 @@ describe("downloadModelWeights", () => {
   });
 
   it("rejects immediately on cancel even while a file load is still pending (regression)", async () => {
-    let resolveWhisperLoad!: () => void;
+    let resolveWhisperLoad!: (model: { dispose: () => Promise<void> }) => void;
     const whisperLoadStarted = new Promise<void>((resolveStarted) => {
       mocks.whisperFromPretrained.mockImplementation(() => {
         resolveStarted();
-        return new Promise<void>((resolve) => {
+        return new Promise<{ dispose: () => Promise<void> }>((resolve) => {
           resolveWhisperLoad = resolve;
         });
       });
@@ -214,7 +219,17 @@ describe("downloadModelWeights", () => {
 
     // The mocked in-flight load never actually settles on its own (mirroring
     // transformers.js's lack of a real abort hook) — clean it up so it
-    // doesn't leak into the next test.
-    resolveWhisperLoad();
+    // doesn't leak into the next test. Resolves with a disposable model so
+    // the background continuation's `model.dispose()` call doesn't throw.
+    resolveWhisperLoad({ dispose: mocks.disposeModel });
+  });
+
+  it("disposes the loaded model after downloading, so its ONNX Runtime session doesn't leak WASM memory (issue #62)", async () => {
+    await downloadModelWeights(() => {}, undefined, [SPEECH_ENTRY]);
+    expect(mocks.disposeModel).toHaveBeenCalledTimes(1);
+
+    mocks.disposeModel.mockClear();
+    await downloadModelWeights(() => {}, undefined, [CAUSAL_ENTRY]);
+    expect(mocks.disposeModel).toHaveBeenCalledTimes(1);
   });
 });

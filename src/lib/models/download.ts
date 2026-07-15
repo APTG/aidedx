@@ -25,6 +25,20 @@
  * (see `$lib/system/cache.ts`), so any later load of the same repo (e.g. a
  * future ASR inference module) must set the same `env.remoteHost` to hit
  * that cache instead of re-fetching.
+ *
+ * Memory leak fix (issue #62): `from_pretrained()` on a model class (as
+ * opposed to a tokenizer/processor) doesn't just fetch and cache bytes — it
+ * also builds a live ONNX Runtime `InferenceSession` per `.onnx` file,
+ * allocating the WASM linear memory that backs it. This module only wants
+ * the bytes in Cache Storage for later real use (`asr/transcribe.ts`'s own
+ * `pipeline()` call, which is memoized deliberately); the session built here
+ * is never used. Each `downloadEntry()` call therefore disposes the model
+ * (`model.dispose()`, which releases every underlying session) right after
+ * loading it, so the consent-flow "download" never leaves a live session —
+ * and its WASM memory — behind. Confirmed via a real-browser repro in #62
+ * that omitting this leaked >1 GB of resident memory per download, not
+ * reclaimed by "Clear cache" (which only clears Cache Storage, not runtime
+ * sessions) or by JS garbage collection, only by closing the tab.
  */
 import { AVAILABLE_MODEL_MANIFEST, type ModelManifestEntry } from "./manifest.ts";
 import { MODEL_MIRROR_HOST } from "./remote.ts";
@@ -111,18 +125,20 @@ async function downloadEntry(
       await import("@huggingface/transformers");
     env.remoteHost = MODEL_MIRROR_HOST;
     await AutoProcessor.from_pretrained(entry.repo, { progress_callback });
-    await WhisperForConditionalGeneration.from_pretrained(entry.repo, {
+    const model = await WhisperForConditionalGeneration.from_pretrained(entry.repo, {
       dtype: entry.dtype,
       progress_callback,
     });
+    await model.dispose();
   } else {
     const { AutoTokenizer, AutoModelForCausalLM, env } = await import("@huggingface/transformers");
     env.remoteHost = MODEL_MIRROR_HOST;
     await AutoTokenizer.from_pretrained(entry.repo, { progress_callback });
-    await AutoModelForCausalLM.from_pretrained(entry.repo, {
+    const model = await AutoModelForCausalLM.from_pretrained(entry.repo, {
       dtype: entry.dtype,
       progress_callback,
     });
+    await model.dispose();
   }
 }
 
