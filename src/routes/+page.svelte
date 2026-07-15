@@ -24,6 +24,7 @@
   let query = $state("");
   let now = $state(Date.now());
   let examplesOpen = $state(false);
+  let queryInput: HTMLInputElement | undefined = $state();
 
   // DEBUG (#9 threading experiment, revertable): show the thread-count panel
   // only when the URL has ?debug, so ordinary visitors never see it. `location`
@@ -103,10 +104,15 @@
 
   // Selecting an example behaves exactly like typing it and hitting submit —
   // same field, same answerStatus.submit() path as typed and mic input
-  // (issue #39) — then collapses the panel so the answer takes focus.
+  // (issue #39) — then collapses the panel. The clicked example button is
+  // removed from the DOM by that collapse, so focus is moved to the query
+  // input explicitly rather than left to land wherever the browser defaults
+  // (usually <body>), which would strand keyboard/screen-reader users
+  // (Copilot review, PR #68).
   function selectExample(text: string) {
     query = text;
     examplesOpen = false;
+    queryInput?.focus();
     void answerStatus.submit(text);
   }
 </script>
@@ -136,6 +142,7 @@
   <form class="flex flex-col gap-3" onsubmit={handleSubmit}>
     <div class="flex flex-col gap-2 sm:flex-row">
       <input
+        bind:this={queryInput}
         type="text"
         name="query"
         bind:value={query}
