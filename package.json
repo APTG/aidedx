@@ -32,7 +32,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/svelte": "^5.2.8",
-    "@types/node": "^25.9.1",
+    "@types/node": "^26.1.1",
     "eslint": "^10.4.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-svelte": "^3.17.1",
