@@ -629,9 +629,13 @@ cross-origin-isolation comment, GitHub Pages can't set them — issue #9), so th
 ("Node and the browser use different ONNX Runtime backends entirely") but it was never quantified
 until now.
 
-Eight real-browser samples — five different eval clips (fresh page load each, pipeline explicitly
-warmed first via the debug button from issue #46's follow-up) plus three repeats of the same clip in
-one page session (no relaunch, testing whether prefill drops after the first transcription):
+Eight real-browser samples — five different eval clips (fresh page load each) plus three repeats of
+the same clip in one page session (no relaunch, testing whether prefill drops after the first
+transcription). No explicit pipeline warm-up step was needed: `asr-status.svelte.ts`'s `start()`
+already kicks off pipeline loading the moment Start is clicked, in parallel with recording, and every
+clip here runs longer than the ~2.4-2.6s that load takes, so it's always resolved by the time Stop is
+clicked — the repeat runs' first sample (no warm-up at all, same page load as the others) shows no
+elevated prefill relative to the rest, confirming this:
 
 | clip / run           | audio (s) | prefill (ms) | tokens | inter-token (ms) |
 | -------------------- | --------: | -----------: | -----: | ---------------: |
@@ -657,11 +661,12 @@ Three things this confirms or corrects relative to the Node-side "Follow-up" tab
    repeat runs (8032ms, 7580ms, 8522ms) are statistically indistinguishable from the five
    fresh-page-load runs. This directly answers the question that prompted this investigation: the
    one-time cost that _is_ memoized per page load is pipeline loading (Cache Storage read + ONNX
-   Runtime Web session creation, ~2.4-2.6s, confirmed via the issue #46-follow-up debug button and
-   `asr-status.svelte.ts`'s `warmupDebug()`) — but the ~7.9s encoder-pass prefill is paid in full,
-   fresh, on _every_ recording, because it's genuine per-utterance inference work, not a cacheable
-   load. There is currently no way to avoid this short of enabling WASM threading (needs COOP/COEP,
-   issue #9) or a smaller/faster model.
+   Runtime Web session creation, ~2.4-2.6s — measured directly with a short-lived debug button added
+   and then removed during this investigation, since it wasn't worth keeping in the shipped UI once
+   this doc had the number) — but the ~7.9s encoder-pass prefill is paid in full, fresh, on _every_
+   recording, because it's genuine per-utterance inference work, not a cacheable load. There is
+   currently no way to avoid this short of enabling WASM threading (needs COOP/COEP, issue #9) or a
+   smaller/faster model.
 3. **Decode's ms/token is far more stable than prefill's slowdown ratio** — 65.2ms mean here vs.
    42ms in Node, only ~1.5x, tight spread (61.9-68.9ms) just like the Node numbers were tight
    (38-47ms). Total tokens per typical 5-15 word query (14-18, mean 15.25) also roughly matches the

@@ -124,26 +124,6 @@
     message={answerStatus.message}
   />
 
-  <!-- Debug affordance: measures the one-time ASR pipeline load (Cache Storage
-       read + ONNX Runtime Web session creation) on demand. A second press
-       after the first succeeds returns near-instantly, since the load is
-       memoized per page load and reused across every recording. -->
-  <div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-    <button
-      type="button"
-      onclick={() => asrStatus.warmupDebug()}
-      disabled={asrStatus.warmupPending}
-      class="rounded-md border border-input px-3 py-1.5 font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
-    >
-      {asrStatus.warmupPending ? "Loading ASR pipeline…" : "Warm up ASR pipeline (debug)"}
-    </button>
-    {#if asrStatus.warmupError}
-      <span class="text-danger">Failed: {asrStatus.warmupError}</span>
-    {:else if asrStatus.warmupDurationMs !== null}
-      <span>Loaded in {asrStatus.warmupDurationMs.toFixed(0)} ms</span>
-    {/if}
-  </div>
-
   <ModelDownloadBanner />
 
   <p class="text-center text-sm text-muted-foreground">

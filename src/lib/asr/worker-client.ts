@@ -12,8 +12,6 @@ export interface TranscribeWorkerClient {
   transcribe(pcm: Float32Array, onToken: (tokensSoFar: number) => void): Promise<string>;
   /** Fire-and-forget: asks the worker to start loading the pipeline now. Safe to call repeatedly — the worker's own loadPipeline() memoizes it. */
   warm(): void;
-  /** Debug: like warm(), but resolves with how long the load took (ms). Resolves near-instantly if the pipeline was already warm — that's the observable proof the load doesn't repeat per call. */
-  warmAndMeasure(): Promise<number>;
   terminate(): void;
 }
 
@@ -21,8 +19,6 @@ class WorkerTranscribeClient implements TranscribeWorkerClient {
   #worker: Worker;
   #pending: { resolve: (text: string) => void; reject: (error: Error) => void } | null = null;
   #onToken: ((tokensSoFar: number) => void) | null = null;
-  #warmPending: { resolve: (durationMs: number) => void; reject: (error: Error) => void } | null =
-    null;
 
   constructor() {
     this.#worker = new Worker(new URL("./asr.worker.ts", import.meta.url), { type: "module" });
@@ -32,12 +28,6 @@ class WorkerTranscribeClient implements TranscribeWorkerClient {
         this.#onToken?.(message.count);
       } else if (message.type === "done") {
         this.#resolve(message.text);
-      } else if (message.type === "warmed") {
-        this.#warmPending?.resolve(message.durationMs);
-        this.#warmPending = null;
-      } else if (message.type === "warmError") {
-        this.#warmPending?.reject(new Error(message.message));
-        this.#warmPending = null;
       } else {
         this.#reject(new Error(message.message));
       }
@@ -81,18 +71,8 @@ class WorkerTranscribeClient implements TranscribeWorkerClient {
     this.#worker.postMessage(request);
   }
 
-  warmAndMeasure(): Promise<number> {
-    return new Promise((resolve, reject) => {
-      this.#warmPending = { resolve, reject };
-      const request: WorkerRequest = { type: "warmMeasured" };
-      this.#worker.postMessage(request);
-    });
-  }
-
   terminate(): void {
     this.#reject(new Error("ASR worker terminated"));
-    this.#warmPending?.reject(new Error("ASR worker terminated"));
-    this.#warmPending = null;
     this.#worker.terminate();
   }
 }

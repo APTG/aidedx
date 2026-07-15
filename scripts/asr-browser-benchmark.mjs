@@ -17,6 +17,15 @@
  *     app code) that taps the worker's raw `{ type: "token", count }`
  *     messages for exact per-token timestamps — see `worker-protocol.ts`.
  *
+ * No explicit "warm the pipeline first" step: `asr-status.svelte.ts`'s
+ * start() already kicks off pipeline loading (Cache Storage read + ONNX
+ * Runtime Web session creation, ~2.4-2.6s) the moment Start is clicked, in
+ * parallel with recording — since every clip below runs longer than that,
+ * it's already resolved by the time Stop is clicked, so the measured
+ * "prefill" is genuinely just the per-utterance encoder pass, not
+ * contaminated by leftover pipeline load. `runRepeated()`'s run 1 (no
+ * warm-up at all) shows the same prefill as later runs, confirming this.
+ *
  * Usage:
  *   pnpm run preview -- --port 4173 &        # or `pnpm dev`
  *   node scripts/asr-browser-benchmark.mjs [baseUrl] [--repeat=N]
@@ -160,15 +169,6 @@ async function recordOnce(page, audioSec) {
   };
 }
 
-async function warmupPipeline(page) {
-  await page.getByRole("button", { name: /Warm up ASR pipeline/ }).click();
-  await page
-    .getByText(/Loaded in \d+ ms/)
-    .waitFor({ timeout: 60_000 })
-    .catch(() => {});
-  await sleep(200);
-}
-
 function fmt(n, digits = 0) {
   return n === null || n === undefined ? "—" : n.toFixed(digits);
 }
@@ -191,7 +191,12 @@ async function runVariedClips() {
       await page.addInitScript(INIT_SCRIPT);
       await page.goto(BASE_URL, { waitUntil: "load" });
       await ensureModelReady(page);
-      await warmupPipeline(page);
+      // No explicit pipeline warm-up step: recordOnce()'s Start click triggers
+      // it naturally (asr-status.svelte.ts's start() calls the worker's
+      // warm()), and every clip here runs longer than the ~2.4-2.6s pipeline
+      // load takes, so it's already resolved by the time Stop is clicked —
+      // confirmed by runRepeated() below showing no elevated prefill on run 1
+      // even without any warm-up step at all.
       const r = await recordOnce(page, clip.audioSec);
       console.error(
         `prefill=${fmt(r.prefillMs)}ms decode=${fmt(r.decodeMs)}ms tokens=${r.totalTokens} interToken=${fmt(r.interTokenMs, 1)}ms "${r.transcript}"`,

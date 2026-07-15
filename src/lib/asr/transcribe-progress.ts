@@ -33,8 +33,8 @@
  * verification" section has the full table) found prefill at a stable
  * ~7.6-8.5s (mean ~7.9s) and decode at ~62-68ms/token (mean ~65ms) — prefill
  * ~5x slower, decode ~1.5x slower, and neither improves across repeated
- * recordings in the same session (only the one-time pipeline load —
- * `asr-status.svelte.ts`'s `warmupDebug()` — is memoized; each utterance's
+ * recordings in the same session (only the one-time pipeline load, kicked
+ * off by `asr-status.svelte.ts`'s `start()`, is memoized; each utterance's
  * encoder pass is paid in full, every time). The EMA would have eventually
  * corrected a wrong seed on its own, but only after ~8-10 real
  * transcriptions (each sample moves the estimate 30% closer); reseeding here

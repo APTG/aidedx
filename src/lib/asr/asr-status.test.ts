@@ -6,7 +6,6 @@ const mocks = vi.hoisted(() => ({
   decodeToMono16k: vi.fn(),
   workerTranscribe: vi.fn(),
   workerWarm: vi.fn(),
-  workerWarmAndMeasure: vi.fn(),
   workerTerminate: vi.fn(),
   createTranscribeWorkerClient: vi.fn(),
   recordCompletedTranscription: vi.fn(),
@@ -46,12 +45,10 @@ describe("asrStatus", () => {
     mocks.decodeToMono16k.mockReset().mockResolvedValue(new Float32Array());
     mocks.workerTranscribe.mockReset().mockResolvedValue("hello world");
     mocks.workerWarm.mockReset();
-    mocks.workerWarmAndMeasure.mockReset();
     mocks.workerTerminate.mockReset();
     mocks.createTranscribeWorkerClient.mockReset().mockReturnValue({
       transcribe: mocks.workerTranscribe,
       warm: mocks.workerWarm,
-      warmAndMeasure: mocks.workerWarmAndMeasure,
       terminate: mocks.workerTerminate,
     });
     mocks.recordCompletedTranscription.mockReset();
@@ -244,45 +241,5 @@ describe("asrStatus", () => {
 
     expect(mocks.workerWarm).toHaveBeenCalledTimes(1);
     expect(store.phase).toBe("error");
-  });
-
-  it("warmupDebug() reports the pipeline load duration", async () => {
-    mocks.workerWarmAndMeasure.mockResolvedValue(2345);
-    const store = await loadStore();
-
-    await store.warmupDebug();
-
-    expect(store.warmupDurationMs).toBe(2345);
-    expect(store.warmupError).toBeNull();
-    expect(store.warmupPending).toBe(false);
-  });
-
-  it("warmupDebug() surfaces a failure without throwing", async () => {
-    mocks.workerWarmAndMeasure.mockRejectedValue(new Error("network blip"));
-    const store = await loadStore();
-
-    await store.warmupDebug();
-
-    expect(store.warmupError).toBe("network blip");
-    expect(store.warmupDurationMs).toBeNull();
-    expect(store.warmupPending).toBe(false);
-  });
-
-  it("warmupDebug() is a no-op while already pending", async () => {
-    let resolveWarm!: (durationMs: number) => void;
-    mocks.workerWarmAndMeasure.mockImplementation(
-      () =>
-        new Promise<number>((resolve) => {
-          resolveWarm = resolve;
-        }),
-    );
-    const store = await loadStore();
-
-    const first = store.warmupDebug();
-    const second = store.warmupDebug();
-    resolveWarm(10);
-    await Promise.all([first, second]);
-
-    expect(mocks.workerWarmAndMeasure).toHaveBeenCalledTimes(1);
   });
 });
