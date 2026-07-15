@@ -17,6 +17,11 @@
       Left intentionally inert until the hosting decision is made.
     -->
 
+    <!-- DEBUG (#9 threading experiment — revertable): enable cross-origin
+         isolation on GitHub Pages so the ?debug thread control actually bites.
+         Adds a one-time reload on first visit. Remove this line + static/coi-serviceworker.js to revert. -->
+    <script src="%sveltekit.assets%/coi-serviceworker.js"></script>
+
     %sveltekit.head%
   </head>
   <body data-sveltekit-preload-data="hover">
