@@ -117,6 +117,41 @@ describe("worker-client", () => {
     expect(() => lastWorker()?.emit({ type: "done", text: "unrelated" })).not.toThrow();
   });
 
+  it("warmAndMeasure() posts a 'warmMeasured' message and resolves with the reported duration", async () => {
+    const { createTranscribeWorkerClient } = await import("./worker-client.ts");
+    const client = createTranscribeWorkerClient();
+
+    const promise = client.warmAndMeasure();
+    expect(lastWorker()?.posted).toEqual([{ type: "warmMeasured" }]);
+
+    lastWorker()?.emit({ type: "warmed", durationMs: 1234 });
+    await expect(promise).resolves.toBe(1234);
+  });
+
+  it("warmAndMeasure() rejects on a 'warmError' message without touching a concurrent transcribe()", async () => {
+    const { createTranscribeWorkerClient } = await import("./worker-client.ts");
+    const client = createTranscribeWorkerClient();
+
+    const transcribePromise = client.transcribe(new Float32Array(), () => {});
+    const warmPromise = client.warmAndMeasure();
+
+    lastWorker()?.emit({ type: "warmError", message: "network blip" });
+    await expect(warmPromise).rejects.toThrow("network blip");
+
+    lastWorker()?.emit({ type: "done", text: "range of protons" });
+    await expect(transcribePromise).resolves.toBe("range of protons");
+  });
+
+  it("terminate() rejects a pending warmAndMeasure() instead of leaving it unsettled", async () => {
+    const { createTranscribeWorkerClient } = await import("./worker-client.ts");
+    const client = createTranscribeWorkerClient();
+
+    const promise = client.warmAndMeasure();
+    client.terminate();
+
+    await expect(promise).rejects.toThrow(/terminated/);
+  });
+
   it("terminate() delegates to the underlying Worker", async () => {
     const { createTranscribeWorkerClient } = await import("./worker-client.ts");
     const client = createTranscribeWorkerClient();

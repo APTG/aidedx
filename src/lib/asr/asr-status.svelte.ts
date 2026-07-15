@@ -46,6 +46,10 @@ class AsrStore {
   errorMessage: string | null = $state(null);
   recordingStartedAt: number | null = $state(null);
   transcribingStartedAt: number | null = $state(null);
+  /** Debug-only pipeline-load timing, driven by warmupDebug() below — not part of the normal record/transcribe flow. */
+  warmupPending = $state(false);
+  warmupDurationMs: number | null = $state(null);
+  warmupError: string | null = $state(null);
 
   #recorder = new MicRecorder();
   #workerClient: TranscribeWorkerClient | null = null;
@@ -124,6 +128,26 @@ class AsrStore {
       this.phase = "error";
     } finally {
       this.transcribingStartedAt = null;
+    }
+  }
+
+  /**
+   * Debug: triggers pipeline loading and reports how long it took, so the
+   * one-time Cache Storage read + ONNX Runtime Web session creation cost is
+   * directly observable instead of inferred from the record flow. Calling
+   * this again after the pipeline is already warm resolves near-instantly —
+   * that's the proof the load isn't repeated on every recording.
+   */
+  async warmupDebug(): Promise<void> {
+    if (this.warmupPending) return;
+    this.warmupPending = true;
+    this.warmupError = null;
+    try {
+      this.warmupDurationMs = await this.#getWorkerClient().warmAndMeasure();
+    } catch (error) {
+      this.warmupError = describeError(error);
+    } finally {
+      this.warmupPending = false;
     }
   }
 
