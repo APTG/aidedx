@@ -5,9 +5,10 @@
 import { pipeline, env } from "@huggingface/transformers";
 import { execSync } from "child_process";
 import { readdirSync, existsSync, writeFileSync } from "fs";
+import { fileURLToPath } from "url";
 import path from "path";
 
-const PROJECT_ROOT = "/home/grzanka/workspace/aidedx";
+const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 env.cacheDir = path.join(PROJECT_ROOT, ".hf-cache");
 env.allowLocalModels = false;
 

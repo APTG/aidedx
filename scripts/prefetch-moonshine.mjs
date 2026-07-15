@@ -1,7 +1,14 @@
 /**
- * Pre-fetch MoonShine ASR model for issue #7 (ASR spike — alternative to Whisper).
- * MoonShine is an edge-first English-only ASR model; ~200 MB at q8,
- * often more accurate than whisper-small on English out-of-vocabulary terms.
+ * Pre-fetch non-Whisper ASR candidates (issue #7's Moonshine, issue #49's
+ * variable-length/CTC "Lever 2" additions). All load via the generic
+ * `pipeline("automatic-speech-recognition", ...)` API, unlike the Whisper
+ * family in prefetch-whisper-models.mjs which needs the AutoProcessor +
+ * WhisperForConditionalGeneration split.
+ *
+ * - moonshine-base-ONNX: edge-first English-only ASR, ~200 MB at q8.
+ * - moonshine-tiny-ONNX (issue #49): smaller Moonshine, ~50 MB at q8.
+ * - wav2vec2-base-960h (issue #49): Meta/Facebook CTC model, encoder-only,
+ *   no autoregressive decode loop, ~91 MB at q8 (Xenova's "quantized" export).
  *
  * Usage: node scripts/prefetch-moonshine.mjs
  */
@@ -13,7 +20,11 @@ const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 
 env.cacheDir = path.join(PROJECT_ROOT, ".hf-cache");
 env.allowLocalModels = false;
 
-const MODELS = [["onnx-community/moonshine-base-ONNX", "q8"]];
+const MODELS = [
+  ["onnx-community/moonshine-base-ONNX", "q8"],
+  ["onnx-community/moonshine-tiny-ONNX", "q8"],
+  ["Xenova/wav2vec2-base-960h", "q8"],
+];
 
 let failed = false;
 for (const [modelId, dtype] of MODELS) {

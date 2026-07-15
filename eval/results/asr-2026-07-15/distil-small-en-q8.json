@@ -1,0 +1,631 @@
+{
+  "modelId": "onnx-community/distil-small.en",
+  "dtype": "q8",
+  "withPrompt": false,
+  "loadS": 0.771,
+  "records": [
+    {
+      "speaker": "km",
+      "id": "stress-001",
+      "raw": "I am curious how far in the water that 240 Kivi carbon ion will go.",
+      "secs": 1.947,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "stress-002",
+      "raw": "Compersedpping power of neon ions in water and therefore 100 MEV per nucleo.",
+      "secs": 2.787,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-003",
+      "raw": "What's the DE slash DX of 250 M EV protons in PMMA?",
+      "secs": 2.668,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-005",
+      "raw": "Stopping power for 80 M.E.V. pernocally on carbon ions in water.",
+      "secs": 3.741,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-007",
+      "raw": "What is the mass stopping power of 200 M.E.V. protons in cortical bone?",
+      "secs": 3.259,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-008",
+      "raw": "D-A slash D-X of 3 M-E-V-Dutrons in Silicon",
+      "secs": 3.564,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-002",
+      "raw": "What is the CSDA range of 150 M.E.V. protein in water?",
+      "secs": 3.877,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-005",
+      "raw": "Rains of 90 M.E.P. pernoclon carbon ions in water.",
+      "secs": 3.152,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-008",
+      "raw": "How deep does a 100MEV proton penetrate in water?",
+      "secs": 3.42,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-001",
+      "raw": "How far will a 60M EV proton travel in water?",
+      "secs": 2.609,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-003",
+      "raw": "At what rate does a 30MED proton shed energy as it moves through aluminium?",
+      "secs": 2.928,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-008",
+      "raw": "What penetration depth do 80 M.E.V. pernoclon oxygen ions reach in water?",
+      "secs": 3.747,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "conv-003",
+      "raw": "So like, how far does a 100MED proton go in water, roughly?",
+      "secs": 3.427,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "conv-008",
+      "raw": "Okay, so I need the range of 250 MED protons in water for a plant.",
+      "secs": 3.409,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-001",
+      "raw": "Compare the stopping power of 100 M.E.V. protons in water and bone.",
+      "secs": 2.82,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-004",
+      "raw": "Range of 150 M.E.V. protons in water, bone and edipose tissue.",
+      "secs": 3.201,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-007",
+      "raw": "For 100 MEV per nucleon carbon ions, compare the range in water and PMMA.",
+      "secs": 3.314,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-par-003",
+      "raw": "How do carbon and neon ions compare in range in water at 100 M.E.V. per maclium?",
+      "secs": 2.979,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-par-005",
+      "raw": "which penetrates deeper in water at 60MV, a proton or a dutron.",
+      "secs": 3.439,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-en-001",
+      "raw": "Compare the range of proteins in water at 100 and 200 MEV.",
+      "secs": 2.957,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-prog-001",
+      "raw": "Compare the range of 150 MEV protons in water using A-star and P-star.",
+      "secs": 3.092,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-001",
+      "raw": "Stopping power of 500 key EV protons in water.",
+      "secs": 2.478,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-003",
+      "raw": "What is the stopping power of one GED protons in water?",
+      "secs": 2.639,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-006",
+      "raw": "What is the range of 900 key EV Dutrons in water?",
+      "secs": 2.595,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "pernuc-001",
+      "raw": "Range of carbon ions in water adds 290 M.E.V. per U.",
+      "secs": 2.732,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "pernuc-003",
+      "raw": "What is the range of a carbon ion with 3.6 G-E-V total energy in water?",
+      "secs": 3.009,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "iso-002",
+      "raw": "Stopping power of carbon-13 ions in water at 100 M.E.V. pernoclon.",
+      "secs": 2.952,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "iso-004",
+      "raw": "Stopping power of a helium-3 ion in water adds 40 M.E.V. pernoclin.",
+      "secs": 2.928,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "inv-rng-001",
+      "raw": "Water energy gives a 10mm range in water for protons.",
+      "secs": 2.455,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "alias-001",
+      "raw": "What is the range of 60 MEV protons in Lucide? Lucid.",
+      "secs": 2.905,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "stress-001",
+      "raw": "I am curious how far in water the 2014KED carbon ion will go.",
+      "secs": 2.453,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "stress-002",
+      "raw": "Compare stopping power of neon ions in water and air for 100 megelectronautals per nucleot.",
+      "secs": 3.04,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-003",
+      "raw": "What's the DEDX of 250 MED protons in PMMA?",
+      "secs": 2.777,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-005",
+      "raw": "Stopping power for 80 MV per nucleon carbon ions in water.",
+      "secs": 3.265,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-007",
+      "raw": "What is the mass stopping power of 200 NED protons in cortical bone?",
+      "secs": 2.696,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-008",
+      "raw": "The E Dix of three M.E.V. Deuterons in Silicon.",
+      "secs": 3.568,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-002",
+      "raw": "What is the CSDA range of 150 MV proton in water?",
+      "secs": 2.771,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-005",
+      "raw": "Range of 90 timidi per nucleon carbon ions in water",
+      "secs": 2.543,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-008",
+      "raw": "How deep does a 100 any proton penetrate in water?",
+      "secs": 2.614,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-001",
+      "raw": "How far will a 60-emiprotant travel in water?",
+      "secs": 2.609,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-003",
+      "raw": "At what rate does a 30 M&V proton shed energy as it moves through aluminium?",
+      "secs": 2.74,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-008",
+      "raw": "What penetration depth do 80 MIV per nuclean oxygen ions reach in water?",
+      "secs": 2.415,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "conv-003",
+      "raw": "So like how far those are a hundred MEPs forton going in water roughly?",
+      "secs": 2.807,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "conv-008",
+      "raw": "Okay, so I need the range of 230 amoebi proton in water for a plan.",
+      "secs": 2.887,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-001",
+      "raw": "Compare the stopping power of 100 amylic protons in water and bone.",
+      "secs": 2.404,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-004",
+      "raw": "range of 150 MEV protons in water, bone and adipose tissue.",
+      "secs": 2.584,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-007",
+      "raw": "For 100 MEV, per nucleon carbon ions, compare the range in water and PMMA.",
+      "secs": 2.855,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-par-003",
+      "raw": "How do carbon and neon ions compare in range in water at 100 MED per nucleon?",
+      "secs": 2.572,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-par-005",
+      "raw": "which penetrates deeper in water at 60 amylidylaproton or a dilute urine.",
+      "secs": 2.917,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-en-001",
+      "raw": "Compare the range of protons in water at 100 and 200 aminevee.",
+      "secs": 2.677,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-prog-001",
+      "raw": "Compared the range of 150 amici protons in water using A-star and P-star.",
+      "secs": 2.671,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-001",
+      "raw": "Stopping power of 500KED protons in water.",
+      "secs": 2.446,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-003",
+      "raw": "What is the stopping power of one GED protons in water?",
+      "secs": 2.589,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-006",
+      "raw": "What is the range of 900 Kevi Dutaros in water?",
+      "secs": 2.654,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "pernuc-001",
+      "raw": "Range of carbon ions in water at 290 NED per year.",
+      "secs": 3.017,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "pernuc-003",
+      "raw": "What is the range of carbon ion with 3.6 Geeve total energy in water?",
+      "secs": 2.727,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "iso-002",
+      "raw": "Stopping power of carbon 30 isles in water at 100 a million per nucleon.",
+      "secs": 2.682,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "iso-004",
+      "raw": "Stopping power of Helium tree ion in water at 40 Meevee per no clown.",
+      "secs": 2.641,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "inv-rng-001",
+      "raw": "What energy gives a 10 centimeter range in water for protons?",
+      "secs": 2.538,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "alias-001",
+      "raw": "What is the range of 60 MED protonsine lusside?",
+      "secs": 2.677,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "stress-001",
+      "raw": "I'm curious how far in water the 240K EV carbon oil will go.",
+      "secs": 2.559,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "stress-002",
+      "raw": "Compare stopping power of neon ions in water and air for 100 M-E-V per nuclei.",
+      "secs": 2.787,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-003",
+      "raw": "What's the D-E-over-D-X of 250 M-E-V protons in PMMA?",
+      "secs": 2.789,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-005",
+      "raw": "stopping power for 80m EV per nucleon carbon ions in water",
+      "secs": 2.521,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-007",
+      "raw": "What is the mass stopping power of 200 M.E.V. protons in Cortiac, Cortical bone?",
+      "secs": 3.055,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-008",
+      "raw": "D over the X of 3MV dealt terrons in Silicon.",
+      "secs": 3.04,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-002",
+      "raw": "What is the CSDA range of 150 M.E.V. protein in water?",
+      "secs": 2.715,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-005",
+      "raw": "Range of 90 M EV per nucleon carbon ions in water.",
+      "secs": 2.54,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-008",
+      "raw": "How deep does a 100MV proton penetrate in water?",
+      "secs": 2.978,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-001",
+      "raw": "How far will a 60-MV proton travel in water?",
+      "secs": 2.784,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-003",
+      "raw": "At what rate does a 30MV proton shed energy as it moves through aluminium?",
+      "secs": 2.851,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-008",
+      "raw": "What penetration depth do 80 MV pernucleon oxygen ions reach in water?",
+      "secs": 2.413,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "conv-003",
+      "raw": "I'm so like, how far does the 100MED proton go in water? Roughly.",
+      "secs": 2.959,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "conv-008",
+      "raw": "Okay, so I need a range of 230 NED protons in water for a plan.",
+      "secs": 2.766,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-mat-001",
+      "raw": "Compare the stopping power of 100 amylv protons in water and bone.",
+      "secs": 2.571,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-mat-004",
+      "raw": "Range of 150 M.E.V. protons in water, bone and adipose tissue.",
+      "secs": 2.684,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-par-003",
+      "raw": "How do carbon and neon ions compare enraged in water at 100MIV per nucleon?",
+      "secs": 2.601,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-par-005",
+      "raw": "Which planet is deeper in water? At 60 ameve. A proton or a deltaron?",
+      "secs": 2.694,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-en-001",
+      "raw": "Compare the range of protons in water at 100 and 200 MIV.",
+      "secs": 2.652,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-prog-001",
+      "raw": "Compare the range of 150 MV protons in water using Astar and P-star.",
+      "secs": 2.715,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-001",
+      "raw": "Stopping power of 500 KV protons in water.",
+      "secs": 2.469,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-003",
+      "raw": "What is the stopping power of 1 gigaelectronovolt protons in water?",
+      "secs": 2.97,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-006",
+      "raw": "What is the range of 900K EV del terrons in water?",
+      "secs": 2.505,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "pernuc-001",
+      "raw": "Range of carbon ions in water at 290 M.E.V. per you.",
+      "secs": 2.936,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "pernuc-003",
+      "raw": "What is the range of a carbon ion with 3.6 G EV total energy in water?",
+      "secs": 3.441,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "iso-002",
+      "raw": "Stopping power of carbon-13 ions in water at 100 NED per nucleon.",
+      "secs": 3.044,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "iso-004",
+      "raw": "Stopping power of helium-free ion in water at 40MV per nuclean.",
+      "secs": 2.577,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "inv-rng-001",
+      "raw": "What energy gives a 10mm range in water for protons?",
+      "secs": 2.833,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "alias-001",
+      "raw": "What is the range of 60 MV protons in Lucite?",
+      "secs": 2.805,
+      "error": null
+    }
+  ]
+}
