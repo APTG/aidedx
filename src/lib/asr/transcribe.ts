@@ -62,6 +62,9 @@
  */
 import { MODEL_MANIFEST } from "../models/manifest.ts";
 import { MODEL_MIRROR_HOST } from "../models/remote.ts";
+import { threadCountForCores } from "../system/threading.ts";
+
+export { threadCountForCores };
 
 const whisperEntry = MODEL_MANIFEST.find((entry) => entry.id === "whisper");
 if (!whisperEntry) throw new Error("manifest.ts is missing the 'whisper' entry");
@@ -107,18 +110,10 @@ interface LoadedPipeline {
 
 let pipelinePromise: Promise<LoadedPipeline> | null = null;
 
-/** Cap on the ORT WASM thread pool — whisper-small's encoder stops scaling
- * meaningfully past this (`docs/threading-coop-coep.md`), and a fixed ceiling
- * keeps memory and thread-spawn overhead bounded on many-core desktops. */
-const MAX_ASR_THREADS = 8;
-
 /**
- * ORT WASM thread count for a given logical-core count.
- *
- * Only meaningful when the page is cross-origin isolated (SharedArrayBuffer
- * available) — otherwise onnxruntime-web forces single-threaded regardless.
- * Policy: **half the logical cores** (onnxruntime-web's own default heuristic)
- * but with the cap raised from 4 to `MAX_ASR_THREADS`. Measurements in
+ * Policy: **half the logical cores** (onnxruntime-web's own default
+ * heuristic) but with the cap raised from 4 to
+ * `threading.ts`'s `MAX_ASR_THREADS` (8). Measurements in
  * `docs/threading-coop-coep.md` show whisper-small's prefill keeps improving
  * from 4→8 threads (~5.7 s → ~4.7 s steady-state, ~2.5 s best-case on a 12-core
  * box), which ORT's default cap of 4 leaves on the table. Half — rather than
@@ -127,15 +122,9 @@ const MAX_ASR_THREADS = 8;
  * big.LITTLE hardware, where the extra logical cores add little for this
  * matmul-bound workload. Conservative by design; tune via the `?debug` panel
  * (`ThreadDebugPanel.svelte`) against real target hardware before raising it.
- *
- * @param cores `navigator.hardwareConcurrency`, or `undefined` if unknown
- *   (rare) → treated as a modest 4-core machine.
+ * `threadCountForCores()` itself lives in `system/threading.ts`, shared with
+ * the status panel's "CPU threads" row (issue #42).
  */
-export function threadCountForCores(cores: number | undefined): number {
-  const usable = cores && cores > 0 ? cores : 4;
-  return Math.max(1, Math.min(MAX_ASR_THREADS, Math.floor(usable / 2)));
-}
-
 function resolveThreadCount(): number {
   return threadCountForCores(globalThis.navigator?.hardwareConcurrency);
 }
