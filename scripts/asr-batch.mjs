@@ -9,7 +9,7 @@
  *
  * Flags (combinable):
  *   --correct          show post-correction results alongside raw
- *   --prompt           inject domain vocabulary hint into Whisper decoder (prompt_ids)
+ *   --no-prompt        disable Whisper domain vocabulary prompt biasing (on by default, issue #25)
  *   --speaker <tag>    run only this speaker subdirectory (default: all found)
  */
 import { pipeline, env } from "@huggingface/transformers";
@@ -26,7 +26,7 @@ env.allowLocalModels = false;
 const modelId = process.argv[2] ?? "onnx-community/whisper-small";
 const dtype = process.argv[3] ?? "q8";
 const withCorrection = process.argv.includes("--correct");
-const withPrompt = process.argv.includes("--prompt");
+const withPrompt = !process.argv.includes("--no-prompt");
 const speakerIdx = process.argv.indexOf("--speaker");
 const speakerArg = speakerIdx !== -1 ? process.argv[speakerIdx + 1] : null;
 
@@ -81,7 +81,6 @@ function loadAudio(file) {
 console.log(`Model : ${modelId} [${dtype}]`);
 console.log(`Clips : ${FILES.length}`);
 if (withCorrection) console.log("Mode  : ASR + domain correction");
-if (withPrompt) console.log("Prompt: domain vocabulary hint enabled");
 console.log("Loading model...");
 const t0 = Date.now();
 const asr = await pipeline("automatic-speech-recognition", modelId, { dtype });
@@ -89,22 +88,42 @@ const asr = await pipeline("automatic-speech-recognition", modelId, { dtype });
 // Build decoder_input_ids replicating Whisper's prompt_ids mechanism (not in transformers.js v4).
 // Correct structure: [<|startofprev|>, ...prompt_tokens, <|startoftranscript|>, <|en|>, <|transcribe|>, <|notimestamps|>]
 // The <|startofprev|> token tells the decoder the prompt is prior context, not the transcript.
+// <|startofprev|> is resolved from the tokenizer at runtime — NEVER hardcode it. It is 50361 in
+// whisper-small/turbo's multilingual vocab; a stale hardcoded id (e.g. 50362) silently degrades
+// decoding into repetition loops instead of erroring (issue #25).
+let promptEnabled = withPrompt;
 let promptDecoderIds;
 let promptPrefix = "";
-if (withPrompt) {
+if (promptEnabled) {
   const gc = asr.model.generation_config;
-  const SOT_PREV = 50362; // <|startofprev|>
-  const SOT = Number(gc.decoder_start_token_id); // <|startoftranscript|> = 50258
-  const LANG_EN = Number(gc.lang_to_id["<|en|>"]); // 50259
-  const TRANSCRIBE = Number(gc.task_to_id["transcribe"]); // 50360
-  const NO_TS = Number(gc.no_timestamps_token_id); // 50364
-  const encoded = await asr.tokenizer(DOMAIN_PROMPT, { add_special_tokens: false });
-  const promptTokenIds = Array.from(encoded.input_ids.data).map(Number);
-  promptDecoderIds = [SOT_PREV, ...promptTokenIds, SOT, LANG_EN, TRANSCRIBE, NO_TS];
-  // The model echoes the prompt prefix verbatim before the actual transcript.
-  // Decode just the prompt tokens to know exactly what to strip.
-  const decoded = await asr.tokenizer.decode(promptTokenIds, { skip_special_tokens: true });
-  promptPrefix = decoded.trim();
+  if (!gc?.lang_to_id || !gc?.task_to_id || gc?.no_timestamps_token_id == null) {
+    console.log(
+      "Prompt: unsupported by this model (no Whisper-style generation_config) — disabled",
+    );
+    promptEnabled = false;
+  } else {
+    const prevEncoded = await asr.tokenizer("<|startofprev|>", { add_special_tokens: false });
+    const prevIds = Array.from(prevEncoded.input_ids.data).map(Number);
+    if (prevIds.length !== 1) {
+      throw new Error(
+        `<|startofprev|> did not resolve to a single token (got ${JSON.stringify(prevIds)}) — ` +
+          `refusing to guess an id`,
+      );
+    }
+    const SOT_PREV = prevIds[0];
+    const SOT = Number(gc.decoder_start_token_id); // <|startoftranscript|>
+    const LANG_EN = Number(gc.lang_to_id["<|en|>"]);
+    const TRANSCRIBE = Number(gc.task_to_id["transcribe"]);
+    const NO_TS = Number(gc.no_timestamps_token_id);
+    const encoded = await asr.tokenizer(DOMAIN_PROMPT, { add_special_tokens: false });
+    const promptTokenIds = Array.from(encoded.input_ids.data).map(Number);
+    promptDecoderIds = [SOT_PREV, ...promptTokenIds, SOT, LANG_EN, TRANSCRIBE, NO_TS];
+    // The model echoes the prompt prefix verbatim before the actual transcript.
+    // Decode just the prompt tokens to know exactly what to strip.
+    const decoded = await asr.tokenizer.decode(promptTokenIds, { skip_special_tokens: true });
+    promptPrefix = decoded.trim();
+    console.log(`Prompt: domain vocabulary hint enabled (<|startofprev|> = ${SOT_PREV})`);
+  }
 }
 
 console.log(`Model loaded in ${((Date.now() - t0) / 1000).toFixed(1)}s\n`);
@@ -144,21 +163,37 @@ for (const speaker of speakers) {
 
     const t1 = Date.now();
     let result;
+    let usedPromptFallback = false;
     try {
       result = await asr(
         audio,
-        withPrompt ? { decoder_input_ids: promptDecoderIds, forced_decoder_ids: [] } : {},
+        promptEnabled ? { decoder_input_ids: promptDecoderIds, forced_decoder_ids: [] } : {},
       );
     } catch (err) {
-      console.log(
-        `  ! ${id.padEnd(14)} ERROR: ${err instanceof Error ? err.message : String(err)}`,
-      );
-      continue;
+      if (!promptEnabled) {
+        console.log(
+          `  ! ${id.padEnd(14)} ERROR: ${err instanceof Error ? err.message : String(err)}`,
+        );
+        continue;
+      }
+      // Rare empty-output decode under prompt mode (issue #25, e.g. "token_ids must be a
+      // non-empty array") — retry once without the prompt rather than losing the clip.
+      try {
+        result = await asr(audio, {});
+        usedPromptFallback = true;
+      } catch (retryErr) {
+        console.log(
+          `  ! ${id.padEnd(14)} ERROR (prompt + no-prompt retry both failed): ${
+            retryErr instanceof Error ? retryErr.message : String(retryErr)
+          }`,
+        );
+        continue;
+      }
     }
     const elapsed = ((Date.now() - t1) / 1000).toFixed(1);
 
     let raw = result.text.trim();
-    if (withPrompt && raw.startsWith(promptPrefix)) {
+    if (promptEnabled && !usedPromptFallback && raw.startsWith(promptPrefix)) {
       raw = raw.slice(promptPrefix.length).trimStart();
     }
     const corrected = withCorrection ? correct(raw) : raw;
@@ -169,7 +204,9 @@ for (const speaker of speakers) {
     if (withCorrection && okCorrected) exactCorrected++;
 
     const mark = okRaw ? "✓" : withCorrection && okCorrected ? "~" : "✗";
-    console.log(`  ${mark} ${id.padEnd(14)} (${elapsed}s)`);
+    console.log(
+      `  ${mark} ${id.padEnd(14)} (${elapsed}s)${usedPromptFallback ? " [no-prompt retry]" : ""}`,
+    );
     if (!okRaw) {
       console.log(`    expected : ${expected}`);
       console.log(`    raw      : ${raw}`);

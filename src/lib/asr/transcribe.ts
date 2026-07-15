@@ -266,9 +266,21 @@ export async function transcribe(
     });
   }
 
-  const result = await asr(pcm, streamer ? { ...genOpts, streamer } : genOpts);
+  let result: { text: string };
+  let usedPromptFallback = false;
+  try {
+    result = await asr(pcm, streamer ? { ...genOpts, streamer } : genOpts);
+  } catch (error) {
+    // Rare empty-output decode under prompt mode (issue #25, e.g. Whisper's "token_ids
+    // must be a non-empty array", ~1% of clips in the eval benchmark) — retry once
+    // without the domain prompt rather than surfacing a hard failure for the user's query.
+    console.warn("[asr] prompt-mode decode failed, retrying without prompt", error);
+    result = await asr(pcm, streamer ? { streamer } : {});
+    usedPromptFallback = true;
+  }
+
   let text = result.text.trim();
-  if (promptPrefix && text.startsWith(promptPrefix)) {
+  if (!usedPromptFallback && promptPrefix && text.startsWith(promptPrefix)) {
     text = text.slice(promptPrefix.length).trimStart();
   }
   return text;
