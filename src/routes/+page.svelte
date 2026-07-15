@@ -6,6 +6,8 @@
   // bundle — each is only pulled in once it's actually needed.
   import ModelDownloadBanner from "$lib/components/status/ModelDownloadBanner.svelte";
   import MicButton from "$lib/components/asr/MicButton.svelte";
+  // DEBUG (#9 threading experiment, revertable): live ORT thread-count control, gated behind ?debug.
+  import ThreadDebugPanel from "$lib/components/asr/ThreadDebugPanel.svelte";
   import AnswerCard from "$lib/components/answer/AnswerCard.svelte";
   import { asrStatus } from "$lib/asr/asr-status.svelte.ts";
   import { answerStatus } from "$lib/answer/answer-status.svelte.ts";
@@ -19,6 +21,13 @@
 
   let query = $state("");
   let now = $state(Date.now());
+
+  // DEBUG (#9 threading experiment, revertable): show the thread-count panel
+  // only when the URL has ?debug, so ordinary visitors never see it. `location`
+  // is unset during prerender (panel stays hidden) and set once on the client.
+  const showThreadDebug = $derived(
+    new URLSearchParams(globalThis.location?.search ?? "").has("debug"),
+  );
 
   // Ticks while a recording/transcription is in flight so the status line's
   // elapsed-time readout updates; torn down as soon as neither is active.
@@ -143,6 +152,10 @@
   />
 
   <ModelDownloadBanner />
+
+  {#if showThreadDebug}
+    <ThreadDebugPanel />
+  {/if}
 
   <p class="text-center text-sm text-muted-foreground">
     🔒 Runs entirely on your machine — your questions never leave the browser.

@@ -22,7 +22,7 @@
  * response; a failed prewarm surfaces instead through the next real
  * `"transcribe"` request, which retries the load itself.
  */
-import { transcribe, warmup } from "./transcribe.ts";
+import { transcribe, warmup, setDebugNumThreads } from "./transcribe.ts";
 import type { WorkerRequest, WorkerResponse } from "./worker-protocol.ts";
 
 function post(message: WorkerResponse): void {
@@ -31,6 +31,11 @@ function post(message: WorkerResponse): void {
 
 self.onmessage = (event: MessageEvent<WorkerRequest>) => {
   const message = event.data;
+  if (message.type === "config") {
+    // DEBUG (#9): stash the requested thread count before the pipeline loads.
+    setDebugNumThreads(message.numThreads);
+    return;
+  }
   if (message.type === "warm") {
     // Errors are swallowed here on purpose — loadPipeline() resets its
     // memoized promise on failure, so the next "transcribe" request just

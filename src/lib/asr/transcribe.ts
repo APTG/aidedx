@@ -107,11 +107,33 @@ interface LoadedPipeline {
 
 let pipelinePromise: Promise<LoadedPipeline> | null = null;
 
+/**
+ * DEBUG (#9 threading experiment, revertable): overrides the ORT WASM thread
+ * count used when the pipeline loads. `null` leaves onnxruntime-web's default
+ * in place. Set via the `config` worker message (see `ThreadDebugPanel.svelte`)
+ * before the first warm/transcribe. Only takes effect when the page is
+ * cross-origin isolated (SharedArrayBuffer available).
+ */
+let debugNumThreads: number | null = null;
+export function setDebugNumThreads(n: number | null): void {
+  debugNumThreads = n;
+}
+
 function loadPipeline(): Promise<LoadedPipeline> {
   pipelinePromise ??= (async () => {
     try {
       const { pipeline, env, WhisperTextStreamer } = await import("@huggingface/transformers");
       env.remoteHost = MODEL_MIRROR_HOST;
+      // DEBUG (#9): force an explicit ORT thread count when isolated.
+      if (debugNumThreads != null && globalThis.crossOriginIsolated) {
+        try {
+          // @ts-expect-error experimental reach into the ORT env
+          env.backends.onnx.wasm.numThreads = debugNumThreads;
+          console.log("[asr] DEBUG forced ORT numThreads =", debugNumThreads);
+        } catch (e) {
+          console.log("[asr] DEBUG could not set numThreads", e);
+        }
+      }
       const asr = await pipeline("automatic-speech-recognition", WHISPER_REPO, {
         dtype: WHISPER_DTYPE,
       });
