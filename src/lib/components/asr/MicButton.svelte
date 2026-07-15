@@ -43,7 +43,13 @@
   // "Processing" (real per-token decode work) — the distinction the user
   // actually perceives as "is anything happening" vs. "it's really working".
   const stageLabel = $derived(isPrefill ? "Warming up…" : "Processing…");
-  const progressPercent = $derived(Math.round((transcribeProgress?.fraction ?? 0) * 100));
+  // Floor + cap at 99, not round: estimateProgress() can legitimately return
+  // up to ~0.98-0.998 while still mid-transcription (Copilot review) —
+  // rounding would show 100% before the bar actually disappears at
+  // completion, contradicting "approaches but never reaches done".
+  const progressPercent = $derived(
+    Math.min(99, Math.floor((transcribeProgress?.fraction ?? 0) * 100)),
+  );
 
   function handleClick() {
     if (isRecording) {

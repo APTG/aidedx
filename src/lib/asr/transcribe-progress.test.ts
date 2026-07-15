@@ -34,6 +34,31 @@ describe("transcribe-progress", () => {
       );
       expect(loadCalibration()).toEqual(DEFAULTS);
     });
+
+    it("returns the seeded defaults when a persisted value is zero or negative (Copilot review)", () => {
+      // A 0 totalTokensEma in particular would otherwise let estimateProgress()
+      // jump to ~99% on the very first token — validation must reject it, not
+      // just check the shape.
+      localStorage.setItem(
+        "aidedx:asr-progress-calibration-v1",
+        JSON.stringify({ prefillMsEma: 1000, perTokenMsEma: 50, totalTokensEma: 0 }),
+      );
+      expect(loadCalibration()).toEqual(DEFAULTS);
+
+      localStorage.setItem(
+        "aidedx:asr-progress-calibration-v1",
+        JSON.stringify({ prefillMsEma: -1000, perTokenMsEma: 50, totalTokensEma: 10 }),
+      );
+      expect(loadCalibration()).toEqual(DEFAULTS);
+    });
+
+    it("returns the seeded defaults when totalTokensEma is below the minimum of 2 (Copilot review)", () => {
+      localStorage.setItem(
+        "aidedx:asr-progress-calibration-v1",
+        JSON.stringify({ prefillMsEma: 1000, perTokenMsEma: 50, totalTokensEma: 1 }),
+      );
+      expect(loadCalibration()).toEqual(DEFAULTS);
+    });
   });
 
   describe("recordCompletedTranscription", () => {

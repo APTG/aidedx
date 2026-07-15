@@ -77,13 +77,26 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+/**
+ * Rejects not just malformed shapes but degenerate values a corrupted or
+ * hand-edited localStorage entry could hold — e.g. `totalTokensEma: 0` would
+ * otherwise survive validation and then make `estimateProgress()` jump to
+ * ~99% on the very first token (Copilot review), defeating the clamping
+ * `estimateProgress()` relies on to keep the bar honest. `totalTokensEma`
+ * needs at least 2 for `recordCompletedTranscription()`'s own per-token-ms
+ * math to be meaningful (it divides by `totalTokens - 1`), so anything below
+ * that isn't a value this module would ever have written itself.
+ */
 function isValidCalibration(value: unknown): value is ProgressCalibration {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Record<string, unknown>;
   return (
     isFiniteNumber(candidate.prefillMsEma) &&
+    candidate.prefillMsEma > 0 &&
     isFiniteNumber(candidate.perTokenMsEma) &&
-    isFiniteNumber(candidate.totalTokensEma)
+    candidate.perTokenMsEma > 0 &&
+    isFiniteNumber(candidate.totalTokensEma) &&
+    candidate.totalTokensEma >= 2
   );
 }
 

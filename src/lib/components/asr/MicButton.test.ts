@@ -132,6 +132,23 @@ describe("MicButton", () => {
     expect(bar.firstElementChild).not.toHaveClass("bg-muted-foreground");
   });
 
+  it("caps the displayed percentage at 99 while still transcribing, even for a near-1 fraction (Copilot review)", () => {
+    const { getByRole } = render(MicButton, {
+      props: {
+        phase: "transcribing",
+        errorMessage: null,
+        elapsedLabel: "3 s",
+        transcribeProgress: { stage: "decode", fraction: 0.998 },
+        onStart: vi.fn(),
+        onStop: vi.fn(),
+      },
+    });
+
+    // Math.round(0.998 * 100) would show 100 here, misleadingly signaling
+    // completion before the bar actually disappears (phase -> "done").
+    expect(getByRole("progressbar")).toHaveAttribute("aria-valuenow", "99");
+  });
+
   it("does not regress the displayed percentage across a prefill->decode transition", () => {
     const { getByRole, rerender } = render(MicButton, {
       props: {
