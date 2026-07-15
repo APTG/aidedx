@@ -50,7 +50,13 @@ if (typeof window === "undefined") {
             headers: newHeaders,
           });
         })
-        .catch((e) => console.error(e)),
+        .catch((e) => {
+          // respondWith() requires a Response; returning undefined from a catch
+          // would throw. Re-throw so the fetch surfaces as a normal network
+          // error (same as if the SW hadn't intercepted it) instead.
+          console.error(e);
+          throw e;
+        }),
     );
   });
 } else {

@@ -242,3 +242,28 @@ describe("threadCountForCores (#9 WASM threading policy)", () => {
     expect(threadCountForCores(0)).toBe(2);
   });
 });
+
+describe("normalizeThreadOverride (#9 debug override validation)", () => {
+  it("accepts positive integers as-is up to the hard cap", async () => {
+    const { normalizeThreadOverride } = await import("./transcribe.ts");
+    expect(normalizeThreadOverride(1)).toBe(1);
+    expect(normalizeThreadOverride(8)).toBe(8);
+    expect(normalizeThreadOverride(12)).toBe(12);
+    expect(normalizeThreadOverride(64)).toBe(64);
+  });
+
+  it("floors fractional values and caps huge ones", async () => {
+    const { normalizeThreadOverride } = await import("./transcribe.ts");
+    expect(normalizeThreadOverride(4.9)).toBe(4);
+    expect(normalizeThreadOverride(1000)).toBe(64);
+  });
+
+  it("rejects null / non-finite / non-positive to null (falls back to the policy)", async () => {
+    const { normalizeThreadOverride } = await import("./transcribe.ts");
+    expect(normalizeThreadOverride(null)).toBeNull();
+    expect(normalizeThreadOverride(0)).toBeNull();
+    expect(normalizeThreadOverride(-4)).toBeNull();
+    expect(normalizeThreadOverride(Number.NaN)).toBeNull();
+    expect(normalizeThreadOverride(Number.POSITIVE_INFINITY)).toBeNull();
+  });
+});

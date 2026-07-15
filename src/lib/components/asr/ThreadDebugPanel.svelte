@@ -10,10 +10,12 @@
    * memoized once created, applying a new value reloads the page so the worker
    * is rebuilt cleanly.
    *
-   * Gated behind the `?debug` query param so ordinary visitors never see it.
+   * Gated behind the `?debug` query param so ordinary visitors never see it —
+   * and `worker-client.ts` only forwards the override when `?debug` is present,
+   * so a stale localStorage value can't affect a normal visit.
    * To use on the live app: visit `<url>?debug`, pick a thread count, Apply,
    * then record a clip and read the "Warming up…" time (and the
-   * `[asr] DEBUG forced ORT numThreads` console line to confirm it took).
+   * `[asr] ORT numThreads = … (debug override)` console line to confirm it took).
    *
    * Remove this file, its mount in `+page.svelte`, and the `config` worker
    * message plumbing to revert.

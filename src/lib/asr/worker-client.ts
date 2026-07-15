@@ -71,9 +71,16 @@ class WorkerTranscribeClient implements TranscribeWorkerClient {
     });
   }
 
-  /** DEBUG (#9): reads `aidedxDebugThreads` from localStorage and posts it as a config message. */
+  /**
+   * DEBUG (#9): reads `aidedxDebugThreads` from localStorage and posts it as a
+   * config message. Gated behind `?debug` so a stale selection can never affect
+   * a normal visitor — without `?debug` the worker gets no override and the
+   * shipped `threadCountForCores` policy applies.
+   */
   #sendDebugThreadConfig(): void {
     try {
+      const hasDebugFlag = new URLSearchParams(globalThis.location?.search ?? "").has("debug");
+      if (!hasDebugFlag) return;
       const raw = globalThis.localStorage?.getItem("aidedxDebugThreads");
       if (raw == null || raw === "" || raw === "off") return;
       const numThreads = Number(raw);
@@ -81,7 +88,7 @@ class WorkerTranscribeClient implements TranscribeWorkerClient {
       const request: WorkerRequest = { type: "config", numThreads };
       this.#worker.postMessage(request);
     } catch {
-      /* localStorage may be unavailable (SSR/hardened browsers) — debug-only, ignore */
+      /* localStorage/location may be unavailable (SSR/hardened browsers) — debug-only, ignore */
     }
   }
 

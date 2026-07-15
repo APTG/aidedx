@@ -146,8 +146,25 @@ function resolveThreadCount(): number {
  * Set via the `config` worker message before the first warm/transcribe.
  */
 let debugNumThreads: number | null = null;
+
+/** Hard ceiling for the debug override — generous enough to test above the
+ * shipped cap, but bounds the damage from a malformed message value. */
+const DEBUG_THREAD_HARD_MAX = 64;
+
+/**
+ * Normalizes a debug override to a positive integer within
+ * [1, DEBUG_THREAD_HARD_MAX], or `null` for anything non-finite / non-positive.
+ * The value ultimately reaches `env.backends.onnx.wasm.numThreads`, so a bad
+ * `config` message must never spawn a huge thread pool or set a fractional/NaN
+ * count.
+ */
+export function normalizeThreadOverride(n: number | null): number | null {
+  if (n == null || !Number.isFinite(n) || n < 1) return null;
+  return Math.min(DEBUG_THREAD_HARD_MAX, Math.floor(n));
+}
+
 export function setDebugNumThreads(n: number | null): void {
-  debugNumThreads = n;
+  debugNumThreads = normalizeThreadOverride(n);
 }
 
 function loadPipeline(): Promise<LoadedPipeline> {
