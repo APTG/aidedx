@@ -123,25 +123,27 @@ for (const speaker of speakers) {
     let raw = "";
     let error = null;
     let usedPromptFallback = false;
+    let result = null;
     try {
-      const result = await asr(audio, genOpts);
-      raw = result.text.trim();
-      if (promptEnabled && raw.startsWith(promptPrefix)) {
-        raw = raw.slice(promptPrefix.length).trimStart();
-      }
+      result = await asr(audio, genOpts);
     } catch (e) {
       if (promptEnabled) {
         // Rare empty-output decode under prompt mode (issue #25, e.g. "token_ids must be a
         // non-empty array") — retry once without the prompt rather than losing the clip.
         try {
-          const result = await asr(audio, {});
-          raw = result.text.trim();
+          result = await asr(audio, {});
           usedPromptFallback = true;
         } catch (e2) {
           error = String(e2 && e2.message ? e2.message : e2);
         }
       } else {
         error = String(e && e.message ? e.message : e);
+      }
+    }
+    if (result) {
+      raw = result.text.trim();
+      if (promptEnabled && !usedPromptFallback && raw.startsWith(promptPrefix)) {
+        raw = raw.slice(promptPrefix.length).trimStart();
       }
     }
     const secs = (Date.now() - t1) / 1000;
@@ -154,5 +156,11 @@ for (const speaker of speakers) {
   }
 }
 
-writeFileSync(outFile, JSON.stringify({ modelId, dtype, withPrompt, loadS, records }, null, 1));
+// Record the *effective* prompt state, not the requested flag: feature detection may
+// have disabled it (e.g. non-Whisper models), and mislabeling the artifact would
+// confuse downstream scoring (asr-score-slots.mjs's label reads this field).
+writeFileSync(
+  outFile,
+  JSON.stringify({ modelId, dtype, withPrompt: promptEnabled, loadS, records }, null, 1),
+);
 console.log(`wrote ${outFile} (${records.length} records)`);
