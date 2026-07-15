@@ -31,6 +31,9 @@ yarn.lock
 # Python venv for s3cmd (Cyfronet mirror tooling)
 /.venv/
 
+# Python venv for local TTS eval-audio synthesis (issue #30 pilot, docs/tts-eval-audio.md)
+/.venv-tts/
+
 # s3cmd credentials (Cyfronet mirror tooling) — contains a live secret key, never commit
 /.s3cmd
 /.s3cfg
