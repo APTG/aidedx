@@ -27,6 +27,11 @@
   let hardwareConcurrency = $state(0);
   let ready = $state(false);
 
+  // Mirror of resolveThreadCount() in transcribe.ts — what "off" resolves to.
+  const policyThreads = $derived(
+    Math.max(1, Math.min(8, Math.floor((hardwareConcurrency > 0 ? hardwareConcurrency : 4) / 2))),
+  );
+
   onMount(() => {
     selected = globalThis.localStorage?.getItem("aidedxDebugThreads") ?? "off";
     crossOriginIsolated = Boolean(globalThis.crossOriginIsolated);
@@ -59,7 +64,7 @@
           class="rounded border border-input bg-card px-2 py-1 font-mono outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {#each OPTIONS as opt (opt)}
-            <option value={opt}>{opt}</option>
+            <option value={opt}>{opt === "off" ? `off (policy → ${policyThreads})` : opt}</option>
           {/each}
         </select>
       </label>
@@ -79,8 +84,9 @@
       </span>
     </div>
     <p class="mt-2 text-xs text-muted-foreground">
-      "off" = onnxruntime-web default. Effective only when crossOriginIsolated. After Apply, record
-      a clip; confirm via the <code>[asr] DEBUG forced ORT numThreads</code> console line.
+      "off" uses the shipped policy (half the logical cores, capped at 8) = <b>{policyThreads}</b>
+      here; pick a number to override it for A/B testing. Effective only when crossOriginIsolated. After
+      Apply, record a clip and confirm via the <code>[asr] ORT numThreads = …</code> console line.
     </p>
   </div>
 {/if}
