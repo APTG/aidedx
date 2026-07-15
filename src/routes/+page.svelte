@@ -9,6 +9,8 @@
   // DEBUG (#9 threading experiment, revertable): live ORT thread-count control, gated behind ?debug.
   import ThreadDebugPanel from "$lib/components/asr/ThreadDebugPanel.svelte";
   import AnswerCard from "$lib/components/answer/AnswerCard.svelte";
+  import ExampleQueries from "$lib/components/answer/ExampleQueries.svelte";
+  import { EXAMPLE_QUERIES } from "$lib/components/answer/example-queries.ts";
   import { asrStatus } from "$lib/asr/asr-status.svelte.ts";
   import { answerStatus } from "$lib/answer/answer-status.svelte.ts";
   import { modelStatus } from "$lib/models/model-status.svelte.ts";
@@ -21,6 +23,7 @@
 
   let query = $state("");
   let now = $state(Date.now());
+  let examplesOpen = $state(false);
 
   // DEBUG (#9 threading experiment, revertable): show the thread-count panel
   // only when the URL has ?debug, so ordinary visitors never see it. `location`
@@ -97,6 +100,15 @@
     event.preventDefault();
     void answerStatus.submit(query);
   }
+
+  // Selecting an example behaves exactly like typing it and hitting submit —
+  // same field, same answerStatus.submit() path as typed and mic input
+  // (issue #39) — then collapses the panel so the answer takes focus.
+  function selectExample(text: string) {
+    query = text;
+    examplesOpen = false;
+    void answerStatus.submit(text);
+  }
 </script>
 
 <svelte:head>
@@ -144,6 +156,13 @@
       Search
     </button>
   </form>
+
+  <ExampleQueries
+    examples={EXAMPLE_QUERIES}
+    open={examplesOpen}
+    onToggle={() => (examplesOpen = !examplesOpen)}
+    onSelect={selectExample}
+  />
 
   <AnswerCard
     phase={answerStatus.phase}
