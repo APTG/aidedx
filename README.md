@@ -23,8 +23,8 @@ server, no account, nothing you type or say ever leaves your device.
    caches them in your browser, so this happens only on your first visit.
 3. **Ask your question** — press 🎤 and speak, or type it. For example: _"stopping power of 150 MeV
    protons in water"_, or _"how far do 200 MeV/nucl carbon ions go in water?"_
-4. **Read the answer and check the assumptions.** aidedx shows how it understood you (isotope,
-   energy, program) as editable chips — fix any and the answer updates instantly.
+4. **Read the answer.** Any assumptions aidedx made (isotope, energy interpretation, program) are
+   noted alongside it.
 
 It's just a web app: no repo to clone, no app to install, no login needed.
 
@@ -39,32 +39,31 @@ steps that each feed the next:
                                                           │
   ┌────────────────── then, for every question, fully local ──────────────────┐
   │                                                                            │
-  │   🎤 speak / ⌨ type  ─▶  1. Listen  ─▶  2. Understand  ─▶  3. Compute  ─▶  4. Explain
+  │   🎤 speak / ⌨ type  ─▶  1. Speech recognition  ─▶  2. Understand  ─▶  3. Compute  ─▶  4. Explain
   │                                                                            │
   └────────────────────────────────────────────────────────────────────────────┘
 ```
 
-1. **Listen** — a speech-recognition model turns what you say into text (or you type it directly).
-2. **Understand** — aidedx reads out which particle, material, energy, and quantity you meant and
-   turns it into a precise query. Common phrasings are handled by fast built-in rules; a small
-   language model steps in only for unusual wording.
+1. **Speech recognition** — turns what you say into text (skip this by typing instead). It's tuned
+   toward physics vocabulary (MeV, PMMA, stopping power, …) rather than everyday speech, since we
+   expect a physics question, not a recipe — with a retry if a decode ever fails outright.
+2. **Understand** — matches your wording against expected physics phrasing to work out the particle,
+   material, energy, and quantity you meant, and turns it into a precise query.
 3. **Compute** — the query is answered from **trusted reference data (NIST, ICRU, Bethe–Bloch)**, not
    guessed by the AI.
-4. **Explain** — you get a plain-language answer, with every assumption shown as an editable chip.
+4. **Explain** — you get a plain-language answer, with any assumptions it made noted alongside it.
 
-Because the AI only ever _fills in the query_, a misheard word surfaces as a chip you can correct —
-it can never corrupt the physics. The models also catch their own slips: a garbled transcript is
-retried, and malformed query output is re-derived. See the
-[technical documentation](docs/development.md) for the specifics.
+See the [technical documentation](docs/development.md) for the specifics.
 
 ## Why "on your machine" matters
 
 Most AI tools send your words to a company's servers. aidedx does the opposite — the models run
 **locally, in your browser**:
 
-- **Privacy is built in.** Clinical and research questions never touch the network.
+- **Privacy is built in.** Your questions never touch the network.
 - **Nothing to pay for or operate.** The whole app is a static website — free to host on GitHub Pages
   or a university server.
+- **Works offline, too**, once downloaded — handy in an experiment hall or anywhere with no signal.
 - **The physics is never guessed.** The AI only _understands_ your question; every number comes from
   trusted reference data, never from the language model.
 
@@ -82,11 +81,12 @@ The only trade-off is the last row: local AI has to fetch its "brain" the first 
 
 Early-stage prototype under active development:
 
-- ✅ **Works:** typed question → understood → computed → answered, with editable assumptions; voice
-  input transcribes; the one-time download has a consent flow and status panel.
-- 🚧 **In progress:** wiring voice all the way through to an answer ([#39](https://github.com/APTG/aidedx/issues/39)); enabling the language-model fallback.
-- 🐢 **Slow / open:** on GPU-less machines the language-model fallback takes ~10–30 s (most questions skip it); fast-inference hosting is still being worked out.
-- 🔭 **Planned:** spoken answers, deep links into dedx_web for full plots, wider phrasing coverage.
+- ✅ **Works:** typed or spoken question → understood → computed → answered, with assumptions noted;
+  the one-time model download has a consent flow and status panel.
+- 🚧 **In progress:** enabling the language-model fallback for phrasing the built-in rules miss.
+- 🐢 **Slow / open:** on GPU-less machines that fallback would take ~10–30 s (most questions skip it,
+  handled by the fast built-in rules); fast-inference hosting is still being worked out.
+- 🔭 **Planned:** spoken answers, editable assumption chips ([#10](https://github.com/APTG/aidedx/issues/10)), deep links into dedx_web for full plots, wider phrasing coverage.
 
 ## Documentation & resources
 
