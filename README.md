@@ -1,20 +1,20 @@
 # aidedx
 
-**Ask a stopping-power question in plain language, get a real answer — computed entirely on your own
-machine. Nothing you type or say ever leaves your device.**
+**Ask about the range, kinetic energy, or stopping power of protons and heavy ions — just speak or
+type the question in plain language and get a real answer, computed entirely on your own machine.**
 
-aidedx is a friendly, conversational front-end to [**libdedx**](https://github.com/APTG/libdedx),
-the stopping-power and range library behind [dedx_web](https://github.com/APTG/dedx_web). Instead of
-filling in a form, you just ask:
+Questions like _"how far does a 40 MeV proton go in PMMA?"_ or _"what's the stopping power of carbon
+ions in water?"_ normally mean digging through a form or a data table. aidedx lets you simply ask:
 
 > 🎤 _"What is the range of 40 MeV protons in PMMA?"_
 >
 > → _"The CSDA range of 40 MeV protons in PMMA is 1.285 cm (PSTAR)."_
 
-The existing dedx_web tool is precise but form-driven. aidedx lowers the barrier for the quick
-"what's the range of X in Y?" questions that researchers, clinicians, and students ask all day — and
-it does it **without a server**. There's no backend to run, no account to create, and no data to
-leak: the AI that understands your question runs inside your browser tab.
+The key point: **the answer comes from trusted reference data — NIST (PSTAR/ASTAR), ICRU, and
+Bethe–Bloch calculations — not from an AI making numbers up.** The AI only listens to your question
+and works out what you're asking; the physics is then computed by [libdedx](https://github.com/APTG/libdedx),
+the same well-established library used by researchers and clinicians. And it all runs **inside your
+browser tab** — no server, no account, nothing you type or say ever leaves your device.
 
 ## How it works — two phases
 
