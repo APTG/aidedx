@@ -159,8 +159,8 @@ resumability (skip any `<id>.wav` already on disk) meant nothing was lost — bu
 time in one project that "just run it in the background" turned out not to be durable enough for a
 multi-hour job.
 
-**Fix: moved the whole pipeline into a committed `sbatch` script** (`submit.sh`, run as
-`sbatch submit.sh`) instead of an interactive background command — a job submitted to the SLURM
+**Fix: moved the whole pipeline into a committed `sbatch` script** (`scripts/submit.sh`, run as
+`sbatch scripts/submit.sh`) instead of an interactive background command — a job submitted to the SLURM
 queue keeps running regardless of what happens to the shell that submitted it. One job now runs, in
 order: regenerate + validate the 1000 sentences (cheap, deterministic, doubles as a pre-flight
 check), resume TTS generation to completion, patch `slotTruth`, transcribe, and score with both
@@ -360,8 +360,8 @@ candidate explanations, not yet distinguished by this data:
 
 - `scripts/generate-1000-sentences.mjs` — the sentence generator (§2).
 - `scripts/tts-qwen-1000.py` — the synthesis driver (§3–4).
-- `submit.sh` — the `sbatch` pipeline that runs generation → patch → transcribe → score as one job
-  (§4).
+- `scripts/submit.sh` — the `sbatch` pipeline that runs generation → patch → transcribe → score as
+  one job (§4).
 - `eval/audio/tts-qwen-1000/*.wav` + `manifest.json` — 1000 clips + full ground truth (text,
   resolved-quantity/multi-scenario tags, `slotTruth`, voice profile) — gitignored like the rest of
   `eval/audio/`, per this project's existing convention for TTS-synthesized (not recorded-human)

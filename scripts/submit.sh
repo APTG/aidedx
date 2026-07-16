@@ -22,7 +22,7 @@
 # (scripts/tts-qwen-1000.py) skips any <id>.wav already on disk and resumes from the
 # manifest, so a resubmit only pays for the work not yet done.
 #
-# Usage: sbatch submit.sh
+# Usage (from the repo root): sbatch scripts/submit.sh
 
 set -euo pipefail
 

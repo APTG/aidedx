@@ -142,8 +142,9 @@ in an interactive session instead of as a batch job:
   noticing (`hostname` / `echo $SLURM_JOB_PARTITION` tells you which kind of node a given shell is
   actually on).
 
-The fix used for the 1000-sample TTS batch (`docs/tts-eval-1000.md`): a committed `submit.sh`
-(`sbatch submit.sh`) that runs the whole pipeline — regenerate + validate sentences, synthesize
+The fix used for the 1000-sample TTS batch (`docs/tts-eval-1000.md`): a committed
+`scripts/submit.sh` (`sbatch scripts/submit.sh`) that runs the whole pipeline — regenerate +
+validate sentences, synthesize
 audio, transcribe, score — as one job, independent of whatever interactive session submitted it.
 Resumable by construction, so a resubmit after a failure only pays for the work not yet done.
 
