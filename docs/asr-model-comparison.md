@@ -17,16 +17,16 @@ domain-prompt biasing, #25, that whisper-small ships with — this is how they'd
 non-Whisper architectures have no prompt mechanism and are shown un-prompted (see the two full
 tables below for both un-prompted and prompted numbers):
 
-| model                                           | size (q8) | in-browser prefill         | E2E audio→intent (prompted) | verdict                                                                           |
-| ----------------------------------------------- | --------- | -------------------------- | --------------------------- | --------------------------------------------------------------------------------- |
-| **whisper-small (baseline)**                    | 240 MB    | **~7.9 s**                 | **89% (78/88)**             | ships today                                                                       |
-| whisper-base                                    | 80 MB     | **~2.5 s (3.2× faster)**   | 63% (56/89)                 | faster, but 26pp worse — fails the accuracy bar                                   |
-| whisper-tiny                                    | 40 MB     | **~1.3 s (6.1× faster)**   | 12% (11/89)                 | floor confirmed — far too weak                                                    |
-| distil-small.en                                 | 190 MB    | not measurable (see below) | 19% (17/89) *un-prompted*²  | ruled out on accuracy; also breaks in this app's code (can't be prompted)         |
-| moonshine-base                                  | 200 MB    | not re-measured            | 22% (20/89) _un-prompted_   | ruled out on accuracy (Node-only, see caveat)                                     |
-| moonshine-tiny                                  | 50 MB     | not re-measured            | 17% (15/89) _un-prompted_   | ruled out on accuracy (Node-only, see caveat)                                     |
-| wav2vec2-base-960h                              | 91 MB     | not re-measured            | **0% (0/89)** _un-prompted_ | ruled out on accuracy — corrector can't parse CTC output                          |
-| whisper-large-v3-turbo (reference, over budget) | ~650 MB   | not re-measured            | 87% (77/89) _un-prompted_   | best accuracy; over the 500 MB CPU/WASM budget — the natural **WebGPU-tier** pick |
+| model                                           | size (q8) | in-browser prefill         | E2E audio→intent (prompted) | verdict                                                                                                                                          |
+| ----------------------------------------------- | --------- | -------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **whisper-small (baseline)**                    | 240 MB    | **~7.9 s**                 | **89% (78/88)**             | ships today                                                                                                                                      |
+| whisper-base                                    | 80 MB     | **~2.5 s (3.2× faster)**   | 63% (56/89)                 | faster, but 26pp worse — fails the accuracy bar                                                                                                  |
+| whisper-tiny                                    | 40 MB     | **~1.3 s (6.1× faster)**   | 12% (11/89)                 | floor confirmed — far too weak                                                                                                                   |
+| distil-small.en                                 | 190 MB    | not measurable (see below) | 19% (17/89) *un-prompted*²  | ruled out on accuracy; also breaks in this app's code (can't be prompted)                                                                        |
+| moonshine-base                                  | 200 MB    | not re-measured            | 22% (20/89) _un-prompted_   | ruled out on accuracy (Node-only, see caveat)                                                                                                    |
+| moonshine-tiny                                  | 50 MB     | not re-measured            | 17% (15/89) _un-prompted_   | ruled out on accuracy (Node-only, see caveat)                                                                                                    |
+| wav2vec2-base-960h                              | 91 MB     | not re-measured            | **0% (0/89)** _un-prompted_ | ruled out on accuracy — corrector can't parse CTC output                                                                                         |
+| whisper-large-v3-turbo (reference, over budget) | ~650 MB   | not re-measured            | 87% (77/89) _un-prompted_   | best accuracy; over the 500 MB CPU/WASM budget — WebGPU tier tested (issue #60) and **not worth it**, see `docs/threading-coop-coep.md` addendum |
 
 The prefill lever (smaller Whisper encoder) works exactly as physics predicts — whisper-base is
 genuinely 3.2× faster prefill, whisper-tiny 6.1× — but domain accuracy falls off a cliff faster than
@@ -197,10 +197,10 @@ S3-mirror follow-up PR from this issue. The productive next levers, in priority 
    (the encoder's large batched matmul is exactly the workload multi-threading helps most) with
    **zero accuracy cost**, unlike any model swap. This is the highest-value path and helps every
    user.
-2. **whisper-large-v3-turbo on the WebGPU tier (also #9)** — the highest accuracy measured here (87%
-   un-prompted; likely 90%+ prompted), excluded only from the _CPU/WASM_ budget, not on merit. For
-   capable users, the right upgrade is a bigger/better model on a faster runtime, not a smaller one
-   on the same slow runtime.
+2. ~~**whisper-large-v3-turbo on the WebGPU tier (also #9)**~~ — tested in issue #60
+   (`docs/threading-coop-coep.md` addendum): WebGPU itself works, but real in-browser prefill for
+   turbo (either backend) is ~10× worse than the Node number this row's accuracy figure was measured
+   against. Not worth shipping as-is.
 3. **whisper-base as an optional fast first-pass tier** — 63% E2E at 3.2× faster prefill (~2.5 s)
    could show an instant provisional answer refined by whisper-small in the background. Real UX
    value for the prefill complaint, but two-model complexity; only worth it if #1 stalls and instant
