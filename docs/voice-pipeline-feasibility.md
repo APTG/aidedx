@@ -253,7 +253,7 @@ eliminate the "dE, dx" and "10-cm" failure modes §2.3 had listed as open matche
 Turbo's raw slot-token accuracy also benefits from prompt biasing (+3.5 pp), and its
 ext-corrected ceiling is unchanged at 98.1% (the extended corrector already closed
 most of turbo's gap even without the prompt; the prompt's contribution for turbo is on
-the raw/uncorrected side). This confirmed turbo as a real _accuracy_ candidate now that
+the raw/uncorrected side). This confirms turbo as a real _accuracy_ candidate now that
 domain-prompt biasing is verified to help it too, but issue #60's WebGPU measurement
 (`docs/threading-coop-coep.md` addendum) found the actual WebGPU-tier latency doesn't
 hold up — real in-browser prefill is ~10× worse than the Node number below. Doesn't
