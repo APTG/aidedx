@@ -125,3 +125,30 @@ which node python3 ffmpeg pnpm    # all resolve, none under $HOME
 echo "$PIP_CACHE_DIR $npm_config_cache $HF_HOME"   # all under the repo, on scratch
 quota -s                          # space usage well under the 10240M limit
 ```
+
+## 7. Heavy work goes through `sbatch`, never run directly in an interactive/login shell
+
+Two real failure modes this project has already hit, both from running GPU/long-CPU work directly
+in an interactive session instead of as a batch job:
+
+- **An interactive background TTS-generation job died silently** when the session it was attached
+  to was torn down (§1's "dropped connection" scenario isn't limited to the shell itself — any
+  long-running child process attached to that session goes with it). It happened to be resumable
+  (`scripts/tts-qwen-1000.py` skips existing output files), so the lost work was bounded, but that's
+  luck, not a plan.
+- **Running Node/Python compute-heavy commands from a login/access node** rather than a job
+  allocation is the same class of mistake, just caught before it caused damage rather than after —
+  login nodes are shared, thin, and not meant for it, and it's easy to end up on one without
+  noticing (`hostname` / `echo $SLURM_JOB_PARTITION` tells you which kind of node a given shell is
+  actually on).
+
+The fix used for the 1000-sample TTS batch (`docs/tts-eval-1000.md`): a committed `submit.sh`
+(`sbatch submit.sh`) that runs the whole pipeline — regenerate + validate sentences, synthesize
+audio, transcribe, score — as one job, independent of whatever interactive session submitted it.
+Resumable by construction, so a resubmit after a failure only pays for the work not yet done.
+
+**Rule of thumb going forward**: anything involving the GPU, a model's `.generate()`/inference
+call, or more than a few seconds of CPU work belongs in an `sbatch` script, not typed directly into
+an interactive shell — even one that already has a GPU allocation (the allocation dying isn't the
+only risk; being on the wrong kind of node in the first place is another). Quick read-only checks
+(`grep`, `jq`/`python3 -c` over an already-written JSON file, `git`, `gh`) are fine anywhere.
