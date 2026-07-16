@@ -35,6 +35,20 @@ aidedx runs in two phases. The **first time** you visit, it downloads its AI mod
 them in your browser. **After that**, every question is handled entirely on your machine, in four
 steps that each feed the next — speech/text in, then:
 
+<p align="center">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="docs/assets/pipeline-dark.svg"
+    />
+    <img
+      alt="aidedx pipeline: a one-time AI-model download that's cached in your browser, then every question flows on your device through speech recognition, understand, compute (from NIST, ICRU and Bethe–Bloch data via libdedx), and explain — ending in a plain-language answer such as 'the CSDA range of 5 MeV alpha particles in air is 3.644 cm (ASTAR)'."
+      src="docs/assets/pipeline-light.svg"
+      width="820"
+    />
+  </picture>
+</p>
+
 1. **Speech recognition** — turns what you say into text (skip this by typing instead). It's tuned
    toward physics vocabulary (MeV, PMMA, stopping power, …) rather than everyday speech, since we
    expect a physics question, not a recipe — with a retry if a decode ever fails outright.
@@ -50,6 +64,20 @@ See the [technical documentation](docs/development.md) for the specifics.
 
 Most AI tools send your words to a company's servers. aidedx does the opposite — the models run
 **locally, in your browser**:
+
+<p align="center">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="docs/assets/local-vs-cloud-dark.svg"
+    />
+    <img
+      alt="Where inference runs: a typical cloud AI round-trips every question between your device and company servers that run the model — it needs a paid API and a backend, gives no answer without a network, and your words may be logged. aidedx instead downloads just the model weights and web app to your device one time, then answers every question there: offline, free to host, with your questions never touching the network."
+      src="docs/assets/local-vs-cloud-light.svg"
+      width="820"
+    />
+  </picture>
+</p>
 
 - **Nothing to pay for or operate.** Hosted for free on GitHub Pages.
 - **Works offline, too**, once downloaded — handy in an experiment hall or anywhere with no signal.

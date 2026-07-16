@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 500" width="880" height="500" role="img" aria-label="aidedx pipeline: one-time model download, then speech recognition, understand, compute, explain — all on your device" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+<title>aidedx pipeline: one-time model download, then speech recognition, understand, compute, explain — all on your device</title>
+<defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0 L10 5 L0 10 z" fill="#9198a1"/>
+  </marker>
+  <marker id="aha" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0 L10 5 L0 10 z" fill="#6ca6ff"/>
+  </marker>
+  <marker id="ahd" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0 L10 5 L0 10 z" fill="#f85149"/>
+  </marker>
+  <marker id="ahs" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0 L10 5 L0 10 z" fill="#3fb950"/>
+  </marker>
+</defs>
+<rect x="24" y="40" width="832" height="92" rx="14" fill="#161b22" stroke="#30363d" stroke-width="1.5" stroke-dasharray="2 6"/>
+<rect x="42" y="27" width="143.04" height="26" rx="13" fill="#12233d" stroke="#2f4f7a" stroke-width="1"/><text x="54" y="44.32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#9fc5ff" text-anchor="start" letter-spacing="0.4">FIRST VISIT ONLY</text>
+<g transform="translate(50,68) scale(1.5)" fill="none" stroke="#6ca6ff" stroke-width="1.1333333333333333" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 v9 M6.5 8.5 L10 12 L13.5 8.5"/><path d="M4 14 v2 a1 1 0 0 0 1 1 h10 a1 1 0 0 0 1-1 v-2"/></g>
+<text x="94" y="82" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#e6edf3" text-anchor="start">Download the AI models</text>
+<text x="94" y="101" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#9198a1" text-anchor="start">a few hundred MB, just once</text>
+<path d="M 379 86 h 96" fill="none" stroke="#9198a1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 5" marker-end="url(#ah)"/>
+<g transform="translate(510,68) scale(1.5)" fill="none" stroke="#6ca6ff" stroke-width="1.1333333333333333" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="14" height="12" rx="1.6"/><path d="M3 7.5 h14"/><circle cx="5.4" cy="5.7" r="0.5" fill="#6ca6ff"/><circle cx="7.2" cy="5.7" r="0.5" fill="#6ca6ff"/><path d="M6 11 h8 M6 13.4 h5"/></g>
+<text x="554" y="82" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#e6edf3" text-anchor="start">Cached in your browser</text>
+<text x="554" y="101" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#9198a1" text-anchor="start">reused every later visit — even offline</text>
+<g transform="translate(26,150) scale(1)" fill="none" stroke="#3fb950" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="12" height="8" rx="1.6"/><path d="M6.5 9 V6.5 a3.5 3.5 0 0 1 7 0 V9"/><circle cx="10" cy="13" r="1" fill="#3fb950"/></g>
+<text x="54" y="165" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#e6edf3" text-anchor="start">Then, for every question — computed 100% on your device</text>
+<rect x="24" y="188" width="316" height="54" rx="12" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<g transform="translate(38,203) scale(1.1)" fill="none" stroke="#6ca6ff" stroke-width="1.5454545454545452" stroke-linecap="round" stroke-linejoin="round"><rect x="7.5" y="2.5" width="5" height="9" rx="2.5"/><path d="M5 9.5 a5 5 0 0 0 10 0"/><path d="M10 14.5 v3 M7 17.5 h6"/></g>
+<text x="66" y="210" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#9198a1" text-anchor="start">speak</text>
+<g transform="translate(66,214) scale(1)" fill="none" stroke="#6ca6ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="15" height="9" rx="1.6"/><path d="M5.5 8.2 h0.01 M8 8.2 h0.01 M10.5 8.2 h0.01 M13 8.2 h0.01 M6.5 11 h7"/></g>
+<text x="90" y="230" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#9198a1" text-anchor="start">or type</text>
+<text x="144" y="220" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#e6edf3" text-anchor="start" font-style="italic">“range of 5 MeV</text>
+<text x="144" y="236" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#e6edf3" text-anchor="start" font-style="italic">alpha particles in air”</text>
+<rect x="24" y="264" width="194" height="168" rx="14" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<circle cx="50" cy="292" r="14" fill="#6ca6ff" stroke="none" stroke-width="1"/>
+<text x="50" y="297" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#0d1117" text-anchor="middle">1</text>
+<g transform="translate(178,279) scale(1.3)" fill="none" stroke="#9198a1" stroke-width="1.3076923076923077" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 v0 M6 6.5 v7 M9 4 v12 M12 7 v6 M15 8.5 v3 M17.5 10 v0"/></g>
+<text x="40" y="332" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15.5" font-weight="700" fill="#e6edf3" text-anchor="start">Speech recognition</text>
+<text x="40" y="354" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9198a1" text-anchor="start">your voice → text,</text>
+<text x="40" y="370" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9198a1" text-anchor="start">tuned to physics words</text>
+<text x="40" y="386" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9198a1" text-anchor="start">(MeV, stopping power, …)</text>
+<path d="M 220 348 h 14" fill="none" stroke="#9198a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+<rect x="236" y="264" width="194" height="168" rx="14" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<circle cx="262" cy="292" r="14" fill="#6ca6ff" stroke="none" stroke-width="1"/>
+<text x="262" y="297" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#0d1117" text-anchor="middle">2</text>
+<g transform="translate(390,279) scale(1.3)" fill="none" stroke="#9198a1" stroke-width="1.3076923076923077" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="2.2"/><path d="M10 1.5 v2.4 M10 16.1 v2.4 M1.5 10 h2.4 M16.1 10 h2.4"/></g>
+<text x="252" y="332" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15.5" font-weight="700" fill="#e6edf3" text-anchor="start">Understand</text>
+<text x="252" y="354" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9198a1" text-anchor="start">which particle, material,</text>
+<text x="252" y="370" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9198a1" text-anchor="start">energy &amp; quantity</text>
+<text x="252" y="386" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9198a1" text-anchor="start">you asked for</text>
+<path d="M 432 348 h 14" fill="none" stroke="#9198a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+<rect x="448" y="264" width="194" height="168" rx="14" fill="#12233d" stroke="#6ca6ff" stroke-width="2"/>
+<circle cx="474" cy="292" r="14" fill="#6ca6ff" stroke="none" stroke-width="1"/>
+<text x="474" y="297" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#0d1117" text-anchor="middle">3</text>
+<g transform="translate(602,279) scale(1.3)" fill="none" stroke="#6ca6ff" stroke-width="1.3076923076923077" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="10" cy="5" rx="6" ry="2.4"/><path d="M4 5 v10 a6 2.4 0 0 0 12 0 V5"/><path d="M4 10 a6 2.4 0 0 0 12 0"/></g>
+<text x="464" y="332" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15.5" font-weight="700" fill="#e6edf3" text-anchor="start">Compute</text>
+<text x="464" y="354" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9198a1" text-anchor="start">real numbers,</text>
+<text x="464" y="370" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9198a1" text-anchor="start">never guessed by the AI</text>
+<rect x="460" y="382" width="170" height="30" rx="8" fill="#12261c" stroke="#2a5a37" stroke-width="1"/>
+<text x="545" y="401" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#3fb950" text-anchor="middle">NIST · ICRU · Bethe–Bloch</text>
+<text x="545" y="424" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#9198a1" text-anchor="middle" font-style="italic">via the libdedx library</text>
+<path d="M 644 348 h 14" fill="none" stroke="#9198a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+<rect x="660" y="264" width="194" height="168" rx="14" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<circle cx="686" cy="292" r="14" fill="#6ca6ff" stroke="none" stroke-width="1"/>
+<text x="686" y="297" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#0d1117" text-anchor="middle">4</text>
+<g transform="translate(814,279) scale(1.3)" fill="none" stroke="#9198a1" stroke-width="1.3076923076923077" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 4.5 h13 a1.5 1.5 0 0 1 1.5 1.5 v6 a1.5 1.5 0 0 1-1.5 1.5 H8 l-3.5 3 v-3 H3.5 a1.5 1.5 0 0 1-1.5-1.5 V6 a1.5 1.5 0 0 1 1.5-1.5 Z"/><path d="M5.5 8 h9 M5.5 10.5 h6"/></g>
+<text x="676" y="332" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15.5" font-weight="700" fill="#e6edf3" text-anchor="start">Explain</text>
+<text x="676" y="354" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9198a1" text-anchor="start">a plain-language answer,</text>
+<text x="676" y="370" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9198a1" text-anchor="start">with assumptions noted</text>
+<path d="M 64 242 V 261" fill="none" stroke="#6ca6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aha)"/>
+<path d="M 757 432 V 451" fill="none" stroke="#3fb950" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ahs)"/>
+<rect x="470" y="454" width="386" height="42" rx="12" fill="#12261c" stroke="#2a5a37" stroke-width="1.5"/>
+<g transform="translate(482,465) scale(1.1)" fill="none" stroke="#3fb950" stroke-width="1.5454545454545452" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 L8.5 15 L16 6"/></g>
+<text x="514" y="472" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#e6edf3" text-anchor="start">The CSDA range of 5 MeV alpha particles in air</text>
+<text x="514" y="488" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#e6edf3" text-anchor="start">is</text>
+<text x="532" y="488" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#3fb950" text-anchor="start">3.644 cm</text>
+<text x="598" y="488" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#9198a1" text-anchor="start">(ASTAR).</text>
+</svg>
