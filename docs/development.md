@@ -123,6 +123,14 @@ distribution obligation for aidedx itself.
   Apple Silicon (M5): ASR latency, LLM-NLU-fallback viability, KV-cache reuse.
 - [`docs/asr-model-comparison.md`](./asr-model-comparison.md) — Whisper model-size comparison for the
   ASR stage.
+- [`docs/whisper-progress-feedback.md`](./whisper-progress-feedback.md) — download/inference progress
+  UX for the Whisper stage.
+- [`docs/tts-eval-audio.md`](./tts-eval-audio.md) — TTS-synthesized eval audio pilot (Kokoro-82M,
+  then Qwen3-TTS), as an alternative to recording human speakers.
+- [`docs/tts-eval-1000.md`](./tts-eval-1000.md) — the 1000-sample TTS eval-audio batch this pilot
+  scaled up to.
+- [`docs/athena-setup.md`](./athena-setup.md) — Athena/PLGrid cluster environment setup, read before
+  any GPU/Python work there (used by the TTS eval docs above).
 - [`docs/nlu.md`](./nlu.md) — the deterministic NLU matcher.
 - [`docs/aliases.md`](./aliases.md) — material/particle alias table provenance and regeneration.
 - [`docs/wasm.md`](./wasm.md) — the libdedx WASM wrapper boundary and how to rebuild the binaries.
@@ -136,5 +144,3 @@ distribution obligation for aidedx itself.
   download-consent, and clear-cache UX.
 - [`docs/threading-coop-coep.md`](./threading-coop-coep.md) — cross-origin isolation, `SharedArrayBuffer`,
   and the static-host threading constraint.
-- [`docs/whisper-progress-feedback.md`](./whisper-progress-feedback.md) — download/inference progress
-  UX for the Whisper stage.
