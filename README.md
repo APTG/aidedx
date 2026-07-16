@@ -33,17 +33,7 @@ It's just a web app: no repo to clone, no app to install, no login needed.
 
 aidedx runs in two phases. The **first time** you visit, it downloads its AI models once and caches
 them in your browser. **After that**, every question is handled entirely on your machine, in four
-steps that each feed the next:
-
-```
-  first visit only ──▶  download AI models  ──▶  cache in your browser (once)
-                                                          │
-  ┌────────────────── then, for every question, fully local ──────────────────┐
-  │                                                                            │
-  │   🎤 speak / ⌨ type  ─▶  1. Speech recognition  ─▶  2. Understand  ─▶  3. Compute  ─▶  4. Explain
-  │                                                                            │
-  └────────────────────────────────────────────────────────────────────────────┘
-```
+steps that each feed the next — speech/text in, then:
 
 1. **Speech recognition** — turns what you say into text (skip this by typing instead). It's tuned
    toward physics vocabulary (MeV, PMMA, stopping power, …) rather than everyday speech, since we
