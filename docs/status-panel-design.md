@@ -3,11 +3,10 @@
 ## Status: shipped
 
 Implemented by [PR #33](https://github.com/APTG/aidedx/pull/33), following design option **1b**
-from the mockup this doc is a companion to:
-[`docs/status-panel-mockup/aidedx-status-explorations.dc.html`](./status-panel-mockup/aidedx-status-explorations.dc.html)
-(vendored from an attachment on [issue #32](https://github.com/APTG/aidedx/issues/32) — see
-"Design mockup" below). This page captures the spec and the _why_ behind it in prose, so a future
-reader doesn't have to open a closed issue (or a non-trivial interactive HTML file) to find them.
+from a three-way interactive mockup posted as an attachment on
+[issue #32](https://github.com/APTG/aidedx/issues/32) — see "Design mockup" below. This page
+captures the spec and the _why_ behind it in prose, so a future reader doesn't have to dig up a
+closed issue's attachment (or open a non-trivial interactive HTML file) to find them.
 
 **Relevance to issue #17** ("Basic/Advanced mode toggle + hardware status panel"): the status
 pill/panel described here already ships everything #17's "hardware status panel" table asked
@@ -87,24 +86,26 @@ desktop unchanged (centered instead of bottom-sheeted).
   (bandwidth/time cost); the individual pieces are each covered by unit tests plus a live partial-
   download check.
 
-## Design mockup
+## Design mockup (removed)
 
-[`docs/status-panel-mockup/`](./status-panel-mockup/) contains the original interactive HTML
-exploration (`aidedx-status-explorations.dc.html` + its generated support runtime, `support.js`),
-vendored from a comment attachment on issue #32 so the design source doesn't depend on GitHub's
-attachment hosting. It shows all three layout options (1a/1b/1c) with mobile/desktop toggles and
-clickable state transitions (Fresh → Downloading → Ready → Clear-cache); option 1b above is the one
-that shipped. `support.js` is a generated third-party rendering runtime for that file's
-`{{ }}`-templated format, not aidedx code — see the "do not edit" header in the file itself; both
-are excluded from Prettier/ESLint (`.prettierignore`, `eslint.config.js`) as vendored, not
-hand-maintained.
+The original interactive HTML exploration (`aidedx-status-explorations.dc.html` + its generated
+support runtime, `support.js`) was vendored into `docs/status-panel-mockup/` from a comment
+attachment on issue #32, so the design source didn't depend on GitHub's attachment hosting. It
+showed all three layout options (1a/1b/1c) with mobile/desktop toggles and clickable state
+transitions (Fresh → Downloading → Ready → Clear-cache); option 1b above is the one that shipped.
 
-**Not fully offline.** "Vendored" here means the repo doesn't depend on GitHub's attachment hosting
-for the file itself — it does **not** mean the mockup is self-contained. Opening the HTML fetches
-and executes React, ReactDOM, and Babel Standalone from `unpkg.com` at runtime (specific versions
-pinned via SRI hashes, but still a live third-party fetch). This is fine for a developer-only design
-reference that's never loaded by an aidedx user, but worth knowing before opening the file on an
-untrusted or offline network.
+It was deleted in a later docs-cleanup pass: the feature has been shipped and stable since PR #33,
+this doc's spec + "why 1b" above already carry everything a future reader needs, and the mockup
+was never fully self-contained anyway (next paragraph) — a 100+ KB generated, non-source artifact
+whose marginal value keeps shrinking now that the design decision it recorded is old news. Still
+recoverable from git history before its removal, or from issue #32's original attachment, if ever
+needed.
+
+**It was not fully offline.** "Vendored" meant the repo didn't depend on GitHub's attachment hosting
+for the file itself — it did **not** mean the mockup was self-contained. Opening the HTML fetched
+and executed React, ReactDOM, and Babel Standalone from `unpkg.com` at runtime (specific versions
+pinned via SRI hashes, but still a live third-party fetch) — one more reason it was only ever a
+developer-only design reference, never something worth keeping polished long-term.
 
 ## Related
 
