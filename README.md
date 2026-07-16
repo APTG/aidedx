@@ -3,8 +3,9 @@
 **Ask about the range, kinetic energy, or stopping power of protons and heavy ions — just speak or
 type the question in plain language and get a real answer, computed entirely on your own machine.**
 
-Questions like _"how far does a 40 MeV proton go in PMMA?"_ or _"what's the stopping power of carbon
-ions in water?"_ normally mean digging through a form or a data table. aidedx lets you simply ask:
+Questions like _"how far does a 5 MeV alpha particle go in air?"_ or _"what's the stopping power of
+200 MeV/nucl carbon ions in water?"_ normally mean digging through a form or a data table. aidedx
+lets you simply ask:
 
 > 🎤 _"What is the range of 40 MeV protons in PMMA?"_
 >
