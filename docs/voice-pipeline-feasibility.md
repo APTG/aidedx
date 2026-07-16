@@ -256,7 +256,7 @@ most of turbo's gap even without the prompt; the prompt's contribution for turbo
 the raw/uncorrected side). This confirms turbo as a real _accuracy_ candidate now that
 domain-prompt biasing is verified to help it too, but issue #60's WebGPU measurement
 (`docs/threading-coop-coep.md` addendum) found the actual WebGPU-tier latency doesn't
-hold up — real in-browser prefill is ~10× worse than the Node number below. Doesn't
+hold up — real in-browser prefill is ~10× worse than the Node number below. This doesn't
 change the CPU-tier recommendation either way: whisper-small + prompt is still both more
 accurate (91% vs 90% E2E) and ~2× faster per clip. Turbo's median per-clip latency in
 this run (5.0 s) was notably lower than §2.1's 8.1 s under otherwise-similar
