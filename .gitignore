@@ -34,6 +34,15 @@ yarn.lock
 # Python venv for local TTS eval-audio synthesis (issue #30 pilot, docs/tts-eval-audio.md)
 /.venv-tts/
 
+# Python venv for the Qwen3-TTS feasibility check (issue #30, docs/tts-eval-audio.md §6)
+/.venv-qwen/
+
+# Athena/PLGrid environment (docs/athena-setup.md, scripts/athena-env.sh) — every cache that
+# would otherwise write into $HOME's 10GB quota (pip, npm, huggingface_hub) redirects here instead
+/.cache/
+/.npm-global/
+/.hf-cache-py/
+
 # s3cmd credentials (Cyfronet mirror tooling) — contains a live secret key, never commit
 /.s3cmd
 /.s3cfg

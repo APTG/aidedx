@@ -54,6 +54,12 @@ Kept out of the way of the repo's Node/TypeScript tooling — Python lives in a 
 `.venv-tts/`** (not committed; would need a `.gitignore` entry and a `requirements.txt` if this
 graduates from pilot to a real script under `scripts/`).
 
+> **Superseded by `docs/athena-setup.md`**: everything below was worked out ad hoc during this
+> pilot. After the follow-up Qwen3-TTS work (§6) hit `$HOME`'s disk quota for real, all of it —
+> modules, `PYTHONPATH` fix, and every cache-redirect env var — was consolidated into one sourceable
+> script, `scripts/athena-env.sh`, documented there. Read that doc first for any new session; the
+> points below are kept as the "why", not a second set of instructions to follow by hand.
+
 - **Python version matters**: the default `Python/3.13.5` module has no prebuilt wheels for
   `blis`/`thinc` (spaCy's dependencies, pulled in by `misaki`'s English G2P) on this platform —
   building from source failed. `Python/3.10.4` (also available as a module) has prebuilt wheels for
@@ -68,8 +74,10 @@ graduates from pilot to a real script under `scripts/`).
 - **GPU**: `torch==2.11.0+cu128` from the official CUDA 12.8 wheel index; confirmed against the
   A100 (`torch.cuda.is_available()` → `True`).
 - **Node/ffmpeg**: not preinstalled on PATH; available as modules (`module load FFmpeg/7.1.2
-nodejs/22.17.1`). `pnpm` isn't installed cluster-wide; installed once to `~/.local` via
-  `npm install -g pnpm@10.33.0 --prefix=$HOME/.local` (matches `package.json`'s pinned version).
+nodejs/22.17.1`). `pnpm` isn't installed cluster-wide; originally installed to `~/.local` via
+  `npm install -g pnpm@10.33.0 --prefix=$HOME/.local` (matches `package.json`'s pinned version) —
+  **later relocated to scratch** (`docs/athena-setup.md`) once it became clear anything installed
+  into `$HOME` counts against the 10 GB quota.
 
 ## 3. Results — pilot voice `af_heart`, 30 sentences
 
@@ -186,3 +194,136 @@ The synthesis script (`tts_synthesize.py`) lives outside the repo for now (pilot
 sentence text straight from `eval/intents.jsonl` for the 30 IDs `asr-transcribe.mjs` already knows,
 and writes 16-bit PCM WAV at Kokoro's native 24 kHz (ffmpeg resamples to 16 kHz mono at ASR time
 regardless, same as the human recordings' 44.1/48 kHz source files).
+
+## 6. Heavy-model option: Qwen3-TTS-12Hz-1.7B (plan)
+
+Issue #30 got a comment proposing a heavier model ("Qwen") as an addition to the Kokoro/Piper plan
+above, explicitly self-labeled as **desk research — no TTS model actually run that session**. Before
+turning that into a task-list item, verified every factual claim in it against primary sources and
+then actually ran the model on this A100. This section is the resulting plan, not yet executed
+beyond the smoke test below (no eval-audio corpus generated, no ASR scoring run).
+
+### 6.1 What the comment got right, and one thing to correct
+
+The comment names `Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign` and its sibling `-CustomVoice`. Checked
+both against the Hugging Face API and the model cards directly (not from training knowledge — this
+model post-dates this session's Jan-2026 cutoff):
+
+- **Real, Apache-2.0, ungated, pip-installable** (`pip install qwen-tts`) — confirmed.
+- **CustomVoice's 9 preset speakers, only 2 natively English** (`Ryan`, `Aiden`, both male) —
+  confirmed verbatim against the model card's speaker table. (`model.get_supported_speakers()`
+  actually returns all 9 speaker IDs regardless of language — each speaker _can_ speak English, just
+  in their native-language voice profile per the card; e.g. `Vivian` speaking English would carry a
+  Chinese-native voice, not an English accent. Untested here, but it's a free extra source of
+  timbre variety beyond the 2 "native English" presets if quality holds up.)
+- **VoiceDesign takes a free-text `instruct` description (accent, age, gender, pacing, emotion), no
+  reference audio, no cloning** — confirmed, and directly demonstrated below.
+- **~4.5 GB of weights, comfortably under 8 GB VRAM** — confirmed: 4.52 GB on disk (main LM
+  3.83 GB + speech tokenizer 0.68 GB), **4.35 GB peak GPU memory** measured on this A100.
+- **One correction**: the comment attributes CustomVoice's "1.24% English WER" to _CustomVoice_
+  specifically. The model card's cited number (SEED test-en, WER 1.24) is reported for
+  **`-Base`**, not `-CustomVoice`. CustomVoice does have its own (different-benchmark) English WER
+  elsewhere on the card — 0.899 on the card's target-speaker multilingual test — which is if
+  anything a _better_ number, so the comment's overall conclusion ("this model's output is cleaner
+  than human/Kokoro speech, treat as a lower bound") still holds; only the specific citation was
+  loose.
+- **One thing the comment flagged as unverified and got right to flag**: the "97 ms first-packet
+  latency" marketing figure is for the streaming/vLLM-Omni serving path, not the plain
+  `qwen_tts.Qwen3TTSModel.generate_*` batch path anyone would actually use to pre-generate a WAV
+  corpus. Measured batch latency below is 5.5–12.4 s/clip — fine for offline generation, not
+  real-time.
+
+### 6.2 Smoke test — actually run, not desk research
+
+Ran both `-VoiceDesign` and `-CustomVoice` on this session's A100, in a separate venv
+(`.venv-qwen/`, Python 3.10, same rationale as `.venv-tts/` in §2) so a `qwen-tts` dependency
+problem can't affect the Kokoro pilot's environment.
+
+**Hit and fixed two environment problems** (both worth knowing before anyone repeats this on
+Athena):
+
+1. **`torchaudio` version mismatch** — `pip install qwen-tts` pulls `torchaudio` from plain PyPI,
+   which resolved to a build linked against `libcudart.so.13`, while `torch` was explicitly
+   installed as the `+cu128` build (CUDA 12.8, i.e. `libcudart.so.12`). Failed at import with
+   `OSError: Could not load this library: .../_torchaudio.abi3.so`. Fix: reinstall torchaudio from
+   the same `cu128` wheel index as torch (`pip install --force-reinstall torchaudio --index-url
+https://download.pytorch.org/whl/cu128`) so the versions match.
+2. **Home-directory quota exceeded mid-download** — confirms the issue comment's un-verified
+   warning exactly. `$HOME` on this PLGrid account has a **10 GB hard quota, already essentially
+   full** (`quota -s`: 10240 MB limit, at the `*`-flagged over-quota line). The default
+   `~/.cache/huggingface` download died with `OSError: [Errno 122] Disk quota exceeded` partway
+   through the first model. Fix: `export HF_HOME=<scratch-path>/.hf-cache-py` before loading —
+   scratch has 126 TB free. **This isn't optional tuning, it's required for the download to
+   complete at all.** Both variants together cache at 8.5 GB on scratch. (This cache directory is
+   shared with Kokoro's downloads too, not Qwen-specific — see `docs/athena-setup.md`, the canonical
+   reference for this and every other cache-redirect env var needed on Athena, written after
+   `$HOME` actually hit its quota mid-session.)
+
+With both fixed, generation works cleanly:
+
+| Model                           | Load (cold / warm cache) | Peak GPU mem | Per-clip generate (no flash-attn) |
+| ------------------------------- | ------------------------ | ------------ | --------------------------------- |
+| `-VoiceDesign`                  | 25.0 s / 7.2 s           | 4.35 GB      | 5.5–9.7 s for 3.2–5.3 s of audio  |
+| `-CustomVoice` (`Ryan`,`Aiden`) | 25.0 s (cold)            | ~4.3 GB      | 7.6–12.4 s for 4.4–6.5 s of audio |
+
+`flash-attn` was **not** installed for this test (its README-recommended build step is a
+from-source compile — same risk profile as `blis`/`thinc` in §2 — skipped to keep the smoke test
+quick). Revisit if per-clip latency matters once scaling past a one-off pilot; not needed for
+correctness, only speed.
+
+**The actual capability check** — accent diversity via free-text `instruct`, the specific gap
+`docs/voice-pipeline-feasibility.md` §6.1/§6.3 flags (3 human speakers, one shared accent profile).
+Generated 3 domain sentences with 3 different accent instructions and nothing else changed:
+
+| Instruct (verbatim)                                                   | Sentence                                                           |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| "Older British male voice, RP accent, unhurried and precise."         | "What is the CSDA range of a 150 MeV proton in water?"             |
+| "Nigerian-accented English, young female voice, confident and clear." | "Compare the stopping power of 100 MeV protons in water and bone." |
+| "Australian-accented English, casual young male voice."               | "What is the range of 60 MeV protons in Lucite?"                   |
+
+All three produced valid, distinct 16-bit PCM / 24 kHz WAVs (verified with `soundfile.info`, not
+just "no exception raised"). Files are in `/tmp/qwen-smoketest/` on this node, not committed —
+this was a feasibility check, not eval-corpus generation. **Not yet verified**: whether these
+accents are _recognizable/correct_ to a human listener, or just superficially different audio — no
+one has listened to them. That's the first thing to check before trusting this for the ASR
+comparison in §6.3.
+
+### 6.3 Recommended plan, if this is worth pursuing
+
+Same staged-cost ordering as §5, adapted for the new model:
+
+1. **Listen-check** the 3 accent clips above (or a fresh batch) — confirm a human agrees the accent
+   instruction produced something plausible before spending eval time on it. Free-text `instruct`
+   models can silently ignore or misinterpret the description; nothing in the smoke test verifies
+   _fidelity_ to the requested accent, only that _some_ distinct audio came out.
+2. **Small pilot mirroring §3's structure**: 5–10 sentences (not all 30 yet) × 2–3 accent
+   `instruct` strings, into `eval/audio/tts-qwen-<accent-tag>/<id>.wav`, then run the existing
+   `scripts/asr-transcribe.mjs` + `scripts/asr-score-slots.mjs` unmodified — same integration path
+   already proven for Kokoro in §3, no new Node-side code needed.
+3. Compare slot-token accuracy **per accent** against both the Kokoro `af_heart` pilot (§3) and the
+   human 3-speaker baseline. The interesting question this model is actually suited to answer:
+   does whisper-small's accuracy degrade on non-American/British accents the way it might for real
+   L2-English speakers, in a way the current 3 human speakers (reportedly a shared accent profile)
+   can't test?
+4. Only if 1–3 justify it: scale to the full 30 (then 120) sentences × a curated accent set. Budget
+   ~6–12 s/clip generation time (no flash-attn) — a 30-sentence × 5-accent matrix is ~150 clips,
+   roughly 15–30 minutes of GPU time, not a blocker.
+5. **Skip for now**: `-Base` (voice cloning) — cloning an identifiable person's voice without
+   consent is the one thing to explicitly avoid here, same standard as the existing human
+   `eval/audio/{km,lg,mn}/` speakers presumably meet; `-VoiceDesign`/`-CustomVoice` sidestep this
+   entirely by construction (no reference audio), which is why they're the ones tested here.
+
+### 6.4 Setup notes specific to this model (delta from §2)
+
+- Separate venv `.venv-qwen/` (Python 3.10.4, same reasoning as `.venv-tts/`) — not sharing one venv
+  between Kokoro and Qwen3-TTS avoids one's dependency pins (e.g. `torchaudio`, `transformers`
+  version) breaking the other.
+- **Must set `HF_HOME` (or `HF_HUB_CACHE`) to a scratch path before first use** — the default
+  `~/.cache/huggingface` will hit the 10 GB home quota on PLGrid before the download finishes (§6.2
+  point 2). Not an edge case — it reproduces on the very first `from_pretrained` call.
+- **Must pin `torchaudio` to the same CUDA wheel index as `torch`** — installing `qwen-tts` alone
+  pulls in a mismatched `torchaudio` from plain PyPI (§6.2 point 1).
+- `sox: command not found` prints as a warning on import but did not block generation in this test
+  (torchaudio's ffmpeg backend, already available via the `FFmpeg/7.1.2` module, covers what was
+  needed here) — left uninstalled; revisit only if a real failure traces back to it.
+- `flash-attn` was skipped (optional, from-source build); note in §6.2 if that changes.

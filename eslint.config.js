@@ -15,6 +15,14 @@ export default tseslint.config(
       "static/wasm/**",
       // Design mockup vendored from issue #32 + its generated support runtime — not hand-maintained.
       "docs/status-panel-mockup/**",
+      // Local Python venvs + caches for GPU/TTS pilots (docs/athena-setup.md) — gitignored, but
+      // eslint's flat config doesn't read .gitignore, and these aren't source anyway.
+      ".venv-tts/**",
+      ".venv-qwen/**",
+      ".cache/**",
+      ".npm-global/**",
+      ".hf-cache-py/**",
+      ".hf-cache/**",
     ],
   },
   js.configs.recommended,
