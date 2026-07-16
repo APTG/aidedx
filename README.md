@@ -72,16 +72,8 @@ Most AI tools send your words to a company's servers. aidedx does the opposite �
   </picture>
 </p>
 
-|                       | **Cloud AI (typical)**  | **aidedx (local)**           |
-| --------------------- | ----------------------- | ---------------------------- |
-| Where inference runs  | Company servers         | Your browser tab             |
-| Your data             | Uploaded, may be logged | Never leaves the device      |
-| Cost / infrastructure | Metered API + a backend | A static file, free to host  |
-| Works offline         | No                      | Yes, once weights are cached |
-| First-use setup       | None                    | One-time model download      |
-
-The only trade-off is the last row: local AI has to fetch its "brain" the first time you use it —
-after that, it works offline too, handy in an experiment hall or anywhere with no signal.
+The only trade-off is that one-time download — fetching the AI's "brain" the first time you use it.
+After that, it works offline too, handy in an experiment hall or anywhere with no signal.
 
 ## Project status
 
