@@ -125,3 +125,38 @@ In-browser ML backends need `SharedArrayBuffer`, which requires the page to be
 workaround is [`coi-serviceworker`](https://github.com/gzuidhof/coi-serviceworker).
 A documented, intentionally-inert hook is left in `src/app.html`; the actual
 hosting/runtime decision is deferred to Spike 3.
+
+## License
+
+aidedx is licensed under the **GNU General Public License v3.0 or later**
+([`LICENSE`](LICENSE)). This matches its two upstream dependencies,
+[APTG/libdedx](https://github.com/APTG/libdedx) (GPL-3.0) and
+[APTG/dedx_web](https://github.com/APTG/dedx_web) (GPL-3.0): the compiled
+libdedx WASM module is vendored and called directly (see
+[`docs/wasm.md`](docs/wasm.md)), and the material/particle alias tables in
+[`src/lib/aliases/`](src/lib/aliases/) are copied from dedx_web's source (see
+[`docs/aliases.md`](docs/aliases.md)) — both make aidedx a combined/derivative
+work under GPL-3.0, independent of what license aidedx itself declared.
+
+### Third-party licenses
+
+Everything else aidedx bundles or fetches at runtime is permissively licensed
+and compatible with GPL-3.0 (permissive code may be combined into a GPL-3.0
+work; the reverse is not true):
+
+| Component                                                                                       | License                                                                                                     | Notes                                                                                                                                                       |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Svelte, SvelteKit, Vite, TypeScript, Tailwind CSS, Vitest, ESLint, Prettier, Playwright         | MIT                                                                                                         | build/runtime tooling                                                                                                                                       |
+| [`@huggingface/transformers`](https://github.com/huggingface/transformers.js) (transformers.js) | Apache-2.0                                                                                                  | in-browser ML runtime                                                                                                                                       |
+| `onnxruntime-web`                                                                               | MIT                                                                                                         | ONNX inference backend                                                                                                                                      |
+| [Whisper](https://github.com/openai/whisper) weights (`onnx-community/whisper-small`)           | MIT                                                                                                         | speech-to-text; mirrored to our Cyfronet S3 bucket, see [`docs/model-hosting-cyfronet.md`](docs/model-hosting-cyfronet.md)                                  |
+| [Qwen2.5-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct) weights              | Apache-2.0                                                                                                  | listed in [`src/lib/models/manifest.ts`](src/lib/models/manifest.ts), not yet mirrored/enabled                                                              |
+| [Llama-3.2-1B-Instruct](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct) weights        | [Llama 3.2 Community License](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/LICENSE) | custom, non-OSI license with an attribution ("Built with Llama") and acceptable-use-policy requirement; listed in the manifest but not yet mirrored/enabled |
+
+`@img/sharp-libvips` (LGPL-3.0-or-later) is a transitive dependency of `sharp`,
+which is pulled in by both `@huggingface/transformers` (a production
+dependency) and Playwright (dev/test tooling). It is still never shipped to
+users, though: transformers.js's own browser build stubs `sharp` out entirely
+as a Node-only module with no browser equivalent (verified in the built
+`build/_app/immutable/workers/asr.worker-*.js` output — `// ignore-modules:sharp`),
+so it carries no distribution obligation for aidedx itself.
