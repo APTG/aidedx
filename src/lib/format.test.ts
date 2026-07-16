@@ -138,6 +138,17 @@ describe("formatEnergyPerNucleon", () => {
     expect(formatEnergyPerNucleon(0)).toBe("0 MeV/nucl");
     expect(formatEnergyPerNucleon(Number.NaN)).toBe("n/a");
   });
+
+  it("drops the /nucl suffix for massNumber 1 (protons, issue #66)", () => {
+    expect(formatEnergyPerNucleon(250, 1)).toBe("250 MeV");
+    expect(formatEnergyPerNucleon(0.0002500000118743628, 1)).toBe("0.25 keV");
+    expect(formatEnergyPerNucleon(12_500, 1)).toBe("12.5 GeV");
+    expect(formatEnergyPerNucleon(0, 1)).toBe("0 MeV");
+  });
+
+  it("keeps the /nucl suffix for massNumber > 1", () => {
+    expect(formatEnergyPerNucleon(250, 12)).toBe("250 MeV/nucl");
+  });
 });
 
 describe("stoppingPowerToKevPerUm", () => {

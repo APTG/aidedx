@@ -274,15 +274,15 @@ function energiesMeVPerNucl(
 function energyBoundsError(
   service: LibdedxService,
   programId: number,
-  particleId: number,
+  particle: ResolvedParticle,
   energies: number[],
 ): string | null {
-  const min = service.getMinEnergy(programId, particleId);
-  const max = service.getMaxEnergy(programId, particleId);
+  const min = service.getMinEnergy(programId, particle.id);
+  const max = service.getMaxEnergy(programId, particle.id);
   for (const e of energies) {
     if (!Number.isFinite(e)) return `Energy ${e} is not a finite number`;
     if (e < min || e > max) {
-      return `Energy ${formatEnergyPerNucleon(e)} is outside the valid range ${formatEnergyPerNucleon(min)} to ${formatEnergyPerNucleon(max)} for this program/particle`;
+      return `Energy ${formatEnergyPerNucleon(e, particle.massNumber)} is outside the valid range ${formatEnergyPerNucleon(min, particle.massNumber)} to ${formatEnergyPerNucleon(max, particle.massNumber)} for this program/particle`;
     }
   }
   return null;
@@ -306,7 +306,7 @@ function forwardSeries(
     points: [],
   };
   withDensity(base, service.getDensity(material.id));
-  const boundsError = energyBoundsError(service, programId, particle.id, energies);
+  const boundsError = energyBoundsError(service, programId, particle, energies);
   if (boundsError) {
     base.error = boundsError;
     return base;

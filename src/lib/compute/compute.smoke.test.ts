@@ -230,7 +230,8 @@ describe("computeIntent — issue #6 smoke cases", () => {
     );
     const s = req(result.series[0]);
     expect(s.error).toMatch(/outside the valid range .+ to .+ for this program\/particle/);
-    expect(s.error).toMatch(/\d (?:ke|Me|Ge)V\/nucl/);
+    // A = 1 (protons) drop the "/nucl" suffix (issue #66) — plain keV/MeV/GeV.
+    expect(s.error).toMatch(/\d (?:ke|Me|Ge)V\b/);
     expect(s.error).not.toMatch(/\[[\d.]/); // no more raw "[0.00025, 250]" bracket
   });
 
