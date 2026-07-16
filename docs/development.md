@@ -138,5 +138,3 @@ distribution obligation for aidedx itself.
   and the static-host threading constraint.
 - [`docs/whisper-progress-feedback.md`](./whisper-progress-feedback.md) — download/inference progress
   UX for the Whisper stage.
-  </content>
-  </invoke>

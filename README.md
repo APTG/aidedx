@@ -90,7 +90,7 @@ Early-stage prototype under active development:
 
 ## Documentation & resources
 
-- 📖 **User guide** — _coming soon._
+- 📖 **[User guide](docs/user-guide.md)** — _coming soon._
 - 🛠 **[Technical documentation](docs/development.md)** — stack, dev workflow, internals, and every deep-dive under [`docs/`](docs/).
 - 🧮 **[APTG/libdedx](https://github.com/APTG/libdedx)** — the library computing every number, built on NIST [PSTAR](https://physics.nist.gov/PhysRefData/Star/Text/PSTAR.html)/[ASTAR](https://physics.nist.gov/PhysRefData/Star/Text/ASTAR.html) and ICRU data.
 - 🌐 **[APTG/dedx_web](https://github.com/APTG/dedx_web)** — the form-driven web tool aidedx complements and reuses.
@@ -98,4 +98,3 @@ Early-stage prototype under active development:
 ## License
 
 **GPL-3.0-or-later** ([`LICENSE`](LICENSE)) — see [third-party licenses](docs/development.md#third-party-licenses).
-</content>
