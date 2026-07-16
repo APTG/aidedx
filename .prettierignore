@@ -3,6 +3,15 @@ node_modules
 build
 coverage
 
+# Local Python venvs + caches for GPU/TTS pilots (docs/athena-setup.md) — gitignored, but
+# prettier doesn't read .gitignore, and these contain multi-GB binaries it chokes on
+.venv-tts
+.venv-qwen
+.cache
+.npm-global
+.hf-cache-py
+.hf-cache
+
 # Lock files are managed by pnpm, not prettier
 **/pnpm-lock.yaml
 
