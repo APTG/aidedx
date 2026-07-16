@@ -14,8 +14,8 @@ lets you simply ask:
 The key point: **the answer comes from trusted reference data — NIST (PSTAR/ASTAR), ICRU, and
 Bethe–Bloch calculations — not from an AI making numbers up.** The AI only listens to your question
 and works out what you're asking; the physics is then computed (via the
-[libdedx](https://github.com/APTG/libdedx) library). And it all runs **inside your browser tab** — no
-server, no account, nothing you type or say ever leaves your device.
+[libdedx](https://github.com/APTG/libdedx) library). It's a **free web app** — no registration, no
+install, nothing you type or say ever leaves your device.
 
 ## How to use it
 
@@ -51,12 +51,11 @@ See the [technical documentation](docs/development.md) for the specifics.
 Most AI tools send your words to a company's servers. aidedx does the opposite — the models run
 **locally, in your browser**:
 
-- **Privacy is built in.** Your questions never touch the network.
-- **Nothing to pay for or operate.** The whole app is a static website — free to host on GitHub Pages
-  or a university server.
+- **Nothing to pay for or operate.** Hosted for free on GitHub Pages.
 - **Works offline, too**, once downloaded — handy in an experiment hall or anywhere with no signal.
 - **The physics is never guessed.** The AI only _understands_ your question; every number comes from
-  trusted reference data, never from the language model.
+  trusted reference data, never invented by the AI.
+- **Privacy is built in.** Your questions never touch the network.
 
 |                       | **Cloud AI (typical)**  | **aidedx (local)**           |
 | --------------------- | ----------------------- | ---------------------------- |
@@ -73,19 +72,24 @@ The only trade-off is the last row: local AI has to fetch its "brain" the first 
 Early-stage prototype under active development:
 
 - ✅ **Works:** typed or spoken question → understood → computed → answered, with assumptions noted;
-  the one-time model download has a consent flow and status panel.
-- 🚧 **In progress:** enabling the language-model fallback for phrasing the built-in rules miss.
-- 🐢 **Slow / open:** on GPU-less machines that fallback would take ~10–30 s (most questions skip it,
-  handled by the fast built-in rules); fast-inference hosting is still being worked out.
-- 🔭 **Planned:** spoken answers, editable assumption chips ([#10](https://github.com/APTG/aidedx/issues/10)), deep links into dedx_web for full plots, wider phrasing coverage.
+  the one-time model download asks first and shows a progress panel.
+- 🚧 **In progress:** smarter correction for phrasings the built-in rules miss.
+- 🐢 **Slow / open:** fast-inference hosting is still being worked out for GPU-less machines.
+- 🔭 **Planned:** Polish-language support ([#63](https://github.com/APTG/aidedx/issues/63)), spoken
+  answers, editable assumption chips ([#10](https://github.com/APTG/aidedx/issues/10)), deep links
+  into dedx_web for full plots, wider phrasing coverage.
 
 ## Documentation & resources
 
 - 📖 **[User guide](docs/user-guide.md)** — _coming soon._
-- 🛠 **[Technical documentation](docs/development.md)** — stack, dev workflow, internals, and every deep-dive under [`docs/`](docs/).
+- 🛠 **[Technical documentation](docs/development.md)** — stack, dev workflow, internals, and pointers to every deep-dive doc.
 - 🧮 **[APTG/libdedx](https://github.com/APTG/libdedx)** — the library computing every number, built on NIST [PSTAR](https://physics.nist.gov/PhysRefData/Star/Text/PSTAR.html)/[ASTAR](https://physics.nist.gov/PhysRefData/Star/Text/ASTAR.html) and ICRU data.
 - 🌐 **[APTG/dedx_web](https://github.com/APTG/dedx_web)** — the form-driven web tool aidedx complements and reuses.
 
 ## License
 
 **GPL-3.0-or-later** ([`LICENSE`](LICENSE)) — see [third-party licenses](docs/development.md#third-party-licenses).
+
+---
+
+Happily vibe-coded with Claude by [grzanka](https://github.com/grzanka).
