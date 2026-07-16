@@ -282,8 +282,11 @@ Generated 3 domain sentences with 3 different accent instructions and nothing el
 | "Australian-accented English, casual young male voice."               | "What is the range of 60 MeV protons in Lucite?"                   |
 
 All three produced valid, distinct 16-bit PCM / 24 kHz WAVs (verified with `soundfile.info`, not
-just "no exception raised"). Files are in `/tmp/qwen-smoketest/` on this node, not committed —
-this was a feasibility check, not eval-corpus generation. **Not yet verified**: whether these
+just "no exception raised"). Files (these 3 plus the earlier single test clip and the 2
+`-CustomVoice` presets, 6 total) live in `eval/audio/qwen-smoketest/` — gitignored like the rest of
+`eval/audio/`, not committed. Deliberately kept in its own subdirectory rather than
+`eval/audio/tts-qwen-<accent>/` naming — this was a feasibility check, not eval-corpus generation,
+and shouldn't be mistaken for pilot data the ASR scripts would pick up. **Not yet verified**: whether these
 accents are _recognizable/correct_ to a human listener, or just superficially different audio — no
 one has listened to them. That's the first thing to check before trusting this for the ASR
 comparison in §6.3.
@@ -327,3 +330,233 @@ Same staged-cost ordering as §5, adapted for the new model:
   (torchaudio's ffmpeg backend, already available via the `FFmpeg/7.1.2` module, covers what was
   needed here) — left uninstalled; revisit only if a real failure traces back to it.
 - `flash-attn` was skipped (optional, from-source build); note in §6.2 if that changes.
+
+## 7. Scale-up: 100 text-mode-validated sentences via Qwen3-TTS
+
+_Session report, 2026-07-16. Executes on §6's plan at a scale between its "5–10 sentence pilot"
+step and its "full 30/120 sentence" step: 100 brand-new sentences (not the RECORDING.md 30), each
+one **empirically confirmed** — not just plausible-sounding — to make aidedx's actual deterministic
+matcher resolve the right intent and its actual libdedx WASM compute a real, finite, positive
+number. This section is written to be reproducible at 10× the scale; §7.7 spells out what would
+need to change to do that._
+
+### 7.1 The core method: verify with the app's own code, not by eye
+
+The brief was "ensure aidedx can correctly guess the intent… for which it can give meaningful
+numerical output" — that's not a property you can eyeball from sentence wording, because the
+matcher (`src/lib/intent/matcher.ts`) and libdedx's WASM tables both have real, non-obvious edge
+cases (§7.3). So before writing a single sentence, a new script,
+**`scripts/tts-sentence-check.ts`**, was built to run candidates through the _actual_ production
+pipeline: `matchIntent()` → `computeIntent()` against the real vendored `static/wasm/libdedx.wasm`
+(the same WASM the app ships, loaded the same way `compute.smoke.test.ts` does it — see that file
+for the pattern this reuses). A candidate only passes when:
+
+- the matcher fills every required slot (`incomplete === false`) with **no schema errors**;
+- the matcher's `quantitySource` is `direct`, `indirect`, or `inverse` — **never `default`**. The
+  matcher silently falls back to `csdaRange` when it recognizes no quantity keyword/idiom at all;
+  that's a wrong guess that can still compute a number, so it's rejected explicitly (this is the one
+  addition beyond what the matcher/compute code already enforces — see the comment in
+  `checkCandidate()`);
+- `computeIntent()` returns with **no `series.error`** on any series, and every series has at least
+  one point;
+- the quantity's actual answer field (stopping power / CSDA range / inverse energy) is a **finite,
+  positive number** — ruling out the case where a unit got silently mis-scaled into _some_ number
+  that isn't the right physical quantity (a real risk in this codebase — §7.3's STP-unit gotcha).
+
+```sh
+node --experimental-strip-types scripts/tts-sentence-check.ts <sentences.json> [--json out.json]
+```
+
+Committed to `scripts/` (not a throwaway) because §7.7 leans on it directly for any future scale-up.
+Run with `--experimental-strip-types` because this session's Athena Node module is v22.17.1; the
+flag isn't needed once CI's pinned Node 24 runs it, same caveat as `docs/tts-eval-audio.md`'s
+earlier Node-version notes.
+
+### 7.2 Sentence sources and the coverage target
+
+Wrote 110 candidate sentences by hand (buffer for the failures §7.3 describes), aiming to span:
+
+- **All four quantities** (`stoppingPower`, `csdaRange`, `energyFromRange`, `energyFromStp`) at
+  roughly equal weight, not just the stopping-power/range mix the original 30-sentence set leans on.
+- **All five `compareDim` values** — plain single-value queries plus material/particle/energy/program
+  comparisons.
+- **Real domain vocabulary**, pulled from the fields aidedx's own alias tables (`src/lib/aliases/`)
+  already cover, so the _sentences_ sound like they come from the literature even though the
+  _entities_ were always going to be limited to what libdedx actually knows:
+  - **Proton radiotherapy / particle therapy**: clinical-range energies (70–250 MeV protons,
+    ~90–400 MeV/nucleon carbon-12), "CSDA range", "residual/projected/mean/extrapolated range" (all
+    contain the literal word the matcher needs — see §7.3), treatment-planning framing.
+  - **Radiobiology/dosimetry phantom materials**: A-150 tissue-equivalent plastic, PMMA, water,
+    adipose/muscle/bone — the materials `docs/voice-pipeline-feasibility.md`'s alias table work was
+    built around.
+  - **Alpha spectroscopy**: the real ²⁴¹Am decay energy (5.486 MeV) as a calibration-source alpha,
+    surface-barrier silicon detectors.
+  - **BNCT (boron neutron capture therapy)**: the ⁷Li recoil ion from the ¹⁰B(n,α)⁷Li capture
+    reaction, a real dosimetry detail, not filler.
+  - **Semiconductor ion implantation**: keV-scale boron-11/phosphorus-31 in silicon — "projected
+    range" is literally the term this field uses for the CSDA range libdedx computes.
+  - **Space radiation / GCR shielding**: nitrogen-14, oxygen-16, argon-40 ions in aluminum,
+    polyethylene, Kapton — real galactic-cosmic-ray shielding vocabulary (iron-56, the most iconic
+    GCR ion, turned out to be unusable — §7.3).
+  - **Detector physics**: NaI/CsI scintillators, plastic scintillators, silicon detectors.
+  - **Program names as flavor, not function**: ASTAR/PSTAR/MSTAR/ICRU73/Bethe formula mentions to
+    trigger `compareDim: "program"` — see §7.3 for why the _specific_ names don't actually matter to
+    the compute result.
+- **Phrasing/register variety** ("language stylistic variety" in the brief): formal/scientific
+  imperatives ("Determine…", "Report the restricted collision stopping power…"), plain questions,
+  the matcher's own indirect idioms ("how deep", "at what rate", "penetration depth", "come to
+  rest"), casual/conversational filler ("So, um, roughly what's…", "Quick one —…", "Okay, one
+  more —…"), and comparative framings ("Which has the higher…", "How does X compare with Y").
+
+### 7.3 What broke, and what it reveals
+
+Every failure category below was found by _running_ the harness, not by reading the matcher source
+carefully enough to predict it — several are real edge cases this session wouldn't have guessed:
+
+1. **Six materials are broken in this build's WASM data, at every energy, for every particle**:
+   `soft tissue` (id 261), `skin` (250), `lung` (190), `brain` (123), `blood` (118), and `concrete`
+   (144) — every query against them fails inside libdedx itself (`_dedx_get_stp_table` returns a
+   nonzero error, surfaced as `"WASM STP calculation failed"`). Confirmed by isolating the variable:
+   the _same_ particle/energy against `muscle`, `adipose tissue`, `cortical bone`, `A-150
+tissue-equivalent plastic`, `water`, and `PMMA` all work. This isn't a wording problem — the
+   alias resolves correctly to the right material id, the WASM call itself just fails for these six.
+   Worth filing as its own issue if any real query might hit them.
+2. **Heavy ions above argon (Z=18) are broken as _projectiles_ via the auto-selected MSTAR
+   program**, regardless of material or energy: calcium-40, titanium-48, iron-56, krypton, xenon,
+   gold all fail; every element H through Ar (confirmed: H, He, Li, Be, B, C, N, O, F, Ne, Mg, Al, P,
+   S, Cl, Ar) works. Iron is the single most-cited galactic-cosmic-ray ion in the space-radiation
+   literature — every "iron ion" sentence drafted for that flavor had to become argon-40 or
+   silicon-28 instead. (The same elements work fine as _materials_ — "gold foil" as a target is
+   unaffected; it's specifically MSTAR's projectile-side table that stops at Ar.)
+3. **`"which"`/`"what"` + ≤3 words + `"energy"` silently reclassifies a forward query as an
+   inverse one** — `detectInverse()`'s `asksForEnergy` regex doesn't care what quantity you actually
+   meant. `"What is the energy loss of…"` and `"Which loses energy faster…"` both got hijacked into
+   `energyFromRange` (no target present → `incomplete`, caught by the harness, but silently wrong
+   without it). Contractions are safe (`"what's"` has no space after `what`, so the regex's
+   `\s+` never matches) — the existing eval set's `"What's the dE/dx of…"` phrasing already relies
+   on exactly this. Fix used here: reword around it (`"how much energy does X lose"`, `"which has
+the higher stopping power"`) rather than fight the regex.
+4. **`energyFromStp` inverse targets must say `"MeV/cm"`/`"MeV per cm"`/`"MeV cm2/g"` — spelling out
+   `"per centimeter"` in full doesn't match `extractStpTarget()`'s regex table at all**, so the
+   target silently never gets extracted and the schema validator (correctly) rejects the resulting
+   intent (`target: required for quantity "energyFromStp"`). This is a pure wording trap, not a
+   WASM issue.
+5. **Not every stopping-power value is reachable by the inverse-STP lookup's high-energy branch**
+   (`side: 1` in `inverseSeries()`) — e.g. "50 MeV cm²/g" for carbon in PMMA has no solution on that
+   branch (too far below the achievable curve for that combination), while "80 MeV cm²/g" does. No
+   formula predicts this from the intent alone; had to probe empirically per (particle, material)
+   pair and pick a target inside the achievable range. This is the sharpest illustration of why
+   "meaningful numerical output" needs to mean _actually calling compute_, not just checking the
+   intent parses.
+6. Two purely mechanical fixes: `"A-150 tissue-equivalent plastic"` must include the `"A-150"` token
+   (the bare descriptive phrase isn't in the alias table); `"lithium-7 recoil ion"` fails to resolve
+   because the matcher's particle-head regex requires the isotope and the word `"ion"` to be
+   _adjacent_ — `"recoil"` sitting between them breaks the match, fixed by moving the descriptive
+   clause elsewhere in the sentence.
+
+None of this is a criticism of the matcher/compute code in the abstract — it's exactly the kind of
+gap that only a real end-to-end harness surfaces, which is the point of building one before writing
+sentences by feel.
+
+### 7.4 Final 100 — category breakdown
+
+| Dimension      | Breakdown                                                                                                                                                                                                                                                                                     |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Quantity       | stoppingPower 36 · csdaRange 36 · energyFromRange 15 · energyFromStp 13                                                                                                                                                                                                                       |
+| compareDim     | none 78 · material 4 · particle 4 · energy 4 · program 4 (the last three concentrated in a handful of dedicated compare sentences — the deterministic matcher only sets a compare dimension from explicit multi-entity phrasing, so these aren't naturally as numerous as `quantity` variety) |
+| Confidence     | 90 at ≥0.82 (direct/indirect/inverse with no fuzzy-match penalty); 10 lower (fuzzy alias resolution, e.g. "plastic scintillator", still correct, just not an exact alias-table hit)                                                                                                           |
+| Particles used | protons, deuterons, tritons, alpha particles, ⁷Li, ¹¹B, ¹²C/¹³C, ³¹P, ¹⁶O, ¹⁹F, ²⁰Ne, ²⁸Si, ⁴⁰Ar                                                                                                                                                                                              |
+| Materials used | water, air, PMMA, A-150 tissue-equivalent plastic, cortical/compact bone, adipose/muscle tissue, silicon, silicon dioxide, aluminum, aluminum oxide, gold, graphite, polyethylene, polystyrene, Kapton, Mylar, lithium fluoride, NaI, CsI, plastic scintillator                               |
+
+Full text + resolved intent + numeric result for all 100 lives in `eval/audio/tts-qwen-100/manifest.json`
+(generated alongside the audio, §7.6) — that manifest **is** the ground truth for this batch, in the
+same spirit as `eval/intents.jsonl`'s hand-labeled `expected` field, except here "expected" means
+"what the app itself actually resolved and computed," which is the right ground truth for a batch
+whose entire purpose is proving the app understands these sentences.
+
+### 7.5 Voice, accent, and emotion assignment
+
+30 profiles, assigned round-robin (`profile[i % 30]`) across the 100 sentences — simple, deterministic,
+and reproducible without needing `Math.random()`/a seed to document. 24 via **VoiceDesign** (free-text
+`instruct`, full accent freedom) + 6 via **CustomVoice** (`Ryan`/`Aiden`/`Vivian`/`Sohee` presets with
+an `instruct` emotion layered on — CustomVoice takes the same free-text emotion control VoiceDesign
+does, just on top of a fixed timbre instead of a designed one).
+
+Each VoiceDesign profile is a one-line `instruct` string spanning four axes at once — accent, age +
+gender, emotional tone, and pace — e.g. `"Nigerian-accented English, middle-aged male voice, warm
+and confident, medium pace."` The accent list deliberately goes beyond American/British: Scottish,
+Irish, Australian, New Zealand, South African, Indian, Nigerian, Kenyan, Singaporean, Jamaican,
+Canadian, plus L2-English accents (German-, French-, Japanese-, Russian-, Spanish-accented English)
+— aimed squarely at the gap `docs/voice-pipeline-feasibility.md` §6.1/§6.3 flagged (3 human speakers
+sharing one accent profile) and that §6.3 of this doc named as the reason to bother with a heavier
+model at all. Emotions/paces: calm, excited, tired, curious, hurried, confident, nervous, cheerful,
+skeptical, sleepy, stressed, formal, casual — spread across the accent list rather than fixed to any
+one of them, so accent and emotion vary independently.
+
+None of this has been listened to yet (same caveat as §6.2's smoke clips) — confirming the
+_requested_ accent/emotion is what a human actually hears is unverified and should be the first
+thing checked before this batch is used for an ASR comparison.
+
+### 7.6 Generation results
+
+Ran via a new script, `scripts/tts-qwen-100.py` (not committed as app tooling — same status as
+§6's ad hoc smoke-test code, but kept in `scripts/` this time since §7.7 expects it to be reused,
+not just referenced):
+
+```sh
+source scripts/athena-env.sh
+source .venv-qwen/bin/activate
+python scripts/tts-qwen-100.py <sentences.json> eval/audio/tts-qwen-100
+```
+
+**All 100 clips generated successfully, zero failures** (both models — VoiceDesign and CustomVoice
+— were loaded simultaneously for the whole run so switching engines mid-batch costs nothing):
+
+| Metric                | Value                                                                                                                                                                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Total generation time | 1199.5 s (~20 min) for 100 clips                                                                                                                                                                                                      |
+| Per-clip generation   | 12.0 s average (range ~7–18 s, no flash-attn)                                                                                                                                                                                         |
+| Total audio produced  | 692.5 s (~11.5 min) across 100 clips                                                                                                                                                                                                  |
+| Output size           | 32 MB (100 WAVs, 24 kHz/16-bit mono)                                                                                                                                                                                                  |
+| Peak GPU memory       | not logged for this run; §6.2 measured ~4.3 GB per model standalone, so ~8.6–9 GB with both loaded — comfortably inside the A100's 40 GB, and inside an 8 GB consumer GPU running one model at a time                                 |
+| Engine split          | 82 VoiceDesign / 18 CustomVoice (matches the 24:6 pool ratio)                                                                                                                                                                         |
+| Voice-profile spread  | every one of the 30 profiles used 3 or 4 times — confirmed even, not by construction alone (round-robin over 100 items across 30 profiles guarantees this arithmetically, but worth checking nothing crashed mid-cycle and skewed it) |
+
+Output: `eval/audio/tts-qwen-100/<id>.wav` (100 files, gitignored like the rest of `eval/audio/`) +
+`eval/audio/tts-qwen-100/manifest.json` (sentence text, resolved intent's `quantitySource`, the
+numeric result, and the voice profile used for every clip — committed-worthy content, but the
+directory it lives in is gitignored wholesale; see §7.7 on whether that should change before ASR
+scoring this batch).
+
+### 7.7 Scaling to 1000+
+
+What changes and what doesn't, in the order that matters most:
+
+1. **The bottleneck is sentence _validation_, not generation.** 110 hand-written candidates took
+   several rounds against `tts-sentence-check.ts` to reach 100 clean passes — mostly the six
+   material and heavy-ion gaps (§7.3 points 1–2), which are now _known_ and avoidable from the
+   start next time. A 1000-sentence batch should still budget a real iteration loop (over-generate
+   by ~15–20%, run the harness, fix or drop failures, top up) rather than assume a first draft passes.
+2. **Reuse `scripts/tts-sentence-check.ts` unmodified** — it takes any `{id, text}[]` JSON and
+   already encodes every lesson from §7.3 in its pass/fail logic (though not as _avoidance_ rules —
+   it will still correctly reject a sentence that hits the broken-material list, it just won't tell
+   you not to write one). Worth adding, before a 1000-run: a lint pass that flags known-bad tokens
+   (the 6 broken materials, the heavy-ion-as-particle names) in draft sentences _before_ running the
+   full WASM check, purely to save iteration rounds — not built here since 100 sentences didn't
+   generate enough repeat-failures to justify it, but 1000 likely would.
+3. **Voice pool**: the current 30-profile round-robin gives each profile ~3.3 uses at 100 sentences;
+   at 1000 that's ~33 uses each, which is still full coverage but repeats the exact same 30
+   voices 10× more. Worth growing the pool (more accents, or vary the emotion/pace wording per
+   repeat) rather than just cycling the same 30 harder — cheap to do, since profiles are just
+   strings in `scripts/tts-qwen-100.py`'s `VOICE_DESIGN_PROFILES`/`CUSTOM_VOICE_PROFILES` lists.
+4. **Compute budget is not a blocker**: at the measured 12.0 s/clip average (§7.6), 1000 clips is
+   ~3.3 hours of generation on one A100 — a single long GPU session, not a multi-day job, and
+   trivially parallelizable across more GPUs if that's still too slow. The real cost driver at
+   1000 is the validation _iteration loop_ in point 1, not raw synthesis time.
+5. **Decide on `eval/audio/` gitignore scope for this batch specifically before scaling**: the
+   existing `/eval/audio/` blanket ignore was written for human recordings that must never be
+   committed; TTS audio has no such privacy constraint, and at 1000 clips × several voices the
+   _manifest_ (text + ground truth, no audio) is exactly the kind of artifact this project's
+   convention commits (`eval/results/*.json`). Worth deciding whether `manifest.json` should move
+   out from under the audio gitignore rule rather than staying invisible to `git status` by
+   accident.

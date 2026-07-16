@@ -16,7 +16,11 @@ fi
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-module load FFmpeg/7.1.2 nodejs/22.17.1 Python/3.10.4
+# GCCcore/14.3.0 is a hard prerequisite for FFmpeg/7.1.2 and nodejs/22.17.1 (Lmod hierarchical
+# module tree — `module spider FFmpeg/7.1.2` shows it) and must be loaded first explicitly: it
+# is NOT reliably pre-loaded by the login shell, and this whole script only works by accident
+# in a session where something else happened to load it first.
+module load GCCcore/14.3.0 FFmpeg/7.1.2 nodejs/22.17.1 Python/3.10.4
 
 # Athena's module system unconditionally adds Python 3.13 system-package directories to
 # PYTHONPATH regardless of which Python module is loaded, which shadows a venv's own packages
