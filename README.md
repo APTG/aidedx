@@ -72,7 +72,7 @@ Most AI tools send your words to a company's servers. aidedx does the opposite �
       srcset="docs/assets/local-vs-cloud-dark.svg"
     />
     <img
-      alt="Where inference runs: a typical cloud AI uploads your question to company servers (where it may be logged, needs a metered API, and fails with no network), whereas aidedx keeps your question and answer inside your browser tab — never touching the network, just a static file, and working offline once cached."
+      alt="Where inference runs: a typical cloud AI round-trips every question between your device and company servers that run the model — it needs a paid API and a backend, gives no answer without a network, and your words may be logged. aidedx instead downloads just the model weights and web app to your device one time, then answers every question there: offline, free to host, with your questions never touching the network."
       src="docs/assets/local-vs-cloud-light.svg"
       width="820"
     />
