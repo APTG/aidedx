@@ -23,7 +23,7 @@ install, nothing you type or say ever leaves your device.
 2. **Allow the one-time download** when prompted. aidedx fetches its AI models (a few hundred MB) and
    caches them in your browser, so this happens only on your first visit.
 3. **Ask your question** — press 🎤 and speak, or type it. For example: _"stopping power of 150 MeV
-   protons in water"_, or _"how far do 200 MeV/nucl carbon ions go in water?"_
+   protons in water"_.
 4. **Read the answer.** Any assumptions aidedx made (isotope, energy interpretation, program) are
    noted alongside it.
 
@@ -49,16 +49,9 @@ steps that each feed the next — speech/text in, then:
   </picture>
 </p>
 
-1. **Speech recognition** — turns what you say into text (skip this by typing instead). It's tuned
-   toward physics vocabulary (MeV, PMMA, stopping power, …) rather than everyday speech, since we
-   expect a physics question, not a recipe — with a retry if a decode ever fails outright.
-2. **Understand** — matches your wording against expected physics phrasing to work out the particle,
-   material, energy, and quantity you meant, and turns it into a precise query.
-3. **Compute** — the query is answered from **trusted reference data (NIST, ICRU, Bethe–Bloch)**, not
-   guessed by the AI.
-4. **Explain** — you get a plain-language answer, with any assumptions it made noted alongside it.
-
-See the [technical documentation](docs/development.md) for the specifics.
+Speech recognition is tuned to physics vocabulary rather than everyday speech, and retries if a
+decode ever fails outright. See the [technical documentation](docs/development.md) for the
+specifics.
 
 ## Why "on your machine" matters
 
@@ -79,21 +72,8 @@ Most AI tools send your words to a company's servers. aidedx does the opposite �
   </picture>
 </p>
 
-- **Nothing to pay for or operate.** Hosted for free on GitHub Pages.
-- **Works offline, too**, once downloaded — handy in an experiment hall or anywhere with no signal.
-- **The physics is never guessed.** The AI only _understands_ your question; every number comes from
-  trusted reference data, never invented by the AI.
-- **Privacy is built in.** Your questions never touch the network.
-
-|                       | **Cloud AI (typical)**  | **aidedx (local)**           |
-| --------------------- | ----------------------- | ---------------------------- |
-| Where inference runs  | Company servers         | Your browser tab             |
-| Your data             | Uploaded, may be logged | Never leaves the device      |
-| Cost / infrastructure | Metered API + a backend | A static file, free to host  |
-| Works offline         | No                      | Yes, once weights are cached |
-| First-use setup       | None                    | One-time model download      |
-
-The only trade-off is the last row: local AI has to fetch its "brain" the first time you use it.
+The only trade-off is that one-time download — fetching the AI's "brain" the first time you use it.
+After that, it works offline too, handy in an experiment hall or anywhere with no signal.
 
 ## Project status
 
