@@ -69,10 +69,6 @@ export function checkCandidate(candidate: Candidate, service: LibdedxService): C
   const { id, text } = candidate;
   const { intent, quantitySource, incomplete } = matchIntent(text);
 
-  const schemaErrors = validateQueryIntent(intent);
-  if (schemaErrors.length > 0) {
-    return { id, text, ok: false, reason: `schema: ${schemaErrors.join("; ")}`, intent };
-  }
   // "default" means the matcher never recognized *any* quantity keyword/idiom and
   // silently fell back to csdaRange — a wrong guess that can still compute a number.
   // Only count a sentence as understood when a real strategy (direct/indirect/inverse)
@@ -87,6 +83,12 @@ export function checkCandidate(candidate: Candidate, service: LibdedxService): C
       quantitySource,
     };
   }
+  // Checked before schema validation, not after: an inverse intent missing its target
+  // fails validateQueryIntent() too (`target: required for quantity "..."`), which would
+  // otherwise short-circuit here with that one generic message instead of this branch's
+  // fuller "missing: particle, material, target" picture — strictly more useful for fixing
+  // sentence wording, and the schema error in that case is just a symptom of the same
+  // incompleteness, not a separate problem.
   if (incomplete) {
     const missing: string[] = [];
     if (intent.particles.length === 0) missing.push("particle");
@@ -103,6 +105,11 @@ export function checkCandidate(candidate: Candidate, service: LibdedxService): C
       intent,
       quantitySource,
     };
+  }
+
+  const schemaErrors = validateQueryIntent(intent);
+  if (schemaErrors.length > 0) {
+    return { id, text, ok: false, reason: `schema: ${schemaErrors.join("; ")}`, intent };
   }
 
   let result;

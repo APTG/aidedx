@@ -107,12 +107,14 @@ let clipPassRaw = 0,
   clips_n = 0;
 const failures = [];
 const perClip = [];
+const scoredSecs = [];
 
 for (const r of data.records) {
   if (r.error) continue;
   const clip = byId.get(r.id);
   if (!clip || !clip.slotTruth) continue;
   clips_n++;
+  scoredSecs.push(r.secs);
   const slots = slotsFor(clip.slotTruth);
   const sRaw = scoreText(slots, r.raw);
   const corrected = correct(r.raw);
@@ -152,9 +154,9 @@ for (const r of data.records) {
   perClip.push({ id: r.id, quantity: q, multi: clip.multi, profile: prof, rawPass, corPass });
 }
 
-const medianSecs = data.records.map((r) => r.secs).sort((a, b) => a - b)[
-  Math.floor(data.records.length / 2)
-];
+// Median over the records actually scored (excludes r.error/missing-slotTruth skips above) —
+// a failed transcription's `secs` isn't representative of the scored population's latency.
+const medianSecs = scoredSecs.sort((a, b) => a - b)[Math.floor(scoredSecs.length / 2)];
 console.log(`\n=== ${label} ===`);
 console.log(
   `clips: ${clips_n}   median inference: ${medianSecs.toFixed(1)}s   load: ${data.loadS.toFixed(1)}s`,

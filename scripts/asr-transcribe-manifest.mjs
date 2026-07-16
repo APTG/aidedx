@@ -9,7 +9,7 @@
  * Usage: node scripts/asr-transcribe-manifest.mjs <audioDir> <manifest.json> <modelId> <dtype> <outFile> [--no-prompt]
  */
 import { pipeline, env } from "@huggingface/transformers";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { readFileSync, writeFileSync } from "fs";
 import { fileURLToPath } from "url";
 import os from "os";
@@ -32,9 +32,16 @@ const DOMAIN_PROMPT =
   "helium-3, carbon-13, stopping power, Lucite, adipose tissue";
 
 function loadAudio(file) {
-  const buf = execSync(`ffmpeg -loglevel quiet -i "${file}" -ar 16000 -ac 1 -f f32le -`, {
-    maxBuffer: 50 * 1024 * 1024,
-  });
+  // execFileSync, not execSync — spawns ffmpeg directly with an argv array, no shell
+  // involved to interpret `file`, so a manifest id/path containing quotes or shell
+  // metacharacters can't be (mis)parsed as anything but a literal filename.
+  const buf = execFileSync(
+    "ffmpeg",
+    ["-loglevel", "quiet", "-i", file, "-ar", "16000", "-ac", "1", "-f", "f32le", "-"],
+    {
+      maxBuffer: 50 * 1024 * 1024,
+    },
+  );
   return new Float32Array(buf.buffer, buf.byteOffset, buf.byteLength / 4);
 }
 

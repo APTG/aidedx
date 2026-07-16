@@ -108,6 +108,11 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     sentences = json.loads(Path(sentences_path).read_text())
 
+    # Global position of each sentence in the full 1000, by id — used below to keep voice-profile
+    # assignment stable across a resume (a plain sentences.index(item) per clip would be O(n) and
+    # rely on full-dict equality; this is a one-time O(n) build then O(1) lookups).
+    global_index_by_id = {s["id"]: i for i, s in enumerate(sentences)}
+
     manifest_path = out_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text())["clips"] if manifest_path.exists() else []
     done_ids = {c["id"] for c in manifest}
@@ -130,7 +135,7 @@ def main():
         sid, text = item["id"], item["text"]
         # Index into the pool by *global* position (over the full 1000, not the resumed
         # remainder) so profile assignment doesn't shift on a resume.
-        global_idx = sentences.index(item)
+        global_idx = global_index_by_id[sid]
         tag, *rest = VOICE_POOL[global_idx % len(VOICE_POOL)]
 
         t0 = time.time()
