@@ -47,7 +47,9 @@ static assets, copied into `build/wasm/` at build time.
 Provenance:
 
 - **libdedx** source: `APTG/libdedx`, the commit pinned by the `libdedx`
-  submodule in `APTG/dedx_web` (currently `60d05f0`).
+  submodule in `APTG/dedx_web` (currently `22e43a9`, via dedx_web#845/#856 —
+  fixes a stale `dedx_program_available_materials` table that falsely claimed
+  ASTAR/PSTAR/ICRU49/ICRU73/ICRU73_OLD covered Boron/Ni/Zr/In/Gd/Ta).
 - **Build glue**: `wasm/dedx_extra.{c,h}` and the emcc flags from
   `APTG/dedx_web` `wasm/build.sh`. The thin C wrappers expose internal libdedx
   functions (nucleon number, atomic mass, density, gas flag, flat inverse
@@ -96,6 +98,16 @@ particle: proton → **PSTAR**, alpha → **ASTAR**, heavier ions → **MSTAR**.
 general Bethe program (`DEFAULT`) is avoided as an auto pick because its adaptive
 CSDA integrator can recurse unboundedly at very low energies. An explicit
 `program` on the intent (e.g. "using PSTAR") overrides the heuristic.
+
+If the specialized program has no tabulated data for the target particle or
+material — checked via its `getParticles()` / `getMaterials()` lists, e.g.
+proton + Boron (PSTAR has no material entry) or calcium and heavier ions
+(MSTAR tabulates only Z=2..18, so it has no particle entry at all regardless
+of material — `docs/tts-eval-1000.md` §2.2) — `autoProgramForParticle()` falls
+back to `DEFAULT` (Bethe), which covers all elements/compounds. This mirrors
+dedx_web's own last-resort fallback (`AUTO_SELECT_CHAIN` in
+`entity-availability.svelte.ts`) and only takes the
+CSDA-recursion risk for combinations the specialized table can't compute anyway.
 
 ## Out of scope for this phase
 
