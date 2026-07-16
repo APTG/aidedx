@@ -12,9 +12,9 @@ ions in water?"_ normally mean digging through a form or a data table. aidedx le
 
 The key point: **the answer comes from trusted reference data — NIST (PSTAR/ASTAR), ICRU, and
 Bethe–Bloch calculations — not from an AI making numbers up.** The AI only listens to your question
-and works out what you're asking; the physics is then computed by [libdedx](https://github.com/APTG/libdedx),
-the same well-established library used by researchers and clinicians. And it all runs **inside your
-browser tab** — no server, no account, nothing you type or say ever leaves your device.
+and works out what you're asking; the physics is then computed (via the
+[libdedx](https://github.com/APTG/libdedx) library). And it all runs **inside your browser tab** — no
+server, no account, nothing you type or say ever leaves your device.
 
 ## How to use it
 
@@ -25,6 +25,8 @@ browser tab** — no server, no account, nothing you type or say ever leaves you
    protons in water"_, or _"how far do 200 MeV/nucl carbon ions go in water?"_
 4. **Read the answer and check the assumptions.** aidedx shows how it understood you (isotope,
    energy, program) as editable chips — fix any and the answer updates instantly.
+
+It's just a web page: no repo to clone, no app to install on your computer or phone.
 
 ## How it works
 
@@ -78,39 +80,22 @@ The only trade-off is the last row: local AI has to fetch its "brain" the first 
 
 ## Project status
 
-aidedx is an **early-stage prototype under active development**:
+Early-stage prototype under active development:
 
-- ✅ **Works today:** typed questions → understood → computed → answered, with editable assumptions.
-  Voice input is live (press the mic, speak, see a transcript). The one-time model download has an
-  explicit consent flow and a live status panel.
-- 🚧 **In progress:** wiring the voice transcript all the way through to a spoken/on-screen answer
-  (issue [#39](https://github.com/APTG/aidedx/issues/39)); mirroring and enabling the fallback
-  language models.
-- 🐢 **Slow paths:** on machines without a GPU, the language-model fallback can take ~10–30 s — but
-  most questions are handled instantly by the deterministic matcher and never reach it. Fast local
-  inference wants browser features GitHub Pages can't fully enable yet; hosting is still being worked
-  out (see the [technical docs](docs/development.md)).
-- 🔭 **Planned:** spoken answers (text-to-speech), deep links into dedx_web for full plots, and a
-  broader range of understood phrasings.
+- ✅ **Works:** typed question → understood → computed → answered, with editable assumptions; voice
+  input transcribes; the one-time download has a consent flow and status panel.
+- 🚧 **In progress:** wiring voice all the way through to an answer ([#39](https://github.com/APTG/aidedx/issues/39)); enabling the language-model fallback.
+- 🐢 **Slow / open:** on GPU-less machines the language-model fallback takes ~10–30 s (most questions skip it); fast-inference hosting is still being worked out.
+- 🔭 **Planned:** spoken answers, deep links into dedx_web for full plots, wider phrasing coverage.
 
-## Documentation
+## Documentation & resources
 
-- 📖 **User guide** — _coming soon._ A friendly walkthrough for asking questions and reading answers.
-- 🛠 **[Technical documentation](docs/development.md)** — the stack, local dev workflow, the internal
-  building blocks (eval set, alias tables, the libdedx WASM wrapper), and pointers to every deep-dive
-  under [`docs/`](docs/).
-
-## libdedx and related resources
-
-- **[APTG/libdedx](https://github.com/APTG/libdedx)** — the stopping-power / CSDA-range library that
-  computes every number aidedx reports, built on standard databases (NIST
-  [PSTAR](https://physics.nist.gov/PhysRefData/Star/Text/PSTAR.html) /
-  [ASTAR](https://physics.nist.gov/PhysRefData/Star/Text/ASTAR.html), ICRU).
-- **[APTG/dedx_web](https://github.com/APTG/dedx_web)** — the precise, form-driven web tool aidedx
-  complements; aidedx reuses its libdedx WebAssembly build and material/particle tables.
+- 📖 **User guide** — _coming soon._
+- 🛠 **[Technical documentation](docs/development.md)** — stack, dev workflow, internals, and every deep-dive under [`docs/`](docs/).
+- 🧮 **[APTG/libdedx](https://github.com/APTG/libdedx)** — the library computing every number, built on NIST [PSTAR](https://physics.nist.gov/PhysRefData/Star/Text/PSTAR.html)/[ASTAR](https://physics.nist.gov/PhysRefData/Star/Text/ASTAR.html) and ICRU data.
+- 🌐 **[APTG/dedx_web](https://github.com/APTG/dedx_web)** — the form-driven web tool aidedx complements and reuses.
 
 ## License
 
-**GPL-3.0-or-later** ([`LICENSE`](LICENSE)), matching the vendored libdedx and dedx_web it builds on.
-Full dependency breakdown: [Third-party licenses](docs/development.md#third-party-licenses).
+**GPL-3.0-or-later** ([`LICENSE`](LICENSE)) — see [third-party licenses](docs/development.md#third-party-licenses).
 </content>
