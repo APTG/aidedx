@@ -105,12 +105,18 @@ const ENERGY_TIERS_FROM_MEV_PER_NUCL: readonly ScaleTier[] = [
  * keV/MeV/GeV per nucleon reads best, e.g. `formatEnergyPerNucleon(0.00025)`
  * -> "0.25 keV/nucl". Used to render libdedx's [min, max] energy bounds as a
  * readable phrase instead of raw MeV/nucl floats.
+ *
+ * Pass `massNumber` when known: for A = 1 particles (protons) total energy
+ * and per-nucleon energy coincide, so the "/nucl" suffix is dropped — it
+ * would otherwise imply a distinction that doesn't exist for a single
+ * nucleon (issue #66).
  */
-export function formatEnergyPerNucleon(mevPerNucl: number): string {
+export function formatEnergyPerNucleon(mevPerNucl: number, massNumber?: number): string {
+  const suffix = massNumber === 1 ? "" : "/nucl";
   if (!Number.isFinite(mevPerNucl)) return "n/a";
-  if (mevPerNucl === 0) return "0 MeV/nucl";
+  if (mevPerNucl === 0) return `0 MeV${suffix}`;
   const { value, unit } = autoScale(mevPerNucl, ENERGY_TIERS_FROM_MEV_PER_NUCL);
-  return `${formatSignificant(value)} ${unit}`;
+  return `${formatSignificant(value)} ${unit.replace("/nucl", suffix)}`;
 }
 
 /**

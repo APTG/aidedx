@@ -90,12 +90,13 @@ function valueText(
   quantity: Quantity,
   point: ComputePoint | undefined,
   density: number | undefined,
+  massNumber: number,
 ): string | null {
   if (!point) return null;
   if (isInverse(quantity)) {
-    return point.energy === undefined || !Number.isFinite(point.energy)
-      ? null
-      : `${formatNumber(point.energy)} MeV/nucl`;
+    if (point.energy === undefined || !Number.isFinite(point.energy)) return null;
+    const unit = massNumber === 1 ? "MeV" : "MeV/nucl";
+    return `${formatNumber(point.energy)} ${unit}`;
   }
   const raw = quantity === "stoppingPower" ? point.stoppingPower : point.csdaRange;
   if (raw === undefined || !Number.isFinite(raw)) return null;
@@ -115,7 +116,12 @@ function compareLine(
   pointIndex: number,
 ): string {
   if (series.error) return `- ${label}: couldn't compute (${series.error})`;
-  const value = valueText(quantity, series.points[pointIndex], series.density);
+  const value = valueText(
+    quantity,
+    series.points[pointIndex],
+    series.density,
+    series.particle.massNumber,
+  );
   if (value === null) return `- ${label}: couldn't compute`;
   return `- ${label}: ${value} (${series.program.name})`;
 }
@@ -131,7 +137,7 @@ function singleSentence(intent: QueryIntent, quantity: Quantity, series: Compute
       : `Couldn't compute the ${QUANTITY_PHRASE[quantity]} of ${energyLabel(intent, 0)} ${particle} in ${material}: ${series.error}`;
   }
 
-  const value = valueText(quantity, series.points[0], series.density);
+  const value = valueText(quantity, series.points[0], series.density, series.particle.massNumber);
   if (value === null) return "Couldn't compute an answer for that query.";
 
   if (isInverse(quantity)) {
