@@ -153,6 +153,10 @@ work; the reverse is not true):
 | [Qwen2.5-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct) weights              | Apache-2.0                                                                                                  | listed in [`src/lib/models/manifest.ts`](src/lib/models/manifest.ts), not yet mirrored/enabled                                                              |
 | [Llama-3.2-1B-Instruct](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct) weights        | [Llama 3.2 Community License](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/LICENSE) | custom, non-OSI license with an attribution ("Built with Llama") and acceptable-use-policy requirement; listed in the manifest but not yet mirrored/enabled |
 
-`@img/sharp-libvips` (LGPL-3.0-or-later) appears transitively via Playwright's
-dev/test tooling only — it is never shipped to users, so it carries no
-distribution obligation for aidedx itself.
+`@img/sharp-libvips` (LGPL-3.0-or-later) is a transitive dependency of `sharp`,
+which is pulled in by both `@huggingface/transformers` (a production
+dependency) and Playwright (dev/test tooling). It is still never shipped to
+users, though: transformers.js's own browser build stubs `sharp` out entirely
+as a Node-only module with no browser equivalent (verified in the built
+`build/_app/immutable/workers/asr.worker-*.js` output — `// ignore-modules:sharp`),
+so it carries no distribution obligation for aidedx itself.
