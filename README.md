@@ -26,7 +26,7 @@ server, no account, nothing you type or say ever leaves your device.
 4. **Read the answer and check the assumptions.** aidedx shows how it understood you (isotope,
    energy, program) as editable chips — fix any and the answer updates instantly.
 
-It's just a web page: no repo to clone, no app to install on your computer or phone.
+It's just a web app: no repo to clone, no app to install, no login needed.
 
 ## How it works
 
