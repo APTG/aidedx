@@ -253,9 +253,11 @@ eliminate the "dE, dx" and "10-cm" failure modes §2.3 had listed as open matche
 Turbo's raw slot-token accuracy also benefits from prompt biasing (+3.5 pp), and its
 ext-corrected ceiling is unchanged at 98.1% (the extended corrector already closed
 most of turbo's gap even without the prompt; the prompt's contribution for turbo is on
-the raw/uncorrected side). This confirms turbo remains a real (if unproven-on-CPU-yet)
-WebGPU-tier candidate now that domain-prompt biasing is verified to help it too, but
-doesn't change the CPU-tier recommendation: whisper-small + prompt is still both more
+the raw/uncorrected side). This confirms turbo as a real _accuracy_ candidate now that
+domain-prompt biasing is verified to help it too, but issue #60's WebGPU measurement
+(`docs/threading-coop-coep.md` addendum) found the actual WebGPU-tier latency doesn't
+hold up — real in-browser prefill is ~10× worse than the Node number below. This doesn't
+change the CPU-tier recommendation either way: whisper-small + prompt is still both more
 accurate (91% vs 90% E2E) and ~2× faster per clip. Turbo's median per-clip latency in
 this run (5.0 s) was notably lower than §2.1's 8.1 s under otherwise-similar
 conditions; treat that gap as environment/load noise (§2.1's number was measured with
@@ -340,7 +342,8 @@ evaluated end-to-end (audio→intent), never on transcript fidelity.
  │
  ▼
 ASR        whisper-small q8 + domain prompt biasing (§2.4) — CPU/WASM tier
- │           (WebGPU tier: re-test turbo *with* prompt biasing before choosing)
+ │           (WebGPU tier: measured, issue #60 — not worth it; see
+ │            docs/threading-coop-coep.md addendum)
  │           per-tier correction rule sets — error distributions differ (§2.1)
  ▼
 CORRECT    closed-vocabulary phonetic lexicon matcher (§5.1)
@@ -505,6 +508,9 @@ idea, don't schedule.
 - **#25 (closed)** — `SOT_PREV` fix, retry guard, and the two corrector rules landed
   (§2.4.1); turbo+prompt measured. Prompt-content tuning (§5.0's follow-up experiment)
   remains open for a future pass.
+- **#60** — turbo+prompt's WebGPU-tier latency measured (`docs/threading-coop-coep.md`
+  addendum): WebGPU execution provider works, but real in-browser prefill is ~10× worse
+  than the Node number here, on either backend. Not worth shipping as a tier.
 - **#8 (LLM NLU)** — rescope: (a) land the quantity-synonym table (deterministic
   120/120); (b) if an LLM fallback is kept at all, single-token constrained
   classification per §5.6, with label-bias controls in the eval; (c) drop full-JSON
