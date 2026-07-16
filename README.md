@@ -16,56 +16,44 @@ and works out what you're asking; the physics is then computed by [libdedx](http
 the same well-established library used by researchers and clinicians. And it all runs **inside your
 browser tab** — no server, no account, nothing you type or say ever leaves your device.
 
-## How it works — two phases
+## How to use it
 
-**Phase 1 — Download the models (once).** The first time you use aidedx, it asks permission to
-download the AI model weights (a few hundred MB), with an explicit consent dialog and a visible
-progress panel. The weights are then cached in your browser, so this only happens once.
+1. **Open the app** at <https://aptg.github.io/aidedx/> — nothing to install.
+2. **Allow the one-time download** when prompted. aidedx fetches its AI models (a few hundred MB) and
+   caches them in your browser, so this happens only on your first visit.
+3. **Ask your question** — press 🎤 and speak, or type it. For example: _"stopping power of 150 MeV
+   protons in water"_, or _"how far do 200 MeV/nucl carbon ions go in water?"_
+4. **Read the answer and check the assumptions.** aidedx shows how it understood you (isotope,
+   energy, program) as editable chips — fix any and the answer updates instantly.
 
-**Phase 2 — Run everything locally (every time after).** With the models cached, your question flows
-through a fully-local pipeline. No network needed.
+## How it works
+
+aidedx runs in two phases. The **first time** you visit, it downloads its AI models once and caches
+them in your browser. **After that**, every question is handled entirely on your machine, in four
+steps that each feed the next:
 
 ```
-  ┌─────────────────────────── PHASE 1: first visit only ───────────────────────────┐
-  │  Consent dialog  →  download model weights  →  cache in browser (hundreds of MB) │
-  └─────────────────────────────────────────────────────────────────────────────────┘
-                                        │
-                                        ▼
-  ┌───────────────────────── PHASE 2: every question, fully local ──────────────────┐
-  │                                                                                  │
-  │   🎤 speak  or  ⌨ type                                                            │
-  │        │                                                                         │
-  │        ▼                                                                         │
-  │   Speech → text        Whisper, running in your browser                          │
-  │        │                                                                         │
-  │        ▼                                                                         │
-  │   Understand the       A fast rule-based reader for common phrasings,            │
-  │   question             with a small local language model as backup              │
-  │        │               for unusual wording                                       │
-  │        ▼                                                                         │
-  │   Compute the answer   libdedx (WebAssembly) — the real physics                  │
-  │        │                                                                         │
-  │        ▼                                                                         │
-  │   Explain it back      A plain-language answer, with every assumption            │
-  │                        (isotope, energy interpretation) shown and editable       │
-  └──────────────────────────────────────────────────────────────────────────────────┘
+  first visit only ──▶  download AI models  ──▶  cache in your browser (once)
+                                                          │
+  ┌────────────────── then, for every question, fully local ──────────────────┐
+  │                                                                            │
+  │   🎤 speak / ⌨ type  ─▶  1. Listen  ─▶  2. Understand  ─▶  3. Compute  ─▶  4. Explain
+  │                                                                            │
+  └────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### The tools behind it, and how it keeps itself honest
+1. **Listen** — a speech-recognition model turns what you say into text (or you type it directly).
+2. **Understand** — aidedx reads out which particle, material, energy, and quantity you meant and
+   turns it into a precise query. Common phrasings are handled by fast built-in rules; a small
+   language model steps in only for unusual wording.
+3. **Compute** — the query is answered from **trusted reference data (NIST, ICRU, Bethe–Bloch)**, not
+   guessed by the AI.
+4. **Explain** — you get a plain-language answer, with every assumption shown as an editable chip.
 
-- **Speech recognition:** [Whisper](https://github.com/openai/whisper), running in-browser via
-  [transformers.js](https://github.com/huggingface/transformers.js) on WebGPU (or CPU where WebGPU
-  isn't available).
-- **Understanding your words:** a two-tier reader. A **deterministic matcher** handles the common,
-  clearly-worded questions instantly; a **small local language model** steps in only for indirect or
-  unusual phrasings, and is constrained to emit a strict, checkable structure rather than free prose.
-- **Self-correction:** the pipeline is designed to catch its own mistakes rather than pass them on.
-  Speech recognition uses a retry-and-repair guard for the rare garbled transcript; the language
-  model's output is validated against a fixed schema and re-derived if it doesn't fit; and because
-  the AI only ever _fills in a query_, a wrong guess shows up as an editable chip you can fix — it
-  can never corrupt the physics.
-- **The physics:** [**libdedx**](https://github.com/APTG/libdedx), compiled to WebAssembly and
-  called directly. Every number is libdedx's, computed on your machine.
+Because the AI only ever _fills in the query_, a misheard word surfaces as a chip you can correct —
+it can never corrupt the physics. The models also catch their own slips: a garbled transcript is
+retried, and malformed query output is re-derived. See the
+[technical documentation](docs/development.md) for the specifics.
 
 ## Why "on your machine" matters
 
@@ -76,7 +64,7 @@ Most AI tools send your words to a company's servers. aidedx does the opposite �
 - **Nothing to pay for or operate.** The whole app is a static website — free to host on GitHub Pages
   or a university server.
 - **The physics is never guessed.** The AI only _understands_ your question; every number comes from
-  libdedx, never from the language model.
+  trusted reference data, never from the language model.
 
 |                       | **Cloud AI (typical)**  | **aidedx (local)**           |
 | --------------------- | ----------------------- | ---------------------------- |
@@ -87,16 +75,6 @@ Most AI tools send your words to a company's servers. aidedx does the opposite �
 | First-use setup       | None                    | One-time model download      |
 
 The only trade-off is the last row: local AI has to fetch its "brain" the first time you use it.
-
-## How to use it
-
-1. **Open the app** at <https://aptg.github.io/aidedx/>.
-2. **Allow the one-time download** when prompted — the model weights cache in your browser.
-3. **Ask a question**, by typing or by pressing 🎤 and speaking. For example:
-   _"stopping power of 150 MeV protons in water"_ or _"how far do 200 MeV/nucl carbon ions go in
-   water?"_
-4. **Read the answer and check the assumptions.** aidedx shows how it interpreted your question
-   (isotope, energy, program) as editable chips — correct any of them and the answer updates.
 
 ## Project status
 
