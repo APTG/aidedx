@@ -1,162 +1,138 @@
 # aidedx
 
-AI-assisted, in-browser front-end for stopping-power (dE/dx) queries. Ask a
-question in plain language and get an answer computed **entirely on your
-machine** — nothing is sent to a server.
+**Ask a physics question in plain language, get a real answer — computed entirely on your own
+machine. Nothing you type or say ever leaves your device.**
 
-> **Status:** Voice input is live — press the mic, speak, and see a transcript
-> (Whisper via transformers.js, lazy-imported so the shell still ships zero ML
-> in the initial bundle). Wiring that transcript through the deterministic NLU
-> matcher to a computed, on-screen answer is in progress (issue #39). Model
-> weights download on first use with explicit consent and a visible status
-> panel — see [`docs/status-panel-design.md`](docs/status-panel-design.md).
+aidedx is a friendly, conversational front-end to [**libdedx**](https://github.com/APTG/libdedx),
+the stopping-power and range library behind [dedx_web](https://github.com/APTG/dedx_web). Instead of
+filling in a form, you just ask:
 
-## Stack
+> 🎤 _"What is the range of 40 MeV protons in PMMA?"_
+>
+> → _"The CSDA range of a 40 MeV proton in PMMA is 1.42 g/cm², about 12 mm."_
 
-- **SvelteKit** + **Svelte 5** (runes only) + **TypeScript** (strict)
-- **Tailwind CSS v4**
-- **`@sveltejs/adapter-static`** — prerendered SPA, deployed to GitHub Pages
-- **Vitest** for unit tests
-- **Node 24 LTS**, package manager **pnpm**
+The existing dedx_web tool is precise but form-driven. aidedx lowers the barrier for the quick
+"what's the range of X in Y?" questions that researchers, clinicians, and students ask all day — and
+it does it **without a server**. There is no backend to run, no account to create, and no data to
+leak: the artificial intelligence that understands your question runs inside your browser tab.
 
-## Develop
+## Why "on your machine" matters
 
-```sh
-pnpm install
-pnpm dev            # dev server
-pnpm build          # static production build → build/
-pnpm preview        # preview the production build
-pnpm check          # svelte-check + tsc typecheck
-pnpm lint           # ESLint
-pnpm format         # Prettier (write)
-pnpm test           # Vitest unit tests
+Most AI tools send your words to a company's servers. aidedx does the opposite. The speech
+recognition and language understanding models run **locally, in your browser**, so:
+
+- **Privacy is built in.** Clinical and research questions never touch the network. This is a real
+  feature, not a footnote.
+- **There's nothing to pay for or operate.** The whole app is a static website — it can live on
+  GitHub Pages or a university server with no running costs.
+- **The physics is never guessed.** The AI's only job is to _understand_ your question and turn it
+  into a precise query. Every actual number comes from libdedx — never invented by the language
+  model.
+
+|                       | **Cloud AI (typical)**        | **aidedx (local)**           |
+| --------------------- | ----------------------------- | ---------------------------- |
+| Where inference runs  | Company servers               | Your browser tab             |
+| Your data             | Uploaded, may be logged       | Never leaves the device      |
+| Cost / infrastructure | Metered API, a backend to run | A static file, free to host  |
+| Works offline         | No                            | Yes, once weights are cached |
+| First-use setup       | None                          | One-time model download      |
+
+The trade-off is the last row: local AI has to fetch its "brain" the first time you use it.
+
+## How it works — two phases
+
+**Phase 1 — Download the models (once).** The first time you use aidedx, it asks permission to
+download the AI model weights (a few hundred MB). This happens with an explicit consent dialog and a
+visible progress panel. The weights are then cached in your browser, so this only happens once.
+
+**Phase 2 — Run everything locally (every time after).** With the models cached, your question flows
+through a fully-local pipeline. No network needed.
+
+```
+  ┌─────────────────────────── PHASE 1: first visit only ───────────────────────────┐
+  │  Consent dialog  →  download model weights  →  cache in browser (hundreds of MB) │
+  └─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        ▼
+  ┌───────────────────────── PHASE 2: every question, fully local ──────────────────┐
+  │                                                                                  │
+  │   🎤 speak  or  ⌨ type                                                            │
+  │        │                                                                         │
+  │        ▼                                                                         │
+  │   Speech → text        Whisper, running in your browser                          │
+  │        │                                                                         │
+  │        ▼                                                                         │
+  │   Understand the       A fast rule-based reader for common phrasings,            │
+  │   question             with a small local language model as backup              │
+  │        │               for unusual wording                                       │
+  │        ▼                                                                         │
+  │   Compute the answer   libdedx (WebAssembly) — the real physics                  │
+  │        │                                                                         │
+  │        ▼                                                                         │
+  │   Explain it back      A plain-language answer, with every assumption            │
+  │                        (isotope, energy interpretation) shown and editable       │
+  └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Deployment
+### The tools behind it, and how it keeps itself honest
 
-Pushing to `main` triggers `.github/workflows/deploy.yml`, which builds the
-static site (with `BASE_PATH=/aidedx`) and publishes it to GitHub Pages at
-<https://aptg.github.io/aidedx/>. CI (`.github/workflows/ci.yml`) runs format,
-lint, typecheck, unit tests, and a build on every push/PR.
+- **Speech recognition:** [Whisper](https://github.com/openai/whisper), running in-browser via
+  [transformers.js](https://github.com/huggingface/transformers.js) on WebGPU (or CPU where WebGPU
+  isn't available).
+- **Understanding your words:** a two-tier reader. A **deterministic matcher** handles the common,
+  clearly-worded questions instantly; a **small local language model** steps in only for indirect or
+  unusual phrasings, and is constrained to emit a strict, checkable structure rather than free prose.
+- **Self-correction:** the pipeline is designed to catch its own mistakes rather than pass them on.
+  Speech recognition uses a retry-and-repair guard for the rare garbled transcript; the language
+  model's output is validated against a fixed schema and re-derived if it doesn't fit; and because
+  the AI only ever _fills in a query_, a wrong guess shows up as an editable chip you can fix — it
+  can never corrupt the physics.
+- **The physics:** [**libdedx**](https://github.com/APTG/libdedx), compiled to WebAssembly and
+  called directly. Every number is libdedx's, computed on your machine.
 
-## Eval set
+## Project status
 
-[`eval/intents.jsonl`](eval/intents.jsonl) is a hand-labeled set of ~110
-natural-language queries mapped to the shared
-[`QueryIntent`](src/lib/intent/query-intent.ts) schema. It is the project's
-frozen regression suite — reused by the ASR/NLU spikes and the deterministic
-matcher — covering direct/indirect/conversational phrasing, comparisons, unit
-variety, isotope and total-vs-per-nucleon ambiguity, and inverse queries.
+aidedx is an **early-stage prototype under active development**. Honestly, here is where things
+stand:
 
-```sh
-pnpm validate:eval   # validate the dataset + print tag coverage
-```
-
-See [`eval/README.md`](eval/README.md) for the schema, labeling conventions,
-and tag taxonomy. The validator also runs in CI and as a Vitest test.
-
-## Alias tables
-
-[`src/lib/aliases/`](src/lib/aliases/) maps natural-language phrases ("PMMA",
-"carbon ions", "lung tissue") to canonical **libdedx** materials and particles —
-the deterministic matcher's accuracy backbone, also reusable by dedx_web's text
-search. `resolveMaterial()` / `resolveParticle()` do exact → normalized → fuzzy
-matching and parse explicit isotopes ("carbon-13", "³He"). Tables are seeded
-from libdedx (via dedx_web) plus the periodic table and shipped as both typed TS
-and JSON ([`static/aliases/`](static/aliases/)).
-
-```sh
-pnpm generate:aliases   # regenerate the JSON artifacts from the TS tables
-```
-
-See [`docs/aliases.md`](docs/aliases.md) for provenance and how to regenerate
-when libdedx updates.
-
-## libdedx compute
-
-[`src/lib/wasm/`](src/lib/wasm/) is a thin, dependency-free TypeScript wrapper
-over the vendored **libdedx** WebAssembly module
-([`static/wasm/`](static/wasm/)) — forward stopping power / CSDA range, inverse
-lookups, and entity lists. It is lazy-loaded (`getService()`) so the shell ships
-zero WASM until a query needs a number, and is kept clean of any
-aidedx-specific concept so it can later be extracted as `@aptg/libdedx-wasm`
-(issue #1 §17).
-
-[`src/lib/compute/`](src/lib/compute/) bridges the two worlds:
-`computeIntent(intent, service)` resolves a [`QueryIntent`](src/lib/intent/query-intent.ts)'s
-particle/material phrases via the alias tables, converts energies to MeV/nucl
-(honoring the total-vs-per-nucleon assumption), auto-selects a program, and
-fans out over the comparison dimension — returning **real libdedx numbers,
-never the LLM**. The end-to-end smoke suite
-([`compute.smoke.test.ts`](src/lib/compute/compute.smoke.test.ts)) drives the
-actual WASM under Node for the issue #1 §7 examples.
-
-The binaries are prebuilt and checked in. See [`docs/wasm.md`](docs/wasm.md) for
-the wrapper boundary, provenance, and how to regenerate them.
+- ✅ **Works today:** typed questions → understood → computed → answered, with editable assumptions.
+  Voice input is live (press the mic, speak, see a transcript). The one-time model download has an
+  explicit consent flow and a live status panel.
+- 🚧 **In progress:** wiring the voice transcript all the way through to a spoken/on-screen answer
+  (issue [#39](https://github.com/APTG/aidedx/issues/39)); mirroring and enabling the fallback
+  language models.
+- 🐢 **Slow paths:** on machines without a GPU, the language-model fallback can take ~10–30 s — but
+  most questions are handled instantly by the deterministic matcher and never reach it. Fast
+  local inference wants browser features GitHub Pages can't fully enable yet; hosting is still being
+  worked out (see the [technical docs](docs/development.md)).
+- 🔭 **Planned:** spoken answers (text-to-speech), deep links into dedx_web for full plots, and a
+  broader range of understood phrasings.
 
 ## Documentation
 
-Deeper write-ups live in [`docs/`](docs/):
+- 📖 **User guide** — _coming soon._ A friendly walkthrough for asking questions and reading answers.
+- 🛠 **[Technical documentation](docs/development.md)** — the stack, local dev workflow, the internal
+  building blocks (eval set, alias tables, the libdedx WASM wrapper), and pointers to every deep-dive
+  under [`docs/`](docs/).
 
-- [`docs/design.md`](docs/design.md) — the original design & prototyping plan (issue #1):
-  architecture, the `QueryIntent` schema, and phasing.
-- [`docs/voice-pipeline-feasibility.md`](docs/voice-pipeline-feasibility.md) — 2026-07-05 audit of
-  the ASR/NLU spikes' findings, with a revised architecture and measured numbers.
-- [`docs/apple-silicon-benchmark.md`](docs/apple-silicon-benchmark.md) — the same benchmarks
-  re-run on Apple Silicon (M5): ASR latency, LLM-NLU-fallback viability, KV-cache reuse.
-- [`docs/aliases.md`](docs/aliases.md) — material/particle alias table provenance and
-  regeneration.
-- [`docs/wasm.md`](docs/wasm.md) — the libdedx WASM wrapper boundary and how to rebuild the
-  binaries.
-- [`docs/answer-pipeline.md`](docs/answer-pipeline.md) — matcher → compute → NLG → UI state, the
-  layer after Whisper: unit conversion, error-message formatting, input validation.
-- [`docs/local-model-cache.md`](docs/local-model-cache.md) — the Node-side `.hf-cache/` prefetch
-  convention used by the benchmark scripts.
-- [`docs/model-hosting-cyfronet.md`](docs/model-hosting-cyfronet.md) — mirroring model weights to
-  Cyfronet S3 instead of Hugging Face's CDN.
-- [`docs/status-panel-design.md`](docs/status-panel-design.md) — the model-status header,
-  download-consent, and clear-cache UX.
+## libdedx and related resources
 
-## Cross-origin isolation (deferred)
+aidedx stands on the shoulders of the APTG stopping-power toolchain:
 
-In-browser ML backends need `SharedArrayBuffer`, which requires the page to be
-[cross-origin isolated](https://developer.mozilla.org/en-US/docs/Web/API/Window/crossOriginIsolated)
-(COOP/COEP headers). GitHub Pages cannot set those headers, so the planned
-workaround is [`coi-serviceworker`](https://github.com/gzuidhof/coi-serviceworker).
-A documented, intentionally-inert hook is left in `src/app.html`; the actual
-hosting/runtime decision is deferred to Spike 3.
+- **[APTG/libdedx](https://github.com/APTG/libdedx)** — the stopping-power / CSDA-range library that
+  computes every number aidedx reports. It draws on standard databases including NIST
+  [PSTAR](https://physics.nist.gov/PhysRefData/Star/Text/PSTAR.html) /
+  [ASTAR](https://physics.nist.gov/PhysRefData/Star/Text/ASTAR.html) and ICRU reference data.
+- **[APTG/dedx_web](https://github.com/APTG/dedx_web)** — the precise, form-driven web tool aidedx
+  complements. aidedx reuses its WebAssembly build of libdedx and its material/particle tables, and
+  aims to deep-link into it for full plots.
 
 ## License
 
-aidedx is licensed under the **GNU General Public License v3.0 or later**
-([`LICENSE`](LICENSE)). This matches its two upstream dependencies,
-[APTG/libdedx](https://github.com/APTG/libdedx) (GPL-3.0) and
-[APTG/dedx_web](https://github.com/APTG/dedx_web) (GPL-3.0): the compiled
-libdedx WASM module is vendored and called directly (see
-[`docs/wasm.md`](docs/wasm.md)), and the material/particle alias tables in
-[`src/lib/aliases/`](src/lib/aliases/) are copied from dedx_web's source (see
-[`docs/aliases.md`](docs/aliases.md)) — both make aidedx a combined/derivative
-work under GPL-3.0, independent of what license aidedx itself declared.
-
-### Third-party licenses
-
-Everything else aidedx bundles or fetches at runtime is permissively licensed
-and compatible with GPL-3.0 (permissive code may be combined into a GPL-3.0
-work; the reverse is not true):
-
-| Component                                                                                       | License                                                                                                     | Notes                                                                                                                                                       |
-| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Svelte, SvelteKit, Vite, TypeScript, Tailwind CSS, Vitest, ESLint, Prettier, Playwright         | MIT                                                                                                         | build/runtime tooling                                                                                                                                       |
-| [`@huggingface/transformers`](https://github.com/huggingface/transformers.js) (transformers.js) | Apache-2.0                                                                                                  | in-browser ML runtime                                                                                                                                       |
-| `onnxruntime-web`                                                                               | MIT                                                                                                         | ONNX inference backend                                                                                                                                      |
-| [Whisper](https://github.com/openai/whisper) weights (`onnx-community/whisper-small`)           | MIT                                                                                                         | speech-to-text; mirrored to our Cyfronet S3 bucket, see [`docs/model-hosting-cyfronet.md`](docs/model-hosting-cyfronet.md)                                  |
-| [Qwen2.5-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct) weights              | Apache-2.0                                                                                                  | listed in [`src/lib/models/manifest.ts`](src/lib/models/manifest.ts), not yet mirrored/enabled                                                              |
-| [Llama-3.2-1B-Instruct](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct) weights        | [Llama 3.2 Community License](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/LICENSE) | custom, non-OSI license with an attribution ("Built with Llama") and acceptable-use-policy requirement; listed in the manifest but not yet mirrored/enabled |
-
-`@img/sharp-libvips` (LGPL-3.0-or-later) is a transitive dependency of `sharp`,
-which is pulled in by both `@huggingface/transformers` (a production
-dependency) and Playwright (dev/test tooling). It is still never shipped to
-users, though: transformers.js's own browser build stubs `sharp` out entirely
-as a Node-only module with no browser equivalent (verified in the built
-`build/_app/immutable/workers/asr.worker-*.js` output — `// ignore-modules:sharp`),
-so it carries no distribution obligation for aidedx itself.
+aidedx is licensed under the **GNU General Public License v3.0 or later** ([`LICENSE`](LICENSE)).
+This matches its upstream dependencies [APTG/libdedx](https://github.com/APTG/libdedx) and
+[APTG/dedx_web](https://github.com/APTG/dedx_web) (both GPL-3.0): the vendored libdedx WASM module
+and the alias tables copied from dedx_web make aidedx a combined/derivative work under GPL-3.0. See
+[**Third-party licenses**](docs/development.md#third-party-licenses) for the full dependency
+breakdown.
+</content>
