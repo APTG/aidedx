@@ -8,23 +8,26 @@
  * engineered from the parsed intent.
  *
  * Reuses scripts/asr-correct.mjs / asr-correct-ext.mjs unmodified: this measures the
- * existing correction layer's real behavior, not a new one.
+ * existing correction layer's real behavior, not a new one. --new instead scores
+ * src/lib/asr/correct (issue #28's regex fast path + phonetic pass, now shipped).
  *
  * Usage:
- *   node scripts/asr-score-slots-generic.mjs <manifest.json> <results.json> [--ext] [--json out.json]
+ *   node scripts/asr-score-slots-generic.mjs <manifest.json> <results.json> [--ext|--new] [--json out.json]
  */
 import { readFileSync, writeFileSync } from "fs";
 import { correct as baseCorrect } from "./asr-correct.mjs";
 import { correct as extCorrect } from "./asr-correct-ext.mjs";
+import { correctTranscript as newCorrect } from "../src/lib/asr/correct/core.ts";
 
 const useExt = process.argv.includes("--ext");
-const correct = useExt ? extCorrect : baseCorrect;
+const useNew = process.argv.includes("--new");
+const correct = useNew ? (text) => newCorrect(text).text : useExt ? extCorrect : baseCorrect;
 const jsonOutIdx = process.argv.indexOf("--json");
 const jsonOutPath = jsonOutIdx >= 0 ? process.argv[jsonOutIdx + 1] : undefined;
 
 const [manifestPath, resultsPath] = process.argv
   .slice(2)
-  .filter((a) => a !== "--ext" && a !== "--json" && a !== jsonOutPath);
+  .filter((a) => a !== "--ext" && a !== "--new" && a !== "--json" && a !== jsonOutPath);
 
 // --- Same normalization as scripts/asr-score-slots.mjs ---
 function norm(text) {
@@ -96,7 +99,8 @@ const clips = manifestRaw.clips ?? manifestRaw;
 const byId = new Map(clips.map((c) => [c.id, c]));
 
 const data = JSON.parse(readFileSync(resultsPath, "utf-8"));
-const label = `${data.modelId} [${data.dtype}]${data.withPrompt ? " +prompt" : ""}${useExt ? " ext-corrector" : " base-corrector"}`;
+const correctorLabel = useNew ? "new-corrector" : useExt ? "ext-corrector" : "base-corrector";
+const label = `${data.modelId} [${data.dtype}]${data.withPrompt ? " +prompt" : ""} ${correctorLabel}`;
 
 const catTotals = {};
 const byQuantity = {}; // quantity -> {rawPass, corPass, n}
