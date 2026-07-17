@@ -74,11 +74,19 @@ if (!whisperEntry) throw new Error("manifest.ts is missing the 'whisper' entry")
 const WHISPER_REPO = whisperEntry.repo;
 const WHISPER_DTYPE = whisperEntry.dtype;
 
-/** Short domain vocabulary hint — keep it brief, prompt tokens add prefill cost linearly (feasibility report §5.0). */
+/**
+ * Short domain vocabulary hint — keep it brief, prompt tokens add prefill cost linearly
+ * (feasibility report §5.0). Extended per issue #83/#92 with the material trade names and
+ * quantity terms `docs/tts-eval-1000.md` §6.4 and `docs/tts-eval-1000-v2.md` §8 both found
+ * whisper-small fails *consistently* on (not occasionally — every occurrence, e.g. "Kapton"
+ * → "captain" every time), plus the LET/keV-µm terms issue #86 taught the matcher to
+ * recognize but this prompt never biased toward.
+ */
 const DOMAIN_PROMPT =
   "MeV, keV, GeV, MeV/u, MeV/nucl, dE/dx, CSDA, PMMA, ASTAR, PSTAR, " +
   "nucleon, proton, deuteron, carbon ion, neon ion, oxygen ion, " +
-  "helium-3, carbon-13, stopping power, Lucite, adipose tissue";
+  "helium-3, carbon-13, stopping power, LET, linear energy transfer, keV/um, " +
+  "Lucite, adipose tissue, Kapton, Mylar, Teflon, Pyrex glass, sodium iodide, cesium iodide";
 
 /** Multilingual-vocab `<|startofprev|>` id, used only if the tokenizer can't resolve it (it always should). */
 const FALLBACK_START_OF_PREV = 50361;
