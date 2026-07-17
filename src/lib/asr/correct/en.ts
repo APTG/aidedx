@@ -20,6 +20,16 @@
  * them is not a "no risk" refactor the way it was for the matcher split; a
  * future `pl.ts` pack will reveal the true shared subset empirically instead
  * of by inspection.
+ *
+ * One deliberate deviation from "verbatim": the two glued-unit rules
+ * ("glued-unit-before-particle", "mm-ml-before-particle") add a trailing `\b`
+ * after the particle-word group that the original scripts lack. Without it,
+ * the alternation can match a *prefix* of an unrelated longer word — "ion" at
+ * the start of "ionization" — and silently rewrite "10mm ionization" to
+ * "10 MeV ionization". That bug already existed in both `.mjs` scripts (this
+ * is a faithful port, not a new one), but this module is the copy now live in
+ * the shipped transcript path, so it's worth the one-token fix here rather
+ * than reproducing it forward.
  */
 import type { CorrectionRule } from "./core.ts";
 
@@ -39,7 +49,7 @@ export const EN_RULES: readonly CorrectionRule[] = [
   {
     label: "glued-unit-before-particle",
     pattern: new RegExp(
-      `(\\d+(?:\\.\\d+)?)\\s*(?:mm|ml|mv|ma|mb|mhz|mev)\\s*[,.]?\\s+(?:a\\s+)?(${PARTICLE_WORDS})`,
+      `(\\d+(?:\\.\\d+)?)\\s*(?:mm|ml|mv|ma|mb|mhz|mev)\\s*[,.]?\\s+(?:a\\s+)?(${PARTICLE_WORDS})\\b`,
       "gi",
     ),
     replacement: "$1 MeV $2",
@@ -114,7 +124,7 @@ export const EN_RULES: readonly CorrectionRule[] = [
   },
   {
     label: "mm-ml-before-particle",
-    pattern: new RegExp(`(\\d+(?:\\.\\d+)?)\\s*(?:mm|ml)\\s+(${PARTICLE_WORDS})`, "gi"),
+    pattern: new RegExp(`(\\d+(?:\\.\\d+)?)\\s*(?:mm|ml)\\s+(${PARTICLE_WORDS})\\b`, "gi"),
     replacement: "$1 MeV $2",
   },
   { label: "gev-word-split", pattern: /(\d)\s*g\s+ev\b/gi, replacement: "$1 GeV" },

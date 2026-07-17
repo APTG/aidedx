@@ -29,6 +29,13 @@ describe("correctTranscript — number/unit mishearings", () => {
     expect(correctTranscript("150mv alpha in water")).toBe("150 MeV alpha in water");
   });
 
+  it("does not treat a particle word that is only a prefix of a longer word as a match", () => {
+    // "ion" is a particle word, but must not fire inside "ionization" — the
+    // particle-word group is word-bounded specifically to prevent this.
+    expect(correctTranscript("10mm ionization observed")).toBe("10mm ionization observed");
+    expect(correctTranscript("5mm ironclad shield")).toBe("5mm ironclad shield");
+  });
+
   it("fixes a bare glued MeV/keV mishearing", () => {
     expect(correctTranscript("100mEV protons in silicon")).toBe("100 MeV protons in silicon");
     expect(correctTranscript("240K EV protons")).toBe("240 keV protons");
