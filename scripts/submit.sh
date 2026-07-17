@@ -37,7 +37,10 @@ cd /net/tscratch/people/plgkongruencj/aidedx
 source scripts/athena-env.sh
 
 echo "=== Step 0/4: regenerate + validate the 1000 sentences (deterministic — same seed, same output every run) ==="
-node scripts/generate-1000-sentences.mjs scripts/tts-1000-sentences.json
+# --experimental-strip-types: the generator now imports tts-sentence-check.ts directly
+# (inline validation, issue #83) — required on Athena's older Node 22.17.1, which (unlike
+# the CI runner's Node 24, or Node 22.18+) doesn't strip .ts imports unflagged.
+node --experimental-strip-types scripts/generate-1000-sentences.mjs scripts/tts-1000-sentences.json
 node --experimental-strip-types scripts/tts-sentence-check.ts scripts/tts-1000-sentences.json
 
 echo "=== Step 1/4: TTS generation (resumes automatically from existing eval/audio/tts-qwen-1000/*.wav) ==="

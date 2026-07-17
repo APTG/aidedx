@@ -42,6 +42,33 @@ describe("quantity detection", () => {
     expect(quantitySource).toBe("indirect");
     expect(intent.energies).toEqual([{ value: 30, unit: "MeV" }]);
   });
+
+  it("reads the acronym 'LET' as stopping power", () => {
+    const { intent, quantitySource } = matchIntent("What is the LET of a 100 MeV proton in water?");
+    expect(intent.quantity).toBe("stoppingPower");
+    expect(quantitySource).toBe("direct");
+  });
+
+  it("reads spelled-out 'linear energy transfer' as stopping power, not an inverse query", () => {
+    // The substring "energy" must not trip inverse detection here.
+    const { intent, quantitySource } = matchIntent(
+      "What is the linear energy transfer of 80 MeV protons in water?",
+    );
+    expect(intent.quantity).toBe("stoppingPower");
+    expect(quantitySource).toBe("direct");
+  });
+
+  it("detects energyFromStp from an inverse LET-with-unit query", () => {
+    const intent = matchQueryIntent("What energy gives an LET of 2 keV/µm in water for protons?");
+    expect(intent.quantity).toBe("energyFromStp");
+  });
+
+  it("does not mistake the verb 'let' for the LET quantity", () => {
+    // Lowercase "let" is the ordinary verb; only the all-caps acronym is the physics term.
+    expect(matchQueryIntent("Let me know the range of a 100 MeV proton in water.").quantity).toBe(
+      "csdaRange",
+    );
+  });
 });
 
 describe("inverse queries", () => {

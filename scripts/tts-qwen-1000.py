@@ -104,6 +104,14 @@ def synthesize(vd_model, cv_model, tag, rest, text):
 
 
 def main():
+    # Python fully block-buffers stdout when it isn't a TTY (e.g. redirected to sbatch's
+    # %x-%j.out) — progress prints sit in an internal buffer and don't appear until it
+    # fills (~4-8 KB) or the process exits, even though the work itself is happening in
+    # real time. stderr is unbuffered by default, which is why the model's own warnings
+    # already show up live in %x-%j.err while this script's own progress line doesn't.
+    # Force line buffering so every print() below is visible immediately for monitoring.
+    sys.stdout.reconfigure(line_buffering=True)
+
     sentences_path, out_dir = sys.argv[1], Path(sys.argv[2])
     out_dir.mkdir(parents=True, exist_ok=True)
     sentences = json.loads(Path(sentences_path).read_text())
@@ -159,14 +167,13 @@ def main():
         )
         manifest_path.write_text(json.dumps({"voicePool": [p[0] for p in VOICE_POOL], "clips": manifest}, indent=2))
 
-        if (i + 1) % 10 == 0 or i == len(remaining) - 1:
-            elapsed = time.time() - t_start
-            rate = elapsed / (i + 1)
-            eta_min = rate * (len(remaining) - i - 1) / 60
-            print(
-                f"  [{len(done_ids) + i + 1}/{len(sentences)}] {sid} ({tag}) gen={gen_s:.1f}s "
-                f"dur={dur_s:.1f}s  avg={rate:.1f}s/clip  eta={eta_min:.0f}min"
-            )
+        elapsed = time.time() - t_start
+        rate = elapsed / (i + 1)
+        eta_min = rate * (len(remaining) - i - 1) / 60
+        print(
+            f"  [{len(done_ids) + i + 1}/{len(sentences)}] {sid} ({tag}) gen={gen_s:.1f}s "
+            f"dur={dur_s:.1f}s  avg={rate:.1f}s/clip  eta={eta_min:.0f}min"
+        )
 
     total = time.time() - t_start
     print(f"\nDone: {len(remaining)} new clips in {total:.1f}s ({total / len(remaining):.2f}s/clip avg)")

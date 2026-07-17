@@ -105,16 +105,36 @@ const DIRECT_STOPPING =
   /\b(?:mass\s+|electronic\s+)?stopping power\b|\bde\s*\/\s*dx\b|\benergy loss\b/i;
 const DIRECT_RANGE = /\bcsda\b|\brange\b/i;
 
+/**
+ * LET (linear energy transfer) is the radiobiology / particle-therapy synonym for
+ * (electronic) stopping power — unrestricted LET∞ is operationally equal to the
+ * electronic mass stopping power libdedx returns, so it maps to `stoppingPower`.
+ *
+ * The acronym is matched CASE-SENSITIVELY against the *original* text (`/\bLET\b/`,
+ * not the lowercased copy the other detectors use) so the ordinary verb "let"
+ * ("let me know…", "Let's…") is never misread as the physics term. The spelled-out
+ * form is unambiguous and matched case-insensitively. ASR transcripts that lowercase
+ * the acronym are normalized upstream by the domain corrector (issue #28).
+ */
+function mentionsLet(lower: string, text: string): boolean {
+  return /\bLET\b/.test(text) || /\blinear energy transfer\b/.test(lower);
+}
+
 /** Detect an inverse ("solve for energy") query and which kind. */
-function detectInverse(lower: string): Quantity | null {
+function detectInverse(lower: string, text: string): Quantity | null {
+  // "linear energy transfer" contains the word "energy" but is NOT a request to
+  // solve for energy — blank it before the asks-for-energy test so a forward LET
+  // query ("what is the linear energy transfer of…") isn't misread as inverse.
+  const deLet = lower.replace(/\blinear energy transfer\b/g, " ");
   // The query must ask for *energy* as the answer: "what energy", "which proton
   // energy", "what carbon ion energy" — i.e. ≤3 plain words between the wh-word
   // and "energy". This rejects "at what rate … shed energy" (a forward query).
   const asksForEnergy =
-    /\b(?:what|which)\s+(?:[a-z]+\s+){0,3}energy\b/.test(lower) || /\bhow energetic\b/.test(lower);
+    /\b(?:what|which)\s+(?:[a-z]+\s+){0,3}energy\b/.test(deLet) || /\bhow energetic\b/.test(deLet);
   if (!asksForEnergy) return null;
   const isStp =
     /\bstopping power\b/.test(lower) ||
+    mentionsLet(lower, text) ||
     /\bmev\s*\/\s*cm\b/.test(lower) ||
     /\bmev\s*cm2\s*\/\s*g\b/.test(lower) ||
     /\bkev\s*\/\s*[uµ]m\b/.test(lower) ||
@@ -124,13 +144,17 @@ function detectInverse(lower: string): Quantity | null {
 }
 
 /** Decide the forward quantity (non-inverse) and how it was found. */
-function detectForwardQuantity(lower: string): {
+function detectForwardQuantity(
+  lower: string,
+  text: string,
+): {
   quantity: Quantity;
   source: QuantitySource;
   idiom?: string;
 } {
-  // Strong direct keywords win first: "stopping power" / "dE/dx" then "range".
-  if (DIRECT_STOPPING.test(lower)) return { quantity: "stoppingPower", source: "direct" };
+  // Strong direct keywords win first: "stopping power" / "dE/dx" / "LET" then "range".
+  if (DIRECT_STOPPING.test(lower) || mentionsLet(lower, text))
+    return { quantity: "stoppingPower", source: "direct" };
   if (DIRECT_RANGE.test(lower)) return { quantity: "csdaRange", source: "direct" };
 
   for (const { pattern, quantity } of INDIRECT_IDIOMS) {
@@ -573,8 +597,8 @@ export function matchIntent(text: string): MatchResult {
   const lower = text.toLowerCase();
 
   // 1. Quantity (inverse takes precedence — it changes how energies are read).
-  const inverse = detectInverse(lower);
-  const fwd = inverse ? null : detectForwardQuantity(lower);
+  const inverse = detectInverse(lower, text);
+  const fwd = inverse ? null : detectForwardQuantity(lower, text);
   const quantity: Quantity = inverse ? inverse : fwd ? fwd.quantity : "csdaRange";
   const source: QuantitySource = inverse ? "inverse" : fwd ? fwd.source : "default";
 

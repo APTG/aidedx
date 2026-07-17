@@ -1,5 +1,6 @@
 /**
- * Generates the 1000-sentence TTS eval-audio batch (issue #30, second scale-up).
+ * Generates the 1000-sentence TTS eval-audio batch (issue #30, second scale-up; v2 per
+ * issue #83 following the libdedx WASM update + Bethe fallback in #81).
  *
  * Quantity split (per the user's stated real-world usage assumption):
  *   60% csdaRange, 25% energyFromRange (inverse), 15% stoppingPower.
@@ -10,12 +11,29 @@
  * pluralized; comparing several entities against the same target is the schema-legal
  * equivalent).
  *
- * Every particle/material pool entry is restricted to combinations already confirmed
- * working against the real libdedx WASM in this project's prior sessions (docs/tts-eval
- * -audio.md §7.3): particles limited to Z 1-18 (heavier ions fail via MSTAR), materials
- * excluding the six that fail unconditionally (soft tissue, skin, lung, brain, blood,
- * concrete). This is baked in up front rather than discovered by iterating against
- * scripts/tts-sentence-check.ts, to keep the failure rate near zero at this scale.
+ * v2 changes (issue #83, after #81 landed the libdedx update + Bethe fallback):
+ *  - Particle pool extended past Z=18 (argon) with calcium, iron, krypton, xenon, gold,
+ *    lead, uranium — verified computable via the Bethe fallback, no longer failing
+ *    unconditionally through the auto-selected MSTAR program.
+ *  - Material pool restores the six previously-broken entries (soft tissue, skin, lung,
+ *    brain, blood, concrete) plus the boron family (boron, boron carbide, boron oxide) —
+ *    all verified computable now.
+ *  - ~50% of the `stoppingPower` category is phrased with LET terminology ("LET" /
+ *    "linear energy transfer") instead of "stopping power" — the term real users in
+ *    particle therapy/radiobiology actually say (matcher support: see #86).
+ *  - The generate→validate loop is now closed: every candidate is checked against the
+ *    real matcher + libdedx WASM (the same logic scripts/tts-sentence-check.ts uses) as
+ *    it's generated, and resampled on failure, rather than validated as a separate pass
+ *    after the fact. This is what makes the expanded pool safe to use at all — the
+ *    heavy-ion "implantation" keV register (bare keV total energy, divided by mass
+ *    number) falls below the Bethe program's low-energy floor for iron and heavier
+ *    (verified: xenon/gold reject below ~300 keV total), and resampling a fresh
+ *    particle/material/energy draw is simpler and more robust than hand-deriving a
+ *    per-ion floor. (The other edge considered — DEFAULT's adaptive CSDA integrator
+ *    "recursing unboundedly at very low energies" — was checked directly and does not
+ *    occur: energyBoundsError() rejects out-of-range energies before the integrator
+ *    ever runs, confirmed in well under a millisecond even at calcium/uranium's lowest
+ *    valid energy.)
  *
  * Output: a single JSON array of {id, text, quantity, multi, slotTruth}. `slotTruth` is
  * ground truth for scoring — derived from the exact words/values used to build the
@@ -26,6 +44,7 @@
  * Usage: node scripts/generate-1000-sentences.mjs <outFile>
  */
 import { writeFileSync } from "fs";
+import { checkCandidate, loadService } from "./tts-sentence-check.ts";
 
 // ---------------------------------------------------------------------------
 // Pools — every entry confirmed to resolve correctly against libdedx in prior sessions.
@@ -57,6 +76,18 @@ const PARTICLES = [
   { phrase: "sulfur-32 ion", listForm: "sulfur-32 ions", bare: "sulfur" },
   { phrase: "chlorine-35 ion", listForm: "chlorine-35 ions", bare: "chlorine" },
   { phrase: "argon-40 ion", listForm: "argon-40 ions", bare: "argon" },
+  // Z > 18 — fail unconditionally via the auto-selected MSTAR program (no tabulated data
+  // at any energy/material) but compute correctly via the Bethe fallback added in #81.
+  // A representative long-tail rather than the full Z=20..98 space: calcium (bone/space-
+  // radiation relevant), iron (the flagship GCR/space-radiation ion), and a spread up to
+  // uranium for general robustness (docs/tts-eval-1000.md's own examples: Kr, Xe, Au, Pb, U).
+  { phrase: "calcium-40 ion", listForm: "calcium-40 ions", bare: "calcium" },
+  { phrase: "iron-56 ion", listForm: "iron-56 ions", bare: "iron" },
+  { phrase: "krypton-84 ion", listForm: "krypton-84 ions", bare: "krypton" },
+  { phrase: "xenon-132 ion", listForm: "xenon-132 ions", bare: "xenon" },
+  { phrase: "gold-197 ion", listForm: "gold-197 ions", bare: "gold" },
+  { phrase: "lead-208 ion", listForm: "lead-208 ions", bare: "lead" },
+  { phrase: "uranium-238 ion", listForm: "uranium-238 ions", bare: "uranium" },
 ];
 const LIGHT_IONS = PARTICLES.filter((p) => p.isLight);
 const HEAVY_IONS = PARTICLES.filter((p) => !p.isLight);
@@ -92,6 +123,21 @@ const MATERIALS = [
   { phrase: "Pyrex glass", bare: "glass|pyrex" },
   { phrase: "Teflon", bare: "teflon" },
   { phrase: "polycarbonate", bare: "polycarbonate" },
+  // Previously excluded — confirmed unconditionally broken (libdedx err 202) on the old
+  // WASM; the #81 Bethe fallback now computes all six. These are the most clinically
+  // realistic materials in the whole pool (radiotherapy/dosimetry queries), not exotic
+  // additions, so they're weighted into the same flat pool as everything else.
+  { phrase: "soft tissue", bare: "soft tissue" },
+  { phrase: "skin", bare: "skin" },
+  { phrase: "lung", bare: "lung" },
+  { phrase: "brain", bare: "brain" },
+  { phrase: "blood", bare: "blood" },
+  { phrase: "concrete", bare: "concrete" },
+  // Boron family — the original motivating case for #81 (proton + Boron used to hit a
+  // raw libdedx error code with no clear message; now resolves via Bethe).
+  { phrase: "boron", bare: "boron" },
+  { phrase: "boron carbide", bare: "boron carbide" },
+  { phrase: "boron oxide", bare: "boron oxide" },
 ];
 
 const PROTON_MEV = [
@@ -341,6 +387,72 @@ const STP_MULTI_PARTICLE_TEMPLATES = [
   },
 ];
 
+// LET ("linear energy transfer") is the term real users in particle therapy/radiobiology
+// actually say, far more often than "stopping power" — matcher support: #86. `kw` uses
+// `\blet\b` (not bare "let") since the scorer's regex has no word boundaries by default
+// and "let" is a common substring (violet, outlet, wallet); word-boundary it explicitly
+// to avoid false-positive scoring hits on unrelated words in the ASR transcript.
+const STP_SINGLE_LET_TEMPLATES = [
+  {
+    fn: (p, m, e) => `What is the LET of a ${energyPhrase(e)} ${p.phrase} in ${m.phrase}?`,
+    kw: "\\blet\\b",
+  },
+  {
+    fn: (p, m, e) =>
+      `What is the linear energy transfer of ${energyPhrase(e)} ${p.listForm} in ${m.phrase}?`,
+    kw: "linear energy transfer",
+  },
+  {
+    fn: (p, m, e) => `Give me the LET of a ${energyPhrase(e)} ${p.phrase} in ${m.phrase}.`,
+    kw: "\\blet\\b",
+  },
+  {
+    fn: (p, m, e) =>
+      `Determine the linear energy transfer for ${energyPhrase(e)} ${p.listForm} in ${m.phrase}.`,
+    kw: "linear energy transfer",
+  },
+  {
+    fn: (p, m, e) => `What's the LET of a ${energyPhrase(e)} ${p.phrase} in ${m.phrase}?`,
+    kw: "\\blet\\b",
+  },
+  {
+    fn: (p, m, e) => `Report the LET for a ${energyPhrase(e)} ${p.phrase} in ${m.phrase}.`,
+    kw: "\\blet\\b",
+  },
+  {
+    fn: (p, m, e) =>
+      `Quick question — what's the linear energy transfer of a ${energyPhrase(e)} ${p.phrase} in ${m.phrase}?`,
+    kw: "linear energy transfer",
+  },
+];
+const STP_MULTI_ENERGY_LET_TEMPLATES = [
+  {
+    fn: (p, m, es) =>
+      `What is the LET of ${p.listForm} in ${m.phrase} at ${joinList(es.map((e) => energyPhrase(e)))}?`,
+    kw: "\\blet\\b",
+  },
+  {
+    fn: (p, m, es) =>
+      `Compare the linear energy transfer of ${p.listForm} in ${m.phrase} at ${joinList(es.map((e) => energyPhrase(e)))}.`,
+    kw: "linear energy transfer",
+  },
+];
+const STP_MULTI_MATERIAL_LET_TEMPLATES = [
+  {
+    fn: (p, ms, e) =>
+      `Compare the LET of a ${energyPhrase(e)} ${p.phrase} in ${joinList(ms.map((m) => m.phrase))}.`,
+    kw: "\\blet\\b",
+  },
+];
+// Same list-regex trap as STP_MULTI_PARTICLE_TEMPLATES — self-contained mentions.
+const STP_MULTI_PARTICLE_LET_TEMPLATES = [
+  {
+    fn: (ps, m, e) =>
+      `Compare the LET of ${ps.map((p) => `a ${energyPhrase(e)} ${p.phrase}`).join(" and ")} in ${m.phrase}.`,
+    kw: "\\blet\\b",
+  },
+];
+
 const INVRNG_SINGLE_TEMPLATES = [
   {
     fn: (p, m, v, u) => `What energy gives a ${v} ${u} range in ${m.phrase} for ${p.listForm}?`,
@@ -451,12 +563,18 @@ function buildRangeMultiParticle() {
   };
 }
 
+// ~50% of the stoppingPower category uses LET terminology instead of "stopping power"
+// (issue #83) — the term real users in particle therapy/radiobiology actually say.
+function pickStpTemplate(classic, let_) {
+  return pickT(rng() < 0.5 ? let_ : classic);
+}
+
 function buildStpSingle() {
   const heavy = rng() < 0.4;
   const p = heavy ? pick(HEAVY_IONS) : pick(LIGHT_IONS.concat([PROTON, PROTON]));
   const m = pick(MATERIALS);
   const e = sampleEnergy(p);
-  const t = pickT(STP_SINGLE_TEMPLATES);
+  const t = pickStpTemplate(STP_SINGLE_TEMPLATES, STP_SINGLE_LET_TEMPLATES);
   return {
     text: t.fn(p, m, e),
     slotTruth: {
@@ -471,7 +589,7 @@ function buildStpMultiEnergy() {
   const p = rng() < 0.4 ? pick(HEAVY_IONS) : PROTON;
   const m = pick(MATERIALS);
   const es = Array.from({ length: rng() < 0.5 ? 2 : 3 }, () => sampleEnergy(p));
-  const t = pickT(STP_MULTI_ENERGY_TEMPLATES);
+  const t = pickStpTemplate(STP_MULTI_ENERGY_TEMPLATES, STP_MULTI_ENERGY_LET_TEMPLATES);
   return {
     text: t.fn(p, m, es),
     slotTruth: {
@@ -486,7 +604,7 @@ function buildStpMultiMaterial() {
   const p = rng() < 0.4 ? pick(HEAVY_IONS) : PROTON;
   const ms = pickN(MATERIALS, rng() < 0.5 ? 2 : 3);
   const e = sampleEnergy(p);
-  const t = pickT(STP_MULTI_MATERIAL_TEMPLATES);
+  const t = pickStpTemplate(STP_MULTI_MATERIAL_TEMPLATES, STP_MULTI_MATERIAL_LET_TEMPLATES);
   return {
     text: t.fn(p, ms, e),
     slotTruth: {
@@ -501,7 +619,7 @@ function buildStpMultiParticle() {
   const ps = pickN(LIGHT_IONS.concat(HEAVY_IONS), 2);
   const m = pick(MATERIALS);
   const e = sampleEnergy(ps[0]);
-  const t = pickT(STP_MULTI_PARTICLE_TEMPLATES);
+  const t = pickStpTemplate(STP_MULTI_PARTICLE_TEMPLATES, STP_MULTI_PARTICLE_LET_TEMPLATES);
   return {
     text: t.fn(ps, m, e),
     slotTruth: {
@@ -568,9 +686,18 @@ function buildInvRngMultiParticle() {
 }
 
 // ---------------------------------------------------------------------------
-// Assemble the 1000, with a dedup pass (same particle+material+energy combo, same
-// template, can collide across independent draws at this pool size — regenerate on
-// collision rather than allow a literal duplicate sentence into the batch).
+// Assemble the 1000. Two checks gate every candidate before it's accepted, both with
+// bounded resampling (a fresh fn() draw — new particle/material/energy, not just a
+// patched energy) rather than a hand-derived per-pool exception list:
+//  - dedup: the same particle+material+energy combo, same template, can collide across
+//    independent draws at this pool size;
+//  - validity (v2, issue #83): every candidate is checked against the real matcher +
+//    libdedx WASM (scripts/tts-sentence-check.ts's checkCandidate — the exact logic that
+//    used to run only as a separate pass after generation). This is what makes the wider
+//    Z>18 ion pool and the heavy-ion keV "implantation" energy register safe to sample
+//    from at all: e.g. xenon/gold below ~300 keV total resolve to <1 keV/nucl, under the
+//    Bethe program's low-energy floor, and fail cleanly here instead of silently landing
+//    in the batch as an uncomputed query.
 // ---------------------------------------------------------------------------
 function buildCategory(
   prefix,
@@ -580,6 +707,7 @@ function buildCategory(
   multiEnergyFrac,
   multiMaterialFrac,
   builders,
+  service,
 ) {
   const out = [];
   const seenText = new Set();
@@ -597,16 +725,31 @@ function buildCategory(
 
   let i = 0;
   for (const { fn, multi } of plan) {
+    const id = `${prefix}-${String(i + 1).padStart(4, "0")}`;
+    const maxTries = 40;
     let attempt;
+    let check;
     let tries = 0;
     do {
       attempt = fn();
       tries++;
-    } while (seenText.has(attempt.text) && tries < 20);
+      check = seenText.has(attempt.text)
+        ? { ok: false, reason: "duplicate text" }
+        : checkCandidate({ id, text: attempt.text }, service);
+    } while (!check.ok && tries < maxTries);
+    if (!check.ok) {
+      // Fail loudly rather than ship an uncomputed query — the whole point of closing
+      // the generate→validate loop is that this should never actually happen; if it
+      // does, the pool/template needs a fix, not a silently-invalid sentence.
+      throw new Error(
+        `${id}: could not find a valid candidate after ${maxTries} tries. ` +
+          `Last attempt: "${attempt.text}" — ${check.reason}`,
+      );
+    }
     seenText.add(attempt.text);
     i++;
     out.push({
-      id: `${prefix}-${String(i).padStart(4, "0")}`,
+      id,
       text: attempt.text,
       quantity,
       multi,
@@ -616,30 +759,70 @@ function buildCategory(
   return out;
 }
 
-const rangeBatch = buildCategory("rng", "csdaRange", 600, 0.8, 0.1333, 0.0333, {
-  single: buildRangeSingle,
-  multiEnergy: buildRangeMultiEnergy,
-  multiMaterial: buildRangeMultiMaterial,
-  multiParticle: buildRangeMultiParticle,
-});
-const invRngBatch = buildCategory("invrng", "energyFromRange", 250, 0.8, 0, 0.12, {
-  single: buildInvRngSingle,
-  multiEnergy: null,
-  multiMaterial: buildInvRngMultiMaterial,
-  multiParticle: buildInvRngMultiParticle,
-});
-const stpBatch = buildCategory("sp", "stoppingPower", 150, 0.8, 0.1333, 0.0333, {
-  single: buildStpSingle,
-  multiEnergy: buildStpMultiEnergy,
-  multiMaterial: buildStpMultiMaterial,
-  multiParticle: buildStpMultiParticle,
-});
+async function main() {
+  const outFile = process.argv[2];
+  if (!outFile) {
+    console.error("Usage: node scripts/generate-1000-sentences.mjs <outFile>");
+    process.exit(1);
+  }
 
-const all = [...rangeBatch, ...invRngBatch, ...stpBatch];
-console.log(
-  `generated: range=${rangeBatch.length} invRange=${invRngBatch.length} stp=${stpBatch.length} total=${all.length}`,
-);
+  console.log("loading libdedx WASM for inline validation...");
+  const service = await loadService();
 
-const outFile = process.argv[2];
-writeFileSync(outFile, JSON.stringify(all, null, 2));
-console.log(`wrote ${outFile}`);
+  const rangeBatch = buildCategory(
+    "rng",
+    "csdaRange",
+    600,
+    0.8,
+    0.1333,
+    0.0333,
+    {
+      single: buildRangeSingle,
+      multiEnergy: buildRangeMultiEnergy,
+      multiMaterial: buildRangeMultiMaterial,
+      multiParticle: buildRangeMultiParticle,
+    },
+    service,
+  );
+  const invRngBatch = buildCategory(
+    "invrng",
+    "energyFromRange",
+    250,
+    0.8,
+    0,
+    0.12,
+    {
+      single: buildInvRngSingle,
+      multiEnergy: null,
+      multiMaterial: buildInvRngMultiMaterial,
+      multiParticle: buildInvRngMultiParticle,
+    },
+    service,
+  );
+  const stpBatch = buildCategory(
+    "sp",
+    "stoppingPower",
+    150,
+    0.8,
+    0.1333,
+    0.0333,
+    {
+      single: buildStpSingle,
+      multiEnergy: buildStpMultiEnergy,
+      multiMaterial: buildStpMultiMaterial,
+      multiParticle: buildStpMultiParticle,
+    },
+    service,
+  );
+
+  const all = [...rangeBatch, ...invRngBatch, ...stpBatch];
+  console.log(
+    `generated: range=${rangeBatch.length} invRange=${invRngBatch.length} stp=${stpBatch.length} total=${all.length}`,
+  );
+  console.log(`every candidate already validated against the real matcher + WASM inline.`);
+
+  writeFileSync(outFile, JSON.stringify(all, null, 2));
+  console.log(`wrote ${outFile}`);
+}
+
+main();
