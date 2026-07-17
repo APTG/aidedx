@@ -54,7 +54,10 @@ SENTENCES_FILE=scripts/tts-1000-sentences-v2.json
 AUDIO_DIR=eval/audio/tts-qwen-1000-v2
 
 echo "=== Step 0/3: regenerate + validate the 1000 sentences (deterministic — same seed, same output every run; every candidate is already checked against the real matcher + WASM as it's generated) ==="
-node scripts/generate-1000-sentences.mjs "$SENTENCES_FILE"
+# --experimental-strip-types: the generator imports tts-sentence-check.ts directly for
+# inline validation — required on Athena's older Node 22.17.1, which (unlike the CI
+# runner's Node 24, or Node 22.18+) doesn't strip .ts imports unflagged.
+node --experimental-strip-types scripts/generate-1000-sentences.mjs "$SENTENCES_FILE"
 node --experimental-strip-types scripts/tts-sentence-check.ts "$SENTENCES_FILE"
 
 echo "=== Step 1/3: TTS generation (resumes automatically from existing $AUDIO_DIR/*.wav) ==="

@@ -153,3 +153,36 @@ call, or more than a few seconds of CPU work belongs in an `sbatch` script, not 
 an interactive shell — even one that already has a GPU allocation (the allocation dying isn't the
 only risk; being on the wrong kind of node in the first place is another). Quick read-only checks
 (`grep`, `jq`/`python3 -c` over an already-written JSON file, `git`, `gh`) are fine anywhere.
+
+## 8. Athena's Node is older than this project's dev/CI Node — `.mjs` files importing a `.ts`
+
+## module need `--experimental-strip-types` explicitly
+
+`module load nodejs/22.17.1` gives **Node 22.17.1** — CI (`.github/workflows/*.yml`) and local dev
+both run **Node 24**, where unflagged type stripping for `.ts` imports is the default (backported to
+22.18.0+ and 24.x, per Node's own release notes). 22.17.1 predates that backport, so a plain `.mjs`
+entry point that `import`s a `.ts` module (e.g. `scripts/generate-1000-sentences.mjs` importing
+`scripts/tts-sentence-check.ts` for inline validation) throws
+`TypeError [ERR_UNKNOWN_FILE_EXTENSION]: Unknown file extension ".ts"` and crashes immediately, with
+no code from the `.mjs` file itself ever running — the crash happens at import resolution, before
+any of the script's own `console.log` calls execute (a confusing symptom if you're looking for a
+bug inside the script instead of at the invocation).
+
+`node --experimental-strip-types <file>.mjs` fixes it — the flag isn't specific to a `.ts` entry
+point; it makes the whole module loader (including anything that file imports) recognize and strip
+`.ts` the same way `node --experimental-strip-types <file>.ts` already does for a direct `.ts`
+entry point (`scripts/submit.sh` / `scripts/submit-v2.sh` already run `tts-sentence-check.ts` this
+way — that half of the pipeline was never broken). The flag is a harmless no-op on newer Node
+versions where stripping is already the default, so passing it unconditionally is safe rather than
+version-gating it.
+
+**Caught this the hard way**: `git pull` alone doesn't help — the bug is a mismatch between what
+Node version is doing the running, not a stale checkout. Verified the fix directly against the
+exact cluster version before committing: `docker run --rm -v "$PWD:/repo" -w /repo node:22.17.1
+node scripts/generate-1000-sentences.mjs ...` reproduces the crash; adding
+`--experimental-strip-types` to that same invocation fixes it.
+
+If you add a new `.mjs` script under `scripts/` that imports anything from `.ts` (directly or
+transitively, including via `src/lib/**/*.ts`), it needs this flag when invoked from an `sbatch`
+script — CI and local dev's Node 24 will hide the omission every time, since only Athena's older
+Node actually requires it.
