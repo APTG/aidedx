@@ -49,6 +49,9 @@ export function formatIsotope(massNumber: number, symbol: string): string {
 /**
  * Canonical lookup key for an alias or query phrase:
  *  - lower-cased and stripped of combining diacritics (café → cafe),
+ *  - Polish ł/Ł folded to l/L (ołów → olow) — U+0142 has no NFKD
+ *    decomposition, unlike every other Polish diacritic, so it needs an
+ *    explicit map or it survives the strip below untouched,
  *  - super/subscript digits folded to ASCII (¹²C → "12c"),
  *  - every run of non-alphanumeric characters collapsed to a single space,
  *  - trimmed.
@@ -59,7 +62,8 @@ export function formatIsotope(massNumber: number, symbol: string): string {
  * stored alias normalize identically.
  */
 export function normalizeText(input: string): string {
-  let s = input.normalize("NFKD").replace(/[̀-ͯ]/g, "");
+  let s = input.replace(/[łŁ]/g, (c) => (c === "Ł" ? "L" : "l"));
+  s = s.normalize("NFKD").replace(/[̀-ͯ]/g, "");
   s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, (c) => SUPERSCRIPT_DIGITS[c] ?? c);
   s = s.replace(/[₀₁₂₃₄₅₆₇₈₉]/g, (c) => SUBSCRIPT_DIGITS[c] ?? c);
   s = s
