@@ -27,7 +27,7 @@ const jsonOutPath = jsonOutIdx >= 0 ? process.argv[jsonOutIdx + 1] : undefined;
 
 const [manifestPath, resultsPath] = process.argv
   .slice(2)
-  .filter((a) => a !== "--ext" && a !== "--json" && a !== jsonOutPath);
+  .filter((a) => a !== "--ext" && a !== "--new" && a !== "--json" && a !== jsonOutPath);
 
 // --- Same normalization as scripts/asr-score-slots.mjs ---
 function norm(text) {
