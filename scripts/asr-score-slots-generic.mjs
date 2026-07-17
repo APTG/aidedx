@@ -11,6 +11,12 @@
  * existing correction layer's real behavior, not a new one. --new instead scores
  * src/lib/asr/correct (issue #28's regex fast path + phonetic pass, now shipped).
  *
+ * Also reports two breakdowns issue #83/#92 asked for: per-unit accuracy (MeV/keV/GeV/
+ * MeV-per-nucleon/cm/mm scored separately instead of one blended "unit" category), and a
+ * clinical-core vs. long-tail-robustness stratum split (`stratumFor()`) so exotic entities
+ * unlocked by #81's Bethe fallback don't masquerade as the real-world query distribution in
+ * the headline number.
+ *
  * Usage:
  *   node scripts/asr-score-slots-generic.mjs <manifest.json> <results.json> [--ext|--new] [--json out.json]
  */
@@ -30,6 +36,13 @@ const [manifestPath, resultsPath] = process.argv
   .filter((a) => a !== "--ext" && a !== "--new" && a !== "--json" && a !== jsonOutPath);
 
 // --- Same normalization as scripts/asr-score-slots.mjs ---
+// A number glued straight to its unit ("30mm", "100mev", no space) is a real, common
+// Whisper/TTS rendering — the actual matcher (LENGTH_TARGET_RE/ENERGY_RE in
+// src/lib/intent/matcher.ts) already tolerates zero whitespace between them. \b treats
+// digits and letters as the same "word" character class, so \b(mev|kev|gev)\b silently
+// fails to match the unit half of a glued token (confirmed: 34/66 mm-target clips in the
+// v2 1000-sentence batch are glued this way, vs 1/184 for cm — issue #92). Use a
+// letter-boundary instead of \b wherever a preceding digit is possible.
 function norm(text) {
   let t = " " + text.toLowerCase() + " ";
   t = t.replace(/(\d)\.(\d)/g, "$1<D>$2");
@@ -39,26 +52,38 @@ function norm(text) {
     .replace(/\bone\b/g, "1")
     .replace(/\bten\b/g, "10")
     .replace(/\bthree\b/g, "3");
-  t = t.replace(/\b(mev|kev|gev)\s*(?:\/|per)\s*(?:nucleon|nucl)\b/g, "$1 pn");
-  t = t.replace(/\bmev\s*(?:\/|per)\s*(?:u|amu)\b/g, "mev mu");
-  t = t.replace(/\bcentimeters?\b/g, "cm").replace(/\bmillimeters?\b/g, "mm");
+  t = t.replace(/(?<![a-z])(mev|kev|gev)\s*(?:\/|per)\s*(?:nucleon|nucl)\b/g, "$1 pn");
+  t = t.replace(/(?<![a-z])mev\s*(?:\/|per)\s*(?:u|amu)\b/g, "mev mu");
+  t = t.replace(/(?<![a-z])centimeters?\b/g, "cm").replace(/(?<![a-z])millimeters?\b/g, "mm");
   t = t.replace(/\s+/g, " ");
   return t;
 }
 
 const S = (cat, ...res) => ({ cat, res });
-const num = (n) => S("number", new RegExp(`\\b${String(n).replace(".", "\\.")}\\b`));
-const mev = () => S("unit", /\bmev\b/);
-const kev = () => S("unit", /\bkev\b/);
-const gev = () => S("unit", /\bgev\b/);
-const mevPN = () => S("unit", /\bmev pn\b/);
+// `unitKind` tags a unit slot with its specific kind (MeV/keV/GeV/MeV-per-nucleon/cm/mm) so
+// callers can report per-unit accuracy (issue #92) alongside the existing aggregate "unit"
+// category — #83's own finding was that units are 65% of all failures, but that's one
+// blended number across five different unit tokens with plausibly different accuracy.
+const U = (unitKind, re) => ({ ...S("unit", re), unitKind });
+// A number's boundary must still reject an adjacent DIGIT (so "30" doesn't match inside
+// "130"), but may be adjacent to a letter — see the norm() comment above for why \b is
+// wrong here when a number is glued straight to its unit.
+const numBoundary = (n) => new RegExp(`(?<!\\d)${String(n).replace(".", "\\.")}(?!\\d)`);
+// A unit's boundary is the mirror case: must reject an adjacent LETTER (so "mm" doesn't
+// match inside "hmm"/"comment"), but may be adjacent to a digit.
+const unitBoundary = (u) => new RegExp(`(?<![a-z])${u}(?![a-z])`);
+const num = (n) => S("number", numBoundary(n));
+const mev = () => U("MeV", unitBoundary("mev"));
+const kev = () => U("keV", unitBoundary("kev"));
+const gev = () => U("GeV", unitBoundary("gev"));
+const mevPN = () => U("MeV/nucl", unitBoundary("mev pn"));
 const part = (w) => S("particle", new RegExp(`\\b(?:${w})\\b`));
 const mat = (w) => S("material", new RegExp(`\\b(?:${w})\\b`));
 const qty = (w) => S("quantity", new RegExp(`(?:${w})`));
 const unitRe = (u) => {
-  if (u === "cm") return S("unit", /\bcm\b/);
-  if (u === "mm") return S("unit", /\bmm\b/);
-  return S("unit", new RegExp(`\\b${u}\\b`));
+  if (u === "cm") return U("cm", unitBoundary("cm"));
+  if (u === "mm") return U("mm", unitBoundary("mm"));
+  return U(u, unitBoundary(u));
 };
 
 function energySlots(e) {
@@ -67,6 +92,50 @@ function energySlots(e) {
   else if (e.unit === "keV") out.push(kev());
   else if (e.unit === "GeV") out.push(gev());
   return out;
+}
+
+// Group A (issue #92, deferred from #83): "clinical core" vs. "long-tail robustness" split
+// — #83 asked not to let exotic entities (unlocked by #81's Bethe fallback) masquerade as
+// the real-world distribution in one blended headline number. Bare-string sets mirror
+// scripts/generate-1000-sentences.mjs's PARTICLES/MATERIALS pools exactly: the particle set
+// is the Z>18 long-tail addition (calcium..uranium) called out in that generator's own
+// comments; the material set is every entry there that isn't water/air/PMMA/A-150/an ICRP
+// tissue/bone — i.e. the detector/electronics-material and boron-family entries. A clip
+// counts as long-tail if ANY of its particles or materials falls in these sets.
+const LONGTAIL_PARTICLE_BARES = new Set([
+  "calcium",
+  "iron",
+  "krypton",
+  "xenon",
+  "gold",
+  "lead",
+  "uranium",
+]);
+const LONGTAIL_MATERIAL_BARES = new Set([
+  "silicon",
+  "aluminum|aluminium",
+  "gold",
+  "graphite",
+  "polyethylene",
+  "polystyrene",
+  "kapton",
+  "mylar",
+  "lithium fluoride",
+  "sodium iodide|nai",
+  "cesium iodide|csi",
+  "glass|pyrex",
+  "teflon",
+  "polycarbonate",
+  "concrete",
+  "boron",
+  "boron carbide",
+  "boron oxide",
+]);
+function stratumFor(slotTruth) {
+  const longTail =
+    slotTruth.particles.some((p) => LONGTAIL_PARTICLE_BARES.has(p)) ||
+    slotTruth.materials.some((m) => LONGTAIL_MATERIAL_BARES.has(m));
+  return longTail ? "long-tail" : "clinical-core";
 }
 
 /** Build the expected SLOTS array for one clip from its recorded slotTruth. */
@@ -103,9 +172,11 @@ const correctorLabel = useNew ? "new-corrector" : useExt ? "ext-corrector" : "ba
 const label = `${data.modelId} [${data.dtype}]${data.withPrompt ? " +prompt" : ""} ${correctorLabel}`;
 
 const catTotals = {};
+const byUnit = {}; // unitKind (MeV/keV/GeV/MeV per nucl/cm/mm) -> {rawMiss, corMiss, total}
 const byQuantity = {}; // quantity -> {rawPass, corPass, n}
 const byMulti = {}; // multi (null|energy|material|particle) -> {rawPass, corPass, n}
 const byProfile = {}; // voice profile -> {rawPass, corPass, n}
+const byStratum = {}; // clinical-core|long-tail -> {rawPass, corPass, n}
 let clipPassRaw = 0,
   clipPassCor = 0,
   clips_n = 0;
@@ -148,14 +219,38 @@ for (const r of data.records) {
   if (rawPass) byProfile[prof].rawPass++;
   if (corPass) byProfile[prof].corPass++;
 
+  const stratum = stratumFor(clip.slotTruth);
+  byStratum[stratum] ??= { rawPass: 0, corPass: 0, n: 0 };
+  byStratum[stratum].n++;
+  if (rawPass) byStratum[stratum].rawPass++;
+  if (corPass) byStratum[stratum].corPass++;
+
   for (const s of slots) {
     catTotals[s.cat] ??= { rawMiss: 0, corMiss: 0, total: 0 };
     catTotals[s.cat].total++;
+    if (s.unitKind) {
+      byUnit[s.unitKind] ??= { rawMiss: 0, corMiss: 0, total: 0 };
+      byUnit[s.unitKind].total++;
+    }
   }
-  for (const m2 of sRaw.missed) catTotals[m2.cat].rawMiss++;
-  for (const m2 of sCor.missed) catTotals[m2.cat].corMiss++;
+  for (const m2 of sRaw.missed) {
+    catTotals[m2.cat].rawMiss++;
+    if (m2.unitKind) byUnit[m2.unitKind].rawMiss++;
+  }
+  for (const m2 of sCor.missed) {
+    catTotals[m2.cat].corMiss++;
+    if (m2.unitKind) byUnit[m2.unitKind].corMiss++;
+  }
 
-  perClip.push({ id: r.id, quantity: q, multi: clip.multi, profile: prof, rawPass, corPass });
+  perClip.push({
+    id: r.id,
+    quantity: q,
+    multi: clip.multi,
+    profile: prof,
+    stratum,
+    rawPass,
+    corPass,
+  });
 }
 
 // Median over the records actually scored (excludes r.error/missing-slotTruth skips above) —
@@ -176,6 +271,10 @@ for (const [q, v] of Object.entries(byQuantity)) {
 console.log(`\nby scenario type (corrected):`);
 for (const [m, v] of Object.entries(byMulti)) {
   console.log(`  ${m.padEnd(10)} ${v.corPass}/${v.n} (${((100 * v.corPass) / v.n).toFixed(1)}%)`);
+}
+console.log(`\nby stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:`);
+for (const [s, v] of Object.entries(byStratum)) {
+  console.log(`  ${s.padEnd(14)} ${v.corPass}/${v.n} (${((100 * v.corPass) / v.n).toFixed(1)}%)`);
 }
 console.log(`\nby voice profile (corrected), worst 10:`);
 const profileRows = Object.entries(byProfile).map(([p, v]) => ({ p, rate: v.corPass / v.n, ...v }));
@@ -200,6 +299,13 @@ console.log(
   `  ${"ALL".padEnd(9)} ${(((allTot - allRawMiss) / allTot) * 100).toFixed(1).padStart(5)}% -> ${(((allTot - allCorMiss) / allTot) * 100).toFixed(1).padStart(5)}%  (n=${allTot})`,
 );
 
+console.log(`\nper-unit accuracy (raw -> corrected), issue #92:`);
+for (const [kind, v] of Object.entries(byUnit)) {
+  console.log(
+    `  ${kind.padEnd(10)} ${(((v.total - v.rawMiss) / v.total) * 100).toFixed(1).padStart(5)}% -> ${(((v.total - v.corMiss) / v.total) * 100).toFixed(1).padStart(5)}%  (n=${v.total})`,
+  );
+}
+
 console.log(`\nfailing clips after correction (${failures.length} total, showing first 30):`);
 for (const f of failures.slice(0, 30)) {
   console.log(`  ${f.id} missing[${f.missed.join(",")}]: ${f.raw}`);
@@ -217,7 +323,9 @@ if (jsonOutPath) {
         byQuantity,
         byMulti,
         byProfile,
+        byStratum,
         catTotals,
+        byUnit,
         failures,
         perClip,
       },

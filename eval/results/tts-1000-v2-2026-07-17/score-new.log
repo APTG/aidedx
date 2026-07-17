@@ -1,40 +1,52 @@
 
 === onnx-community/whisper-small [q8] +prompt new-corrector ===
 clips: 1000   median inference: 2.2s   load: 1.8s
-clip-level all-slots-correct:  raw 705/1000 (70.5%)   corrected 777/1000 (77.7%)
+clip-level all-slots-correct:  raw 741/1000 (74.1%)   corrected 807/1000 (80.7%)
 
 by quantity (corrected):
   csdaRange        479/600 (79.8%)
-  energyFromRange  197/250 (78.8%)
+  energyFromRange  227/250 (90.8%)
   stoppingPower    101/150 (67.3%)
 
 by scenario type (corrected):
-  single     624/800 (78.0%)
+  single     649/800 (81.1%)
   energy     80/100 (80.0%)
-  material   43/55 (78.2%)
-  particle   30/45 (66.7%)
+  material   45/55 (81.8%)
+  particle   33/45 (73.3%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      544/698 (77.9%)
+  clinical-core  263/302 (87.1%)
 
 by voice profile (corrected), worst 10:
-  jamaican-male-animated           9/17 (52.9%)
   custom-dylan-formal              9/17 (52.9%)
-  custom-serena-warm               10/17 (58.8%)
+  jamaican-male-animated           11/17 (64.7%)
   german-accented-female-brisk     11/17 (64.7%)
-  italian-accented-male-animated   11/17 (64.7%)
-  custom-aiden-tired               11/17 (64.7%)
-  custom-vivian-en                 11/17 (64.7%)
-  british-female-tired             12/18 (66.7%)
+  custom-serena-warm               11/17 (64.7%)
   jamaican-female-relaxed          12/18 (66.7%)
   us-teen-nervous                  12/18 (66.7%)
+  singaporean-female-formal        12/17 (70.6%)
+  italian-accented-male-animated   12/17 (70.6%)
+  custom-vivian-en                 12/17 (70.6%)
+  custom-sohee-en                  12/17 (70.6%)
 
 slot-token accuracy by category (raw -> corrected):
   quantity   97.8% ->  97.8%  (n=1250)
   particle   95.7% ->  95.7%  (n=1045)
   material   94.9% ->  94.9%  (n=1085)
-  number     91.5% ->  92.5%  (n=1152)
-  unit       82.2% ->  90.7%  (n=1152)
-  ALL        92.4% ->  94.4%  (n=5684)
+  number     96.6% ->  96.7%  (n=1152)
+  unit       85.8% ->  93.8%  (n=1152)
+  ALL        94.2% ->  95.8%  (n=5684)
 
-failing clips after correction (223 total, showing first 30):
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         81.5% ->  90.9%  (n=482)
+  MeV/nucl    79.5% ->  92.9%  (n=322)
+  keV        100.0% -> 100.0%  (n=83)
+  GeV         53.3% ->  80.0%  (n=15)
+  cm          99.5% ->  99.5%  (n=184)
+  mm          98.5% ->  98.5%  (n=66)
+
+failing clips after correction (193 total, showing first 30):
   rng-0010 missing[unit]: range of a 100-MIV proton in silicon dioxide, please.
   rng-0014 missing[particle]: How far will a 15 MeV-healium-3 ion travel through boron oxide?
   rng-0016 missing[particle,unit]: How far will a 400-MIV per nucleon-ion-56 ion travel through skin?
@@ -49,16 +61,16 @@ failing clips after correction (223 total, showing first 30):
   rng-0048 missing[unit]: to determine the range of 15 in the V-deuteron in gold.
   rng-0051 missing[material]: How deep does a 15 MV Triton penetrate into captain?
   rng-0052 missing[material]: Determine the range of 40 MeV protons in A1 to 150 tissue-equivalent plastics
-  rng-0053 missing[number,unit]: Before coming to rest, how far does a 40FV deuteron get through silicon dioxide?
+  rng-0053 missing[unit]: Before coming to rest, how far does a 40FV deuteron get through silicon dioxide?
   rng-0062 missing[particle]: Range of a 400 MeV per nucleon led 208 ion and lung, please.
   rng-0065 missing[unit]: Determine the range of 50 MeV for nucleon-carbon 12 ions in a 150 tissue equivalent plastic.
-  rng-0073 missing[number,unit]: Range of a 1GV proton in graphite, please.
+  rng-0073 missing[unit]: Range of a 1GV proton in graphite, please.
   rng-0078 missing[material]: What is the CSDA range of a 180 MeV per nucleon, boron, 11 ion, and captain?
   rng-0083 missing[material]: How deep does a 60 MeV per nucleon lead to 108 ion penetrated into captain?
   rng-0084 missing[particle]: Before coming to rest, how far does a 40 MeV per nucleon crypton-84 ion get through boron carbide?
   rng-0087 missing[unit]: range of a 10 ME deuteron and adipose tissue, please.
   rng-0092 missing[unit]: What's the range of a 180-DMED proton in air?
-  rng-0094 missing[number,unit]: How far will a 40EAV deuteron travel through water?
+  rng-0094 missing[unit]: How far will a 40EAV deuteron travel through water?
   rng-0096 missing[number]: Determine the range of two MeV tritons and A150 tissue-equivalent plastic.
   rng-0098 missing[number]: What is the CSDA range of a 1 in 20 MeV proton and cesium iodide?
   rng-0100 missing[unit]: What is the CSDA range of an 8-nevy triton and aluminum oxide?
@@ -66,4 +78,4 @@ failing clips after correction (223 total, showing first 30):
   rng-0109 missing[unit]: What's the range of a 400 man V per nucleon carbon-13 ion in aluminum oxide?
   rng-0111 missing[material]: What is the CSDA range of 80 MeV per nucleon uranium 238 ion in lungs?
 
-wrote /home/leszekgrzanka/workspace/aidedx/eval/results/tts-1000-v2-2026-07-17/score-new.json
+wrote eval/results/tts-1000-v2-2026-07-17/score-new.json
