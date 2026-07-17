@@ -4,8 +4,9 @@
  * against the eval set's expected QueryIntent. This is the metric that matters
  * for the voice pipeline (transcript fidelity is only a proxy).
  *
- * Usage: node scripts/e2e-audio-intents.ts <asr-results.json> [--base]
+ * Usage: node scripts/e2e-audio-intents.ts <asr-results.json> [--base|--new]
  *   --base  use the shipped asr-correct.mjs instead of the extended experiment layer
+ *   --new   use the typed src/lib/asr/correct module (issue #28's regex fast path + phonetic pass)
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -16,9 +17,16 @@ import { parseEvalRecords } from "../src/lib/intent/query-intent.ts";
 import { correct as baseCorrect } from "./asr-correct.mjs";
 // @ts-expect-error plain JS module
 import { correct as extCorrect } from "./asr-correct-ext.mjs";
+import { correctTranscript as newCorrect } from "../src/lib/asr/correct/core.ts";
 
 const useBase = process.argv.includes("--base");
-const correct = useBase ? baseCorrect : extCorrect;
+const useNew = process.argv.includes("--new");
+const correct = useNew
+  ? (text: string) => newCorrect(text).text
+  : useBase
+    ? baseCorrect
+    : extCorrect;
+const correctorLabel = useNew ? "new (issue #28)" : useBase ? "base" : "extended";
 
 const evalPath = fileURLToPath(new URL("../eval/intents.jsonl", import.meta.url));
 const byId = new Map(parseEvalRecords(readFileSync(evalPath, "utf-8")).map((e) => [e.id, e]));
@@ -66,9 +74,7 @@ for (const file of process.argv.slice(2).filter((a) => !a.startsWith("--"))) {
     }
   }
 
-  console.log(
-    `\n=== E2E ${data.modelId} [${data.dtype}] corrector=${useBase ? "base" : "extended"} ===`,
-  );
+  console.log(`\n=== E2E ${data.modelId} [${data.dtype}] corrector=${correctorLabel} ===`);
   console.log(
     `audio→intent slot-match: raw ${slotOkRaw}/${n} (${((100 * slotOkRaw) / n).toFixed(0)}%)  corrected ${slotOkCor}/${n} (${((100 * slotOkCor) / n).toFixed(0)}%)`,
   );

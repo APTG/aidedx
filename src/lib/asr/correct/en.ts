@@ -153,3 +153,92 @@ export const EN_RULES: readonly CorrectionRule[] = [
   { label: "centimeters-word", pattern: /\bcentimeters?\b/gi, replacement: "cm" },
   { label: "millimeters-word", pattern: /\bmillimeters?\b/gi, replacement: "mm" },
 ];
+
+/**
+ * Closed lexicon for the phonetic-distance pass (issue #28) — every domain
+ * keyword that ISN'T already covered by a fuzzy alias lookup. Materials and
+ * particles already get fuzzy resolution inside the matcher itself
+ * (`resolveMaterial`/`resolveParticle`, `src/lib/aliases/lookup.ts`), so
+ * duplicating them here would just stack a second, redundant fuzzy pass ahead
+ * of an already-tuned one. Units, quantity keywords, and program names have no
+ * such fallback today — a mishearing the fixed rules above don't cover (a new
+ * ASR model, a new speaker) currently falls straight to the matcher's regex
+ * keyword tables and misses entirely.
+ *
+ * Order matters for ties: `applyPhoneticPass` (`../correct/core.ts`) keeps the
+ * first minimum-distance entry, so within a slot, put the most common domain
+ * term first (e.g. MeV before keV/GeV — dominant in the eval set) to break a
+ * tie sensibly rather than arbitrarily.
+ */
+export interface LexiconEntry {
+  slot: "unit" | "quantity" | "program";
+  canonical: string;
+}
+
+export const LEXICON: readonly LexiconEntry[] = [
+  { slot: "unit", canonical: "MeV" },
+  { slot: "unit", canonical: "keV" },
+  { slot: "unit", canonical: "GeV" },
+  { slot: "quantity", canonical: "stopping power" },
+  { slot: "quantity", canonical: "range" },
+  { slot: "quantity", canonical: "dE/dx" },
+  { slot: "quantity", canonical: "CSDA" },
+  { slot: "quantity", canonical: "LET" },
+  { slot: "quantity", canonical: "linear energy transfer" },
+  { slot: "program", canonical: "ASTAR" },
+  { slot: "program", canonical: "PSTAR" },
+  { slot: "program", canonical: "ESTAR" },
+  { slot: "program", canonical: "MSTAR" },
+  { slot: "program", canonical: "SRIM" },
+  { slot: "program", canonical: "ATIMA" },
+  { slot: "program", canonical: "libdedx" },
+  { slot: "program", canonical: "Geant4" },
+  { slot: "program", canonical: "FLUKA" },
+  { slot: "program", canonical: "Bethe" },
+  { slot: "program", canonical: "ICRU" },
+  { slot: "program", canonical: "NIST" },
+];
+
+/**
+ * Common English function/domain words the phonetic pass must never try to
+ * "correct" against the lexicon — short, high-frequency words that would
+ * otherwise sit within edit distance of some lexicon entry (e.g. "is" vs.
+ * "u" isn't a risk, but "and"/"can" etc. are exactly the kind of short token
+ * a length-scaled edit-distance check has to explicitly exclude).
+ */
+export const PHONETIC_STOPWORDS = new Set([
+  "the",
+  "a",
+  "an",
+  "of",
+  "in",
+  "into",
+  "through",
+  "for",
+  "at",
+  "and",
+  "or",
+  "to",
+  "is",
+  "what",
+  "how",
+  "does",
+  "do",
+  "much",
+  "energy",
+  "per",
+  "compare",
+  "with",
+  "using",
+  "both",
+  "please",
+  "me",
+  "give",
+  "it",
+  "go",
+  "goes",
+  "will",
+  "can",
+  "you",
+  "your",
+]);

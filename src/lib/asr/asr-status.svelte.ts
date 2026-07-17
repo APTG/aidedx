@@ -116,11 +116,13 @@ class AsrStore {
         lastTokenAt = now;
         this.tokensSoFar = tokensSoFar;
       });
-      // Domain-vocabulary correction (issue #87 Part B) runs here, once, on the
-      // final transcript — not inside the per-token callback above — so it sees
-      // the whole sentence a rule's context (e.g. "before a particle word") may
-      // need, and so the query box + matcher agree on one corrected string.
-      this.transcript = correctTranscript(rawTranscript);
+      // Domain-vocabulary correction (issue #87 Part B, issue #28) runs here,
+      // once, on the final transcript — not inside the per-token callback
+      // above — so it sees the whole sentence a rule's context (e.g. "before
+      // a particle word") may need, and so the query box + matcher agree on
+      // one corrected string. `substitutions` (the phonetic pass's "heard X ->
+      // read as Y" log) isn't surfaced yet — that's the trust UX, issue #10.
+      this.transcript = correctTranscript(rawTranscript).text;
       this.phase = "done";
       if (firstTokenAt !== null && lastTokenAt !== null) {
         recordCompletedTranscription({
