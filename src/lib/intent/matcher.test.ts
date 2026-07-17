@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { INDIRECT_IDIOMS, matchIntent, matchQueryIntent } from "./matcher.ts";
+import { INDIRECT_IDIOMS } from "./lang/en.ts";
+import { matchIntent, matchQueryIntent } from "./matcher.ts";
 import { validateQueryIntent } from "./query-intent.ts";
 
 describe("quantity detection", () => {

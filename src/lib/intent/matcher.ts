@@ -28,6 +28,7 @@ import {
   type MaterialMatch,
   type ParticleMatch,
 } from "../aliases/index.ts";
+import * as en from "./lang/en.ts";
 import type {
   CompareDim,
   EnergySlot,
@@ -63,83 +64,28 @@ interface Span {
 
 // ---------------------------------------------------------------------------
 // 1. Quantity — direct keywords, indirect idioms, inverse queries
+//
+// The keyword/idiom *data* below is English-specific and lives in the `en`
+// language pack (`./lang/en.ts`, issue #87 Part A); this section is the
+// language-neutral control flow that consumes it. A future non-English pack
+// plugs into the same functions without touching this file.
 // ---------------------------------------------------------------------------
 
-/**
- * Indirect-idiom table: phrasings that imply a quantity without naming it.
- * These are the cases the issue flags as "the LLM's job"; the deterministic
- * matcher leans on this table to claw back the common, formulaic ones.
- */
-export const INDIRECT_IDIOMS: ReadonlyArray<{ pattern: RegExp; quantity: Quantity }> = [
-  // csdaRange — "how far / deep / thick … will go / travel / stop / come to rest".
-  { pattern: /\bhow far\b/, quantity: "csdaRange" },
-  { pattern: /\bhow deep\b/, quantity: "csdaRange" },
-  { pattern: /\bhow thick\b/, quantity: "csdaRange" },
-  { pattern: /\bpenetration depth\b/, quantity: "csdaRange" },
-  { pattern: /\bpenetrat(?:e|es|ing|ion)\b/, quantity: "csdaRange" },
-  { pattern: /\bcome to rest\b/, quantity: "csdaRange" },
-  { pattern: /\bcomes to rest\b/, quantity: "csdaRange" },
-  { pattern: /\bbefore stopping\b/, quantity: "csdaRange" },
-  { pattern: /\b(?:will|can|does|do)\b[^.?!]*\btravel\b/, quantity: "csdaRange" },
-  { pattern: /\bshorter distance\b/, quantity: "csdaRange" },
-  { pattern: /\bgo(?:es)? in\b/, quantity: "csdaRange" },
-  { pattern: /\bget into\b/, quantity: "csdaRange" },
-  { pattern: /\bmake it\b/, quantity: "csdaRange" },
-  // stoppingPower — "how quickly / at what rate … loses / sheds energy per length".
-  { pattern: /\blose[s]? energy\b/, quantity: "stoppingPower" },
-  { pattern: /\bshed[s]? energy\b/, quantity: "stoppingPower" },
-  { pattern: /\bslowed down\b/, quantity: "stoppingPower" },
-  { pattern: /\bat what rate\b/, quantity: "stoppingPower" },
-  { pattern: /\bhow quickly\b/, quantity: "stoppingPower" },
-  {
-    pattern: /\blose[s]?\b[^.?!]*\bper\s+(?:centimeter|millimeter|cm|mm|unit length)\b/,
-    quantity: "stoppingPower",
-  },
-  {
-    pattern: /\b(?:per|after)\s+(?:each\s+)?(?:centimeter|millimeter|cm|mm|unit length)\b/,
-    quantity: "stoppingPower",
-  },
-];
-
-const DIRECT_STOPPING =
-  /\b(?:mass\s+|electronic\s+)?stopping power\b|\bde\s*\/\s*dx\b|\benergy loss\b/i;
-const DIRECT_RANGE = /\bcsda\b|\brange\b/i;
-
-/**
- * LET (linear energy transfer) is the radiobiology / particle-therapy synonym for
- * (electronic) stopping power — unrestricted LET∞ is operationally equal to the
- * electronic mass stopping power libdedx returns, so it maps to `stoppingPower`.
- *
- * The acronym is matched CASE-SENSITIVELY against the *original* text (`/\bLET\b/`,
- * not the lowercased copy the other detectors use) so the ordinary verb "let"
- * ("let me know…", "Let's…") is never misread as the physics term. The spelled-out
- * form is unambiguous and matched case-insensitively. ASR transcripts that lowercase
- * the acronym are normalized upstream by the domain corrector (issue #28).
- */
-function mentionsLet(lower: string, text: string): boolean {
-  return /\bLET\b/.test(text) || /\blinear energy transfer\b/.test(lower);
-}
+/** Unit-notation cue that an inverse query's target is stopping-power-flavored (vs. range-flavored); unit notation is language-neutral. */
+const STP_UNIT_RE = /\bmev\s*cm2\s*\/\s*g\b|\bmev\s*\/\s*cm\b|\bkev\s*\/\s*[uµ]m\b/;
 
 /** Detect an inverse ("solve for energy") query and which kind. */
 function detectInverse(lower: string, text: string): Quantity | null {
-  // "linear energy transfer" contains the word "energy" but is NOT a request to
-  // solve for energy — blank it before the asks-for-energy test so a forward LET
-  // query ("what is the linear energy transfer of…") isn't misread as inverse.
-  const deLet = lower.replace(/\blinear energy transfer\b/g, " ");
-  // The query must ask for *energy* as the answer: "what energy", "which proton
-  // energy", "what carbon ion energy" — i.e. ≤3 plain words between the wh-word
-  // and "energy". This rejects "at what rate … shed energy" (a forward query).
-  const asksForEnergy =
-    /\b(?:what|which)\s+(?:[a-z]+\s+){0,3}energy\b/.test(deLet) || /\bhow energetic\b/.test(deLet);
-  if (!asksForEnergy) return null;
+  // A forward stopping-power synonym like "linear energy transfer" contains the
+  // word "energy" but is NOT a request to solve for energy — blank it before the
+  // asks-for-energy test so a forward LET query ("what is the linear energy
+  // transfer of…") isn't misread as inverse.
+  const deSynonym = lower.replace(en.BLANK_BEFORE_INVERSE_RE, " ");
+  if (!en.asksForEnergy(deSynonym)) return null;
   const isStp =
-    /\bstopping power\b/.test(lower) ||
-    mentionsLet(lower, text) ||
-    /\bmev\s*\/\s*cm\b/.test(lower) ||
-    /\bmev\s*cm2\s*\/\s*g\b/.test(lower) ||
-    /\bkev\s*\/\s*[uµ]m\b/.test(lower) ||
-    /\blose[s]?\b[^.?!]*\bmev per cm\b/.test(lower) ||
-    /\bmev per cm\b/.test(lower);
+    STP_UNIT_RE.test(lower) ||
+    en.mentionsStoppingPowerSynonym(lower, text) ||
+    en.mentionsStoppingPowerKeyword(lower);
   return isStp ? "energyFromStp" : "energyFromRange";
 }
 
@@ -153,17 +99,17 @@ function detectForwardQuantity(
   idiom?: string;
 } {
   // Strong direct keywords win first: "stopping power" / "dE/dx" / "LET" then "range".
-  if (DIRECT_STOPPING.test(lower) || mentionsLet(lower, text))
+  if (en.DIRECT_STOPPING.test(lower) || en.mentionsStoppingPowerSynonym(lower, text))
     return { quantity: "stoppingPower", source: "direct" };
-  if (DIRECT_RANGE.test(lower)) return { quantity: "csdaRange", source: "direct" };
+  if (en.DIRECT_RANGE.test(lower)) return { quantity: "csdaRange", source: "direct" };
 
-  for (const { pattern, quantity } of INDIRECT_IDIOMS) {
+  for (const { pattern, quantity } of en.INDIRECT_IDIOMS) {
     const m = pattern.exec(lower);
     if (m) return { quantity, source: "indirect", idiom: m[0] };
   }
 
   // Last resort: a bare "stops/stopped … in <length>" reads as range.
-  if (/\bstop(?:s|ped)?\b/.test(lower))
+  if (en.FALLBACK_STOP_RE.test(lower))
     return { quantity: "csdaRange", source: "indirect", idiom: "stop" };
 
   // Unknown — default to range but flag low confidence via "default" source.
@@ -205,14 +151,13 @@ function toEnergyValueUnit(
 
 const PER_NUCL = "(?:\\s*\\/\\s*(nucleon|nucl|amu|u)|\\s+per\\s+(nucleon|nucl|amu|u))?";
 const ENERGY_RE = new RegExp(`(\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${PER_NUCL}`, "gi");
-// Connector between list members, allowing a serial-comma "X, Y, and Z".
-const LIST_SEP_SRC =
-  "(?:\\s*,\\s*(?:and\\s+|or\\s+)?|\\s+and\\s+|\\s+or\\s+|\\s+versus\\s+|\\s+vs\\.?\\s+)";
-const LIST_SPLIT_RE = new RegExp(LIST_SEP_SRC, "i");
+// Connector between list members ("X, Y, and Z") — the connector words
+// ("and"/"or"/"versus"/"vs") are language-specific pack data (./lang/en.ts).
+const LIST_SPLIT_RE = new RegExp(en.LIST_SEP_SRC, "i");
 // A coordinated list of values sharing one trailing unit: "100 and 200 MeV",
 // "50, 100, and 150 MeV", "100 and 400 MeV per nucleon".
 const ENERGY_LIST_RE = new RegExp(
-  `((?:\\d+(?:\\.\\d+)?${LIST_SEP_SRC})+\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${PER_NUCL}`,
+  `((?:\\d+(?:\\.\\d+)?${en.LIST_SEP_SRC})+\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${PER_NUCL}`,
   "gi",
 );
 
@@ -351,15 +296,19 @@ interface RawParticle {
 // A coordinated list sharing a trailing head: "carbon and neon ions",
 // "protons, helium, and carbon ions". Requires ≥1 connector so it only fires on
 // genuine lists; single "<element> ion(s)" is handled separately below.
+// The connector words and head words ("ion(s)/particle(s)/nuclei") are
+// language-specific pack data (./lang/en.ts).
 const PARTICLE_LIST_RE = new RegExp(
-  `((?:[a-z][a-z-]*${LIST_SEP_SRC})+[a-z][a-z-]*)\\s+(ions?|particles?|nuclei|nucleus)\\b`,
+  `((?:[a-z][a-z-]*${en.LIST_SEP_SRC})+[a-z][a-z-]*)\\s+(${en.PARTICLE_LIST_HEAD_SRC})\\b`,
   "gi",
 );
 // A single "<element/isotope> ion(s)/particle(s)/nuclei" head.
-const PARTICLE_HEAD_RE = /\b([a-z][a-z]*(?:-\d{1,3})?)\s+(ions?|particles?|nuclei|nucleus)\b/gi;
+const PARTICLE_HEAD_RE = new RegExp(
+  `\\b([a-z][a-z]*(?:-\\d{1,3})?)\\s+(${en.PARTICLE_LIST_HEAD_SRC})\\b`,
+  "gi",
+);
 // Standalone named particles whose isotope is fixed by the name.
-const NAMED_PARTICLE_RE =
-  /\b(protons?|deuterons?|tritons?|alpha particles?|alphas?|helions?|electrons?|positrons?|beta minus|betas?)\b/gi;
+const NAMED_PARTICLE_RE = new RegExp(`\\b(${en.NAMED_PARTICLE_SRC})\\b`, "gi");
 
 function overlaps(a: Span, spans: Span[]): boolean {
   return spans.some((s) => a.start < s.end && s.start < a.end);
@@ -437,65 +386,6 @@ interface RawMaterial {
   span: Span;
 }
 
-// Words that never start/own a material phrase; kept short to avoid eating real
-// multi-word names. Numbers are excluded by the \p{L} requirement below.
-const MATERIAL_STOPWORDS = new Set([
-  "the",
-  "a",
-  "an",
-  "of",
-  "in",
-  "into",
-  "through",
-  "for",
-  "at",
-  "and",
-  "or",
-  "to",
-  "is",
-  "what",
-  "whats",
-  "how",
-  "does",
-  "do",
-  "much",
-  "energy",
-  "per",
-  "compare",
-  "versus",
-  "vs",
-  "range",
-  "stopping",
-  "power",
-  "dedx",
-  "loss",
-  "lose",
-  "loses",
-  "deep",
-  "far",
-  "thick",
-  "proton",
-  "protons",
-  "alpha",
-  "alphas",
-  "ion",
-  "ions",
-  "particle",
-  "particles",
-  "nucleon",
-  "with",
-  "using",
-  "both",
-  "model",
-  "models",
-  "please",
-  "me",
-  "give",
-  "it",
-  "go",
-  "goes",
-]);
-
 const MAX_NGRAM = 3;
 
 /** Scan unconsumed token windows (1..3 words) for known materials, longest-first. */
@@ -520,7 +410,7 @@ function extractMaterials(text: string, consumed: Span[]): RawMaterial[] {
       // A 1-gram that is a stopword can never be a material on its own; and a
       // 1- or 2-char token (a stray "s"/"I", or an element *symbol* like "U")
       // is never a material *name* in this domain — real names are ≥3 chars.
-      if (n === 1 && MATERIAL_STOPWORDS.has(first.word.toLowerCase())) continue;
+      if (n === 1 && en.MATERIAL_STOPWORDS.has(first.word.toLowerCase())) continue;
       if (n === 1 && first.word.length < 3) continue;
       const phrase = text.slice(span.start, span.end);
       const resolved = resolveMaterial(phrase);
