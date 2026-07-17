@@ -183,6 +183,15 @@ describe("applyPhoneticPass — issue #28", () => {
     expect(applyPhoneticPass(text)).toEqual({ text, substitutions: [] });
   });
 
+  it("does not corrupt an already-correct alphanumeric program name like 'Geant4' (review)", () => {
+    // The tokenizer must include trailing digits in a token — "Geant4" split
+    // as "Geant" + "4" left the "4" outside the match span, so a fuzzy match
+    // against the "Geant4" canonical replaced only "Geant" and left the
+    // original "4" behind, corrupting the text into "Geant44".
+    const text = "simulated using Geant4 with libdedx";
+    expect(applyPhoneticPass(text)).toEqual({ text, substitutions: [] });
+  });
+
   it("runs after the regex fast path inside correctTranscript, fixing what the fast path leaves behind", () => {
     const result = correctTranscript("100 NEV protons in water");
     expect(result.text).toBe("100 MeV protons in water");

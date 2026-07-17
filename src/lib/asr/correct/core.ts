@@ -92,7 +92,11 @@ function closestLexiconMatch(phrase: string, slot: LexiconEntry["slot"]): Lexico
   return best;
 }
 
-const TOKEN_RE = /[A-Za-z]+(?:[/-][A-Za-z]+)*/g;
+// Each segment must start with a letter (so a bare number is never captured
+// as a token) but may continue with digits — "Geant4" is a lexicon canonical
+// and must tokenize as one unit, or its trailing "4" sits outside the match
+// span and survives a substitution, corrupting "Geant4" into "Geant44".
+const TOKEN_RE = /[A-Za-z][A-Za-z0-9]*(?:[/-][A-Za-z][A-Za-z0-9]*)*/g;
 
 function tokenize(text: string): Array<{ word: string; start: number; end: number }> {
   const tokens: Array<{ word: string; start: number; end: number }> = [];
