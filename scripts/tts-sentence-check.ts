@@ -41,7 +41,10 @@ export interface CheckResult {
   numericSummary?: string;
 }
 
-async function loadService(): Promise<LibdedxService> {
+/** Loads the vendored libdedx WASM service. Exported for reuse by the generator
+ * (scripts/generate-1000-sentences.mjs), which validates candidates inline as it builds
+ * them rather than as a separate pass. */
+export async function loadService(): Promise<LibdedxService> {
   const here = dirname(fileURLToPath(import.meta.url));
   const wasmDir = resolve(here, "..", "static", "wasm");
   const mjsUrl = pathToFileURL(join(wasmDir, "libdedx.mjs")).href;

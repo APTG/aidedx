@@ -60,3 +60,9 @@ yarn.lock
 /scripts/tts-1000-sentences.json
 /aidedx-tts1000-*.out
 /aidedx-tts1000-*.err
+
+# v2 batch (issue #83, expanded ion/material pools + LET phrasing, submit-v2.sh) — same
+# regenerable-artifact rationale as the v1 files above.
+/scripts/tts-1000-sentences-v2.json
+/aidedx-tts1000-v2-*.out
+/aidedx-tts1000-v2-*.err
