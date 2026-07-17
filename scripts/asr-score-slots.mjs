@@ -6,6 +6,7 @@
  * Usage:
  *   node scripts/asr-score-slots.mjs <results.json> [more.json...]        # asr-correct.mjs
  *   node scripts/asr-score-slots.mjs --ext <results.json> [more.json...]  # asr-correct-ext.mjs
+ *   node scripts/asr-score-slots.mjs --new <results.json> [more.json...]  # src/lib/asr/correct (issue #28)
  *
  * Input JSONs are produced by scripts/asr-transcribe.mjs; committed runs live
  * in eval/results/.
@@ -13,8 +14,13 @@
 import { readFileSync } from "fs";
 import { correct as baseCorrect } from "./asr-correct.mjs";
 import { correct as extCorrect } from "./asr-correct-ext.mjs";
+import { correctTranscript as newCorrect } from "../src/lib/asr/correct/core.ts";
 
-const correct = process.argv.includes("--ext") ? extCorrect : baseCorrect;
+const correct = process.argv.includes("--new")
+  ? (text) => newCorrect(text).text
+  : process.argv.includes("--ext")
+    ? extCorrect
+    : baseCorrect;
 
 // Canonicalisation applied before slot matching (case-insensitive containment).
 function norm(text) {
@@ -215,6 +221,9 @@ for (const file of process.argv.slice(2).filter((a) => !a.startsWith("--"))) {
     console.log(`failing clips after correction (${failures.length}):`);
     for (const f of failures.slice(0, 40)) {
       console.log(`  ${f.sp}/${f.id} missing[${f.missed.join(",")}]: ${f.raw}`);
+    }
+    if (failures.length > 40) {
+      console.log(`  ... and ${failures.length - 40} more (not printed)`);
     }
   }
 }
