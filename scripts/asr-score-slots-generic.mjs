@@ -52,7 +52,21 @@ function norm(text) {
     .replace(/\bone\b/g, "1")
     .replace(/\bten\b/g, "10")
     .replace(/\bthree\b/g, "3");
+  // Polish equivalents — precautionary, not yet observed failing in practice the way the
+  // English mm/cm glued-unit bug (module doc comment above) was, but the same Whisper
+  // behavior (writing a spoken number as a word instead of a digit) plausibly happens in any
+  // language. "dziesięć" ends in a non-ASCII letter, so this needs the same Unicode-aware
+  // boundary as wordBoundary() below, not plain \b (which would silently never match here).
+  t = t
+    .replace(/(?<![\p{L}\d])jeden(?![\p{L}\d])/gu, "1")
+    .replace(/(?<![\p{L}\d])dziesięć(?![\p{L}\d])/gu, "10")
+    .replace(/(?<![\p{L}\d])trzy(?![\p{L}\d])/gu, "3");
   t = t.replace(/(?<![a-z])(mev|kev|gev)\s*(?:\/|per)\s*(?:nucleon|nucl)\b/g, "$1 pn");
+  // Polish "MeV na nukleon" (per-nucleon) — the only per-nucleon phrasing lang/pl.ts's matcher
+  // supports (no Polish "per-u"/"per-amu" construction is vetted, so no Polish counterpart to
+  // the "mev mu" normalization below). "nukleonu"/"nukleonie" tolerate a declined ASR
+  // transcription of the word, not just the bare dictionary form actually spoken.
+  t = t.replace(/(?<![a-z])(mev|kev|gev)\s+na\s+nukleon(?:u|ie|em)?\b/g, "$1 pn");
   t = t.replace(/(?<![a-z])mev\s*(?:\/|per)\s*(?:u|amu)\b/g, "mev mu");
   t = t.replace(/(?<![a-z])centimeters?\b/g, "cm").replace(/(?<![a-z])millimeters?\b/g, "mm");
   t = t.replace(/\s+/g, " ");
@@ -77,9 +91,16 @@ const mev = () => U("MeV", unitBoundary("mev"));
 const kev = () => U("keV", unitBoundary("kev"));
 const gev = () => U("GeV", unitBoundary("gev"));
 const mevPN = () => U("MeV/nucl", unitBoundary("mev pn"));
-const part = (w) => S("particle", new RegExp(`\\b(?:${w})\\b`));
-const mat = (w) => S("material", new RegExp(`\\b(?:${w})\\b`));
-const qty = (w) => S("quantity", new RegExp(`(?:${w})`));
+// Unicode-aware word boundary, not plain `\b` — `\b` is defined in terms of `\w`, which is
+// ASCII-only, so `\bżelaza\b` (a real Polish material/particle word starting with a non-ASCII
+// letter) silently fails to match at all: the position right before "ż" sees a non-word char
+// on *both* sides (e.g. a space, then "ż" itself), so no boundary is detected there — confirmed
+// empirically while wiring up Polish scoring (issue #79/#87), not a hypothetical. `(?<![\p{L}\d])`/
+// `(?![\p{L}\d])` reject the same adjacent letter-or-digit classes `\b` does, just Unicode-aware.
+const wordBoundary = (w) => new RegExp(`(?<![\\p{L}\\d])(?:${w})(?![\\p{L}\\d])`, "u");
+const part = (w) => S("particle", wordBoundary(w));
+const mat = (w) => S("material", wordBoundary(w));
+const qty = (w) => S("quantity", new RegExp(`(?:${w})`, "u"));
 const unitRe = (u) => {
   if (u === "cm") return U("cm", unitBoundary("cm"));
   if (u === "mm") return U("mm", unitBoundary("mm"));
@@ -110,6 +131,15 @@ const LONGTAIL_PARTICLE_BARES = new Set([
   "gold",
   "lead",
   "uranium",
+  // Polish (scripts/generate-1000-sentences-pl.mjs) — same Z>18 boundary, its own bare
+  // (genitive) forms rather than English's, since slotTruth.particles carries whichever
+  // language the clip was generated in.
+  "wapnia",
+  "tytanu",
+  "żelaza",
+  "miedzi",
+  "kryptonu",
+  "ksenonu",
 ]);
 const LONGTAIL_MATERIAL_BARES = new Set([
   "silicon",
@@ -130,6 +160,15 @@ const LONGTAIL_MATERIAL_BARES = new Set([
   "boron",
   "boron carbide",
   "boron oxide",
+  // Polish — same non-clinical (not water/air/PMMA/A-150/ICRP-tissue/bone) boundary.
+  "kaptonie",
+  "graficie",
+  "poliwęglanie",
+  "polietylenie",
+  "dwutlenku krzemu",
+  "aluminium",
+  "złocie",
+  "ołowiu",
 ]);
 function stratumFor(slotTruth) {
   const longTail =
@@ -142,7 +181,10 @@ function stratumFor(slotTruth) {
 function slotsFor(slotTruth) {
   const slots = [];
   slots.push(qty(slotTruth.quantityKeyword));
-  if (slotTruth.isInverse) slots.push(qty("range")); // every invrng sentence also says "range"
+  // Every invrng sentence also says "range" (English) or "zasięg" (Polish) — checking for
+  // either is safe in both directions, since a transcript in one language never contains the
+  // other's word; simpler than threading a per-clip lang field through slotTruth just for this.
+  if (slotTruth.isInverse) slots.push(qty("range|zasięg"));
   for (const p of slotTruth.particles) slots.push(part(p));
   for (const m of slotTruth.materials) slots.push(mat(m));
   for (const e of slotTruth.energies ?? []) slots.push(...energySlots(e));

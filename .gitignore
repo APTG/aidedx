@@ -37,6 +37,12 @@ yarn.lock
 # Python venv for the Qwen3-TTS feasibility check (issue #30, docs/tts-eval-audio.md §6)
 /.venv-qwen/
 
+# Python venv for Piper TTS (Polish synthesis, issue #79/#87 — scripts/tts-piper-1000.py)
+/.venv-piper/
+
+# Python bytecode cache, generated whenever a scripts/*.py file is run directly
+__pycache__/
+
 # Athena/PLGrid environment (docs/athena-setup.md, scripts/athena-env.sh) — every cache that
 # would otherwise write into $HOME's 10GB quota (pip, npm, huggingface_hub) redirects here instead
 /.cache/
