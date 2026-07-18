@@ -277,6 +277,43 @@ const MATERIAL_ALIAS_OVERRIDES: ReadonlyArray<[string, number]> = [
   ["csi", 141],
   ["lif", 185],
   ["paraffin", 213],
+
+  // Polish (issue #87/#63) — compounds/mixtures not covered by the element-name
+  // loop below, in the case forms actually used in eval/RECORDING.pl.md's
+  // 50-sentence set ("w wodzie" locative, "w tkance tłuszczowej" locative, …).
+  // Bare elements (aluminium, silicon, gold, lead, …) don't need an entry here —
+  // their Polish names are declared once in elements.ts's ELEMENT_NAME_VARIANTS
+  // and this table's own auto-aliasing loop below picks them up for free.
+  ["woda", 276],
+  ["wody", 276],
+  ["wodzie", 276],
+  ["wodę", 276],
+  ["wodą", 276],
+  ["powietrze", 104],
+  ["powietrza", 104],
+  ["powietrzu", 104],
+  ["tkanka mięśniowa", 201],
+  ["tkankę mięśniową", 201],
+  ["tkance mięśniowej", 201],
+  ["mięsień", 201],
+  ["tkanka tłuszczowa", 103],
+  ["tkankę tłuszczową", 103],
+  ["tkance tłuszczowej", 103],
+  ["kość korowa", 120],
+  ["kości korowej", 120],
+  ["kość zbita", 119],
+  ["kości zbitej", 119],
+  ["kaptonie", 179],
+  ["grafit", 906],
+  ["graficie", 906],
+  ["poliwęglan", 219],
+  ["poliwęglanie", 219],
+  ["polietylen", 221],
+  ["polietylenie", 221],
+  ["dwutlenek krzemu", 245],
+  ["dwutlenku krzemu", 245],
+  ["plastik tkankopodobny a-150", 99],
+  ["plastiku tkankopodobnym a-150", 99],
 ];
 
 /**

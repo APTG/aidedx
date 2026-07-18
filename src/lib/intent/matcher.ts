@@ -11,13 +11,20 @@
  *   1. quantity        — direct keywords, an indirect-idiom table, and the
  *                        inverse-query ("what energy gives …") detector.
  *   2. energies/target — number+unit grammar with per-nucleon-vs-total handling.
- *   3. particles       — named particles, "<element> ion(s)" heads, and
- *                        coordinated lists ("carbon and neon ions").
+ *   3. particles       — named particles, a single "<element> ion(s)"-shaped
+ *                        head, and (where the language uses it) a coordinated
+ *                        list sharing one trailing head ("carbon and neon ions").
  *   4. materials       — n-gram scan resolved against the material alias table.
  *   5. compareDim      — entity multiplicity + program-name detection.
  *   6. resolver        — fuzzy-match slots to real libdedx entities, fill
  *                        `assumptions[]` (isotope defaults, total→per-nucleon)
  *                        and a calibrated `confidence`.
+ *
+ * Every keyword/idiom/regex table is supplied by a `LangPack` (`./lang/en.ts`,
+ * `./lang/pl.ts`) selected by the `lang` parameter (issue #87 Part B) — this
+ * file is the language-neutral control flow that consumes whichever pack is
+ * selected; a pack's regexes may differ in *shape*, not just vocabulary (e.g.
+ * Polish's head-first "jon węgla" vs. English's head-last "carbon ion").
  *
  * Both this matcher and the future LLM emit the *same* QueryIntent shape, so all
  * downstream code (resolver, compute, NLG) is producer-agnostic.
@@ -29,6 +36,8 @@ import {
   type ParticleMatch,
 } from "../aliases/index.ts";
 import * as en from "./lang/en.ts";
+import * as pl from "./lang/pl.ts";
+import type { Lang, LangPack } from "./lang/types.ts";
 import type {
   CompareDim,
   EnergySlot,
@@ -39,6 +48,11 @@ import type {
   QueryIntent,
   TargetSlot,
 } from "./query-intent.ts";
+
+/** Select the language pack for `lang` (default English, issue #87). */
+function packFor(lang: Lang): LangPack {
+  return lang === "pl" ? pl : en;
+}
 
 // ---------------------------------------------------------------------------
 // Result type — the intent plus a little provenance the harness/tests can read.
@@ -65,27 +79,25 @@ interface Span {
 // ---------------------------------------------------------------------------
 // 1. Quantity — direct keywords, indirect idioms, inverse queries
 //
-// The keyword/idiom *data* below is English-specific and lives in the `en`
-// language pack (`./lang/en.ts`, issue #87 Part A); this section is the
-// language-neutral control flow that consumes it. A future non-English pack
-// plugs into the same functions without touching this file.
+// The keyword/idiom data is pack-supplied (`./lang/en.ts`, `./lang/pl.ts`);
+// this section is the language-neutral control flow that consumes it.
 // ---------------------------------------------------------------------------
 
 /** Unit-notation cue that an inverse query's target is stopping-power-flavored (vs. range-flavored); unit notation is language-neutral. */
 const STP_UNIT_RE = /\bmev\s*cm2\s*\/\s*g\b|\bmev\s*\/\s*cm\b|\bkev\s*\/\s*[uµ]m\b/;
 
 /** Detect an inverse ("solve for energy") query and which kind. */
-function detectInverse(lower: string, text: string): Quantity | null {
+function detectInverse(lower: string, text: string, pack: LangPack): Quantity | null {
   // A forward stopping-power synonym like "linear energy transfer" contains the
   // word "energy" but is NOT a request to solve for energy — blank it before the
   // asks-for-energy test so a forward LET query ("what is the linear energy
   // transfer of…") isn't misread as inverse.
-  const deSynonym = lower.replace(en.BLANK_BEFORE_INVERSE_RE, " ");
-  if (!en.asksForEnergy(deSynonym)) return null;
+  const deSynonym = lower.replace(pack.BLANK_BEFORE_INVERSE_RE, " ");
+  if (!pack.asksForEnergy(deSynonym)) return null;
   const isStp =
     STP_UNIT_RE.test(lower) ||
-    en.mentionsStoppingPowerSynonym(lower, text) ||
-    en.mentionsStoppingPowerKeyword(lower);
+    pack.mentionsStoppingPowerSynonym(lower, text) ||
+    pack.mentionsStoppingPowerKeyword(lower);
   return isStp ? "energyFromStp" : "energyFromRange";
 }
 
@@ -93,23 +105,24 @@ function detectInverse(lower: string, text: string): Quantity | null {
 function detectForwardQuantity(
   lower: string,
   text: string,
+  pack: LangPack,
 ): {
   quantity: Quantity;
   source: QuantitySource;
   idiom?: string;
 } {
   // Strong direct keywords win first: "stopping power" / "dE/dx" / "LET" then "range".
-  if (en.DIRECT_STOPPING.test(lower) || en.mentionsStoppingPowerSynonym(lower, text))
+  if (pack.DIRECT_STOPPING.test(lower) || pack.mentionsStoppingPowerSynonym(lower, text))
     return { quantity: "stoppingPower", source: "direct" };
-  if (en.DIRECT_RANGE.test(lower)) return { quantity: "csdaRange", source: "direct" };
+  if (pack.DIRECT_RANGE.test(lower)) return { quantity: "csdaRange", source: "direct" };
 
-  for (const { pattern, quantity } of en.INDIRECT_IDIOMS) {
+  for (const { pattern, quantity } of pack.INDIRECT_IDIOMS) {
     const m = pattern.exec(lower);
     if (m) return { quantity, source: "indirect", idiom: m[0] };
   }
 
   // Last resort: a bare "stops/stopped … in <length>" reads as range.
-  if (en.FALLBACK_STOP_RE.test(lower))
+  if (pack.FALLBACK_STOP_RE.test(lower))
     return { quantity: "csdaRange", source: "indirect", idiom: "stop" };
 
   // Unknown — default to range but flag low confidence via "default" source.
@@ -121,8 +134,8 @@ function detectForwardQuantity(
 // ---------------------------------------------------------------------------
 
 /** Map a base unit token + optional per-nucleon suffix to the schema enum. */
-function toEnergyUnit(base: string, perNuclSuffix?: string): EnergyUnit {
-  if (perNuclSuffix) return perNuclSuffix === "u" || perNuclSuffix === "amu" ? "MeV/u" : "MeV/nucl";
+function toEnergyUnit(base: string, pack: LangPack, perNuclSuffix?: string): EnergyUnit {
+  if (perNuclSuffix) return pack.perNuclUnitFor(perNuclSuffix);
   const b = base.toLowerCase();
   if (b === "kev") return "keV";
   if (b === "gev") return "GeV";
@@ -140,26 +153,35 @@ function toEnergyUnit(base: string, perNuclSuffix?: string): EnergyUnit {
 function toEnergyValueUnit(
   rawValue: number,
   base: string,
+  pack: LangPack,
   suffix?: string,
 ): { value: number; unit: EnergyUnit } {
-  const unit = toEnergyUnit(base, suffix);
+  const unit = toEnergyUnit(base, pack, suffix);
   if (suffix === undefined) return { value: rawValue, unit };
   const b = base.toLowerCase();
   const value = b === "kev" ? rawValue / 1000 : b === "gev" ? rawValue * 1000 : rawValue;
   return { value: round(value), unit };
 }
 
-const PER_NUCL = "(?:\\s*\\/\\s*(nucleon|nucl|amu|u)|\\s+per\\s+(nucleon|nucl|amu|u))?";
-const ENERGY_RE = new RegExp(`(\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${PER_NUCL}`, "gi");
-// Connector between list members ("X, Y, and Z") — the connector words
-// ("and"/"or"/"versus"/"vs") are language-specific pack data (./lang/en.ts).
-const LIST_SPLIT_RE = new RegExp(en.LIST_SEP_SRC, "i");
-// A coordinated list of values sharing one trailing unit: "100 and 200 MeV",
-// "50, 100, and 150 MeV", "100 and 400 MeV per nucleon".
-const ENERGY_LIST_RE = new RegExp(
-  `((?:\\d+(?:\\.\\d+)?${en.LIST_SEP_SRC})+\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${PER_NUCL}`,
-  "gi",
-);
+/** Build the list-member split regex from a pack's connector-word source. */
+function buildListSplitRe(pack: LangPack): RegExp {
+  return new RegExp(pack.LIST_SEP_SRC, "i");
+}
+
+/**
+ * The number grammar always places group 1 = the number(s), group 2 = the
+ * base unit, so a pack's `PER_NUCL_SUFFIX_SRC` capture group(s) — however
+ * many it declares — start at index 3. Scanning for whichever one matched
+ * (instead of a hardcoded `m[3] ?? m[4]`) lets English's two-shape suffix
+ * (slash form / "per" form) and Polish's single-shape "na nukleon" share the
+ * same extraction code.
+ */
+function perNuclSuffixFrom(m: RegExpExecArray): string | undefined {
+  for (let i = 3; i < m.length; i++) {
+    if (m[i] !== undefined) return m[i]?.toLowerCase();
+  }
+  return undefined;
+}
 
 interface RawEnergy {
   value: number;
@@ -198,33 +220,45 @@ function isNegativeAt(text: string, matchStart: number): boolean {
  * Entries with `negative: true` are still returned (so their span can be
  * excluded from later material matching) but must not be used as a slot
  * value — see `isNegativeAt`. */
-function extractEnergies(text: string): RawEnergy[] {
+function extractEnergies(text: string, pack: LangPack): RawEnergy[] {
+  const energyRe = new RegExp(
+    `(\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
+    "gi",
+  );
+  const listSplitRe = buildListSplitRe(pack);
+  // A coordinated list of values sharing one trailing unit: "100 and 200 MeV",
+  // "50, 100, and 150 MeV", "100 and 400 MeV per nucleon".
+  const energyListRe = new RegExp(
+    `((?:\\d+(?:\\.\\d+)?${pack.LIST_SEP_SRC})+\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
+    "gi",
+  );
+
   const out: RawEnergy[] = [];
   const consumed: Span[] = [];
 
   // Shared-unit lists first, so the trailing "<num> <unit>" isn't also matched
   // as a lone energy below.
-  for (const m of text.matchAll(ENERGY_LIST_RE)) {
+  for (const m of text.matchAll(energyListRe)) {
     const start = m.index ?? 0;
     const span = { start, end: start + m[0].length };
     const negative = isNegativeAt(text, start);
     const base = m[2] ?? "mev";
-    const suffix = (m[3] ?? m[4])?.toLowerCase();
-    const rawValues = (m[1] ?? "").split(LIST_SPLIT_RE).filter(Boolean).map(Number);
+    const suffix = perNuclSuffixFrom(m);
+    const rawValues = (m[1] ?? "").split(listSplitRe).filter(Boolean).map(Number);
     for (const raw of rawValues) {
-      const { value, unit } = toEnergyValueUnit(raw, base, suffix);
+      const { value, unit } = toEnergyValueUnit(raw, base, pack, suffix);
       out.push({ value, unit, perNucleon: suffix !== undefined, span, negative });
     }
     consumed.push(span);
   }
 
-  for (const m of text.matchAll(ENERGY_RE)) {
+  for (const m of text.matchAll(energyRe)) {
     const start = m.index ?? 0;
     const span = { start, end: start + m[0].length };
     if (consumed.some((s) => span.start < s.end && s.start < span.end)) continue;
     const base = m[2] ?? "mev";
-    const suffix = (m[3] ?? m[4])?.toLowerCase();
-    const { value, unit } = toEnergyValueUnit(Number(m[1]), base, suffix);
+    const suffix = perNuclSuffixFrom(m);
+    const { value, unit } = toEnergyValueUnit(Number(m[1]), base, pack, suffix);
     out.push({
       value,
       unit,
@@ -293,69 +327,65 @@ interface RawParticle {
   span: Span;
 }
 
-// A coordinated list sharing a trailing head: "carbon and neon ions",
-// "protons, helium, and carbon ions". Requires ≥1 connector so it only fires on
-// genuine lists; single "<element> ion(s)" is handled separately below.
-// The connector words and head words ("ion(s)/particle(s)/nuclei") are
-// language-specific pack data (./lang/en.ts).
-const PARTICLE_LIST_RE = new RegExp(
-  `((?:[a-z][a-z-]*${en.LIST_SEP_SRC})+[a-z][a-z-]*)\\s+(${en.PARTICLE_LIST_HEAD_SRC})\\b`,
-  "gi",
-);
-// A single "<element/isotope> ion(s)/particle(s)/nuclei" head.
-const PARTICLE_HEAD_RE = new RegExp(
-  `\\b([a-z][a-z]*(?:-\\d{1,3})?)\\s+(${en.PARTICLE_LIST_HEAD_SRC})\\b`,
-  "gi",
-);
-// Standalone named particles whose isotope is fixed by the name.
-const NAMED_PARTICLE_RE = new RegExp(`\\b(${en.NAMED_PARTICLE_SRC})\\b`, "gi");
-
 function overlaps(a: Span, spans: Span[]): boolean {
   return spans.some((s) => a.start < s.end && s.start < a.end);
 }
 
-/** Resolve a phrase to a particle, returning the raw match + resolution. */
-function tryParticle(match: string, start: number): RawParticle | null {
-  const resolved = resolveParticle(match);
+/**
+ * Resolve a phrase to a particle. `resolveText` is what's handed to
+ * `resolveParticle`; `displayText` is what's stored as the slot's `match` and
+ * defines the span — for English's head-last shape they're the same string
+ * (the whole "carbon ion" match resolves fine via suffix-stripping), but
+ * Polish's head-first "jon węgla" needs only "węgla" resolved while still
+ * reporting the whole phrase as the match/span.
+ */
+function tryParticle(resolveText: string, displayText: string, start: number): RawParticle | null {
+  const resolved = resolveParticle(resolveText);
   if (!resolved) return null;
-  return { match: match.trim(), resolved, span: { start, end: start + match.length } };
+  return { match: displayText.trim(), resolved, span: { start, end: start + displayText.length } };
 }
 
-function extractParticles(text: string): RawParticle[] {
+function extractParticles(text: string, pack: LangPack): RawParticle[] {
   const found: RawParticle[] = [];
   const consumed: Span[] = [];
 
   // Coordinated lists first — they subsume any inner single/named matches.
-  for (const m of text.matchAll(PARTICLE_LIST_RE)) {
-    const listStart = m.index ?? 0;
-    const listText = m[1] ?? "";
-    const members = listText.split(LIST_SPLIT_RE).filter(Boolean);
-    // Resolve each member; a member like "alpha"/"protons" resolves on its own,
-    // a bare element ("carbon") resolves to its ion via the alias table.
-    const resolvedMembers: RawParticle[] = [];
-    let cursor = listStart;
-    let ok = true;
-    for (const member of members) {
-      const at = text.toLowerCase().indexOf(member.toLowerCase(), cursor);
-      const rp = tryParticle(member, at >= 0 ? at : listStart);
-      if (!rp) {
-        ok = false;
-        break;
+  // Not every language uses this shape (Polish repeats "jon" per mention
+  // instead), so it's skipped entirely when the pack has none.
+  if (pack.PARTICLE_LIST_RE) {
+    const listSplitRe = buildListSplitRe(pack);
+    for (const m of text.matchAll(pack.PARTICLE_LIST_RE)) {
+      const listStart = m.index ?? 0;
+      const listText = m[1] ?? "";
+      const members = listText.split(listSplitRe).filter(Boolean);
+      // Resolve each member; a member like "alpha"/"protons" resolves on its own,
+      // a bare element ("carbon") resolves to its ion via the alias table.
+      const resolvedMembers: RawParticle[] = [];
+      let cursor = listStart;
+      let ok = true;
+      for (const member of members) {
+        const at = text.toLowerCase().indexOf(member.toLowerCase(), cursor);
+        const rp = tryParticle(member, member, at >= 0 ? at : listStart);
+        if (!rp) {
+          ok = false;
+          break;
+        }
+        if (at >= 0) cursor = at + member.length;
+        resolvedMembers.push(rp);
       }
-      if (at >= 0) cursor = at + member.length;
-      resolvedMembers.push(rp);
-    }
-    if (ok && resolvedMembers.length >= 2) {
-      found.push(...resolvedMembers);
-      consumed.push({ start: listStart, end: listStart + m[0].length });
+      if (ok && resolvedMembers.length >= 2) {
+        found.push(...resolvedMembers);
+        consumed.push({ start: listStart, end: listStart + m[0].length });
+      }
     }
   }
 
-  // Single "<element> ion(s)" heads not already inside a list.
-  for (const m of text.matchAll(PARTICLE_HEAD_RE)) {
+  // Single "<element> ion(s)" (or a language's equivalent shape) heads not
+  // already inside a list.
+  for (const m of text.matchAll(pack.PARTICLE_HEAD_RE)) {
     const span = { start: m.index ?? 0, end: (m.index ?? 0) + m[0].length };
     if (overlaps(span, consumed)) continue;
-    const rp = tryParticle(m[0], span.start);
+    const rp = tryParticle(pack.particleHeadResolveText(m), m[0], span.start);
     if (rp) {
       found.push(rp);
       consumed.push(span);
@@ -363,10 +393,10 @@ function extractParticles(text: string): RawParticle[] {
   }
 
   // Standalone named particles (proton, alpha, deuteron, …).
-  for (const m of text.matchAll(NAMED_PARTICLE_RE)) {
+  for (const m of text.matchAll(pack.NAMED_PARTICLE_RE)) {
     const span = { start: m.index ?? 0, end: (m.index ?? 0) + m[0].length };
     if (overlaps(span, consumed)) continue;
-    const rp = tryParticle(m[0], span.start);
+    const rp = tryParticle(m[0], m[0], span.start);
     if (rp) {
       found.push(rp);
       consumed.push(span);
@@ -389,7 +419,11 @@ interface RawMaterial {
 const MAX_NGRAM = 3;
 
 /** Scan unconsumed token windows (1..3 words) for known materials, longest-first. */
-function extractMaterials(text: string, consumed: Span[]): RawMaterial[] {
+function extractMaterials(
+  text: string,
+  consumed: Span[],
+  stopwords: ReadonlySet<string>,
+): RawMaterial[] {
   const tokenRe = /[\p{L}][\p{L}\d-]*/gu;
   const tokens: { word: string; start: number; end: number }[] = [];
   for (const m of text.matchAll(tokenRe)) {
@@ -407,10 +441,19 @@ function extractMaterials(text: string, consumed: Span[]): RawMaterial[] {
       if (!first || !last) continue;
       const span = { start: first.start, end: last.end };
       if (overlaps(span, used)) continue;
-      // A 1-gram that is a stopword can never be a material on its own; and a
-      // 1- or 2-char token (a stray "s"/"I", or an element *symbol* like "U")
-      // is never a material *name* in this domain — real names are ≥3 chars.
-      if (n === 1 && en.MATERIAL_STOPWORDS.has(first.word.toLowerCase())) continue;
+      // No real material name starts or ends with a bare grammatical stopword
+      // ("w wodzie", "wodzie i", "and water") — skipping these windows
+      // outright (rather than just at n===1) matters for short single-token
+      // materials in languages like Polish, where a 2-char preposition/
+      // conjunction ("w "/" i") is short enough to fall inside the
+      // fuzzy-match edit-distance budget and would otherwise resolve as a
+      // needless *fuzzy* hit (discounting confidence) instead of the clean
+      // exact match on the bare noun that a shifted window would find.
+      if (stopwords.has(first.word.toLowerCase()) || stopwords.has(last.word.toLowerCase()))
+        continue;
+      // A 1- or 2-char token (a stray "s"/"I", or an element *symbol* like
+      // "U") is never a material *name* in this domain — real names are ≥3
+      // chars.
       if (n === 1 && first.word.length < 3) continue;
       const phrase = text.slice(span.start, span.end);
       const resolved = resolveMaterial(phrase);
@@ -483,19 +526,20 @@ function round(n: number): number {
 // ---------------------------------------------------------------------------
 
 /** Run the deterministic matcher over a query, returning intent + provenance. */
-export function matchIntent(text: string): MatchResult {
+export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
+  const pack = packFor(lang);
   const lower = text.toLowerCase();
 
   // 1. Quantity (inverse takes precedence — it changes how energies are read).
-  const inverse = detectInverse(lower, text);
-  const fwd = inverse ? null : detectForwardQuantity(lower, text);
+  const inverse = detectInverse(lower, text, pack);
+  const fwd = inverse ? null : detectForwardQuantity(lower, text, pack);
   const quantity: Quantity = inverse ? inverse : fwd ? fwd.quantity : "csdaRange";
   const source: QuantitySource = inverse ? "inverse" : fwd ? fwd.source : "default";
 
   // 2. Particles and energies/target first, so their spans are not re-mined as
   //    materials (e.g. "carbon" in "carbon ions", "u" in "MeV/u", "cm" in a
   //    "10 cm" range target — all of which alias to element symbols).
-  const rawParticles = extractParticles(text);
+  const rawParticles = extractParticles(text, pack);
 
   // Inverse queries carry no energy slot — only a target.
   let rawEnergies: RawEnergy[] = [];
@@ -514,7 +558,7 @@ export function matchIntent(text: string): MatchResult {
     // so the query reads as missing its energy and falls through the usual
     // `incomplete` / low-confidence path instead of silently going through
     // with the sign stripped off.
-    const allEnergies = extractEnergies(text);
+    const allEnergies = extractEnergies(text, pack);
     rawEnergies = allEnergies.filter((e) => !e.negative);
     negativeEnergySpans = allEnergies.filter((e) => e.negative).map((e) => e.span);
   }
@@ -526,7 +570,7 @@ export function matchIntent(text: string): MatchResult {
     ...negativeEnergySpans,
   ];
   if (targetSpan) consumedSpans.push(targetSpan);
-  const rawMaterials = extractMaterials(text, consumedSpans);
+  const rawMaterials = extractMaterials(text, consumedSpans, pack.MATERIAL_STOPWORDS);
 
   // 4. compareDim from program names + entity multiplicity.
   const programs = detectPrograms(lower);
@@ -600,8 +644,8 @@ export function matchIntent(text: string): MatchResult {
 }
 
 /** Convenience wrapper when only the intent is needed. */
-export function matchQueryIntent(text: string): QueryIntent {
-  return matchIntent(text).intent;
+export function matchQueryIntent(text: string, lang: Lang = "en"): QueryIntent {
+  return matchIntent(text, lang).intent;
 }
 
 /**
