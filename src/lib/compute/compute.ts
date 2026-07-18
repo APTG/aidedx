@@ -120,7 +120,7 @@ const PROGRAM_ID_TO_NAME: Record<number, string> = {
   [PROGRAMS.BETHE_EXT00]: "Bethe-ext",
 };
 
-function programName(id: number): string {
+export function programName(id: number): string {
   return PROGRAM_ID_TO_NAME[id] ?? `program ${id}`;
 }
 
@@ -145,7 +145,7 @@ function withDensity(series: ComputeSeries, density: number | undefined): Comput
  * material (MSTAR only tabulates Z=2..18 — helium through argon — so it has
  * no calcium/heavier-ion data at all, see docs/tts-eval-1000.md §2.2).
  */
-function programSupportsCombination(
+export function programSupportsCombination(
   service: LibdedxService,
   programId: number,
   particleId: number,
@@ -190,7 +190,7 @@ function compareProgramsForParticle(particleId: number): number[] {
   return [PROGRAMS.MSTAR, PROGRAMS.ICRU73, PROGRAMS.DEFAULT];
 }
 
-function resolveProgramId(
+export function resolveProgramId(
   intent: QueryIntent,
   particleId: number,
   materialId: number,
