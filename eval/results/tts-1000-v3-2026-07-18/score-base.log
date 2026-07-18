@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-small [q8] +prompt base-corrector ===
+clips: 1000   median inference: 2.3s   load: 1.9s
+clip-level all-slots-correct:  raw 782/1000 (78.2%)   corrected 782/1000 (78.2%)
+
+by quantity (corrected):
+  csdaRange        446/600 (74.3%)
+  energyFromRange  234/250 (93.6%)
+  stoppingPower    102/150 (68.0%)
+
+by scenario type (corrected):
+  single     610/800 (76.3%)
+  energy     86/100 (86.0%)
+  material   48/55 (87.3%)
+  particle   38/45 (84.4%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      549/698 (78.7%)
+  clinical-core  233/302 (77.2%)
+
+by voice profile (corrected), worst 10:
+  spanish-accented-male-animated   12/25 (48.0%)
+  custom-aiden-curious             13/24 (54.2%)
+  irish-male-sleepy                13/21 (61.9%)
+  singaporean-male-hurried         14/22 (63.6%)
+  jamaican-female-relaxed          7/11 (63.6%)
+  nigerian-female-hurried          9/14 (64.3%)
+  custom-ryan-happy                14/21 (66.7%)
+  italian-accented-male-animated   18/27 (66.7%)
+  russian-accented-female-flat     12/18 (66.7%)
+  nigerian-male-warm               14/21 (66.7%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   98.3% ->  98.3%  (n=1250)
+  particle   96.1% ->  96.1%  (n=1045)
+  material   98.8% ->  98.8%  (n=1085)
+  number     96.0% ->  96.0%  (n=1152)
+  unit       87.1% ->  87.1%  (n=1152)
+  ALL        95.2% ->  95.2%  (n=5684)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         84.2% ->  84.2%  (n=482)
+  MeV/nucl    80.1% ->  80.1%  (n=322)
+  keV         98.8% ->  98.8%  (n=83)
+  GeV         66.7% ->  66.7%  (n=15)
+  cm         100.0% -> 100.0%  (n=184)
+  mm          95.5% ->  95.5%  (n=66)
+
+failing clips after correction (218 total, showing first 30):
+  rng-0010 missing[unit]: range of 100 MAV proton and silicon dioxide, please.
+  rng-0018 missing[unit]: Find the CSDA range for 100 MAV protons in graphite.
+  rng-0022 missing[unit]: Find the CSDA range for 250 MAV per nucleon, sulfur-32 ions and graphite.
+  rng-0025 missing[unit]: What is the CSDA range of a 70-MV proton and polystyrene?
+  rng-0031 missing[particle]: So roughly how far would a 40 MeV per nucleon phosphorous 31 ion make it into polyethylene?
+  rng-0032 missing[particle,number]: So, roughly how far would a one-agate MEV per nucleon-led 208 ion make it into cortical bone?
+  rng-0034 missing[unit]: Quick one, how far does a 15 MV deuteron go in Kapton?
+  rng-0036 missing[unit]: Before coming to rest, how far does a 400 MAV per nucleon krypton 84 ion get through soft tissue?
+  rng-0038 missing[unit]: quick one. How far does a 8-EmeV deuteron go in muscle tissue?
+  rng-0040 missing[unit]: What's the range of a 400 MAV per nucleon, lithium-7 ion, and boron oxide?
+  rng-0044 missing[particle,number,unit]: range of ADMEV, Dodorant and Pyrex glass, please?
+  rng-0048 missing[particle]: Determine the range of 15 MeV deuterans in gold.
+  rng-0057 missing[unit]: What's the range of a 250-MIV proton in A150 tissue-equivalent plastic?
+  rng-0061 missing[unit]: Find the CSDA range for 40 MAV protons in PMMA.
+  rng-0062 missing[particle]: Range of a 400 MeV per nucleon led 208 ion in lung, please.
+  rng-0064 missing[unit]: How deep does a 100-EV alpha particle penetrate into graphite?
+  rng-0069 missing[unit]: Find the CSDA range for 300 MAV per nucleon silicon, 28 ions and polystyrene.
+  rng-0073 missing[unit]: range of a 1G, V-proton and graphite, please.
+  rng-0077 missing[unit]: How far will a 120 MAV proton travel through soft tissue?
+  rng-0078 missing[number]: What is the CSDA range of a 1.080 MeV per nucleon boron-11 ion in Kapton?
+  rng-0079 missing[number]: Quick one, how far does it ate MeV helium-3 ion go in water?
+  rng-0093 missing[unit]: What's the range of a 250 MIV per nucleon, gold 197 ion, and polyethylene?
+  rng-0096 missing[number]: Determine the range of two MeV tritons in a 150-tissue equivalent plastic.
+  rng-0103 missing[unit]: What's the range of a 400 MAV per nucleon krypton 84 ion and muscle tissue?
+  rng-0104 missing[particle]: So roughly how far would a 80 MeV per nucleon phosphorous 31 ion make it into blood?
+  rng-0107 missing[particle]: Determine the range of 25 MeV-healium-3 ions in muscle tissue.
+  rng-0110 missing[unit]: Find the CSDA range for 200 MAV per nucleon lithium-7 ions in brain.
+  rng-0113 missing[unit]: What's the range of a 100-mV-alpha particle in polystyrene?
+  rng-0118 missing[number]: How deep does a 1-hade MeV per nucleon phosphorus 31 ion penetrate into a 150 tissue equivalent plastic?
+  rng-0123 missing[number]: Find the CSDA range for two MeV alpha particles in gold.
+
+wrote eval/results/tts-1000-v3-2026-07-18/score-base.json
