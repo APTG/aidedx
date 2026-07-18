@@ -4,7 +4,7 @@
  * Usage: node scripts/asr-transcribe.mjs <modelId> <dtype> <outFile> [--no-prompt]
  */
 import { pipeline, env } from "@huggingface/transformers";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { readdirSync, existsSync, writeFileSync } from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
@@ -51,15 +51,27 @@ const IDS = [
   "alias-001",
 ];
 
+// Kept in sync by hand with src/lib/asr/transcribe.ts's own copy (issue #92) — this script
+// can't import that module directly (Node/onnxruntime-node here vs. the browser
+// transformers.js pipeline there), same reason the two have always been separate literals.
 const DOMAIN_PROMPT =
   "MeV, keV, GeV, MeV/u, MeV/nucl, dE/dx, CSDA, PMMA, ASTAR, PSTAR, " +
   "nucleon, proton, deuteron, carbon ion, neon ion, oxygen ion, " +
-  "helium-3, carbon-13, stopping power, Lucite, adipose tissue";
+  "helium-3, carbon-13, stopping power, LET, linear energy transfer, keV/um, " +
+  "Lucite, adipose tissue, Kapton, Mylar, Teflon, Pyrex glass, sodium iodide, cesium iodide";
 
 function loadAudio(file) {
-  const buf = execSync(`ffmpeg -loglevel quiet -i "${file}" -ar 16000 -ac 1 -f f32le -`, {
-    maxBuffer: 50 * 1024 * 1024,
-  });
+  // execFileSync, not execSync — spawns ffmpeg directly with an argv array, no shell
+  // involved to interpret `file`, so a speaker/id containing quotes or shell metacharacters
+  // can't be (mis)parsed as anything but a literal filename (consistent with
+  // asr-transcribe-manifest.mjs's own loadAudio()).
+  const buf = execFileSync(
+    "ffmpeg",
+    ["-loglevel", "quiet", "-i", file, "-ar", "16000", "-ac", "1", "-f", "f32le", "-"],
+    {
+      maxBuffer: 50 * 1024 * 1024,
+    },
+  );
   return new Float32Array(buf.buffer, buf.byteOffset, buf.byteLength / 4);
 }
 

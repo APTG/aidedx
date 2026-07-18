@@ -6,11 +6,17 @@
  * Same model-loading and domain-prompt logic as scripts/asr-transcribe.mjs, verbatim — this
  * script only generalizes *which* files get fed to it.
  *
+ * Resumable (issue #92): writes `outFile` after every clip and skips any id already present
+ * in it, so a job killed partway through (confirmed to happen: a real v3 Athena run hit its
+ * walltime limit at 975/1000 clips transcribed) only re-does the clips not yet done on
+ * resubmit, instead of losing all completed transcriptions — `outFile` used to be written
+ * once at the very end, so a mid-loop kill discarded everything.
+ *
  * Usage: node scripts/asr-transcribe-manifest.mjs <audioDir> <manifest.json> <modelId> <dtype> <outFile> [--no-prompt]
  */
 import { pipeline, env } from "@huggingface/transformers";
 import { execFileSync } from "child_process";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, renameSync } from "fs";
 import { fileURLToPath } from "url";
 import os from "os";
 import path from "path";
@@ -26,10 +32,14 @@ const dtype = process.argv[5];
 const outFile = process.argv[6];
 const withPrompt = !process.argv.includes("--no-prompt");
 
+// Kept in sync by hand with src/lib/asr/transcribe.ts's own copy (issue #92) — this script
+// can't import that module directly (Node/onnxruntime-node here vs. the browser
+// transformers.js pipeline there), same reason the two have always been separate literals.
 const DOMAIN_PROMPT =
   "MeV, keV, GeV, MeV/u, MeV/nucl, dE/dx, CSDA, PMMA, ASTAR, PSTAR, " +
   "nucleon, proton, deuteron, carbon ion, neon ion, oxygen ion, " +
-  "helium-3, carbon-13, stopping power, Lucite, adipose tissue";
+  "helium-3, carbon-13, stopping power, LET, linear energy transfer, keV/um, " +
+  "Lucite, adipose tissue, Kapton, Mylar, Teflon, Pyrex glass, sodium iodide, cesium iodide";
 
 function loadAudio(file) {
   // execFileSync, not execSync — spawns ffmpeg directly with an argv array, no shell
@@ -47,6 +57,49 @@ function loadAudio(file) {
 
 const manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
 const clips = manifest.clips ?? manifest; // accept either {clips:[...]} or a bare array
+
+let records = [];
+let existingMeta = null;
+try {
+  const prior = JSON.parse(readFileSync(outFile, "utf-8"));
+  records = prior.records ?? [];
+  existingMeta = prior;
+} catch (e) {
+  // ENOENT (no prior outFile) is the expected fresh-start case. Anything else — most
+  // notably a truncated/unparseable JSON left by a job killed mid-write — is a real
+  // anomaly: silently treating it as "start fresh" would overwrite it on the very next
+  // checkpoint and lose whatever partial results it held, so surface it loudly instead of
+  // swallowing it. (Checkpoint writes below are now atomic via write-then-rename
+  // specifically so this script's own writes can no longer produce that truncated state;
+  // this remains a guard against out-of-band corruption.)
+  if (e.code !== "ENOENT") {
+    console.error(
+      `warning: ${outFile} exists but failed to parse (${e.message}) — starting fresh ` +
+        `and will overwrite it; back it up now if it might hold recoverable results`,
+    );
+  }
+}
+if (
+  existingMeta &&
+  (existingMeta.modelId !== modelId ||
+    existingMeta.dtype !== dtype ||
+    existingMeta.withPrompt !== withPrompt)
+) {
+  const describe = (id, dt, wp) => `${id} [${dt}]${wp ? " +prompt" : " --no-prompt"}`;
+  throw new Error(
+    `${outFile} already has results for ${describe(existingMeta.modelId, existingMeta.dtype, existingMeta.withPrompt)}, ` +
+      `not ${describe(modelId, dtype, withPrompt)} — use a different outFile instead of resuming into it`,
+  );
+}
+const doneIds = new Set(records.map((r) => r.id));
+const remaining = clips.filter((c) => !doneIds.has(c.id));
+console.log(
+  `${doneIds.size} already transcribed, ${remaining.length} remaining of ${clips.length}`,
+);
+if (remaining.length === 0) {
+  console.log("nothing to do");
+  process.exit(0);
+}
 
 // onnxruntime-node defaults its thread pool to the *physical* core count and pins thread i
 // to CPU i; on a cgroup-limited Slurm/Athena allocation (nproc here != physical cores) most
@@ -100,9 +153,8 @@ if (promptEnabled) {
   }
 }
 
-const records = [];
-for (let i = 0; i < clips.length; i++) {
-  const { id } = clips[i];
+for (let i = 0; i < remaining.length; i++) {
+  const { id } = remaining[i];
   const file = path.join(audioDir, `${id}.wav`);
   const audio = loadAudio(file);
   const t1 = Date.now();
@@ -132,15 +184,24 @@ for (let i = 0; i < clips.length; i++) {
   }
   const secs = (Date.now() - t1) / 1000;
   records.push({ id, raw, secs, error, usedPromptFallback });
-  if ((i + 1) % 25 === 0 || i === clips.length - 1) {
+  // Checkpoint after every clip, not just once at the end — a job killed mid-run (a time
+  // limit, preemption, ...) loses at most the clip in flight, not every completed
+  // transcription (confirmed cost of not doing this: a real run lost 975/1000 completed
+  // transcriptions to a walltime kill because this used to write only after the full loop).
+  // Written atomically (temp file + rename) so a kill mid-write can never leave `outFile`
+  // itself truncated/unparseable — a rename is atomic, so the next resume always sees
+  // either the previous checkpoint intact or the new one complete, never a torn file.
+  const tmpFile = `${outFile}.tmp`;
+  writeFileSync(
+    tmpFile,
+    JSON.stringify({ modelId, dtype, withPrompt: promptEnabled, loadS, records }, null, 1),
+  );
+  renameSync(tmpFile, outFile);
+  if ((i + 1) % 25 === 0 || i === remaining.length - 1) {
     console.log(
-      `  [${i + 1}/${clips.length}] ${id}: (${secs.toFixed(1)}s) ${error ? "ERROR " + error : raw}`,
+      `  [${doneIds.size + i + 1}/${clips.length}] ${id}: (${secs.toFixed(1)}s) ${error ? "ERROR " + error : raw}`,
     );
   }
 }
 
-writeFileSync(
-  outFile,
-  JSON.stringify({ modelId, dtype, withPrompt: promptEnabled, loadS, records }, null, 1),
-);
 console.log(`wrote ${outFile} (${records.length} records)`);

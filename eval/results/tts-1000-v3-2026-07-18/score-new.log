@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-small [q8] +prompt new-corrector ===
+clips: 1000   median inference: 2.3s   load: 1.9s
+clip-level all-slots-correct:  raw 782/1000 (78.2%)   corrected 840/1000 (84.0%)
+
+by quantity (corrected):
+  csdaRange        493/600 (82.2%)
+  energyFromRange  234/250 (93.6%)
+  stoppingPower    113/150 (75.3%)
+
+by scenario type (corrected):
+  single     658/800 (82.3%)
+  energy     90/100 (90.0%)
+  material   51/55 (92.7%)
+  particle   41/45 (91.1%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      589/698 (84.4%)
+  clinical-core  251/302 (83.1%)
+
+by voice profile (corrected), worst 10:
+  spanish-accented-male-animated   16/25 (64.0%)
+  nigerian-female-hurried          9/14 (64.3%)
+  custom-aiden-curious             17/24 (70.8%)
+  custom-ryan-happy                15/21 (71.4%)
+  irish-male-sleepy                15/21 (71.4%)
+  british-male-skeptical           18/25 (72.0%)
+  jamaican-female-relaxed          8/11 (72.7%)
+  german-accented-female-brisk     19/25 (76.0%)
+  nigerian-male-warm               16/21 (76.2%)
+  french-accented-female-elegant   17/22 (77.3%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   98.3% ->  98.4%  (n=1250)
+  particle   96.1% ->  96.2%  (n=1045)
+  material   98.8% ->  98.8%  (n=1085)
+  number     96.0% ->  96.0%  (n=1152)
+  unit       87.1% ->  93.1%  (n=1152)
+  ALL        95.2% ->  96.5%  (n=5684)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         84.2% ->  89.4%  (n=482)
+  MeV/nucl    80.1% ->  93.8%  (n=322)
+  keV         98.8% ->  98.8%  (n=83)
+  GeV         66.7% ->  66.7%  (n=15)
+  cm         100.0% -> 100.0%  (n=184)
+  mm          95.5% ->  95.5%  (n=66)
+
+failing clips after correction (160 total, showing first 30):
+  rng-0025 missing[unit]: What is the CSDA range of a 70-MV proton and polystyrene?
+  rng-0031 missing[particle]: So roughly how far would a 40 MeV per nucleon phosphorous 31 ion make it into polyethylene?
+  rng-0032 missing[particle,number]: So, roughly how far would a one-agate MEV per nucleon-led 208 ion make it into cortical bone?
+  rng-0038 missing[unit]: quick one. How far does a 8-EmeV deuteron go in muscle tissue?
+  rng-0044 missing[particle,number,unit]: range of ADMEV, Dodorant and Pyrex glass, please?
+  rng-0057 missing[unit]: What's the range of a 250-MIV proton in A150 tissue-equivalent plastic?
+  rng-0062 missing[particle]: Range of a 400 MeV per nucleon led 208 ion in lung, please.
+  rng-0064 missing[unit]: How deep does a 100-EV alpha particle penetrate into graphite?
+  rng-0073 missing[unit]: range of a 1G, V-proton and graphite, please.
+  rng-0078 missing[number]: What is the CSDA range of a 1.080 MeV per nucleon boron-11 ion in Kapton?
+  rng-0079 missing[number]: Quick one, how far does it ate MeV helium-3 ion go in water?
+  rng-0096 missing[number]: Determine the range of two MeV tritons in a 150-tissue equivalent plastic.
+  rng-0104 missing[particle]: So roughly how far would a 80 MeV per nucleon phosphorous 31 ion make it into blood?
+  rng-0107 missing[particle]: Determine the range of 25 MeV-healium-3 ions in muscle tissue.
+  rng-0113 missing[unit]: What's the range of a 100-mV-alpha particle in polystyrene?
+  rng-0118 missing[number]: How deep does a 1-hade MeV per nucleon phosphorus 31 ion penetrate into a 150 tissue equivalent plastic?
+  rng-0123 missing[number]: Find the CSDA range for two MeV alpha particles in gold.
+  rng-0124 missing[particle]: What is the CSDA range of a 15 MeV-healium-3 ion in Mylar?
+  rng-0126 missing[material]: Determine the range of 400 MeV per nucleon sulfur, 32 ions in captain.
+  rng-0127 missing[particle]: Quick one, how far does a 10 MeV-healium-3 ion go in adipose tissue?
+  rng-0129 missing[particle,unit]: Quick one, how far does a 60MIAV per nucleon lid U08 ion go in polystyrene?
+  rng-0134 missing[unit]: What's the range of a 300-MV proton in aluminum?
+  rng-0148 missing[particle]: What's the range of a 400 MeV per nucleon led 208 ion in cortical bone?
+  rng-0150 missing[number]: Determine the range of two MeV deuteron and Kapton.
+  rng-0152 missing[particle,number,unit]: range of an ADMAV-tritin in muscle tissue, please.
+  rng-0160 missing[particle,material,unit]: Rage of a 200-mini-vebroton in graph 5.
+  rng-0161 missing[unit]: Before coming to rest, how far does a 20-MV triton get through air?
+  rng-0165 missing[unit]: Quick one, how far does a 350M at EV proton go in Mylar?
+  rng-0167 missing[unit]: Click one! How far does a 60mI deuteron go on cesium iodide?
+  rng-0169 missing[unit]: How deep does a 40-EMeV triton penetrate into aluminum?
+
+wrote eval/results/tts-1000-v3-2026-07-18/score-new.json
