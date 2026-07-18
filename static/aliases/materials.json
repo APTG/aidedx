@@ -14,7 +14,9 @@
     "kind": "element",
     "aliases": [
       "he",
-      "helium"
+      "hel",
+      "helium",
+      "helu"
     ]
   },
   {
@@ -23,7 +25,9 @@
     "kind": "element",
     "aliases": [
       "li",
-      "lithium"
+      "lit",
+      "lithium",
+      "litu"
     ]
   },
   {
@@ -41,7 +45,9 @@
     "kind": "element",
     "aliases": [
       "b",
-      "boron"
+      "bor",
+      "boron",
+      "boru"
     ]
   },
   {
@@ -50,7 +56,9 @@
     "kind": "element",
     "aliases": [
       "c",
-      "carbon"
+      "carbon",
+      "wegiel",
+      "wegla"
     ]
   },
   {
@@ -58,6 +66,8 @@
     "name": "Nitrogen",
     "kind": "element",
     "aliases": [
+      "azot",
+      "azotu",
       "n",
       "nitrogen"
     ]
@@ -68,7 +78,9 @@
     "kind": "element",
     "aliases": [
       "o",
-      "oxygen"
+      "oxygen",
+      "tlen",
+      "tlenu"
     ]
   },
   {
@@ -86,7 +98,8 @@
     "kind": "element",
     "aliases": [
       "ne",
-      "neon"
+      "neon",
+      "neonu"
     ]
   },
   {
@@ -104,6 +117,8 @@
     "kind": "element",
     "aliases": [
       "magnesium",
+      "magnez",
+      "magnezu",
       "mg"
     ]
   },
@@ -122,6 +137,9 @@
     "name": "Silicon",
     "kind": "element",
     "aliases": [
+      "krzem",
+      "krzemie",
+      "krzemu",
       "si",
       "silicon"
     ]
@@ -160,7 +178,8 @@
     "kind": "element",
     "aliases": [
       "ar",
-      "argon"
+      "argon",
+      "argonu"
     ]
   },
   {
@@ -178,7 +197,9 @@
     "kind": "element",
     "aliases": [
       "ca",
-      "calcium"
+      "calcium",
+      "wapn",
+      "wapnia"
     ]
   },
   {
@@ -196,7 +217,9 @@
     "kind": "element",
     "aliases": [
       "ti",
-      "titanium"
+      "titanium",
+      "tytan",
+      "tytanu"
     ]
   },
   {
@@ -232,7 +255,9 @@
     "kind": "element",
     "aliases": [
       "fe",
-      "iron"
+      "iron",
+      "zelaza",
+      "zelazo"
     ]
   },
   {
@@ -259,7 +284,9 @@
     "kind": "element",
     "aliases": [
       "copper",
-      "cu"
+      "cu",
+      "miedz",
+      "miedzi"
     ]
   },
   {
@@ -322,7 +349,8 @@
     "kind": "element",
     "aliases": [
       "kr",
-      "krypton"
+      "krypton",
+      "kryptonu"
     ]
   },
   {
@@ -483,6 +511,8 @@
     "name": "Xenon",
     "kind": "element",
     "aliases": [
+      "ksenon",
+      "ksenonu",
       "xe",
       "xenon"
     ]
@@ -711,7 +741,9 @@
     "kind": "element",
     "aliases": [
       "au",
-      "gold"
+      "gold",
+      "zlocie",
+      "zloto"
     ]
   },
   {
@@ -738,6 +770,8 @@
     "kind": "element",
     "aliases": [
       "lead",
+      "olow",
+      "olowiu",
       "pb"
     ]
   },
@@ -892,7 +926,9 @@
     "aliases": [
       "a 150",
       "a 150 tissue equivalent plastic",
-      "a150"
+      "a150",
+      "plastik tkankopodobny a 150",
+      "plastiku tkankopodobnym a 150"
     ]
   },
   {
@@ -902,7 +938,10 @@
     "aliases": [
       "adipose",
       "adipose tissue",
-      "fat"
+      "fat",
+      "tkance tluszczowej",
+      "tkanka tluszczowa",
+      "tkanke tluszczowa"
     ]
   },
   {
@@ -910,7 +949,10 @@
     "name": "Air (dry, near sea level)",
     "kind": "compound",
     "aliases": [
-      "air"
+      "air",
+      "powietrza",
+      "powietrze",
+      "powietrzu"
     ]
   },
   {
@@ -970,7 +1012,9 @@
     "kind": "compound",
     "aliases": [
       "bone compact",
-      "compact bone"
+      "compact bone",
+      "kosc zbita",
+      "kosci zbitej"
     ]
   },
   {
@@ -980,7 +1024,9 @@
     "aliases": [
       "bone",
       "bone cortical",
-      "cortical bone"
+      "cortical bone",
+      "kosc korowa",
+      "kosci korowej"
     ]
   },
   {
@@ -1411,7 +1457,8 @@
     "kind": "compound",
     "aliases": [
       "kapton",
-      "kapton polyimide film"
+      "kapton polyimide film",
+      "kaptonie"
     ]
   },
   {
@@ -1557,10 +1604,14 @@
     "name": "Muscle, Skeletal",
     "kind": "compound",
     "aliases": [
+      "miesien",
       "muscle",
       "muscle skeletal",
       "muscle tissue",
-      "skeletal muscle"
+      "skeletal muscle",
+      "tkance miesniowej",
+      "tkanka miesniowa",
+      "tkanke miesniowa"
     ]
   },
   {
@@ -1680,6 +1731,8 @@
     "aliases": [
       "lexan",
       "makrolon",
+      "poliweglan",
+      "poliweglanie",
       "polycarbonate"
     ]
   },
@@ -1696,6 +1749,8 @@
     "name": "Polyethylene",
     "kind": "compound",
     "aliases": [
+      "polietylen",
+      "polietylenie",
       "polyethylene"
     ]
   },
@@ -1876,6 +1931,8 @@
     "name": "Silicon Dioxide",
     "kind": "compound",
     "aliases": [
+      "dwutlenek krzemu",
+      "dwutlenku krzemu",
       "fused silica",
       "quartz",
       "silica",
@@ -2077,7 +2134,11 @@
     "aliases": [
       "h2o",
       "liquid water",
-      "water"
+      "water",
+      "woda",
+      "wode",
+      "wody",
+      "wodzie"
     ]
   },
   {
@@ -2095,6 +2156,8 @@
     "name": "Graphite",
     "kind": "compound",
     "aliases": [
+      "graficie",
+      "grafit",
       "graphite"
     ]
   }

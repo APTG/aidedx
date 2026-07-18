@@ -161,4 +161,47 @@ export const ELEMENT_NAME_VARIANTS: ReadonlyArray<[string, number]> = [
   ["sulphur", 16],
   ["cesium", 55],
   ["wolfram", 74],
+
+  // Polish names (issue #87/#63), nominative + the case forms actually used in
+  // eval/RECORDING.pl.md's 50-sentence set — Polish physics queries decline the
+  // element name itself ("jon węgla" = "ion of-carbon", genitive), unlike
+  // English's invariant "carbon ion". Feeds both the particle alias index
+  // (particles.ts) and the elemental-material index (materials.ts) automatically,
+  // since both loop over this same table. Where the Polish nominative is already
+  // identical to the English name (argon, krypton, neon), only the declined
+  // forms actually seen are added, not a redundant duplicate of the nominative.
+  ["hel", 2],
+  ["helu", 2],
+  ["lit", 3],
+  ["litu", 3],
+  ["bor", 5],
+  ["boru", 5],
+  ["węgiel", 6],
+  ["węgla", 6],
+  ["azot", 7],
+  ["azotu", 7],
+  ["tlen", 8],
+  ["tlenu", 8],
+  ["neonu", 10],
+  ["magnez", 12],
+  ["magnezu", 12],
+  ["krzem", 14],
+  ["krzemu", 14],
+  ["krzemie", 14],
+  ["argonu", 18],
+  ["wapń", 20],
+  ["wapnia", 20],
+  ["tytan", 22],
+  ["tytanu", 22],
+  ["żelazo", 26],
+  ["żelaza", 26],
+  ["miedź", 29],
+  ["miedzi", 29],
+  ["kryptonu", 36],
+  ["ksenon", 54],
+  ["ksenonu", 54],
+  ["złoto", 79],
+  ["złocie", 79],
+  ["ołów", 82],
+  ["ołowiu", 82],
 ];

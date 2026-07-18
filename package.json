@@ -55,7 +55,9 @@
   },
   "pnpm": {
     "overrides": {
-      "onnxruntime-web": "1.27.0"
+      "onnxruntime-web": "1.27.0",
+      "adm-zip": ">=0.6.0",
+      "cookie": ">=0.7.0 <1"
     }
   }
 }
