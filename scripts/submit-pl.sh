@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=64G
 #SBATCH --gres=gpu:a100:1
-#SBATCH --time=08:00:00
+#SBATCH --time=12:00:00
 #SBATCH --output=%x-%j.out
 #SBATCH --error=%x-%j.err
 #
@@ -29,12 +29,22 @@
 # seed, same 600/250/150 csdaRange/energyFromRange/stoppingPower balance and single/multi
 # fractions as the English 1000-sentence batches) — only the synthesis engine differs.
 #
-# Prerequisite (one-time, mirrors docs/athena-setup.md's .venv-tts/.venv-qwen convention):
-#   python3 -m venv .venv-piper && source .venv-piper/bin/activate && pip install piper-tts
-# .venv-qwen must already exist per the existing English-batch setup (docs/athena-setup.md).
+# .venv-piper is created and provisioned automatically below (piper-tts is a small, pure-CPU
+# pip install — no CUDA-specific wheel to get right, unlike torch/qwen_tts), so there's no
+# manual prerequisite for it. .venv-qwen still must already exist per the existing
+# English-batch setup (docs/athena-setup.md) — that one *is* CUDA-specific (a particular
+# torch wheel + multi-GB weights) and riskier to auto-provision blindly in a batch job, so
+# it stays a one-time interactive setup step; this script fails fast with a clear message if
+# it's missing rather than silently trying to install it.
 #
-# Safe to resubmit as-is if it fails or times out partway through — every step below is
-# resumable (skips already-done clips/ids), same discipline as submit-v3.sh.
+# Time budget (12h, generous rather than measured — no prior Polish run to size this from):
+# a single-engine 1000-clip Qwen batch already needed ~3.3h TTS + ~40min transcription in the
+# English v3 run (docs/tts-eval-1000-v3.md §2), and this job runs Piper (fast, CPU) *and*
+# Qwen-Polish (same order of cost as before, plus per-clip Auto-fallback retries on whatever
+# fraction of clips reject "Polish" outright) back to back, transcribes and scores both, and
+# provisions .venv-piper from scratch on a first run. Safe to resubmit as-is if it still times
+# out partway through — every step below is resumable (skips already-done clips/ids), same
+# discipline as submit-v3.sh.
 #
 # Usage (from the repo root, after pulling this branch/commit onto Athena):
 #   sbatch scripts/submit-pl.sh
@@ -60,11 +70,25 @@ node --experimental-strip-types scripts/generate-1000-sentences-pl.mjs "$SENTENC
 node --experimental-strip-types scripts/tts-sentence-check.ts "$SENTENCES_FILE" --lang pl
 
 echo "=== Step 1/4: Piper TTS generation (resumes automatically from existing $PIPER_AUDIO_DIR/*.wav) ==="
-source .venv-piper/bin/activate
+if [ ! -d .venv-piper ]; then
+  echo "  .venv-piper not found — creating it (one-time; piper-tts is a small, pure-CPU install)"
+  python3 -m venv .venv-piper
+  source .venv-piper/bin/activate
+  pip install --upgrade pip
+  pip install piper-tts
+else
+  source .venv-piper/bin/activate
+fi
 python scripts/tts-piper-1000.py "$SENTENCES_FILE" "$PIPER_AUDIO_DIR"
 deactivate
 
 echo "=== Step 2/4: Qwen3-TTS Polish generation — experimental, unsupported language (resumes automatically) ==="
+if [ ! -d .venv-qwen ]; then
+  echo "ERROR: .venv-qwen not found. This one is CUDA-specific (a particular torch wheel +" >&2
+  echo "multi-GB weights) and isn't auto-provisioned here — set it up once per" >&2
+  echo "docs/athena-setup.md (the existing English-batch prerequisite), then resubmit." >&2
+  exit 1
+fi
 source .venv-qwen/bin/activate
 python scripts/tts-qwen-1000-pl.py "$SENTENCES_FILE" "$QWEN_AUDIO_DIR"
 deactivate
