@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=64G
 #SBATCH --gres=gpu:a100:1
-#SBATCH --time=04:00:00
+#SBATCH --time=06:00:00
 #SBATCH --output=%x-%j.out
 #SBATCH --error=%x-%j.err
 #
@@ -40,9 +40,21 @@
 # collides with or overwrites the v1/v2 batches, which remain the historical record
 # backing docs/tts-eval-1000.md and docs/tts-eval-1000-v2.md.
 #
-# Safe to resubmit as-is if it fails or times out partway through: TTS generation
-# (scripts/tts-qwen-1000.py) skips any <id>.wav already on disk and resumes from the
-# manifest, so a resubmit only pays for the work not yet done.
+# Time limit bumped 4h -> 6h after a real run confirmed 4h is razor-thin even for a single
+# clean pass: TTS generation alone took 11,823s (3.28h; see eval/audio/tts-qwen-1000-v3/
+# manifest.json's summed gen_s), leaving well under an hour of margin for validation +
+# transcription (~2,550s/42min for 1000 clips) + scoring before hitting a 4h ceiling. That
+# run was in fact killed by SLURM's time limit — "CANCELLED ... DUE TO TIME LIMIT" — during
+# transcription, at 975/1000 clips.
+#
+# Safe to resubmit as-is if it fails or times out partway through:
+#  - TTS generation (scripts/tts-qwen-1000.py) skips any <id>.wav already on disk and
+#    resumes from the manifest, so a resubmit only pays for the work not yet done.
+#  - ASR transcription (scripts/asr-transcribe-manifest.mjs) is now resumable the same way
+#    (issue #92, fixed after the run above lost all 975 completed transcriptions to the
+#    time-limit kill — it used to write its output only once, after the full loop): it
+#    checkpoints after every clip and skips any id already recorded in the existing
+#    outFile, so a resubmit only re-transcribes what wasn't already saved.
 #
 # Usage (from the repo root, after pulling this branch/commit onto Athena):
 #   sbatch scripts/submit-v3.sh
