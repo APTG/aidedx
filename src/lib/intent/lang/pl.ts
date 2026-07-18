@@ -90,6 +90,21 @@ export function mentionsStoppingPowerKeyword(lower: string): boolean {
 /** Last-resort fallback: a bare "zatrzyma-" stem reads as range. Unexercised by the eval set. */
 export const FALLBACK_STOP_RE = /\bzatrzyma\w*\b/iu;
 
+/**
+ * Empty — no Polish spelled-out-number example exists in eval/RECORDING.pl.md to vet against
+ * (issue #26's English fix, "one GeV"/"three MeV", has no confirmed Polish counterpart here).
+ * Polish numerals also decline by the followed noun's case/gender in ways a flat word→digit
+ * table can't safely capture without a physicist review, unlike English's invariant
+ * "one".."ten" — left for a future pack update once real examples exist to build it from.
+ */
+export const NUMBER_WORDS: ReadonlyArray<readonly [string, string]> = [];
+
+/** "Zdolność hamowania" is Polish's own long, distinctive direct keyword (mirrors en.ts's
+ * "stopping power" entry) — safe to extend the same edit-distance typo tolerance to. */
+export const FUZZY_QUANTITY_PHRASES: ReadonlyArray<{ phrase: string; quantity: Quantity }> = [
+  { phrase: "zdolność hamowania", quantity: "stoppingPower" },
+];
+
 // Words that never start/own a material phrase on their own — the function
 // words, quantities, and particle names actually used across the 50
 // sentences. Numbers are excluded by the \p{L} requirement in the core scan.
