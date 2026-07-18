@@ -12,15 +12,21 @@
       "deuterium",
       "deuteron",
       "deuterons",
+      "deuteronu",
       "h",
       "hydrogen",
       "p",
       "proton",
+      "protonow",
       "protons",
+      "protonu",
+      "protony",
       "t",
       "tritium",
       "triton",
-      "tritons"
+      "tritons",
+      "tryton",
+      "trytonu"
     ]
   },
   {
@@ -35,9 +41,14 @@
       "alpha particle",
       "alpha particles",
       "alphas",
+      "czastce alfa",
+      "czastka alfa",
+      "czastki alfa",
       "he",
+      "hel",
       "helion",
       "helium",
+      "helu",
       "α"
     ]
   },
@@ -48,7 +59,9 @@
     "defaultMassNumber": 7,
     "aliases": [
       "li",
-      "lithium"
+      "lit",
+      "lithium",
+      "litu"
     ]
   },
   {
@@ -68,7 +81,9 @@
     "defaultMassNumber": 11,
     "aliases": [
       "b",
-      "boron"
+      "bor",
+      "boron",
+      "boru"
     ]
   },
   {
@@ -78,7 +93,9 @@
     "defaultMassNumber": 12,
     "aliases": [
       "c",
-      "carbon"
+      "carbon",
+      "wegiel",
+      "wegla"
     ]
   },
   {
@@ -87,6 +104,8 @@
     "name": "Nitrogen",
     "defaultMassNumber": 14,
     "aliases": [
+      "azot",
+      "azotu",
       "n",
       "nitrogen"
     ]
@@ -98,7 +117,9 @@
     "defaultMassNumber": 16,
     "aliases": [
       "o",
-      "oxygen"
+      "oxygen",
+      "tlen",
+      "tlenu"
     ]
   },
   {
@@ -118,7 +139,8 @@
     "defaultMassNumber": 20,
     "aliases": [
       "ne",
-      "neon"
+      "neon",
+      "neonu"
     ]
   },
   {
@@ -138,6 +160,8 @@
     "defaultMassNumber": 24,
     "aliases": [
       "magnesium",
+      "magnez",
+      "magnezu",
       "mg"
     ]
   },
@@ -158,6 +182,9 @@
     "name": "Silicon",
     "defaultMassNumber": 28,
     "aliases": [
+      "krzem",
+      "krzemie",
+      "krzemu",
       "si",
       "silicon"
     ]
@@ -199,7 +226,8 @@
     "defaultMassNumber": 40,
     "aliases": [
       "ar",
-      "argon"
+      "argon",
+      "argonu"
     ]
   },
   {
@@ -219,7 +247,9 @@
     "defaultMassNumber": 40,
     "aliases": [
       "ca",
-      "calcium"
+      "calcium",
+      "wapn",
+      "wapnia"
     ]
   },
   {
@@ -239,7 +269,9 @@
     "defaultMassNumber": 48,
     "aliases": [
       "ti",
-      "titanium"
+      "titanium",
+      "tytan",
+      "tytanu"
     ]
   },
   {
@@ -279,7 +311,9 @@
     "defaultMassNumber": 56,
     "aliases": [
       "fe",
-      "iron"
+      "iron",
+      "zelaza",
+      "zelazo"
     ]
   },
   {
@@ -309,7 +343,9 @@
     "defaultMassNumber": 63,
     "aliases": [
       "copper",
-      "cu"
+      "cu",
+      "miedz",
+      "miedzi"
     ]
   },
   {
@@ -379,7 +415,8 @@
     "defaultMassNumber": 84,
     "aliases": [
       "kr",
-      "krypton"
+      "krypton",
+      "kryptonu"
     ]
   },
   {
@@ -558,6 +595,8 @@
     "name": "Xenon",
     "defaultMassNumber": 132,
     "aliases": [
+      "ksenon",
+      "ksenonu",
       "xe",
       "xenon"
     ]
@@ -811,7 +850,9 @@
     "defaultMassNumber": 197,
     "aliases": [
       "au",
-      "gold"
+      "gold",
+      "zlocie",
+      "zloto"
     ]
   },
   {
@@ -841,6 +882,8 @@
     "defaultMassNumber": 208,
     "aliases": [
       "lead",
+      "olow",
+      "olowiu",
       "pb"
     ]
   },

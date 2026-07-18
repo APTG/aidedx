@@ -92,6 +92,25 @@ const NAMED_PARTICLE_ALIASES: ReadonlyArray<[string, ParticleAliasEntry]> = [
   ["beta", { id: ELECTRON_ID, massNumber: 0, assumed: false }],
   ["β", { id: ELECTRON_ID, massNumber: 0, assumed: false }],
   ["beta minus", { id: ELECTRON_ID, massNumber: 0, assumed: false }],
+
+  // Polish (issue #87/#63) — the case forms actually used in
+  // eval/RECORDING.pl.md's 50-sentence set. "jon <element, genitive>" (e.g.
+  // "jon węgla") is handled separately by the matcher's Polish pack, which
+  // strips the "jon"/"jonu" head before calling resolveParticle — these entries
+  // are only the *named* particles whose isotope is fixed by the Polish name
+  // itself, mirroring the English proton/deuteron/triton/alpha entries above.
+  // "proton" and "deuteron" are shared spellings with English and already
+  // covered by the entries above; only the Polish-specific inflections are
+  // added here.
+  ["protonu", { id: 1, massNumber: 1, assumed: false }],
+  ["protony", { id: 1, massNumber: 1, assumed: false }],
+  ["protonów", { id: 1, massNumber: 1, assumed: false }],
+  ["deuteronu", { id: 1, massNumber: 2, assumed: false }],
+  ["tryton", { id: 1, massNumber: 3, assumed: false }],
+  ["trytonu", { id: 1, massNumber: 3, assumed: false }],
+  ["cząstka alfa", { id: 2, massNumber: 4, assumed: false }],
+  ["cząstki alfa", { id: 2, massNumber: 4, assumed: false }],
+  ["cząstce alfa", { id: 2, massNumber: 4, assumed: false }],
 ];
 
 /**

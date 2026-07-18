@@ -164,9 +164,42 @@ export const MATERIAL_STOPWORDS = new Set([
 export const LIST_SEP_SRC =
   "(?:\\s*,\\s*(?:and\\s+|or\\s+)?|\\s+and\\s+|\\s+or\\s+|\\s+versus\\s+|\\s+vs\\.?\\s+)";
 
+/**
+ * Optional per-nucleon suffix, e.g. "/nucleon", "/u", " per nucleon". Two
+ * alternatives (slash form vs. "per" form) each with their own capture group,
+ * since the core's `extractEnergies` doesn't assume a fixed group count — it
+ * scans every group from index 3 onward for whichever one matched.
+ */
+export const PER_NUCL_SUFFIX_SRC =
+  "(?:\\s*\\/\\s*(nucleon|nucl|amu|u)|\\s+per\\s+(nucleon|nucl|amu|u))?";
+
+/** "u"/"amu" read as the per-*mass-unit* figure; anything else ("nucleon"/"nucl") as per-nucleon. */
+export function perNuclUnitFor(suffixWord: string): "MeV/u" | "MeV/nucl" {
+  return suffixWord === "u" || suffixWord === "amu" ? "MeV/u" : "MeV/nucl";
+}
+
 /** Trailing head word for a coordinated particle list or a single "<element> ion(s)" head. */
-export const PARTICLE_LIST_HEAD_SRC = "ions?|particles?|nuclei|nucleus";
+const PARTICLE_LIST_HEAD_SRC = "ions?|particles?|nuclei|nucleus";
 
 /** Standalone named particles whose isotope is fixed by the name. */
-export const NAMED_PARTICLE_SRC =
+const NAMED_PARTICLE_SRC =
   "protons?|deuterons?|tritons?|alpha particles?|alphas?|helions?|electrons?|positrons?|beta minus|betas?";
+
+// A coordinated list sharing a trailing head: "carbon and neon ions",
+// "protons, helium, and carbon ions". Requires ≥1 connector so it only fires on
+// genuine lists; single "<element> ion(s)" is handled separately below.
+export const PARTICLE_LIST_RE = new RegExp(
+  `((?:[a-z][a-z-]*${LIST_SEP_SRC})+[a-z][a-z-]*)\\s+(${PARTICLE_LIST_HEAD_SRC})\\b`,
+  "gi",
+);
+// A single "<element/isotope> ion(s)/particle(s)/nuclei" head.
+export const PARTICLE_HEAD_RE = new RegExp(
+  `\\b([a-z][a-z]*(?:-\\d{1,3})?)\\s+(${PARTICLE_LIST_HEAD_SRC})\\b`,
+  "gi",
+);
+/** English's head word trails the element, and the whole match ("carbon ion") already resolves fine via `resolveParticle`'s suffix-stripping. */
+export function particleHeadResolveText(m: RegExpExecArray): string {
+  return m[0];
+}
+// Standalone named particles whose isotope is fixed by the name.
+export const NAMED_PARTICLE_RE = new RegExp(`\\b(${NAMED_PARTICLE_SRC})\\b`, "gi");
