@@ -51,10 +51,14 @@ const IDS = [
   "alias-001",
 ];
 
+// Kept in sync by hand with src/lib/asr/transcribe.ts's own copy (issue #92) — this script
+// can't import that module directly (Node/onnxruntime-node here vs. the browser
+// transformers.js pipeline there), same reason the two have always been separate literals.
 const DOMAIN_PROMPT =
   "MeV, keV, GeV, MeV/u, MeV/nucl, dE/dx, CSDA, PMMA, ASTAR, PSTAR, " +
   "nucleon, proton, deuteron, carbon ion, neon ion, oxygen ion, " +
-  "helium-3, carbon-13, stopping power, Lucite, adipose tissue";
+  "helium-3, carbon-13, stopping power, LET, linear energy transfer, keV/um, " +
+  "Lucite, adipose tissue, Kapton, Mylar, Teflon, Pyrex glass, sodium iodide, cesium iodide";
 
 function loadAudio(file) {
   const buf = execSync(`ffmpeg -loglevel quiet -i "${file}" -ar 16000 -ac 1 -f f32le -`, {

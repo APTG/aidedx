@@ -81,6 +81,10 @@ const WHISPER_DTYPE = whisperEntry.dtype;
  * whisper-small fails *consistently* on (not occasionally — every occurrence, e.g. "Kapton"
  * → "captain" every time), plus the LET/keV-µm terms issue #86 taught the matcher to
  * recognize but this prompt never biased toward.
+ *
+ * `scripts/asr-transcribe.mjs` and `scripts/asr-transcribe-manifest.mjs` each carry their
+ * own literal copy of this same string (can't import this module from a plain Node
+ * benchmark script) — keep all three in sync by hand when this one changes.
  */
 const DOMAIN_PROMPT =
   "MeV, keV, GeV, MeV/u, MeV/nucl, dE/dx, CSDA, PMMA, ASTAR, PSTAR, " +

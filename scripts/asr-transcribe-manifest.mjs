@@ -26,10 +26,14 @@ const dtype = process.argv[5];
 const outFile = process.argv[6];
 const withPrompt = !process.argv.includes("--no-prompt");
 
+// Kept in sync by hand with src/lib/asr/transcribe.ts's own copy (issue #92) — this script
+// can't import that module directly (Node/onnxruntime-node here vs. the browser
+// transformers.js pipeline there), same reason the two have always been separate literals.
 const DOMAIN_PROMPT =
   "MeV, keV, GeV, MeV/u, MeV/nucl, dE/dx, CSDA, PMMA, ASTAR, PSTAR, " +
   "nucleon, proton, deuteron, carbon ion, neon ion, oxygen ion, " +
-  "helium-3, carbon-13, stopping power, Lucite, adipose tissue";
+  "helium-3, carbon-13, stopping power, LET, linear energy transfer, keV/um, " +
+  "Lucite, adipose tissue, Kapton, Mylar, Teflon, Pyrex glass, sodium iodide, cesium iodide";
 
 function loadAudio(file) {
   // execFileSync, not execSync — spawns ffmpeg directly with an argv array, no shell
