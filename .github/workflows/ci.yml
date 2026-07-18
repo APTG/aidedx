@@ -53,6 +53,15 @@ jobs:
         continue-on-error: true
         run: pnpm run coverage:intents
 
+      # Reported, non-blocking metric: end-to-end audio→intent accuracy (issue #27), re-scored
+      # from the committed transcript JSONs in eval/results/asr-2026-07-05/ against the frozen
+      # eval/intents.jsonl gold labels. No audio or model needed — deterministic and fast — so
+      # any matcher/corrector change gets this number on every PR without re-running ASR. The
+      # script always exits 0; transcription itself (producing new transcript JSONs) stays local.
+      - name: End-to-end audio→intent accuracy (reported, non-blocking)
+        continue-on-error: true
+        run: pnpm run eval:e2e -- eval/results/asr-2026-07-05/*.json
+
   build:
     name: Build + Unit Tests
     runs-on: ubuntu-latest

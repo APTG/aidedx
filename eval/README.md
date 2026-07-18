@@ -132,3 +132,58 @@ uniqueness, tag-vocabulary membership, and the inverse-query `target` rule.
    genuinely needed, and document them here).
 3. Run `pnpm validate:eval` and `pnpm test`.
 4. Keep the schema in `query-intent.ts` — do **not** fork it.
+
+## End-to-end audio→intent — the standard voice-path metric (issue #27)
+
+Transcript fidelity is a proxy; what the pipeline needs is the right `QueryIntent`. Wording that
+looks "wrong" (a dropped article, a rephrased unit) is fine if the matcher still resolves it
+correctly — the number that matters is **audio → transcript → correction → matcher →
+`compareIntent` vs. the gold label**, not exact transcript match.
+
+### Workflow
+
+1. **Transcribe once**, saving raw output to JSON (offline, re-runnable, no model needed after
+   this step):
+
+   ```sh
+   pnpm run asr:transcribe -- onnx-community/whisper-small q8 eval/results/my-run.json
+   ```
+
+   Reads every speaker subdirectory under `eval/audio/` for the fixed 30-sentence ID list; add
+   `--no-prompt` to disable the domain-vocabulary prompt bias (on by default, issue #25).
+
+2. **Score the saved transcript** two ways, both deterministic and fast (no audio/model):
+
+   ```sh
+   pnpm run asr:score -- eval/results/my-run.json   # slot-token + clip-level accuracy (issue #7)
+   pnpm run eval:e2e -- eval/results/my-run.json     # audio→intent vs. eval/intents.jsonl gold labels (this issue)
+   ```
+
+   Both default to the **shipped** corrector (`src/lib/asr/correct/`, issue #28) — matching what
+   the live app actually runs. `--base`/`--ext` re-score against the pre-#28 experiment correctors,
+   kept only for historical comparison in older `docs/*.md` reports.
+
+3. **Report the E2E number** (`eval:e2e`'s `audio→intent slot-match: ... corrected N/M`) for any
+   change to the ASR model, the corrector, or the matcher — not transcript exact-match. CI
+   re-scores the committed baseline transcripts (`eval/results/asr-2026-07-05/`) on every push as a
+   **non-blocking metric**, the same way `pnpm coverage:intents` is: it always exits 0 and never
+   gates the build, since it's a signal to watch, not a merge gate. Producing new transcripts
+   (step 1) needs a local machine with the audio and stays local — CI only re-scores what's already
+   committed.
+
+### Two measurement tracks — know which one a doc is reporting
+
+This workflow's `eval:e2e` compares against **hand-labeled** `QueryIntent`s in `intents.jsonl`, so
+it only applies to material with a gold label — today that's the original 30-sentence/3-speaker
+human recording set (`eval/results/asr-2026-07-05/`, 89 clips per model). The larger TTS-synthesized
+batches (`docs/tts-eval-1000*.md`, up to 1000 sentences) aren't hand-labeled at that scale, so they
+report a **different**, slot-truth-based metric instead (`scripts/asr-score-slots-generic.mjs`,
+matching against ground truth recorded at _generation_ time). Both are legitimate — one is
+gold-label E2E intent accuracy on a small hand-verified set, the other is slot recall on a much
+larger, synthetically-labeled set — but they aren't the same number and shouldn't be compared
+directly. Check which script a report used before comparing percentages across docs.
+
+`scripts/asr-batch.mjs` (the original issue #7 batch tool) still reports transcript exact-match,
+but only as a labeled debug detail now — it predates the transcribe/score split above and doesn't
+run the E2E/slot scorers itself, so it's a quick single-shot sanity check, not a source for the
+reported metric.
