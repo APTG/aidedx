@@ -123,9 +123,28 @@ describe("validateIntent — particle/material/program combination", () => {
       expect.objectContaining({
         slot: "particle",
         index: 0,
-        message: "Carbon in Water (liquid) has no data under PSTAR",
+        message: "Carbon has no data under PSTAR",
       }),
     );
+  });
+
+  it("attributes a material-side gap to the material slot even in a singleton (compareDim: none) query", () => {
+    // Regression case: PSTAR supports protons everywhere except Boron (dedx_web#845, see
+    // compute.ts). A singleton query has only one particle/material pair, so this must not be
+    // hard-attributed to "particle" just because that's the slot a comparison would vary.
+    const v = validateIntent(
+      intent({
+        particles: [{ match: "proton" }],
+        materials: [{ match: "boron" }],
+        energies: [{ value: 40, unit: "MeV" }],
+        program: "PSTAR",
+      }),
+      service,
+    );
+    expect(v.plausible).toBe(false);
+    expect(v.issues).toEqual([
+      { slot: "material", index: 0, message: "Boron has no data under PSTAR for Hydrogen" },
+    ]);
   });
 
   it("attributes the failing combination to the actual bad particle in a compareDim: particle list", () => {
@@ -143,7 +162,24 @@ describe("validateIntent — particle/material/program combination", () => {
     expect(v.issues[0]).toMatchObject({ slot: "particle", index: 1 });
   });
 
-  it("attributes the failing combination to the material slot in a compareDim: material list", () => {
+  it("attributes a material-side gap to the varying material's own index in a compareDim: material list", () => {
+    const v = validateIntent(
+      intent({
+        compareDim: "material",
+        particles: [{ match: "proton" }],
+        materials: [{ match: "water" }, { match: "boron" }],
+        energies: [{ value: 40, unit: "MeV" }],
+        program: "PSTAR",
+      }),
+      service,
+    );
+    // Water is fine under PSTAR; only Boron (index 1) is flagged.
+    expect(v.issues).toEqual([
+      { slot: "material", index: 1, message: "Boron has no data under PSTAR for Hydrogen" },
+    ]);
+  });
+
+  it("dedupes a particle-side gap that would otherwise repeat once per material in a compareDim: material list", () => {
     const v = validateIntent(
       intent({
         compareDim: "material",
@@ -154,8 +190,10 @@ describe("validateIntent — particle/material/program combination", () => {
       }),
       service,
     );
-    expect(v.issues.map((i) => i.slot)).toEqual(["material", "material"]);
-    expect(v.issues.map((i) => i.index)).toEqual([0, 1]);
+    // Carbon is unsupported by PSTAR regardless of material — one issue, not one per material.
+    expect(v.issues).toEqual([
+      { slot: "particle", index: 0, message: "Carbon has no data under PSTAR" },
+    ]);
   });
 
   it("passes when the program is auto-selected, even for calcium (MSTAR falls back to Bethe)", () => {

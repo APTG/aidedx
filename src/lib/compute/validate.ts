@@ -47,9 +47,9 @@ export interface ValidationResult {
 /**
  * Real isotopes satisfy Z <= A (a nuclide can't have fewer nucleons than protons) and, on the
  * heavy side, stay within roughly A <= 3Z + 10 — checked against periodictable.com's known-
- * isotope tables for H, He, C, O, Ca, Fe and Wikipedia's isotopes-of-uranium list (U: Z=92 gives
- * a bound of A<=286, comfortably above every known uranium isotope up to A~294 at the very
- * neutron-rich edge of the chart). This is a coarse "impossible vs merely exotic" gate, not a
+ * isotope tables for H, He, C, O, Ca, Fe and Wikipedia's isotopes-of-uranium list (27 known
+ * isotopes span A=214 to A=242; this bound's ceiling for Z=92 is A<=286, comfortably above that
+ * real max). This is a coarse "impossible vs merely exotic" gate, not a
  * per-element nuclide chart: wide enough to never reject a real (if rare) isotope libdedx would
  * otherwise compute fine, but tight enough to catch a grossly wrong one (carbon-30, A=30,
  * against carbon's real max of A=22 and this bound's A<=28).
@@ -96,11 +96,17 @@ function suggestAlternateUnit(
   return undefined;
 }
 
-/** One (particle, material) pair to plausibility-check, plus which chip it's attributed to. */
+/**
+ * One (particle, material) pair to plausibility-check, plus each side's real position in
+ * `intent.particles` / `intent.materials` — used to attribute a combination failure to whichever
+ * side is actually unsupported (see `validateIntent()`), not to whichever side `compareDim`
+ * happens to be varying.
+ */
 interface ActivePair {
   particleMatch: string;
   materialMatch: string;
-  attribution: { slot: "particle" | "material"; index: number };
+  particleIndex: number;
+  materialIndex: number;
 }
 
 /**
@@ -115,17 +121,19 @@ function activePairsFor(intent: QueryIntent): ActivePair[] {
   const firstParticle = intent.particles[0];
   const firstMaterial = intent.materials[0];
   if (intent.compareDim === "material" && firstParticle) {
-    return intent.materials.map((m, index) => ({
+    return intent.materials.map((m, materialIndex) => ({
       particleMatch: firstParticle.match,
       materialMatch: m.match,
-      attribution: { slot: "material", index },
+      particleIndex: 0,
+      materialIndex,
     }));
   }
   if (intent.compareDim === "particle" && firstMaterial) {
-    return intent.particles.map((p, index) => ({
+    return intent.particles.map((p, particleIndex) => ({
       particleMatch: p.match,
       materialMatch: firstMaterial.match,
-      attribution: { slot: "particle", index },
+      particleIndex,
+      materialIndex: 0,
     }));
   }
   if (intent.compareDim !== "program" && firstParticle && firstMaterial) {
@@ -133,11 +141,27 @@ function activePairsFor(intent: QueryIntent): ActivePair[] {
       {
         particleMatch: firstParticle.match,
         materialMatch: firstMaterial.match,
-        attribution: { slot: "particle", index: 0 },
+        particleIndex: 0,
+        materialIndex: 0,
       },
     ];
   }
   return [];
+}
+
+/**
+ * Drops exact (slot, index, message) repeats — the same underlying fact can otherwise surface
+ * once per pair, e.g. a particle unsupported by the selected program fails identically against
+ * every material in a `compareDim: "material"` list.
+ */
+function dedupeIssues(issues: PlausibilityIssue[]): PlausibilityIssue[] {
+  const seen = new Set<string>();
+  return issues.filter((issue) => {
+    const key = `${issue.slot}:${issue.index}:${issue.message}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 /**
@@ -179,11 +203,26 @@ export function validateIntent(intent: QueryIntent, service: LibdedxService): Va
 
     const programId = resolveProgramId(intent, particle.id, material.id, service);
     if (!programSupportsCombination(service, programId, particle.id, material.id)) {
-      issues.push({
-        slot: pair.attribution.slot,
-        index: pair.attribution.index,
-        message: `${particle.name} in ${material.name} has no data under ${programName(programId)}`,
-      });
+      // Attribute to whichever side is actually missing from the program's own tables — e.g.
+      // proton + Boron under PSTAR is a *material* gap (PSTAR supports protons everywhere else),
+      // not a particle problem, even though the particle slot is what a singleton query varies.
+      const name = programName(programId);
+      const particleOk = service.getParticles(programId).some((p) => p.id === particle.id);
+      const materialOk = service.getMaterials(programId).some((m) => m.id === material.id);
+      if (!particleOk) {
+        issues.push({
+          slot: "particle",
+          index: pair.particleIndex,
+          message: `${particle.name} has no data under ${name}`,
+        });
+      }
+      if (!materialOk) {
+        issues.push({
+          slot: "material",
+          index: pair.materialIndex,
+          message: `${material.name} has no data under ${name} for ${particle.name}`,
+        });
+      }
       continue;
     }
 
@@ -205,5 +244,6 @@ export function validateIntent(intent: QueryIntent, service: LibdedxService): Va
     });
   }
 
-  return { plausible: issues.length === 0, issues };
+  const deduped = dedupeIssues(issues);
+  return { plausible: deduped.length === 0, issues: deduped };
 }
