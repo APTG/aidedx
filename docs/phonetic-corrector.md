@@ -44,9 +44,11 @@ A closed-lexicon edit-distance pass, run **after** the existing regex fast path
 
 ## 3. Validation — re-verified now, not copied from the PR
 
-Scored with `scripts/asr-score-slots.mjs` against the committed 3-speaker (km/lg/mn, 89–90
-clips) transcripts in `eval/results/asr-2026-07-16/`, comparing the shipped regex-only
-corrector (`--ext`, PR #89) against this phonetic pass (`--new`) on the exact same files:
+Scored with `scripts/asr-score-slots.mjs` against the committed 3-speaker (km/lg/mn) transcripts
+in `eval/results/asr-2026-07-16/`, comparing the shipped regex-only corrector (`--ext`, PR #89)
+against this phonetic pass (`--new`) on the exact same files. Every result file has 89 records;
+`whisper-base`'s denominator is 86 because 3 of its records carry a transcription error (dropped
+before scoring), not because fewer clips exist for it:
 
 | Model                      | ext-only    | +phonetic (new) |
 | -------------------------- | ----------- | --------------- |
