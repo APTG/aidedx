@@ -16,7 +16,7 @@
  */
 import { pipeline, env } from "@huggingface/transformers";
 import { execFileSync } from "child_process";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, renameSync } from "fs";
 import { fileURLToPath } from "url";
 import os from "os";
 import path from "path";
@@ -64,13 +64,31 @@ try {
   const prior = JSON.parse(readFileSync(outFile, "utf-8"));
   records = prior.records ?? [];
   existingMeta = prior;
-} catch {
-  /* no prior outFile (or unparseable) — starting fresh, not an error */
+} catch (e) {
+  // ENOENT (no prior outFile) is the expected fresh-start case. Anything else — most
+  // notably a truncated/unparseable JSON left by a job killed mid-write — is a real
+  // anomaly: silently treating it as "start fresh" would overwrite it on the very next
+  // checkpoint and lose whatever partial results it held, so surface it loudly instead of
+  // swallowing it. (Checkpoint writes below are now atomic via write-then-rename
+  // specifically so this script's own writes can no longer produce that truncated state;
+  // this remains a guard against out-of-band corruption.)
+  if (e.code !== "ENOENT") {
+    console.error(
+      `warning: ${outFile} exists but failed to parse (${e.message}) — starting fresh ` +
+        `and will overwrite it; back it up now if it might hold recoverable results`,
+    );
+  }
 }
-if (existingMeta && (existingMeta.modelId !== modelId || existingMeta.dtype !== dtype)) {
+if (
+  existingMeta &&
+  (existingMeta.modelId !== modelId ||
+    existingMeta.dtype !== dtype ||
+    existingMeta.withPrompt !== withPrompt)
+) {
+  const describe = (id, dt, wp) => `${id} [${dt}]${wp ? " +prompt" : " --no-prompt"}`;
   throw new Error(
-    `${outFile} already has results for ${existingMeta.modelId} [${existingMeta.dtype}], ` +
-      `not ${modelId} [${dtype}] — use a different outFile instead of resuming into it`,
+    `${outFile} already has results for ${describe(existingMeta.modelId, existingMeta.dtype, existingMeta.withPrompt)}, ` +
+      `not ${describe(modelId, dtype, withPrompt)} — use a different outFile instead of resuming into it`,
   );
 }
 const doneIds = new Set(records.map((r) => r.id));
@@ -170,10 +188,15 @@ for (let i = 0; i < remaining.length; i++) {
   // limit, preemption, ...) loses at most the clip in flight, not every completed
   // transcription (confirmed cost of not doing this: a real run lost 975/1000 completed
   // transcriptions to a walltime kill because this used to write only after the full loop).
+  // Written atomically (temp file + rename) so a kill mid-write can never leave `outFile`
+  // itself truncated/unparseable — a rename is atomic, so the next resume always sees
+  // either the previous checkpoint intact or the new one complete, never a torn file.
+  const tmpFile = `${outFile}.tmp`;
   writeFileSync(
-    outFile,
+    tmpFile,
     JSON.stringify({ modelId, dtype, withPrompt: promptEnabled, loadS, records }, null, 1),
   );
+  renameSync(tmpFile, outFile);
   if ((i + 1) % 25 === 0 || i === remaining.length - 1) {
     console.log(
       `  [${doneIds.size + i + 1}/${clips.length}] ${id}: (${secs.toFixed(1)}s) ${error ? "ERROR " + error : raw}`,
