@@ -41,6 +41,8 @@ reading in order gives the current picture rather than a snapshot.
 | [`tts-eval-audio.md`](./tts-eval-audio.md)                         | 2026-07-15/16                      | Pilot: can TTS-synthesized audio scale up the eval set instead of recording humans?                                                                                       |
 | [`tts-eval-1000.md`](./tts-eval-1000.md)                           | 2026-07-16                         | 1000-sample TTS eval batch, weighted to a realistic query-intent distribution.                                                                                            |
 | [`tts-eval-1000-v2.md`](./tts-eval-1000-v2.md)                     | 2026-07-17                         | v2 of the above: expanded particle/material pool + LET terminology (issue #83) — does it hold up, and how much does the new phonetic corrector (issue #28) help at scale? |
+| [`phonetic-corrector.md`](./phonetic-corrector.md)                 | 2026-07-18                         | Does the phonetic-lexicon ASR corrector (issue #28) match or beat the tuned extended-rules experiment, without overfitting to the recordings that motivated it?           |
+| [`tts-eval-1000-v3.md`](./tts-eval-1000-v3.md)                     | 2026-07-18                         | v3 of the above: `DOMAIN_PROMPT` expansion + voice-composition fixes (issue #92 Group B) — measured.                                                                      |
 
 ## Environment & tooling
 
