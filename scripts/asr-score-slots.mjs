@@ -23,6 +23,13 @@ const correct = process.argv.includes("--new")
     : baseCorrect;
 
 // Canonicalisation applied before slot matching (case-insensitive containment).
+// A number glued straight to its unit ("30mm", "100mev", no space) is a real, common
+// Whisper/TTS rendering — the actual matcher (LENGTH_TARGET_RE/ENERGY_RE in
+// src/lib/intent/matcher.ts) already tolerates zero whitespace between them. \b treats
+// digits and letters as the same "word" character class, so \b(mev|kev|gev)\b silently
+// fails to match the unit half of a glued token (issue #92: confirmed 34/66 mm-target
+// clips in the v2 1000-sentence batch are glued this way, vs 1/184 for cm). Use a
+// letter-boundary instead of \b wherever a preceding digit is possible.
 function norm(text) {
   let t = " " + text.toLowerCase() + " ";
   t = t.replace(/(\d)\.(\d)/g, "$1<D>$2");
@@ -34,21 +41,28 @@ function norm(text) {
     .replace(/\bten\b/g, "10")
     .replace(/\bthree\b/g, "3");
   // per-nucleon variants → PN ; MeV/u variants → MU
-  t = t.replace(/\b(mev|kev|gev)\s*(?:\/|per)\s*(?:nucleon|nucl)\b/g, "$1 pn");
-  t = t.replace(/\bmev\s*(?:\/|per)\s*(?:u|amu)\b/g, "mev mu");
-  t = t.replace(/\bcentimeters?\b/g, "cm").replace(/\bmillimeters?\b/g, "mm");
+  t = t.replace(/(?<![a-z])(mev|kev|gev)\s*(?:\/|per)\s*(?:nucleon|nucl)\b/g, "$1 pn");
+  t = t.replace(/(?<![a-z])mev\s*(?:\/|per)\s*(?:u|amu)\b/g, "mev mu");
+  t = t.replace(/(?<![a-z])centimeters?\b/g, "cm").replace(/(?<![a-z])millimeters?\b/g, "mm");
   t = t.replace(/\s+/g, " ");
   return t;
 }
 
 // slot spec: [category, [acceptable regexes over normalised text]]
 const S = (cat, ...res) => ({ cat, res });
-const num = (n) => S("number", new RegExp(`\\b${n.replace(".", "\\.")}\\b`));
-const mev = () => S("unit", /\bmev\b/);
-const kev = () => S("unit", /\bkev\b/);
-const gev = () => S("unit", /\bgev\b/);
-const mevPN = () => S("unit", /\bmev pn\b/);
-const mevU = () => S("unit", /\bmev mu\b/);
+// A number's boundary must still reject an adjacent DIGIT (so "30" doesn't match inside
+// "130"), but may be adjacent to a letter — see the norm() comment above for why \b is
+// wrong here when a number is glued straight to its unit.
+const numBoundary = (n) => new RegExp(`(?<!\\d)${n.replace(".", "\\.")}(?!\\d)`);
+// A unit's boundary is the mirror case: must reject an adjacent LETTER (so "mm" doesn't
+// match inside "hmm"/"comment"), but may be adjacent to a digit.
+const unitBoundary = (u) => new RegExp(`(?<![a-z])${u}(?![a-z])`);
+const num = (n) => S("number", numBoundary(n));
+const mev = () => S("unit", unitBoundary("mev"));
+const kev = () => S("unit", unitBoundary("kev"));
+const gev = () => S("unit", unitBoundary("gev"));
+const mevPN = () => S("unit", unitBoundary("mev pn"));
+const mevU = () => S("unit", unitBoundary("mev mu"));
 const part = (...ws) => S("particle", new RegExp(`\\b(?:${ws.join("|")})\\b`));
 const mat = (...ws) => S("material", new RegExp(`\\b(?:${ws.join("|")})\\b`));
 const qty = (...ws) => S("quantity", new RegExp(`(?:${ws.join("|")})`));
@@ -136,7 +150,7 @@ const SLOTS = {
   "inv-rng-001": [
     qty("what energy"),
     num("10"),
-    S("unit", /\bcm\b/),
+    S("unit", unitBoundary("cm")),
     qty("range"),
     mat("water"),
     part("protons?"),

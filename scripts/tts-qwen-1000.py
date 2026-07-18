@@ -3,9 +3,15 @@ Generate the 1000-sentence Qwen3-TTS eval-audio batch (issue #30, second scale-u
 
 Reads the validated 1000 sentences (every one confirmed by scripts/tts-sentence-check.ts
 to produce a correct intent + a real libdedx number — see scripts/generate-1000-sentences.mjs)
-and synthesizes each with a deterministically round-robin-assigned voice profile from an
-expanded pool (docs/tts-eval-audio.md §7.7 recommended growing the 30-profile pool before
-scaling 10x further, to avoid each voice repeating ~33 times).
+and synthesizes each with a deterministically assigned voice profile from an expanded pool
+(docs/tts-eval-audio.md §7.7 recommended growing the 30-profile pool before scaling 10x
+further, to avoid each voice repeating ~33 times).
+
+Voice assignment is keyed off a stable hash of each sentence's id (issue #83/#92), not its
+sequential position in the 1000 — decorrelates voice from the fixed category order the
+sentences are built in (600 range -> 250 inverse -> 150 stp). Each clip's synthesis is also
+seeded from the same hash, so a regenerated batch is bit-reproducible audio, not just
+equivalent sentences.
 
 Resumable: writes the manifest after every clip and skips any <id>.wav that already exists
 on disk, so a dropped connection mid-run (this project has hit that once already) costs only
@@ -77,20 +83,30 @@ VOICE_DESIGN_PROFILES = [
     ("dutch-accented-female-relaxed", "Dutch-accented English, adult female voice, relaxed and matter-of-fact, medium pace."),
 ]
 
+# Shrunk from 10 to 3 (issue #83/#92): CustomVoice trailed VoiceDesign on every corrector in
+# both the v1 and v2 1000-sentence batches (docs/tts-eval-1000.md §6.3, docs/tts-eval-1000-v2.md
+# §6) — 61.8-77.5% vs. 77.1-81.7% — and most of the *individual* CustomVoice presets (Vivian,
+# Sohee, Dylan, Serena, both Aiden variants) showed up in a "worst 10 profiles" list at least
+# once across the two reports. Kept only the three that never did, per #83's recommendation to
+# grow VoiceDesign rather than CustomVoice. Not measured yet — needs a new Athena run (§10 of
+# docs/tts-eval-1000-v2.md).
 CUSTOM_VOICE_PROFILES = [
     ("custom-ryan-happy", "Ryan", "Very happy and upbeat."),
-    ("custom-ryan-calm", "Ryan", "Calm, matter-of-fact delivery."),
     ("custom-aiden-curious", "Aiden", "Curious, asking as if genuinely wondering."),
-    ("custom-aiden-tired", "Aiden", "Sounding tired, low energy."),
-    ("custom-vivian-en", "Vivian", "Speaking English with her natural accent, cheerful tone."),
-    ("custom-sohee-en", "Sohee", "Speaking English with her natural accent, warm and gentle tone."),
-    ("custom-dylan-formal", "Dylan", "Formal and businesslike delivery."),
     ("custom-eric-hurried", "Eric", "Hurried, slightly rushed delivery."),
-    ("custom-serena-warm", "Serena", "Warm and reassuring tone."),
-    ("custom-onoAnna-en", "Ono_Anna", "Speaking English with her natural accent, cheerful and polite."),
 ]
 
 VOICE_POOL = VOICE_DESIGN_PROFILES + CUSTOM_VOICE_PROFILES
+
+
+def stable_hash(s: str) -> int:
+    """Deterministic 32-bit FNV-1a hash — same string always maps to the same int, on any
+    machine, without relying on Python's randomized str hashing (PYTHONHASHSEED)."""
+    h = 2166136261
+    for byte in s.encode("utf-8"):
+        h ^= byte
+        h = (h * 16777619) & 0xFFFFFFFF
+    return h
 
 
 def synthesize(vd_model, cv_model, tag, rest, text):
@@ -116,11 +132,6 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     sentences = json.loads(Path(sentences_path).read_text())
 
-    # Global position of each sentence in the full 1000, by id — used below to keep voice-profile
-    # assignment stable across a resume (a plain sentences.index(item) per clip would be O(n) and
-    # rely on full-dict equality; this is a one-time O(n) build then O(1) lookups).
-    global_index_by_id = {s["id"]: i for i, s in enumerate(sentences)}
-
     manifest_path = out_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text())["clips"] if manifest_path.exists() else []
     done_ids = {c["id"] for c in manifest}
@@ -141,10 +152,23 @@ def main():
     t_start = time.time()
     for i, item in enumerate(remaining):
         sid, text = item["id"], item["text"]
-        # Index into the pool by *global* position (over the full 1000, not the resumed
-        # remainder) so profile assignment doesn't shift on a resume.
-        global_idx = global_index_by_id[sid]
-        tag, *rest = VOICE_POOL[global_idx % len(VOICE_POOL)]
+        # Voice assignment keyed off a hash of the sentence id (issue #83/#92) rather than the
+        # sentence's sequential position in the 1000 — the old `global_index % poolSize` tied
+        # voice to category order (600 range -> 250 inverse -> 150 stp, built sequentially), so
+        # voice and quantity/scenario marginals were partially confounded. A hash of a stable id
+        # is unrelated to that order (and, unlike the old scheme, doesn't even need the full
+        # sentence list to compute — same id always maps to the same voice on any resume).
+        seed = stable_hash(sid)
+        tag, *rest = VOICE_POOL[seed % len(VOICE_POOL)]
+
+        # Per-clip deterministic seed (issue #83/#92) so a regenerated batch is bit-reproducible
+        # audio, not just equivalent sentences — matches the project's determinism discipline
+        # (scripts/generate-1000-sentences.mjs's fixed-seed mulberry32 for the sentences
+        # themselves). Re-seeding right before each call keeps every clip's synthesis
+        # reproducible regardless of how many clips ran before it in this process.
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
 
         t0 = time.time()
         wavs, sr, voice_info = synthesize(vd_model, cv_model, tag, rest, text)
@@ -162,6 +186,7 @@ def main():
                 "slotTruth": item.get("slotTruth"),
                 "gen_s": round(gen_s, 2),
                 "dur_s": round(dur_s, 2),
+                "seed": seed,
                 **voice_info,
             }
         )
