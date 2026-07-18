@@ -228,7 +228,7 @@ for (const speaker of speakers) {
   }
 
   console.log(
-    `  => (debug) ${exactRaw}/${clips} transcript exact match (raw)${withCorrection ? ` | ${exactCorrected}/${clips} after correction` : ""}`,
+    `  => (debug) ${exactRaw}/${clips} transcript exact match (raw)${withCorrection ? ` | ${exactCorrected}/${clips} transcript exact match (corrected)` : ""}`,
   );
   speakerSummary.push({ speaker, exactRaw, exactCorrected, clips });
   totalRaw += exactRaw;
@@ -241,12 +241,12 @@ console.log("SUMMARY (debug: transcript exact-match only)");
 console.log(`${"=".repeat(50)}`);
 for (const { speaker, exactRaw, exactCorrected, clips } of speakerSummary) {
   const pct = clips > 0 ? ((exactRaw / clips) * 100).toFixed(0) : "—";
-  const line = `  ${speaker}  ${exactRaw}/${clips} (${pct}%)${withCorrection ? `  corrected: ${exactCorrected}/${clips}` : ""}`;
+  const line = `  ${speaker}  ${exactRaw}/${clips} (${pct}%)${withCorrection ? `  exact match (corrected): ${exactCorrected}/${clips}` : ""}`;
   console.log(line);
 }
 const allPct = totalClips > 0 ? ((totalRaw / totalClips) * 100).toFixed(0) : "—";
 console.log(
-  `  ALL  ${totalRaw}/${totalClips} (${allPct}%)${withCorrection ? `  corrected: ${totalCorrected}/${totalClips}` : ""}`,
+  `  ALL  ${totalRaw}/${totalClips} (${allPct}%)${withCorrection ? `  exact match (corrected): ${totalCorrected}/${totalClips}` : ""}`,
 );
 console.log(`${"=".repeat(50)}`);
 console.log(

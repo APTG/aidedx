@@ -166,9 +166,11 @@ correctly — the number that matters is **audio → transcript → correction �
 3. **Report the E2E number** (`eval:e2e`'s `audio→intent slot-match: ... corrected N/M`) for any
    change to the ASR model, the corrector, or the matcher — not transcript exact-match. CI
    re-scores the committed baseline transcripts (`eval/results/asr-2026-07-05/`) on every push as a
-   **non-blocking metric**, the same way `pnpm coverage:intents` is: it always exits 0 and never
-   gates the build, since it's a signal to watch, not a merge gate. Producing new transcripts
-   (step 1) needs a local machine with the audio and stays local — CI only re-scores what's already
+   **non-blocking metric**, the same way `pnpm coverage:intents` is: the step runs with
+   `continue-on-error: true`, so it never gates the build regardless of the script's own exit
+   code (which isn't always 0 — a missing/malformed transcript JSON does throw). It's a signal to
+   watch, not a merge gate. Producing new transcripts (step 1) needs a local machine with the audio
+   and stays local — CI only re-scores what's already
    committed.
 
 ### Two measurement tracks — know which one a doc is reporting

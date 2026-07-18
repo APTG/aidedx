@@ -4,9 +4,10 @@
  * against the eval set's expected QueryIntent. This is the metric that matters
  * for the voice pipeline (transcript fidelity is only a proxy).
  *
- * Usage: node scripts/e2e-audio-intents.ts <asr-results.json> [--base|--ext]
+ * Usage: node scripts/e2e-audio-intents.ts <asr-results.json> [more.json...] [--base|--ext]
  *   (default)  the shipped src/lib/asr/correct module (issue #28's regex fast path + phonetic
- *              pass) — matches what the live app actually runs.
+ *              pass) — matches what the live app actually runs. `--new` (this module's old flag
+ *              name) still works too, via harmless fallthrough to the same default.
  *   --base     the pre-#28 scripts/asr-correct.mjs, kept only for historical comparison.
  *   --ext      the pre-#28 scripts/asr-correct-ext.mjs experiment layer, same reason.
  */
