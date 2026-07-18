@@ -23,7 +23,10 @@
     "coverage:intents": "node scripts/coverage-intents.ts",
     "llm:nlu-eval": "node scripts/llm-nlu-eval.ts",
     "generate:aliases": "node scripts/generate-aliases.ts",
-    "bench:asr-browser": "node scripts/asr-browser-benchmark.mjs"
+    "bench:asr-browser": "node scripts/asr-browser-benchmark.mjs",
+    "asr:transcribe": "node scripts/asr-transcribe.mjs",
+    "asr:score": "node scripts/asr-score-slots.mjs",
+    "eval:e2e": "node scripts/e2e-audio-intents.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -4,9 +4,14 @@
  * materials, quantity words, program names), raw and after the correction layer.
  *
  * Usage:
- *   node scripts/asr-score-slots.mjs <results.json> [more.json...]        # asr-correct.mjs
- *   node scripts/asr-score-slots.mjs --ext <results.json> [more.json...]  # asr-correct-ext.mjs
- *   node scripts/asr-score-slots.mjs --new <results.json> [more.json...]  # src/lib/asr/correct (issue #28)
+ *   node scripts/asr-score-slots.mjs <results.json> [more.json...]        # shipped corrector (default; --new is a synonym)
+ *   node scripts/asr-score-slots.mjs --base <results.json> [more.json...] # pre-#28 asr-correct.mjs
+ *   node scripts/asr-score-slots.mjs --ext <results.json> [more.json...]  # pre-#28 asr-correct-ext.mjs
+ *
+ * The default matches src/lib/asr/correct (issue #28), what the live app actually runs (issue
+ * #27) — `--base`/`--ext` exist only for historical comparison against the pre-#28 experiments.
+ * `--new` (this module's old flag, e.g. `docs/phonetic-corrector.md`'s measurement table) still
+ * works: it isn't `--base`/`--ext`, so it falls through to the same default.
  *
  * Input JSONs are produced by scripts/asr-transcribe.mjs; committed runs live
  * in eval/results/.
@@ -16,11 +21,11 @@ import { correct as baseCorrect } from "./asr-correct.mjs";
 import { correct as extCorrect } from "./asr-correct-ext.mjs";
 import { correctTranscript as newCorrect } from "../src/lib/asr/correct/core.ts";
 
-const correct = process.argv.includes("--new")
-  ? (text) => newCorrect(text).text
+const correct = process.argv.includes("--base")
+  ? baseCorrect
   : process.argv.includes("--ext")
     ? extCorrect
-    : baseCorrect;
+    : (text) => newCorrect(text).text;
 
 // Canonicalisation applied before slot matching (case-insensitive containment).
 // A number glued straight to its unit ("30mm", "100mev", no space) is a real, common

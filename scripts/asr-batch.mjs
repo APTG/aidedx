@@ -1,6 +1,15 @@
 /**
  * Batch ASR benchmark against the 30-sentence eval set (issue #7).
- * Loads the model once and runs all audio files through it.
+ * Loads the model once and runs all audio files through it — a quick single-shot check, unlike
+ * the transcribe/score split below.
+ *
+ * The transcript-exact-match this script reports (below) is a legacy debug detail, not the
+ * project's standard voice-path metric (issue #27) — exact wording rarely matters, the resolved
+ * `QueryIntent` does. For the metric that matters, save transcripts once and re-score them
+ * (cheap, re-runnable, no model needed for re-scoring):
+ *   pnpm run asr:transcribe -- <modelId> <dtype> <outFile>
+ *   pnpm run asr:score -- <outFile>       # slot-token accuracy
+ *   pnpm run eval:e2e -- <outFile>        # audio→intent vs. eval/intents.jsonl gold labels
  *
  * Usage:
  *   node scripts/asr-batch.mjs                                              # whisper-small q8, all speakers
@@ -8,7 +17,7 @@
  *   node scripts/asr-batch.mjs onnx-community/moonshine-base-ONNX  q8
  *
  * Flags (combinable):
- *   --correct          show post-correction results alongside raw
+ *   --correct          show post-correction results alongside raw (shipped src/lib/asr/correct)
  *   --no-prompt        disable Whisper domain vocabulary prompt biasing (on by default, issue #25)
  *   --speaker <tag>    run only this speaker subdirectory (default: all found)
  */
@@ -17,7 +26,9 @@ import { execSync } from "child_process";
 import { fileURLToPath } from "url";
 import { readdirSync, existsSync } from "fs";
 import path from "path";
-import { correct } from "./asr-correct.mjs";
+import { correctTranscript } from "../src/lib/asr/correct/core.ts";
+
+const correct = (text) => correctTranscript(text).text;
 
 const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 env.cacheDir = path.join(PROJECT_ROOT, ".hf-cache");
@@ -217,7 +228,7 @@ for (const speaker of speakers) {
   }
 
   console.log(
-    `  => ${exactRaw}/${clips} exact match (raw)${withCorrection ? ` | ${exactCorrected}/${clips} after correction` : ""}`,
+    `  => (debug) ${exactRaw}/${clips} transcript exact match (raw)${withCorrection ? ` | ${exactCorrected}/${clips} transcript exact match (corrected)` : ""}`,
   );
   speakerSummary.push({ speaker, exactRaw, exactCorrected, clips });
   totalRaw += exactRaw;
@@ -226,15 +237,22 @@ for (const speaker of speakers) {
 }
 
 console.log(`\n${"=".repeat(50)}`);
-console.log("SUMMARY");
+console.log("SUMMARY (debug: transcript exact-match only)");
 console.log(`${"=".repeat(50)}`);
 for (const { speaker, exactRaw, exactCorrected, clips } of speakerSummary) {
   const pct = clips > 0 ? ((exactRaw / clips) * 100).toFixed(0) : "—";
-  const line = `  ${speaker}  ${exactRaw}/${clips} (${pct}%)${withCorrection ? `  corrected: ${exactCorrected}/${clips}` : ""}`;
+  const line = `  ${speaker}  ${exactRaw}/${clips} (${pct}%)${withCorrection ? `  exact match (corrected): ${exactCorrected}/${clips}` : ""}`;
   console.log(line);
 }
 const allPct = totalClips > 0 ? ((totalRaw / totalClips) * 100).toFixed(0) : "—";
 console.log(
-  `  ALL  ${totalRaw}/${totalClips} (${allPct}%)${withCorrection ? `  corrected: ${totalCorrected}/${totalClips}` : ""}`,
+  `  ALL  ${totalRaw}/${totalClips} (${allPct}%)${withCorrection ? `  exact match (corrected): ${totalCorrected}/${totalClips}` : ""}`,
 );
 console.log(`${"=".repeat(50)}`);
+console.log(
+  "Not the standard voice-path metric (issue #27) — exact wording rarely matters, the resolved\n" +
+    "QueryIntent does. Save a transcript once and re-score it for the number that matters:\n" +
+    "  pnpm run asr:transcribe -- <modelId> <dtype> <outFile>\n" +
+    "  pnpm run asr:score -- <outFile>       # slot-token accuracy\n" +
+    "  pnpm run eval:e2e -- <outFile>        # audio→intent vs. eval/intents.jsonl gold labels",
+);
