@@ -30,6 +30,7 @@
  * downstream code (resolver, compute, NLG) is producer-agnostic.
  */
 import {
+  boundedLevenshtein,
   resolveMaterial,
   resolveParticle,
   type MaterialMatch,
@@ -83,8 +84,52 @@ interface Span {
 // this section is the language-neutral control flow that consumes it.
 // ---------------------------------------------------------------------------
 
+/**
+ * Replace a pack's spelled-out number words ("one", "three") with their digit form, padded
+ * with trailing spaces so the string's length — and every character offset after it — is
+ * unchanged (issue #26: "one GeV"/"three MeV" otherwise carry no energy slot at all, since
+ * the number+unit grammar only ever looks for `\d+`). Padding instead of a plain replace
+ * keeps every span computed downstream (particle/material/energy positions) valid in both
+ * the substituted and original text, with no separate bookkeeping to reconcile them.
+ */
+function spellOutNumbers(text: string, pack: LangPack): string {
+  let out = text;
+  for (const [word, digit] of pack.NUMBER_WORDS) {
+    out = out.replace(new RegExp(`\\b${word}\\b`, "gi"), (m) => digit.padEnd(m.length));
+  }
+  return out;
+}
+
 /** Unit-notation cue that an inverse query's target is stopping-power-flavored (vs. range-flavored); unit notation is language-neutral. */
 const STP_UNIT_RE = /\bmev\s*cm2\s*\/\s*g\b|\bmev\s*\/\s*cm\b|\bkev\s*\/\s*[uµ]m\b/;
+
+/**
+ * Last-resort typo tolerance for a pack's canonical quantity phrases (issue #26, "Stoping
+ * power"): scan every word-window the same length as each candidate phrase and accept a
+ * near-miss within the alias table's own length-scaled edit-distance budget. Runs only after
+ * every exact detector (direct keywords, indirect idioms) has already failed to match, so an
+ * exact "stopping power" is never second-guessed by this path.
+ */
+function detectFuzzyQuantity(
+  lower: string,
+  pack: LangPack,
+): { quantity: Quantity; idiom: string } | null {
+  const words = lower.match(/[\p{L}]+/gu) ?? [];
+  for (const { phrase, quantity } of pack.FUZZY_QUANTITY_PHRASES) {
+    const phraseWords = phrase.split(/\s+/);
+    const n = phraseWords.length;
+    const target = phraseWords.join(" ");
+    const max = target.length >= 7 ? 2 : 1;
+    for (let i = 0; i + n <= words.length; i++) {
+      const window = words.slice(i, i + n).join(" ");
+      if (Math.abs(window.length - target.length) > max) continue;
+      if (boundedLevenshtein(window, target, max) <= max) {
+        return { quantity, idiom: window };
+      }
+    }
+  }
+  return null;
+}
 
 /** Detect an inverse ("solve for energy") query and which kind. */
 function detectInverse(lower: string, text: string, pack: LangPack): Quantity | null {
@@ -120,6 +165,12 @@ function detectForwardQuantity(
     const m = pattern.exec(lower);
     if (m) return { quantity, source: "indirect", idiom: m[0] };
   }
+
+  // A typo'd direct keyword ("Stoping power") reads the same as the real one, one tier
+  // below an exact match — tried after indirect idioms so a genuine phrasing is never
+  // second-guessed by an edit-distance near-miss.
+  const fuzzy = detectFuzzyQuantity(lower, pack);
+  if (fuzzy) return { quantity: fuzzy.quantity, source: "indirect", idiom: fuzzy.idiom };
 
   // Last resort: a bare "stops/stopped … in <length>" reads as range.
   if (pack.FALLBACK_STOP_RE.test(lower))
@@ -235,15 +286,17 @@ function energyRegexesFor(pack: LangPack): EnergyRegexes {
   const cached = energyRegexCache.get(pack);
   if (cached) return cached;
 
+  // [\s-]* (not \s*) between the number and unit — issue #26: a written "10-MeV proton"
+  // hyphenates the compound adjective, which \s* alone doesn't match.
   const energyRe = new RegExp(
-    `(\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
+    `(\\d+(?:\\.\\d+)?)[\\s-]*(gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
     "gi",
   );
   const listSplitRe = buildListSplitRe(pack);
   // A coordinated list of values sharing one trailing unit: "100 and 200 MeV",
   // "50, 100, and 150 MeV", "100 and 400 MeV per nucleon".
   const energyListRe = new RegExp(
-    `((?:\\d+(?:\\.\\d+)?${pack.LIST_SEP_SRC})+\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
+    `((?:\\d+(?:\\.\\d+)?${pack.LIST_SEP_SRC})+\\d+(?:\\.\\d+)?)[\\s-]*(gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
     "gi",
   );
 
@@ -304,8 +357,10 @@ function toMeV(value: number, unit: EnergyUnit): number {
   return value; // MeV, MeV/nucl, MeV/u
 }
 
+// [\s-]* (not \s*) between the number and unit — issue #26: a written "10-cm range" hyphenates
+// the compound adjective, which \s* alone doesn't match (a literal "-" isn't whitespace).
 const LENGTH_TARGET_RE =
-  /(\d+(?:\.\d+)?)\s*(g\s*\/\s*cm\s*\^?\s*2|g\s*cm\s*\^?\s*-?\s*2|mm|cm|[uµ]m|micron[s]?)\b/i;
+  /(\d+(?:\.\d+)?)[\s-]*(g\s*\/\s*cm\s*\^?\s*2|g\s*cm\s*\^?\s*-?\s*2|mm|cm|[uµ]m|micron[s]?)\b/i;
 
 interface RawTarget {
   slot: TargetSlot;
@@ -358,6 +413,26 @@ function overlaps(a: Span, spans: Span[]): boolean {
 }
 
 /**
+ * Collapse repeated mentions of the same resolved entity to their first occurrence (issue
+ * #26): an ASR echo repeating a word back ("...in Lucite? Lucite.") otherwise produces two
+ * material slots and a spurious `compareDim: "material"`, even though there's only one
+ * distinct entity in the query. Keyed by whatever `keyFn` returns, not raw match text, so two
+ * different *phrasings* of the same entity also collapse (e.g. "Lucite" and its PMMA alias
+ * would collapse too, if they ever both matched the same clip).
+ */
+function dedupeByKey<T>(items: T[], keyFn: (item: T) => string): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const item of items) {
+    const key = keyFn(item);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
+}
+
+/**
  * Resolve a phrase to a particle. `resolveText` is what's handed to
  * `resolveParticle`; `displayText` is what's stored as the slot's `match` and
  * defines the span — for English's head-last shape they're the same string
@@ -368,7 +443,12 @@ function overlaps(a: Span, spans: Span[]): boolean {
 function tryParticle(resolveText: string, displayText: string, start: number): RawParticle | null {
   const resolved = resolveParticle(resolveText);
   if (!resolved) return null;
-  return { match: displayText.trim(), resolved, span: { start, end: start + displayText.length } };
+  // Collapse whitespace runs for display only — spellOutNumbers() pads a spelled-out number
+  // ("three" -> "3    ") to keep every span aligned with the original text, which would
+  // otherwise leak visible multi-space gaps into the slot's displayed match text; `span`
+  // still spans the untrimmed `displayText.length`, so position tracking is unaffected.
+  const match = displayText.trim().replace(/\s+/g, " ");
+  return { match, resolved, span: { start, end: start + displayText.length } };
 }
 
 function extractParticles(text: string, pack: LangPack): RawParticle[] {
@@ -554,18 +634,28 @@ function round(n: number): number {
 /** Run the deterministic matcher over a query, returning intent + provenance. */
 export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
   const pack = packFor(lang);
-  const lower = text.toLowerCase();
+  // Spelled-out numbers ("one GeV") normalized to digits before anything else runs (issue
+  // #26) — length-preserving, so every span computed below stays valid in the original text.
+  const query = spellOutNumbers(text, pack);
+  const lower = query.toLowerCase();
 
   // 1. Quantity (inverse takes precedence — it changes how energies are read).
-  const inverse = detectInverse(lower, text, pack);
-  const fwd = inverse ? null : detectForwardQuantity(lower, text, pack);
+  const inverse = detectInverse(lower, query, pack);
+  const fwd = inverse ? null : detectForwardQuantity(lower, query, pack);
   const quantity: Quantity = inverse ? inverse : fwd ? fwd.quantity : "csdaRange";
   const source: QuantitySource = inverse ? "inverse" : fwd ? fwd.source : "default";
 
   // 2. Particles and energies/target first, so their spans are not re-mined as
   //    materials (e.g. "carbon" in "carbon ions", "u" in "MeV/u", "cm" in a
   //    "10 cm" range target — all of which alias to element symbols).
-  const rawParticles = extractParticles(text, pack);
+  const rawParticlesAll = extractParticles(query, pack);
+  // Repeated mentions of the same isotope collapse to one (issue #26) — keyed by
+  // (id, massNumber), not id alone, so genuinely different isotopes of the same element
+  // (a real multi-particle comparison, e.g. carbon-12 vs. carbon-13) are kept distinct.
+  const rawParticles = dedupeByKey(
+    rawParticlesAll,
+    (p) => `${p.resolved.id}:${p.resolved.massNumber}`,
+  );
 
   // Inverse queries carry no energy slot — only a target.
   let rawEnergies: RawEnergy[] = [];
@@ -573,10 +663,10 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
   let target: TargetSlot | undefined;
   let targetSpan: Span | undefined;
   if (quantity === "energyFromRange") {
-    const t = extractRangeTarget(text);
+    const t = extractRangeTarget(query);
     if (t) ({ slot: target, span: targetSpan } = t);
   } else if (quantity === "energyFromStp") {
-    const t = extractStpTarget(text);
+    const t = extractStpTarget(query);
     if (t) ({ slot: target, span: targetSpan } = t);
   } else {
     // A non-positive energy (issue #42 §5) is dropped rather than filled in
@@ -584,19 +674,24 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
     // so the query reads as missing its energy and falls through the usual
     // `incomplete` / low-confidence path instead of silently going through
     // with the sign stripped off.
-    const allEnergies = extractEnergies(text, pack);
+    const allEnergies = extractEnergies(query, pack);
     rawEnergies = allEnergies.filter((e) => !e.negative);
     negativeEnergySpans = allEnergies.filter((e) => e.negative).map((e) => e.span);
   }
 
   // 3. Materials — over the spans not already claimed by particles/energies.
+  // Uses the *undeduplicated* particle spans, so a repeated mention is still excluded from
+  // the material scan even though only its first occurrence survives into the slot list.
   const consumedSpans: Span[] = [
-    ...rawParticles.map((p) => p.span),
+    ...rawParticlesAll.map((p) => p.span),
     ...rawEnergies.map((e) => e.span),
     ...negativeEnergySpans,
   ];
   if (targetSpan) consumedSpans.push(targetSpan);
-  const rawMaterials = extractMaterials(text, consumedSpans, pack.MATERIAL_STOPWORDS);
+  const rawMaterialsAll = extractMaterials(query, consumedSpans, pack.MATERIAL_STOPWORDS);
+  // Same repeated-mention collapse as particles (issue #26) — an ASR echo repeating a
+  // material name back ("...in Lucite? Lucite.") is one entity, not two.
+  const rawMaterials = dedupeByKey(rawMaterialsAll, (m) => String(m.resolved.id));
 
   // 4. compareDim from program names + entity multiplicity.
   const programs = detectPrograms(lower);

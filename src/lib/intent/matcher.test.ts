@@ -254,3 +254,123 @@ describe("indirect-idiom table", () => {
     }
   });
 });
+
+// Issue #26 — quantity-synonym table + matcher quick fixes.
+describe("issue #26 — expanded quantity-synonym vocabulary", () => {
+  it.each([
+    "What is the specific ionisation of 40 MeV protons in water?",
+    "What is the specific ionization of 40 MeV protons in water?",
+    "What is the Bethe-Bloch value for 100 MeV protons in water?",
+    "What is the Bethe Bloch value for 100 MeV protons in water?",
+    "What is the retarding force on 30 MeV protons in silicon?",
+    "What is the energy deposition of 50 MeV protons in water?",
+    "What is the energy deposition density of 50 MeV protons in water?",
+    "What is the dose per micrometer of 20 MeV alpha particles in tissue?",
+    "How much energy is deposited per micrometer by 100 MeV protons in PMMA?",
+  ])("reads %s as stoppingPower", (text) => {
+    expect(matchQueryIntent(text).quantity).toBe("stoppingPower");
+  });
+
+  it("does not mistake 'energy deposition' for an inverse solve-for-energy query", () => {
+    const { intent, quantitySource } = matchIntent(
+      "What is the energy deposition density of 50 MeV protons in water?",
+    );
+    expect(intent.quantity).toBe("stoppingPower");
+    expect(quantitySource).toBe("direct");
+  });
+});
+
+describe("issue #26 — spelled-out numbers", () => {
+  it("parses 'one GeV' as an energy value", () => {
+    expect(matchQueryIntent("What is the range of one GeV protons in water?").energies).toEqual([
+      { value: 1, unit: "GeV" },
+    ]);
+  });
+
+  it("parses 'three MeV' as an energy value", () => {
+    expect(
+      matchQueryIntent("Stopping power of three MeV alpha particles in air?").energies,
+    ).toEqual([{ value: 3, unit: "MeV" }]);
+  });
+
+  it("does not shift spans for unrelated text around the spelled-out number", () => {
+    const intent = matchQueryIntent("Range of one GeV protons in water?");
+    expect(intent.particles).toEqual([{ match: "protons" }]);
+    expect(intent.materials).toEqual([{ match: "water" }]);
+  });
+});
+
+describe("issue #26 — unhyphenated isotope mentions", () => {
+  it("resolves 'helium 3 ion' (space, not hyphen) as a particle, not a material", () => {
+    const intent = matchQueryIntent("Range of a helium 3 ion in water at 40 MeV?");
+    expect(intent.particles).toEqual([{ match: "helium 3 ion" }]);
+    expect(intent.materials).toEqual([{ match: "water" }]);
+  });
+
+  it("resolves 'carbon 13 ions' (space, not hyphen)", () => {
+    const intent = matchQueryIntent("Range of carbon 13 ions in water at 200 MeV per nucleon?");
+    expect(intent.particles).toEqual([{ match: "carbon 13 ions" }]);
+  });
+
+  it("resolves a comma-separated isotope mention ('helium, three ions') — a real Whisper mistranscription of 'helium-3 ions'", () => {
+    const intent = matchQueryIntent(
+      "to determine the range of two MeV helium, three ions in water.",
+    );
+    expect(intent.particles).toEqual([{ match: "helium, 3 ions" }]);
+    expect(intent.materials).toEqual([{ match: "water" }]);
+  });
+});
+
+describe("issue #26 — dedup repeated resolved entities", () => {
+  it("collapses a repeated material mention (ASR echo) instead of reading it as a comparison", () => {
+    const intent = matchQueryIntent("What is the range of 40 MeV protons in Lucite? Lucite.");
+    expect(intent.materials).toEqual([{ match: "Lucite" }]);
+    expect(intent.compareDim).toBe("none");
+  });
+
+  it("collapses two aliases of the same material (PMMA/Lucite) rather than treating them as distinct", () => {
+    const intent = matchQueryIntent(
+      "Compare the stopping power of 100 MeV protons in PMMA and Lucite.",
+    );
+    expect(intent.materials).toHaveLength(1);
+    expect(intent.compareDim).toBe("none");
+  });
+
+  it("still keeps two genuinely different isotopes of the same element distinct", () => {
+    const intent = matchQueryIntent(
+      "Compare the range of carbon-12 ions and carbon-13 ions in water at 200 MeV per nucleon.",
+    );
+    expect(intent.particles).toHaveLength(2);
+    expect(intent.compareDim).toBe("particle");
+  });
+});
+
+describe("issue #26 — hyphenated length/energy grammar", () => {
+  it("accepts a hyphenated length target ('10-cm range')", () => {
+    const intent = matchQueryIntent("What energy gives a 10-cm range in water for protons?");
+    expect(intent.quantity).toBe("energyFromRange");
+    expect(intent.target).toEqual({ value: 10, unit: "cm" });
+  });
+
+  it("accepts a hyphenated energy ('10-MeV proton')", () => {
+    expect(matchQueryIntent("Range of a 10-MeV proton in water.").energies).toEqual([
+      { value: 10, unit: "MeV" },
+    ]);
+  });
+});
+
+describe("issue #26 — fuzzy quantity-keyword tolerance", () => {
+  it("reads a typo'd 'Stoping power' as stoppingPower", () => {
+    const { intent, quantitySource } = matchIntent(
+      "What is the stoping power of 40 MeV protons in water?",
+    );
+    expect(intent.quantity).toBe("stoppingPower");
+    expect(quantitySource).toBe("indirect");
+  });
+
+  it("does not fuzzy-match unrelated text", () => {
+    expect(matchQueryIntent("What is the range of 40 MeV protons in water?").quantity).toBe(
+      "csdaRange",
+    );
+  });
+});

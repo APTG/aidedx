@@ -53,4 +53,20 @@ export interface LangPack {
   particleHeadResolveText(m: RegExpExecArray): string;
   /** Standalone named particles whose isotope is fixed by the name. */
   NAMED_PARTICLE_RE: RegExp;
+
+  /**
+   * Spelled-out small numbers ("one", "three") paired with their digit form, checked before
+   * the number+unit grammar runs so "one GeV"/"three MeV" parse the same as "1 GeV"/"3 MeV"
+   * (issue #26). Empty when a language has no vetted spelled-out-number examples yet.
+   */
+  NUMBER_WORDS: ReadonlyArray<readonly [word: string, digit: string]>;
+  /**
+   * Canonical quantity-keyword phrases eligible for edit-distance typo tolerance as a
+   * last-resort fallback before indirect idioms fail through to the default guess (issue #26,
+   * e.g. "Stoping power" still reads as stoppingPower). Kept to a short list of long,
+   * distinctive phrases the direct keyword regexes already recognize exactly — not every
+   * possible synonym — since a short/generic word would collide with unrelated text under
+   * edit-distance tolerance.
+   */
+  FUZZY_QUANTITY_PHRASES: ReadonlyArray<{ phrase: string; quantity: Quantity }>;
 }

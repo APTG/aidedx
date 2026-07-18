@@ -47,11 +47,26 @@ export const INDIRECT_IDIOMS: ReadonlyArray<{ pattern: RegExp; quantity: Quantit
     pattern: /\b(?:per|after)\s+(?:each\s+)?(?:centimeter|millimeter|cm|mm|unit length)\b/,
     quantity: "stoppingPower",
   },
+  // The verb form of the "energy deposition" synonym (issue #26, DIRECT_STOPPING's own noun
+  // form doesn't match this) — "how much energy is deposited per micrometer".
+  {
+    pattern:
+      /\benergy\b[^.?!]*\bdeposited\b[^.?!]*\bper\s+(?:micrometer|micrometre|micron|[uµ]m)\b/,
+    quantity: "stoppingPower",
+  },
 ];
 
-/** Direct keyword regex for the stoppingPower / csdaRange quantities (matched against lowercased text). */
+/**
+ * Direct keyword regex for the stoppingPower / csdaRange quantities (matched against
+ * lowercased text). Issue #26 added the physics-synonym alternatives beyond the original
+ * "stopping power"/"dE/dx"/"energy loss": specific ionisation (energy lost per ion pair,
+ * proportional to stopping power for a given medium), Bethe-Bloch (the equation stopping
+ * power is computed from — used metonymically for the quantity itself), retarding force
+ * (the force-dimensioned reading of dE/dx), and energy deposition (density) / dose per
+ * micrometer (the dosimetry-register phrasings of the same quantity).
+ */
 export const DIRECT_STOPPING =
-  /\b(?:mass\s+|electronic\s+)?stopping power\b|\bde\s*\/\s*dx\b|\benergy loss\b/i;
+  /\b(?:mass\s+|electronic\s+)?stopping power\b|\bde\s*\/\s*dx\b|\benergy loss\b|\bspecific ioni[sz]ation\b|\bbethe[\s-]bloch\b|\bretarding force\b|\benergy deposition(?:\s+density)?\b|\bdose per (?:micrometer|micrometre|micron|[uµ]m)\b/i;
 export const DIRECT_RANGE = /\bcsda\b|\brange\b/i;
 
 /**
@@ -70,11 +85,14 @@ export function mentionsStoppingPowerSynonym(lower: string, text: string): boole
 }
 
 /**
- * The spelled-out stopping-power synonym, blanked out of the lowercased text
- * before the inverse detector's asks-for-energy test — "linear energy transfer"
- * contains the word "energy" but is not a request to solve for energy.
+ * Spelled-out stopping-power synonyms containing the word "energy", blanked out of the
+ * lowercased text before the inverse detector's asks-for-energy test — "linear energy
+ * transfer" and "energy deposition (density)" both contain "energy" but neither is a request
+ * to solve for energy. (Issue #26's other new synonyms — specific ionisation, Bethe-Bloch,
+ * retarding force, dose per micrometer — don't contain "energy" and need no blanking.)
  */
-export const BLANK_BEFORE_INVERSE_RE = /\blinear energy transfer\b/g;
+export const BLANK_BEFORE_INVERSE_RE =
+  /\blinear energy transfer\b|\benergy deposition(?:\s+density)?\b/g;
 
 /**
  * Inverse ("solve for energy") cue: the query must ask for *energy* as the
@@ -100,6 +118,28 @@ export function mentionsStoppingPowerKeyword(lower: string): boolean {
 
 /** Last-resort fallback: a bare "stops/stopped" verb reads as range. */
 export const FALLBACK_STOP_RE = /\bstop(?:s|ped)?\b/;
+
+/** Spelled-out one through ten — the small, closed set actually plausible in an energy
+ * phrase ("one GeV", "three MeV"); not a full number-word parser (issue #26). */
+export const NUMBER_WORDS: ReadonlyArray<readonly [string, string]> = [
+  ["one", "1"],
+  ["two", "2"],
+  ["three", "3"],
+  ["four", "4"],
+  ["five", "5"],
+  ["six", "6"],
+  ["seven", "7"],
+  ["eight", "8"],
+  ["nine", "9"],
+  ["ten", "10"],
+];
+
+/** "Stopping power" is the only phrase judged safe for edit-distance typo tolerance (issue
+ * #26, "Stoping power") — long and distinctive enough that a fuzzy match is unlikely to
+ * collide with unrelated text, unlike a short/generic word such as "range". */
+export const FUZZY_QUANTITY_PHRASES: ReadonlyArray<{ phrase: string; quantity: Quantity }> = [
+  { phrase: "stopping power", quantity: "stoppingPower" },
+];
 
 // Words that never start/own a material phrase; kept short to avoid eating real
 // multi-word names. Numbers are excluded by the \p{L} requirement in the core scan.
@@ -192,14 +232,23 @@ export const PARTICLE_LIST_RE = new RegExp(
   `((?:[a-z][a-z-]*${LIST_SEP_SRC})+[a-z][a-z-]*)\\s+(${PARTICLE_LIST_HEAD_SRC})\\b`,
   "gi",
 );
-// A single "<element/isotope> ion(s)/particle(s)/nuclei" head.
+// A single "<element/isotope> ion(s)/particle(s)/nuclei" head. The isotope suffix accepts a
+// hyphen ("carbon-13"), a space ("carbon 13", "helium 3 ion"), or a comma+space ("helium,
+// three ions" — a real Whisper transcription of "helium-3 ions", confirmed against the
+// committed eval/results/tts-1000-v3-2026-07-18 transcripts) — issue #26: a spoken/ASR
+// isotope mention rarely carries the written hyphen, and lookup.ts's parseIsotope already
+// tolerates the space form once this regex actually captures it as part of the same match
+// (particleHeadResolveText below strips the comma itself before resolving).
 export const PARTICLE_HEAD_RE = new RegExp(
-  `\\b([a-z][a-z]*(?:-\\d{1,3})?)\\s+(${PARTICLE_LIST_HEAD_SRC})\\b`,
+  `\\b([a-z][a-z]*(?:[-,\\s]+\\d{1,3})?)\\s+(${PARTICLE_LIST_HEAD_SRC})\\b`,
   "gi",
 );
-/** English's head word trails the element, and the whole match ("carbon ion") already resolves fine via `resolveParticle`'s suffix-stripping. */
+/** English's head word trails the element, and the whole match ("carbon ion") already
+ * resolves fine via `resolveParticle`'s suffix-stripping — except a comma-separated isotope
+ * ("helium, 3 ions"), which needs the comma stripped first (parseIsotope expects only
+ * letters/whitespace/digits). */
 export function particleHeadResolveText(m: RegExpExecArray): string {
-  return m[0];
+  return m[0].replace(/,/g, "");
 }
 // Standalone named particles whose isotope is fixed by the name.
 export const NAMED_PARTICLE_RE = new RegExp(`\\b(${NAMED_PARTICLE_SRC})\\b`, "gi");
