@@ -99,11 +99,12 @@ const NAMED_PARTICLE_ALIASES: ReadonlyArray<[string, ParticleAliasEntry]> = [
   // strips the "jon"/"jonu" head before calling resolveParticle — these entries
   // are only the *named* particles whose isotope is fixed by the Polish name
   // itself, mirroring the English proton/deuteron/triton/alpha entries above.
-  ["proton", { id: 1, massNumber: 1, assumed: false }],
+  // "proton" and "deuteron" are shared spellings with English and already
+  // covered by the entries above; only the Polish-specific inflections are
+  // added here.
   ["protonu", { id: 1, massNumber: 1, assumed: false }],
   ["protony", { id: 1, massNumber: 1, assumed: false }],
   ["protonów", { id: 1, massNumber: 1, assumed: false }],
-  ["deuteron", { id: 1, massNumber: 2, assumed: false }],
   ["deuteronu", { id: 1, massNumber: 2, assumed: false }],
   ["tryton", { id: 1, massNumber: 3, assumed: false }],
   ["trytonu", { id: 1, massNumber: 3, assumed: false }],

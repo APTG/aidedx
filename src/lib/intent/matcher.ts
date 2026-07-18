@@ -216,11 +216,25 @@ function isNegativeAt(text: string, matchStart: number): boolean {
   return !(j >= 0 && /\d/.test(text[j] ?? ""));
 }
 
-/** Extract every "<number> <unit>[/nucleon]" energy, in reading order.
- * Entries with `negative: true` are still returned (so their span can be
- * excluded from later material matching) but must not be used as a slot
- * value — see `isNegativeAt`. */
-function extractEnergies(text: string, pack: LangPack): RawEnergy[] {
+interface EnergyRegexes {
+  energyRe: RegExp;
+  energyListRe: RegExp;
+  listSplitRe: RegExp;
+}
+
+/**
+ * These patterns depend only on the selected `LangPack`, which is a stable
+ * module-namespace reference (`packFor` always returns the same `en`/`pl`
+ * object), so compiling them once per pack and caching avoids recompiling on
+ * every `extractEnergies` call. `matchAll` clones the regex it's given, so a
+ * shared cached instance is safe to reuse across calls.
+ */
+const energyRegexCache = new WeakMap<LangPack, EnergyRegexes>();
+
+function energyRegexesFor(pack: LangPack): EnergyRegexes {
+  const cached = energyRegexCache.get(pack);
+  if (cached) return cached;
+
   const energyRe = new RegExp(
     `(\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
     "gi",
@@ -232,6 +246,18 @@ function extractEnergies(text: string, pack: LangPack): RawEnergy[] {
     `((?:\\d+(?:\\.\\d+)?${pack.LIST_SEP_SRC})+\\d+(?:\\.\\d+)?)\\s*(gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
     "gi",
   );
+
+  const regexes: EnergyRegexes = { energyRe, energyListRe, listSplitRe };
+  energyRegexCache.set(pack, regexes);
+  return regexes;
+}
+
+/** Extract every "<number> <unit>[/nucleon]" energy, in reading order.
+ * Entries with `negative: true` are still returned (so their span can be
+ * excluded from later material matching) but must not be used as a slot
+ * value — see `isNegativeAt`. */
+function extractEnergies(text: string, pack: LangPack): RawEnergy[] {
+  const { energyRe, energyListRe, listSplitRe } = energyRegexesFor(pack);
 
   const out: RawEnergy[] = [];
   const consumed: Span[] = [];
