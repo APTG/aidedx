@@ -6,6 +6,9 @@
  * Usage:
  *   node scripts/prefetch-whisper-models.mjs          # all models
  *   node scripts/prefetch-whisper-models.mjs --new    # large-v3-turbo + distil-small.en only
+ *   node scripts/prefetch-whisper-models.mjs --bench  # full whisper-model-bench matrix (issue #27
+ *                                                      # follow-up: all 7 multilingual sizes x
+ *                                                      # {q8, fp32}) — see scripts/submit-whisper-bench.sh
  */
 import { AutoProcessor, WhisperForConditionalGeneration, env } from "@huggingface/transformers";
 import { fileURLToPath } from "url";
@@ -16,6 +19,7 @@ env.cacheDir = path.join(PROJECT_ROOT, ".hf-cache");
 env.allowLocalModels = false;
 
 const newOnly = process.argv.includes("--new");
+const benchOnly = process.argv.includes("--bench");
 
 const MODELS_EXISTING = [
   ["onnx-community/whisper-tiny", "q8"],
@@ -36,7 +40,36 @@ const MODELS_NEW = [
   ["onnx-community/distil-small.en", "q8"],
 ];
 
-const MODELS = newOnly ? MODELS_NEW : [...MODELS_EXISTING, ...MODELS_NEW];
+// Every officially-released Whisper size, at both q8 (this repo's usual browser-deployment
+// quantization) and fp32 (unquantized — measures each size's real accuracy ceiling instead of
+// the quantized approximation, since an Athena GPU-partition benchmark isn't budget-constrained
+// the way a browser/WASM deployment is). Multilingual checkpoints only (no .en-suffixed
+// variants) so the exact same 14 models run against both the English and Polish 1000-sentence
+// batches — see scripts/submit-whisper-bench.sh. medium/large-v2/large-v3 are published under a
+// "-ONNX"-suffixed repo name on onnx-community (confirmed via the HF API — the bare names 401,
+// the "-ONNX" names don't); large-v3-turbo and the tiny/base/small tier keep their bare names.
+const MODELS_BENCH = [
+  ["onnx-community/whisper-tiny", "q8"],
+  ["onnx-community/whisper-tiny", "fp32"],
+  ["onnx-community/whisper-base", "q8"],
+  ["onnx-community/whisper-base", "fp32"],
+  ["onnx-community/whisper-small", "q8"],
+  ["onnx-community/whisper-small", "fp32"],
+  ["onnx-community/whisper-medium-ONNX", "q8"],
+  ["onnx-community/whisper-medium-ONNX", "fp32"],
+  ["onnx-community/whisper-large-v2-ONNX", "q8"],
+  ["onnx-community/whisper-large-v2-ONNX", "fp32"],
+  ["onnx-community/whisper-large-v3-ONNX", "q8"],
+  ["onnx-community/whisper-large-v3-ONNX", "fp32"],
+  ["onnx-community/whisper-large-v3-turbo", "q8"],
+  ["onnx-community/whisper-large-v3-turbo", "fp32"],
+];
+
+const MODELS = benchOnly
+  ? MODELS_BENCH
+  : newOnly
+    ? MODELS_NEW
+    : [...MODELS_EXISTING, ...MODELS_NEW];
 
 let failed = false;
 for (const [modelId, dtype] of MODELS) {
