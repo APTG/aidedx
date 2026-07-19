@@ -26,9 +26,7 @@ interface PerformanceMemory {
 }
 
 export type MemoryEstimate =
-  | { source: "heap"; mb: number }
-  | { source: "device"; gb: number }
-  | { source: "unsupported" };
+  { source: "heap"; mb: number } | { source: "device"; gb: number } | { source: "unsupported" };
 
 export function getMemoryEstimate(): MemoryEstimate {
   if (typeof performance !== "undefined") {

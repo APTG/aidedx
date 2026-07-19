@@ -18,9 +18,7 @@ One JSON object per line (JSONL):
   "id": "rng-001", // stable, unique
   "text": "What is the range of 40 MeV protons in PMMA?",
   "audio": null, // optional; recorded-voice path filled LOCALLY in Spike 1
-  "expected": {
-    /* QueryIntent — see src/lib/intent/query-intent.ts */
-  },
+  "expected": {/* QueryIntent — see src/lib/intent/query-intent.ts */},
   "tags": ["direct", "quantity-csda-range", "single", "unit-MeV"],
 }
 ```
