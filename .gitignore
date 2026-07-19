@@ -72,3 +72,9 @@ __pycache__/
 /scripts/tts-1000-sentences-v2.json
 /aidedx-tts1000-v2-*.out
 /aidedx-tts1000-v2-*.err
+
+# Polish 1000-sentence batch (issue #79 Track 3, submit-pl.sh) — same regenerable-artifact
+# rationale, fixed seed in generate-1000-sentences-pl.mjs.
+/scripts/tts-1000-sentences-pl.json
+/aidedx-tts1000-pl-*.out
+/aidedx-tts1000-pl-*.err

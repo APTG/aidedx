@@ -64,11 +64,17 @@ VOICE_DESIGN_PROFILES = [
 # Same three surviving CustomVoice presets as tts-qwen-1000.py (issue #83/#92 kept only the
 # ones that never showed up in a "worst 10" list) — untested whether a fixed English-trained
 # speaker embedding can produce Polish output at all via `language`; kept in purely for the
-# comparison data point, not because it's expected to work better than VoiceDesign.
+# comparison data point, not because it's expected to work better than VoiceDesign. Tuples are
+# (tag, speaker, instruct) — 3 elements, same arity as tts-qwen-1000.py's own — so
+# `synthesize_one`'s `len(rest) == 1` check actually distinguishes these from the 2-element
+# VoiceDesign entries above (a 2-element `(tag, speaker)` here collapsed `rest` to length 1,
+# indistinguishable from VoiceDesign, so every "custom-*" clip silently went through
+# `generate_voice_design` with the bare name as `instruct` instead of `generate_custom_voice`
+# — caught by inspecting the completed run's manifest, see docs/tts-eval-1000-pl.md).
 CUSTOM_VOICE_PROFILES = [
-    ("custom-ryan", "Ryan"),
-    ("custom-aiden", "Aiden"),
-    ("custom-eric", "Eric"),
+    ("custom-ryan", "Ryan", "Very happy and upbeat."),
+    ("custom-aiden", "Aiden", "Curious, asking as if genuinely wondering."),
+    ("custom-eric", "Eric", "Hurried, slightly rushed delivery."),
 ]
 
 VOICE_POOL = VOICE_DESIGN_PROFILES + CUSTOM_VOICE_PROFILES
@@ -89,9 +95,9 @@ def synthesize_one(vd_model, cv_model, tag, rest, text, lang):
         (instruct,) = rest
         wavs, sr = vd_model.generate_voice_design(text=text, language=lang, instruct=instruct)
         return wavs, sr, {"engine": "VoiceDesign", "profile": tag, "instruct": instruct}
-    (speaker,) = rest
-    wavs, sr = cv_model.generate_custom_voice(text=text, language=lang, speaker=speaker)
-    return wavs, sr, {"engine": "CustomVoice", "profile": tag, "speaker": speaker}
+    speaker, instruct = rest
+    wavs, sr = cv_model.generate_custom_voice(text=text, language=lang, speaker=speaker, instruct=instruct)
+    return wavs, sr, {"engine": "CustomVoice", "profile": tag, "speaker": speaker, "instruct": instruct}
 
 
 def synthesize(vd_model, cv_model, tag, rest, text):

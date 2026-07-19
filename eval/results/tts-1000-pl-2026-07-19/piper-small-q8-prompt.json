@@ -1,0 +1,7009 @@
+{
+ "modelId": "onnx-community/whisper-small",
+ "dtype": "q8",
+ "lang": "pl",
+ "withPrompt": true,
+ "loadS": 1.806,
+ "records": [
+  {
+   "id": "pl-rng-0001",
+   "raw": "obirz zasięg protonu o energii 100 MeV w aluminium.",
+   "secs": 3.155,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0002",
+   "raw": "Jak daleko doleci proton o energistom, meV w wodze?",
+   "secs": 2.621,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0003",
+   "raw": "jak daleko do czejon ma gnezło energi 50NV na nuklen w dwutlenku przemu.",
+   "secs": 3.361,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0004",
+   "raw": "Powiedz mi, jak daleko zajdzie ją Litu o energii 30 MeV na nukleon w wodze",
+   "secs": 2.382,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0005",
+   "raw": "oblicz za sięg protonu o energii 250 MeV w aluminium.",
+   "secs": 2.151,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0006",
+   "raw": "Powiedz mi, jak darekko zajdzie, jon kryp, tomuł energii, czterstamy farm na nukleon, tkanka mięśniowej.",
+   "secs": 3.128,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0007",
+   "raw": "jaki jest zasiędcząstki alfa o energii 60 meca w Ołowiu.",
+   "secs": 2.452,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0008",
+   "raw": "Jak jest zasięgionu węgla o energi i 300 MeV na nukleon w kości korowej?",
+   "secs": 3.179,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0009",
+   "raw": "i ja wynosi zasięg protonu, renergi, czterdzieści nefałów, bylaficie.",
+   "secs": 3.38,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0010",
+   "raw": "jak daleko docze jon tlenu o energii 400 MeV na nukleon w złocie?",
+   "secs": 2.51,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0011",
+   "raw": "Jak głęboko wniknie jon węgla o energii 2 siemefa na nukleon w kości zbitej?",
+   "secs": 3.124,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0012",
+   "raw": "obicz zasięg protonu, energi, czysta, meV w politylenie.",
+   "secs": 2.475,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0013",
+   "raw": "ile wynosi zasięg, protonu, oranelid, 250 V w wodzie.",
+   "secs": 2.71,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0014",
+   "raw": "Jak daleko do czyjononu o energii 250 MeV na nukleonu w wodze?",
+   "secs": 2.973,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0015",
+   "raw": "Jak głęboko wniknie jon neonu o energii 100 keV w złocie?",
+   "secs": 2.776,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0016",
+   "raw": "podaj zasięg protonu o energię 50V kości z bitej.",
+   "secs": 2.075,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0017",
+   "raw": "Powiedznik, jak daleko zajdzi Groton 2 Energii 70 MeV aluminium",
+   "secs": 2.652,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0018",
+   "raw": "jakiś zasięg ma proton po energii 60 MeV w politylenie.",
+   "secs": 2.675,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0019",
+   "raw": "powiedz mi, jak daleko zajdzie jonolity u NRG 80NV na nukleon w wodze.",
+   "secs": 3.308,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0020",
+   "raw": "oblicz zasięg deuteronu energii 40, myfaw po wieczu.",
+   "secs": 2.562,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0021",
+   "raw": "Jak daleko docze cząstka alfa o energii 25 MeV w wodze?",
+   "secs": 2.258,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0022",
+   "raw": "poddaj zasięg proton, jon energi stopień dziesiątne, v, Kapton.",
+   "secs": 2.586,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0023",
+   "raw": "i jak daleko, doczek ją krzemu o energii, 30 MeV na nukleon w poliwiedylenie.",
+   "secs": 3.284,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0024",
+   "raw": "ile wynosi zasięgionu helu-3, ONRd5, metaw pojeczu.",
+   "secs": 2.889,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0025",
+   "raw": "ile wynosie zasięgionu na ono energii 120 mv na nukleon w tkance mięśniowej?",
+   "secs": 2.391,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0026",
+   "raw": "podaj zasięg jonu xenonu o energii 150 MeV na nukleonu w plastiku tkanku podobnym a 150",
+   "secs": 3.284,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0027",
+   "raw": "obidż zasięg, protonu, borynergistone, fałów kości zbitej.",
+   "secs": 2.816,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0028",
+   "raw": "oblidzasiem deuterunu, neli, 15 meV po idylienie.",
+   "secs": 2.242,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0029",
+   "raw": "jak łęboko, wniki jon węgla, orenergi 50 ktr. w Kaptonie.",
+   "secs": 2.87,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0030",
+   "raw": "jaki zasięg na jon żelaza o energii, 60 na jon czał na nukleon, dna r.",
+   "secs": 2.744,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0031",
+   "raw": "jak daleko dleci proton, polenę listo 20 mefa uwołów.",
+   "secs": 2.553,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0032",
+   "raw": "Jak głęboko wniknie proton o energii 220 MeV w powieczu?",
+   "secs": 2.532,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0033",
+   "raw": "jak głęboko wniknijon, magnezu, energii, 150V na nukleon, w tkance mięśniowej.",
+   "secs": 2.978,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0034",
+   "raw": "podej z asięg protonu o energii 150V w powietrzu.",
+   "secs": 2.335,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0035",
+   "raw": "jaki zasięg ma proton o energii 80 mesau z aluminiumu.",
+   "secs": 2.568,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0036",
+   "raw": "Jak daleko doczek tryton oenergi 2 MeV w poliwę glanie?",
+   "secs": 2.469,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0037",
+   "raw": "ile wynosi zasięg jonu krzemu o energii 400 MeV na nukleon w graficie?",
+   "secs": 2.596,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0038",
+   "raw": "ile wynosi zasięg protonu ONR 1.5 Tv w plastiku tkankopodobnym a 150.",
+   "secs": 2.793,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0039",
+   "raw": "oblicz zasięg, jonu-3 o energii, dwame, fał w graficie.",
+   "secs": 2.396,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0040",
+   "raw": "Jak daleko dotrze ją przy mołenergi 80 na nukleonu, albo minimum?",
+   "secs": 2.412,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0041",
+   "raw": "jak daleko docze jon helu-3 po energii pięćme fałw muna.",
+   "secs": 2.839,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0042",
+   "raw": "wiek daleko doleci, jon witu, o energii, zjeżdżie 50 mesał nam ukrałom spolietylenie.",
+   "secs": 3.325,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0043",
+   "raw": "Jak głęboko wniknie jon na onu energii 120 MeV na nukleon w poliwęglanie?",
+   "secs": 2.432,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0044",
+   "raw": "podaje zasięg jonu ksenonu o energii 200 MeV na nukleon w ołowiu.",
+   "secs": 2.472,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0045",
+   "raw": "podaj za shing cząstki alfa energii 10 MeV w tkance tłuszczowej.",
+   "secs": 2.546,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0046",
+   "raw": "obij, dżza sięg, jonu żelazo, neli 20, nfn, nukleon w poliwęglanie.",
+   "secs": 2.959,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0047",
+   "raw": "Jak daleko do czetrytą? O energii! 40 męsaów tkancenie zniowej",
+   "secs": 3.048,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0048",
+   "raw": "Jaki jest zasięg jonu helu 3O energii 20MV plastikutkankopodobnym A150?",
+   "secs": 3.934,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0049",
+   "raw": "jaki jest zasięg deuteronu o energii 15 MeV w złocie?",
+   "secs": 2.908,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0050",
+   "raw": "jaki zasięg mają krzemu energii 350V na nukleon wołowiu.",
+   "secs": 2.968,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0051",
+   "raw": "Jaki zasięg mają helu-3 o NRD 80 meV w dwutlenku krzemu?",
+   "secs": 3.087,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0052",
+   "raw": "Jak daleko docze jon ksenonu o energii 150 MeV na nukleon w dwutlemku krzemu?",
+   "secs": 3.829,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0053",
+   "raw": "jak głęboko wniknie cząstka alfa o energii 5-mf w plastiku tkankopodobnym a 150",
+   "secs": 3.28,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0054",
+   "raw": "Jak daleko doleci jon węgla, onerji, 50 MeV na nukleon w wodze?",
+   "secs": 3.069,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0055",
+   "raw": "ile wynosi zasięg jonu azotu o energii 400 MeV na nukleon w graficie?",
+   "secs": 3.603,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0056",
+   "raw": "Jak jest zasięg jonu krzemu energii, czy dziesiejmy fauna nukleon w kości z bitej?",
+   "secs": 3.171,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0057",
+   "raw": "Jaki zasięg mają w aknie oainelii 400 mfa na nukleon kości korowej",
+   "secs": 3.13,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0058",
+   "raw": "Jak daleko doleci jon wapnia o energii 80 MeV na nukleonów złocie?",
+   "secs": 3.538,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0059",
+   "raw": "podaj zasięg trytonu o energii 30 MeV w kości z bitej.",
+   "secs": 3.147,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0060",
+   "raw": "powiedz mi, jak daleko zajdzie proton, ojmne rybizwieście mecał w poliwę glanie.",
+   "secs": 4.265,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0061",
+   "raw": "Jak głęboko wniknie on neoną energii, czy ten jest taki faw, MA?",
+   "secs": 2.982,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0062",
+   "raw": "Jak głęboko wniknie deuteron o NRV 60 MeV w kości zbitej?",
+   "secs": 3.523,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0063",
+   "raw": "jak dane kodoczety, tonporeneli, 30-fimne fałów w graficie.",
+   "secs": 3.166,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0064",
+   "raw": "oblicz zasięg trytonu energii 40 MeV polietylenia.",
+   "secs": 2.709,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0065",
+   "raw": "ile wynosi zasięg protonu o energii 70 MeV w powietrzu?",
+   "secs": 3.156,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0066",
+   "raw": "poddaje zasięg, dęuteronu wolne, nalbija jasne fałów w wodzie.",
+   "secs": 2.928,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0067",
+   "raw": "i jak daleko doczyją argonu o energii 159nN, w tkanka tłuszczowej.",
+   "secs": 3.169,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0068",
+   "raw": "11, zasięg protonu o energii, 80 MeV, aluminium.",
+   "secs": 2.257,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0069",
+   "raw": "Woda i zasięg, jon umiedzi o energii, 250 nm na nukleon, w dwutynku krzemu.",
+   "secs": 3.182,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0070",
+   "raw": "Jaki zasięg macząstka alfa, energii, pięćmefa, w tkance mięśniowej?",
+   "secs": 2.417,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0071",
+   "raw": "jak daleko dotrzę, proton o energii, 30, meV w kości korowej.",
+   "secs": 2.087,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0072",
+   "raw": "Powiedz mi, jak daleko zadziej on węgla o energii 40 mefał na nukleon w kości zbitej",
+   "secs": 2.726,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0073",
+   "raw": "Jak daleko docze cząstka alfa o energii 15 MeV w plastikutkam kopodobnym a 150?",
+   "secs": 3.601,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0074",
+   "raw": "jag daleko do czejon, magnezu ojne, lis 120 na saun na nukleon, poliwęglanie.",
+   "secs": 2.913,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0075",
+   "raw": "jak dalekko docze cząstka alfa, energii, 40V w wodzie.",
+   "secs": 2.398,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0076",
+   "raw": "Jak daleko doleci jon argonu o energii 30 MeV na nukleon w dwutlenku krzemu?",
+   "secs": 2.595,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0077",
+   "raw": "Powiedz mi, jak daleko zajdzie jon ksenonu o energii 50V na nukleon w wodzie.",
+   "secs": 2.932,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0078",
+   "raw": "Jak daleko do Czejon-Helu czy o Enelid, 2 mefałów PMA?",
+   "secs": 3.37,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0079",
+   "raw": "oblicz zasięg protonu o energii 20 MeV w złocie.",
+   "secs": 3.093,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0080",
+   "raw": "Jaki jest zasięg protonu o energii 30 MeV w dwutlemku krzemu?",
+   "secs": 3.077,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0081",
+   "raw": "Jak go w boku wniknie proton o energii 220 MeV w poliwęglanie?",
+   "secs": 3.232,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0082",
+   "raw": "jaki jest zasięg jonu żelaza o energii 50 MeV na nukleon, tkanka tłuszczowej.",
+   "secs": 3.248,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0083",
+   "raw": "podaj z zasiędzioną tlemu ONR-li, 40 i mechauna mukleon w powietrzu.",
+   "secs": 3.646,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0084",
+   "raw": "Jaki jest zasięg protonu o nr 90 MeV ma?",
+   "secs": 2.436,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0085",
+   "raw": "i zawynosić zasięg deuteronu, bo energii 80% w złocie.",
+   "secs": 2.636,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0086",
+   "raw": "jaćgi jest zacięg deuteronu o energii 60 menv wołowiu.",
+   "secs": 3.331,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0087",
+   "raw": "Jak daleko doleci jon żelaza o energii, czystamy fauna nukleon w poliwęglania?",
+   "secs": 3.352,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0088",
+   "raw": "oblicz, zasięg jonu wapnia, o energii, czysta, meV na nukleon, w złocie, lewe, lewe, lewe.",
+   "secs": 3.307,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0089",
+   "raw": "Jak daleko doleci jon miedzi o energii dwie siem fauna nukleon w tkance mięśniowej?",
+   "secs": 3.181,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0090",
+   "raw": "Powiedz mi, jak daleko zajdzie jon krzemu energi 350 MeV na nukleonu w Kaptonie.",
+   "secs": 3.007,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0091",
+   "raw": "Jak głęboko w nich nie tryton o energii 15 MeV w dwutlenku krzemu?",
+   "secs": 2.905,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0092",
+   "raw": "powiedz mi jak daleko zajdzie proton o energii 70V w graficie",
+   "secs": 2.251,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0093",
+   "raw": "jak daleko dotrze jon tlenu, o energii, dwieście mesał na nukleon, stowietrzu.",
+   "secs": 3.5,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0094",
+   "raw": "jaki zasięg mają krzemu energii 150mV na nukleon w aluminium.",
+   "secs": 2.575,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0095",
+   "raw": "podaj zasięg trytonu o NRG 50 MeV w wodze.",
+   "secs": 3.088,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0096",
+   "raw": "podej zasięg protonu o energii 100 MeV w tkance mięśniowej.",
+   "secs": 2.221,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0097",
+   "raw": "jak daleko doczę proton o energii, czyli dziesimy VW-owiu.",
+   "secs": 2.731,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0098",
+   "raw": "Powiedz mi, jak daleko zadzie jon azotu o energii 50 MeV na nukleonu w poliwęglanie.",
+   "secs": 3.017,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0099",
+   "raw": "padaj zasięgionu litu, o energii, 6 tysiąc na cał na nukleon, w węglu czemu.",
+   "secs": 3.959,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0100",
+   "raw": "jaki jest zasięg jomu, a złotu, o energii, czysta, meV na nukleon, tkanka tłuszczowej, w role.",
+   "secs": 3.383,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0101",
+   "raw": "jar dalako doczejona z otu, energii 250V na mukion w pojęty leni.",
+   "secs": 3.713,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0102",
+   "raw": "podej zasięg, jon umiedzi o energii 80 MeV na nukleon w wodze.",
+   "secs": 2.698,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0103",
+   "raw": "Powiedz mi, jak daleko zadzie jon tytanu o energii 40 MeV na nukleon w dwutlenku krzemu.",
+   "secs": 3.487,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0104",
+   "raw": "Powiedz mi, jak daleko zajdzie jon węgla ONRD 40 i MeV na nukleon w powietrzu",
+   "secs": 2.616,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0105",
+   "raw": "jak daleko doleci, jon kryptonu, o energii, czterwieśki, mesał nam ublęd złocie.",
+   "secs": 2.761,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0106",
+   "raw": "obiecz zasięg protonu o NRV 300 MeV w dwutlenku krzemu.",
+   "secs": 2.525,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0107",
+   "raw": "Jaki zasięg model teron o energii 5 MeV w plastiku tkankopodobnym a 150?",
+   "secs": 2.956,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0108",
+   "raw": "Jaki zasięg mają helu-3 energii, 8 evałów, dwutlenku krzemu?",
+   "secs": 3.329,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0109",
+   "raw": "Jak daleko docze proton o energii 10 MeV w plastiku tkankopodobnym a 150?",
+   "secs": 3.622,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0110",
+   "raw": "ile wynosi zasięg, cząstki, alfa, energii, czydieśliny fał w kości zbitej?",
+   "secs": 3.241,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0111",
+   "raw": "powiedz mi, jak daleką zajdzie jon, helu-3, energii-8, MeV w poliwęglanie.",
+   "secs": 4.687,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0112",
+   "raw": "Jak daleko doczejon krzemu o energii 150 MeV na nukleon w aluminiu?",
+   "secs": 2.527,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0113",
+   "raw": "Jak jest zasięgiono arbanu ONR-di 500 keV w plastiku tkankopodobnym A150?",
+   "secs": 3.931,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0114",
+   "raw": "podaj zasięgionu magnezu o energii 60 MeV na nukleonu w plastiku tkankopodobnym a 150",
+   "secs": 4.22,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0115",
+   "raw": "powiedz mi jak daleko zajdzie proton po nLi 90mv uOuU",
+   "secs": 3.76,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0116",
+   "raw": "powiedz mi jak daleko zajdzie proton o energii 10-mv plastikutkankopodobnym a 150",
+   "secs": 3.075,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0117",
+   "raw": "Jak daleko doleci cząstka alfa o energii 2 MeV w polietylenie?",
+   "secs": 3.072,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0118",
+   "raw": "Powiedz mi, jak daleko zajdzie jon żelaza o energii 400 MeV na nukleon w ołowiu",
+   "secs": 4.029,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0119",
+   "raw": "Jak gąboko wniknie jon plenu energii czysto mefa na nu planu tkanka tłuszczowej?",
+   "secs": 3.04,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0120",
+   "raw": "oblicz zasięg, cząstki alfa o energii 40 MeV w Kaptonie.",
+   "secs": 2.888,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0121",
+   "raw": "Jak daleko doczejon węgla energii, czy dziesiemy fauna nukleon w ołowiu?",
+   "secs": 2.877,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0122",
+   "raw": "jaki zasięg matrotom o aluminiumie 50% saustkanca, puszczowej.",
+   "secs": 3.213,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0123",
+   "raw": "Jak daleko do leci cząstka pan fał, weneri i osiemny fał w bianaficie?",
+   "secs": 3.306,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0124",
+   "raw": "omieć zasięg cząstki alfa NRG i 80 mefałów w graficie.",
+   "secs": 3.667,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0125",
+   "raw": "ile wynosi zasięgionu węgla o energii 100 MeV na nukleon w plastikutkankopodobnym A150?",
+   "secs": 3.432,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0126",
+   "raw": "podaj zasięg protonu o energii 220V dwutlenku krzemu.",
+   "secs": 2.219,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0127",
+   "raw": "padaj zasięg trotarnu, a energii 90 meca w woloju.",
+   "secs": 2.118,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0128",
+   "raw": "jaki zasięg na deuteron o reneli pięćny V kości zbityj.",
+   "secs": 2.785,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0129",
+   "raw": "Jak daleko doczyjąc jonu onerlist 120 MeV na nukleon w plastiku tkankopodobnym a 150?",
+   "secs": 3.548,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0130",
+   "raw": "Jaki jest zasięg jonu żelaza, energii, dwie siemy fauna, nukleon w wodzie?",
+   "secs": 3.637,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0131",
+   "raw": "Jaki jest zasięg jonu xenonu o energii sto mefa na nukleon w aluminium?",
+   "secs": 2.916,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0132",
+   "raw": "ile wynosi z zesienki onolitu o energii sto kefaów PMMA?",
+   "secs": 2.027,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0133",
+   "raw": "jak głęboko wniknie jon tlenu, konagii 500 keV kości korowej.",
+   "secs": 2.774,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0134",
+   "raw": "Jaki jest zasięg jonu wapnia o energii 80 MeV na nukleon w powieczu?",
+   "secs": 2.807,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0135",
+   "raw": "ile wynosi zasięgionu boru Onerdi 250 na fał na nukleon w wodze?",
+   "secs": 3.119,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0136",
+   "raw": "obidzasięg, protonu, gotenerli, czterdzieścine fałpne.",
+   "secs": 2.388,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0137",
+   "raw": "jak głęboko, wiknie ją bolu, o energii, 350 mefał na nukleon w wodzie.",
+   "secs": 2.383,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0138",
+   "raw": "podaj zasięgioną między anergi, 80 na fał na nukleonów tkanka tłuszczowej.",
+   "secs": 3.029,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0139",
+   "raw": "jaki jest zesien w deuteronu energistone V-aluminium.",
+   "secs": 2.087,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0140",
+   "raw": "podaj, da się wcząstki, lalpa, energii, pięć, na całw pojeczylenie",
+   "secs": 2.919,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0141",
+   "raw": "powiedz mi jak daleko zajdzie tryton po energii 15 mefałów grafitie.",
+   "secs": 2.894,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0142",
+   "raw": "ile wynosi zasięg kionu magnezu o energii 250 MeV na nukleon w kości korowej?",
+   "secs": 2.767,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0143",
+   "raw": "Powiedz mi, jak daleko zajdzie jon kryptonu energii 350 keV w powietrzu?",
+   "secs": 3.509,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0144",
+   "raw": "jak daleko docze cząstka talfa o energii pięć mefa uwołowiu.",
+   "secs": 3.149,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0145",
+   "raw": "Jak daleko doleci proton oenergizm to MeV w kości korowej?",
+   "secs": 2.336,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0146",
+   "raw": "Jaki zasięg ma tryton, ONR, G80 MeV ma?",
+   "secs": 2.642,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0147",
+   "raw": "jaki zasięg mają azotu o energii, 100 me, fraum na nukleonem kaptoniem.",
+   "secs": 3.307,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0148",
+   "raw": "Jak daleko docze proton o energii 350 MeV w dwutlenku krzemu?",
+   "secs": 2.901,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0149",
+   "raw": "podaj zasięg protonu energii czysta keV w tkanki mięśniowej.",
+   "secs": 3.126,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0150",
+   "raw": "Jak głęboko, wniknie ją kryptonu, o innerwi 150 mefa on nanukleon w złocie.",
+   "secs": 4.372,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0151",
+   "raw": "jak głęboko wniknie, jon wapniał energię, 80-m v na nukleon w poliwę tlenie.",
+   "secs": 3.586,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0152",
+   "raw": "ile wynosi zasięg protonu ONR-ni 4 dv w kości z bitei?",
+   "secs": 2.758,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0153",
+   "raw": "njaki za sięg ma proton o energii dndv aluminium.",
+   "secs": 3.235,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0154",
+   "raw": "ile wynosi zasięg protonu ONEaggi60mV poliwęglanie.",
+   "secs": 2.755,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0155",
+   "raw": "Jaki jest zasięg jonu tytanu o energii 120 MeV na nukleon w poliwęglanie?",
+   "secs": 3.438,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0156",
+   "raw": "jabli daleko docze, jon magnezu, energii, u 80 MeV na nukleon wpuna.",
+   "secs": 4.358,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0157",
+   "raw": "olicz zasięgionu, mieliła energii, stomna fauna nukleonu z aluminium, dE, dE, dE, dE.",
+   "secs": 3.537,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0158",
+   "raw": "obiecz, zasięg, jonu, helu-3, energi, osiem, mefałów, poliwęglania.",
+   "secs": 3.883,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0159",
+   "raw": "jak dane kodoleci, jon tytanu, renel i 20mv na nukleon w poliwęglani.",
+   "secs": 3.12,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0160",
+   "raw": "obidz, zasięg, jonu, helu-3 po energii, 80 na fał w kości korowej.",
+   "secs": 2.789,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0161",
+   "raw": "Powiedz mi, jak daleko zajdzie proton o energii 1DV w wodze.",
+   "secs": 1.995,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0162",
+   "raw": "jaki jest zasiem kionu magnezu o energii 60 MeV na nukleon w złocie?",
+   "secs": 2.219,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0163",
+   "raw": "Jak głęboko wniknie trytonu o energii 80MV w ołowiu?",
+   "secs": 2.543,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0164",
+   "raw": "Jaki zasięg ma proton ONR biztomy VW?",
+   "secs": 3.236,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0165",
+   "raw": "Powiedz mi, jak daleko zajdzie deuteron o energii 80 MeV w wodze?",
+   "secs": 3.442,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0166",
+   "raw": "podaj zasięg protonu o energii 70V polietylenie.",
+   "secs": 2.104,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0167",
+   "raw": "jaki jest zasięg cząstki alfa o energii. 50 WVW.",
+   "secs": 3.133,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0168",
+   "raw": "Powiedz mi, jak daleko zajdzie jon argonu o energii 120 MeV na nukleon w kości kolornej?",
+   "secs": 3.583,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0169",
+   "raw": "Jak głęboko wniknie tryton o energii 25MV dwutlenku krzemu?",
+   "secs": 3.846,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0170",
+   "raw": "oblicz zasięgionu Argonu ONR-li 50 keV w tkance tłuszczowej.",
+   "secs": 4.365,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0171",
+   "raw": "jaki zasięg mają kieptomu enelis, to 20an V na nukleon w tkancie tłuszczowej.",
+   "secs": 3.342,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0172",
+   "raw": "podaj, zasięg protonu, o energii, 60 metałów dwutlenku krzemu.",
+   "secs": 2.809,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0173",
+   "raw": "ile wynosi zasięg cząstki alfa o energii 10-mv poliwęglanie?",
+   "secs": 2.965,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0174",
+   "raw": "Jak daleko doleci jon haluczy o energii 25 MeV w kości z bitej?",
+   "secs": 3.023,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0175",
+   "raw": "podej zasięg, jonu magnezu, o energi 250 MeV na nukleon w tkance tłuszczowej.",
+   "secs": 3.886,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0176",
+   "raw": "ile wynosi zasięg jonu, wagonu, energii, czysta keV w poliwęglanie.",
+   "secs": 3.544,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0177",
+   "raw": "Hadaj dosięg tytonu, oj energii, dziesięć metawów aluminiumu",
+   "secs": 3.968,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0178",
+   "raw": "Powiedz mi, jak daleko zajdzie proton o energii 80 w Wołowiu.",
+   "secs": 3.071,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0179",
+   "raw": "Jak daleko doleci proton o energii 70 MeV w poliwę w lanie?",
+   "secs": 2.924,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0180",
+   "raw": "podaj zasięgionu krzemu o nr 60 MeV na nukleon w Kaptonie.",
+   "secs": 3.066,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0181",
+   "raw": "oblicz zasięg, jon u krzemu, o energii, czy 10 MeV na nukleon w graficie.",
+   "secs": 2.438,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0182",
+   "raw": "odaj zasięg protonu, ONR-X180 na V-draficie.",
+   "secs": 2.344,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0183",
+   "raw": "i ze wynosi zasięg, jon uboru w energiu 80 fauna nukleon w tkance tłuszczowej.",
+   "secs": 3.436,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0184",
+   "raw": "i wynosi zasięg deuteronu energii 20 MeV w kości korowej.",
+   "secs": 2.687,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0185",
+   "raw": "Jak jest zasięg jemu przymu energii 500 kefałów kości korowej?",
+   "secs": 2.701,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0186",
+   "raw": "podaj zasięg, jonu neonu, energii, czystamy fauna nukleonu w wodzie.",
+   "secs": 3.04,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0187",
+   "raw": "Jak w głęboko, zniknie ją neonu, energii 250 MeV na nukleon w polietylenie.",
+   "secs": 3.397,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0188",
+   "raw": "jak bórnboko, wniknie jon helu-3, o energii, stronę V w plastikutkę, podobnym, a 150.",
+   "secs": 3.882,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0189",
+   "raw": "jak głęboko wniknie, cząstka talfa o renergi, piętnaściem fałów w wodzie.",
+   "secs": 3.954,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0190",
+   "raw": "Jak daleko do 4 ton o energii czy 10 MeV w złocie?",
+   "secs": 3.463,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0191",
+   "raw": "Jak daleko dotrze proton o energii 80 MeV w graficie?",
+   "secs": 2.5,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0192",
+   "raw": "jar daleko do leci, tryton, pojenie, ergi, 30 ml, foudz, złocie, lewe.",
+   "secs": 2.808,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0193",
+   "raw": "oblicz zasięg protonu NLG900 keV w powietrzu.",
+   "secs": 3.512,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0194",
+   "raw": "Jak daleko doleci deuteron o energii 20 MeV w dwutlenku krzemu?",
+   "secs": 2.969,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0195",
+   "raw": "obijsza, zasięg, jonu, argonu, ONRG, 40 MeV na nukleon w kości korowej.",
+   "secs": 3.528,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0196",
+   "raw": "oddej zasięg, jon uazotu, energisto, 80V, namukionu w wodze.",
+   "secs": 2.867,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0197",
+   "raw": "jak głęboko, wmicznie, proton o energii 60 nL w dzuczęku 3.",
+   "secs": 2.974,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0198",
+   "raw": "i dar wynosi za szynktry tonu renergi u 80-nv w kości zbityj.",
+   "secs": 2.87,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0199",
+   "raw": "ile wynosi zasięg jonu, helu-3, energii 80 na cał, w kości zbitej.",
+   "secs": 3.023,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0200",
+   "raw": "jak głęboko wniknie jon helu czy porenergi 10 MeV na.",
+   "secs": 3.05,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0201",
+   "raw": "ile dnosi zasięg deuteronu, o energii 25 ms w poliwym blanie.",
+   "secs": 3.217,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0202",
+   "raw": "Jak daleko docze proton o energii 50 MeV w kości z bitej?",
+   "secs": 2.387,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0203",
+   "raw": "Jak daleko doczę proton o energii 40 MeV w złocie?",
+   "secs": 2.028,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0204",
+   "raw": "jaki zasięg mają helu-3 o enerni 20 na VW2.",
+   "secs": 2,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0205",
+   "raw": "Powiedz mi, jak daleko zajdzie jon azotłoenergi 350 keV kości z bitej.",
+   "secs": 2.378,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0206",
+   "raw": "obijcz, zasięg, deuteron, ONR, li 80 meV w dwutlenku krzemu.",
+   "secs": 2.651,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0207",
+   "raw": "jaki jest zasięg protonu, renergi 250 nV w pojeźdź tyleni.",
+   "secs": 2.989,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0208",
+   "raw": "Powiedz mi, jak daleko zajdzie jon żelaza o energii 50MV na nukleon w dwuklenku krzemu",
+   "secs": 3.079,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0209",
+   "raw": "Jaki jest zasięg trytonu o energii 30 MeV w poliietylenie?",
+   "secs": 2.521,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0210",
+   "raw": "Jak daleko doczeje jon żelazał energii 150 keV w kości korowej?",
+   "secs": 2.535,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0211",
+   "raw": "obić zasięgionu argonu o energii 350 MeV na nukleon w polietylenie.",
+   "secs": 2.758,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0212",
+   "raw": "oblicz, zesiem, protonu, oj energii, jeden de-faw, plastik, utkanko podobny, a 150 węgla.",
+   "secs": 2.984,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0213",
+   "raw": "jaki jest w zasięg protonu o enelii 50-tefałów w wodzy.",
+   "secs": 2.258,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0214",
+   "raw": "Jaki jest zasięg jonu helu-3 o energii 60 MeV w dwutlenku krzemu?",
+   "secs": 2.971,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0215",
+   "raw": "obilć zasięg deuteronu o energii z Tomefao w dwutlenku krzemu.",
+   "secs": 3.069,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0216",
+   "raw": "jaki jest zasięg tytonu energii 10 mefałów pojetylenie?",
+   "secs": 2.934,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0217",
+   "raw": "powiedz mi jak daleko zajdzie proton o energii 90 V w złocie.",
+   "secs": 2.869,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0218",
+   "raw": "Jak głęboko wniknie jon helu-3 o energię 80mV aluminiu?",
+   "secs": 3.148,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0219",
+   "raw": "powiedz mi, wiek daleko zajdzie deuteron o energii 60 MeV w plastik tkank podobnym a 150",
+   "secs": 3.869,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0220",
+   "raw": "Jaki jest zasięg cząstki alfa energii z tonnej fałów w graficie?",
+   "secs": 3.467,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0221",
+   "raw": "i wynosi zasięgi onu, helu-3, polenel i dwame fałów powietrzu.",
+   "secs": 3.809,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0222",
+   "raw": "polej zasięgionu tlenu, energii, przydzieści, mecau na nukleon w gaficie.",
+   "secs": 3.439,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0223",
+   "raw": "ile wynosi z zasięgioną argonu o energii, czytarystamy fauna nukleon w kości korowej?",
+   "secs": 3.116,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0224",
+   "raw": "podej zasięg, jon umiedzi o energii 40 MeV na nukleon w PMMA.",
+   "secs": 3.007,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0225",
+   "raw": "Jak głęboko wniknie proton o energii 80V zł.",
+   "secs": 2.312,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0226",
+   "raw": "jak daleko doczeją tytanu, energii czy stanę fauna, nukleon w kance nieśniowej.",
+   "secs": 3.316,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0227",
+   "raw": "podaje zasięg tej tonu, ojani 25 na całówka tonie.",
+   "secs": 2.499,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0228",
+   "raw": "jak daleko doleci cząstka palca o energii 15, męcołówkości korowej.",
+   "secs": 2.997,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0229",
+   "raw": "Powiedz mi, jak daleko zadzie jon tlenu o energii 150 MeV na nukleon w tkance tłuszczowej",
+   "secs": 3.098,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0230",
+   "raw": "Jak daleko do tryton o energii 25 MeV, PMMA?",
+   "secs": 2.326,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0231",
+   "raw": "Jak daleko doleci cząstka alfa o energii z Tomefa w PMMA?",
+   "secs": 2.597,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0232",
+   "raw": "obludź zasięgionu boru o energii 250V na nukleon w tkance tłuszczowej.",
+   "secs": 3.392,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0233",
+   "raw": "jak i zasięg ma proton o energii 80 mefałów plastikutkankopodobnym a 150",
+   "secs": 2.684,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0234",
+   "raw": "Jak głęboko wniknie jon madnezu o energii 200 MeV na nukleon w poliwę wlanie?",
+   "secs": 2.577,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0235",
+   "raw": "Powiedz mi, jak daleko zajdzie jon boru o energii 60 MeV na nukleon w poliwęglanie.",
+   "secs": 2.456,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0236",
+   "raw": "jak głęboko wniknie jon, helu-3, ONR-gi, gdzie się śmiesał w bodzie.",
+   "secs": 3.281,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0237",
+   "raw": "obidz, zasięg, protonu, kolenel i czeryfałów w wodzie.",
+   "secs": 2.399,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0238",
+   "raw": "jaki zasięg ma trytą energii pięć no i cał w polietylenie.",
+   "secs": 2.657,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0239",
+   "raw": "jaki jest zasięg jonu Pryptomu, orneli 400V na muteon w pnna.",
+   "secs": 2.64,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0240",
+   "raw": "obidz zasięg, jon uazotu, energi, 500 keV w plastiku, tkankopodobny, na 150.",
+   "secs": 3.028,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0241",
+   "raw": "jaki jest zasięg jonu tlenu, jon energii, 150 metaon, nukleon, dwutlenku, trzemu",
+   "secs": 2.888,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0242",
+   "raw": "ile wynosi zasięg i onukszemu o energii 40 MeV na nukleon w aluminium?",
+   "secs": 2.437,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0243",
+   "raw": "Jak głęboko wniknie jon kryptonu o energii 150 MeV na nukleon w graficie?",
+   "secs": 3.156,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0244",
+   "raw": "ile wynosi zasięgioną kryktonu o energii z Tomefaonanu planu w Ołowiu.",
+   "secs": 2.64,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0245",
+   "raw": "jak daleko doczejone ono, energii, czydzieś limefauna, nukleon w wodzie.",
+   "secs": 2.713,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0246",
+   "raw": "Jak daleko doleci deuteron o energię 8V w wodzie?",
+   "secs": 2.889,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0247",
+   "raw": "jad głęboko wniknie, jon żelaza o energii 400 MeV na nukleon w Kaptonie.",
+   "secs": 3.079,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0248",
+   "raw": "Jak daleko docze proton o energistom, fauf poliwęganie?",
+   "secs": 3.026,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0249",
+   "raw": "Jaki zasięg ma proton o energii 150 MeV w złocie?",
+   "secs": 2.605,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0250",
+   "raw": "jak daleko doczę jon, helu-3, o NLi 8 nt w graficie.",
+   "secs": 2.606,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0251",
+   "raw": "jaki zasięg mają helu czy orenergi 20 MeV w tpancetuszczowej?",
+   "secs": 3.5,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0252",
+   "raw": "ile wynosi z zasięgionu xononu o energii 250 MeV na nukleon w plastiku tkankopodobnym a 150?",
+   "secs": 3.19,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0253",
+   "raw": "Jaki zasięg mają naonu o energii 40 MeV na nukleon w PMMA?",
+   "secs": 3.626,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0254",
+   "raw": "Jak daleko doleci krytonowa energii 2 MeV w dwutlenku krzemu?",
+   "secs": 2.308,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0255",
+   "raw": "Powiedz mi, keV daleko dzajdzie jon kryptonu, o energii 20, meV na nukleon, w polietylenie, dddx,",
+   "secs": 3.669,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0256",
+   "raw": "Jaki jest zasięg proton o energii 900 keV w wołowiu?",
+   "secs": 2.591,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0257",
+   "raw": "Jaki jest zasięgionu helu-3 oenergii 2 MeV w Kaptonie?",
+   "secs": 3.068,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0258",
+   "raw": "ile wynosi zasięg protonu o energii 2 GeV w graficie?",
+   "secs": 2.53,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0259",
+   "raw": "jak głęboko wniknie jon krzemu energii 20mV na nukleon w ołowiu.",
+   "secs": 3.065,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0260",
+   "raw": "Powiedz mi, jak daleko zajdzie cząstka alfa o energii 5 MeV w tkance mięśniowej?",
+   "secs": 3.052,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0261",
+   "raw": "ile wynosi za sięg cząstki alfa o energii 15 MeV w tkance mięśniowej?",
+   "secs": 2.719,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0262",
+   "raw": "jaki zasięg ma proton po energii 900 keV w powietrzu.",
+   "secs": 2.148,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0263",
+   "raw": "jak daleko do trzejon helu, 3, o energii, 80, z MeV w wodzie,",
+   "secs": 2.483,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0264",
+   "raw": "Jak daleko doleci proton ONL i 20 MeV w poliwęglanie?",
+   "secs": 2.409,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0265",
+   "raw": "i jar wynosi zasięgi jon ukrzemu NLG 150 keV tkanka mięśniowej.",
+   "secs": 3.034,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0266",
+   "raw": "podaj, zasięg Tatomu, ONRG, 60V w graficie.",
+   "secs": 3.205,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0267",
+   "raw": "podaj zasięg deuteronu o energii 25mV w powietrzu.",
+   "secs": 2.734,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0268",
+   "raw": "Jak jest zasięgionu magnezu o energii? 40 mysł na nukleon w plastiku, tkankopodobnym, a 150",
+   "secs": 3.602,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0269",
+   "raw": "ile wynosi zasięg jonu boru, energii 20mV na nukleon w kości zbitej?",
+   "secs": 3.643,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0270",
+   "raw": "Jaki jest zasięg protonu ONR-350MV w złocie?",
+   "secs": 3.026,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0271",
+   "raw": "powiedz mi, jak daleko zajdzie jon helu-3 o energii 60 MeV w plastiku tkanko podobnym a 150",
+   "secs": 4.107,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0272",
+   "raw": "jak daleko do chlion, helu-3, nRd, j8, VPMMA",
+   "secs": 3.544,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0273",
+   "raw": "jaki jest zasięg protonu o energii. Staw na em. Fał wad.",
+   "secs": 3.213,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0274",
+   "raw": "i dowynosi zasięg protonu, renali dziesięć my fałów graficie.",
+   "secs": 3.834,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0275",
+   "raw": "podaj zasięgionu kryptonu o energii 120 MeV na nukleonu w aluminium.",
+   "secs": 3.964,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0276",
+   "raw": "obidż zasięg deuteronu o energii 80 MeV w graficie.",
+   "secs": 2.743,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0277",
+   "raw": "jaki zasięg ma proton o energii czy dzieślimy fał w kości z bitej?",
+   "secs": 3.954,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0278",
+   "raw": "Jak daleko doleci proton o energii 500 keV w kości z bitej?",
+   "secs": 2.876,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0279",
+   "raw": "podej z asięgionu węgla o energie, 80 netał na nukleon aluminium.",
+   "secs": 2.502,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0280",
+   "raw": "Jaki jest zasięgion ozotu o energii 80 mefauna nukleon w Kaptonie?",
+   "secs": 2.874,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0281",
+   "raw": "podej zasięg protonu o energii 50 MeV w poliwęglanie.",
+   "secs": 2.238,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0282",
+   "raw": "jak daleko odrocze jon kryptomu o renagli 350V na nukleon w graficie.",
+   "secs": 3.624,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0283",
+   "raw": "Powiedz mi, jak daleko zajdzie deuterom OMR i 50 mężą w poliwęglanie.",
+   "secs": 3.453,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0284",
+   "raw": "Jak daleko docze jon helu 3O energii 60 MeV w tkance mięśniowej?",
+   "secs": 2.744,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0285",
+   "raw": "podaj zasięg protonu o energi 1, 5 keV w złoty.",
+   "secs": 2.384,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0286",
+   "raw": "powiedz mi, jak daleko zajdzie tryton, ONRG-30, mesał w poliwęglanie.",
+   "secs": 2.739,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0287",
+   "raw": "Jaki jest zasięgionu neonu o energii 50mV na nukleon w graficie?",
+   "secs": 3.611,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0288",
+   "raw": "obidż, zasięg, protonu, phenelwistopie, dziesiątne fałów, dwutyn, kupszemu.",
+   "secs": 3.107,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0289",
+   "raw": "jak jest zasięg trytonu o energii, 10 na V w plastiku tkankopodobnym, a 150",
+   "secs": 2.76,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0290",
+   "raw": "Jak daleko docze jon krzemu o energii 120 MeV na nukleon w poliwę wlanie?",
+   "secs": 3.211,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0291",
+   "raw": "jak daleko dolecie proton o energii 77 fow tkanka mięśniowej?",
+   "secs": 3.006,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0292",
+   "raw": "jak i zasięg majona zotu, energi 50, my fauna, nukleon w poliwęglani.",
+   "secs": 4.081,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0293",
+   "raw": "oblicz zasięg cząstki alfa o energii 2 MeV w ołowiu.",
+   "secs": 3.825,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0294",
+   "raw": "jak daleko doczek protonu energii 150V aluminią?",
+   "secs": 3.181,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0295",
+   "raw": "i jak głęboko wniknie proton do energi 180 mesałów w aluminiumu.",
+   "secs": 3.447,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0296",
+   "raw": "ile wynosi zasięg trytonu energii 15 MeV w aluminium.",
+   "secs": 3.239,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0297",
+   "raw": "obić zasięg protonu o energii 60 MeV w tkance tłuszczowej.",
+   "secs": 3.101,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0298",
+   "raw": "obidz, zasięg, jon łazotu, orenegli, pięćdziesiątne fauna, nuklen w dwutlenku krzemu.",
+   "secs": 3.135,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0299",
+   "raw": "obieć, zasięg, deuteronu o energii 50 na V w dwutlenku krzemu.",
+   "secs": 2.332,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0300",
+   "raw": "jak daje go doleczyć się proton, o energii, 180 meV w bradki Cie.",
+   "secs": 2.56,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0301",
+   "raw": "jakiś zasięg, ma proton, polenelgi, 180, myfau w Kaptonie.",
+   "secs": 2.286,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0302",
+   "raw": "i jaki jest zasięg jon węgla o energii 150 keV w kości zbitej?",
+   "secs": 2.459,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0303",
+   "raw": "Podaj zasięgionu węgla o energii 20 MeV na nukleonu w aluminium.",
+   "secs": 2.521,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0304",
+   "raw": "Jak daleko doczy, on węglał energii 60mV na nukleon w złocie?",
+   "secs": 2.837,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0305",
+   "raw": "Ja w tle kodotrzę deuteron, winery i przywieźli mesał w plastiku, tkankopodobnym, a 150",
+   "secs": 4.325,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0306",
+   "raw": "Jak głęboko wniknie jon zotu, o neli 400V na nupion w poliwę glanii.",
+   "secs": 2.885,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0307",
+   "raw": "Jak daleko dotrze proton ONR listu 180 MeV w polietylenie?",
+   "secs": 2.413,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0308",
+   "raw": "Powiedz mi, jak daleko zajdzie proton o energii 300 MeV w poliwę wlanie.",
+   "secs": 3.021,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0309",
+   "raw": "Jaki zasięg matryton o energii 10 MeV-PMA?",
+   "secs": 3.043,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0310",
+   "raw": "jak głęboko wniknie jon kryptonu, ryneli, 150V na nukleon w pojwygnlanie.",
+   "secs": 3.039,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0311",
+   "raw": "Jaki jest zasięg jonu, księnomu, o NRB, zwięźwie mecauna, nukleon w dwutlenku, trzemu?",
+   "secs": 4.671,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0312",
+   "raw": "Jak daleko doleci jon helu-3 o energii 80, myf o poliwę tlenie?",
+   "secs": 3.573,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0313",
+   "raw": "Powiedz mi, jak daleko zajdzie jon węgla o energii czysta mefa na nukleon w graficie",
+   "secs": 3.113,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0314",
+   "raw": "Jaki zasięg mają żelaza? O energii.",
+   "secs": 2.561,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0315",
+   "raw": "Jak głęboko wniknie jon żela za o energii 80 MeV na nukleon w Kaptonie?",
+   "secs": 3.309,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0316",
+   "raw": "Jaki jest zasiem Kionu Tytanu o energii 40 MeV na nukleon w kości korowej?",
+   "secs": 3.099,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0317",
+   "raw": "Jak daleko doleci proton o energii 200 MeV-pMA?",
+   "secs": 3.111,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0318",
+   "raw": "Jaki jest zasięgionu azotu o energii 40 MeV na nukleon w Kaptonie?",
+   "secs": 2.713,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0319",
+   "raw": "obić zasięg protonu o energii 30 MeV w kości z bitej.",
+   "secs": 3.388,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0320",
+   "raw": "Jak dalek oddoczę ją magnezu o energii, czy dziesimy fauna nukleonu w wodzie?",
+   "secs": 4.01,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0321",
+   "raw": "Toda i zasięgion Xenonu, ONRG i 30 na całna nukleon w Ołowiu",
+   "secs": 2.977,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0322",
+   "raw": "obić zasięgionu argonu ONRD 60 MeV na nukleonu w poliwęglaniu.",
+   "secs": 3.754,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0323",
+   "raw": "Powiedz mi, jak daleko zajdzie proton o energii 900 keV w kości zbitej",
+   "secs": 2.808,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0324",
+   "raw": "Jaki zasięg mają boru o energii 50 keV w polietylenie?",
+   "secs": 2.424,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0325",
+   "raw": "podaj zasięg deuteronu o energii 25MV w plastiku tkankopodobnym 150",
+   "secs": 3.498,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0326",
+   "raw": "podaj zasięg, jonu żelaza, energii, czysta keV w powietrzu.",
+   "secs": 2.56,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0327",
+   "raw": "Powiedz mi, jak daleko zajdzie proton o NRG 60 MeV w graficie.",
+   "secs": 2.582,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0328",
+   "raw": "Jak daleko doczę tryton ONRD 8 MeV w polietylenie?",
+   "secs": 2.338,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0329",
+   "raw": "powiedz mi, jak daleko zajdzie jon miedzi o energii 250 keV w ołowiu.",
+   "secs": 2.77,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0330",
+   "raw": "ile wynosi zasięg, jon wapnia, ONRGID 250V na nukleon w poliwęglanie?",
+   "secs": 2.528,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0331",
+   "raw": "jaki jest zasięg jonu o energii 400 MeV na nukleonu w złocie?",
+   "secs": 2.424,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0332",
+   "raw": "jaki jest zasięg tytonu energii 25 mefałów ołowiu.",
+   "secs": 2.302,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0333",
+   "raw": "jak daleko dotrzę deuteron balenergistą meca uwołowiu.",
+   "secs": 3.584,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0334",
+   "raw": "i jak daleko dotrze jon krzemu o energii, 120, mezał na nukleon wołowił.",
+   "secs": 2.964,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0335",
+   "raw": "Jaki zasięg mają żelaza o energii dwie sieme fauna nukleon w Ołowiu?",
+   "secs": 3.356,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0336",
+   "raw": "Jak daleko doleci tryton ONR i 40 MeV w polietylenie?",
+   "secs": 2.952,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0337",
+   "raw": "powiedz mi, jak daleko zajdzie proton, polen, energii, czy deVN.",
+   "secs": 2.305,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0338",
+   "raw": "Jaki jest zasięgionu kryptonu o energii 30 MeV na nukleonu w Kaptonie?",
+   "secs": 3.472,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0339",
+   "raw": "Jak głęboko wniknie proton po energii, czy stanę fałów po jedynie?",
+   "secs": 3.349,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0340",
+   "raw": "jak daleko dotrzę proton, on energii, 350 meufałów kości zbita i...",
+   "secs": 3.42,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0341",
+   "raw": "jak i zasięg matoton po energii 60 MeV w wodzy.",
+   "secs": 2.993,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0342",
+   "raw": "Jak daleko dolecideł te rony o energii 5 MeV w powietrzu?",
+   "secs": 3.022,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0343",
+   "raw": "Jak daleko docze proton o energii 100 MeV w polietylenie?",
+   "secs": 1.925,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0344",
+   "raw": "i ziawynosi zasięgionu przemłowy energii 350 MeV na nukleon w aluminium.",
+   "secs": 2.421,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0345",
+   "raw": "Jak głęboko wniknie i on węglał energii 30 MeV na nukleonu w aluminium?",
+   "secs": 2.565,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0346",
+   "raw": "podej zasięg, jonu tytanu o energii 250 MeV na nukleon w złoczy.",
+   "secs": 2.78,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0347",
+   "raw": "jak głęboko wniknie tryton o energii czy dziesimy fał w aluminiu.",
+   "secs": 2.732,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0348",
+   "raw": "Jaki zasięg matryton o energii 60 MeV w plastiku tkankopodobnym a 150?",
+   "secs": 3.174,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0349",
+   "raw": "Jak daleko doleci jon boru energii 500 keV w dwutlenku krzemu?",
+   "secs": 2.72,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0350",
+   "raw": "jakiś zasięg mając czemu NL i 60 MeV na muton w aluminium.",
+   "secs": 2.191,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0351",
+   "raw": "Jaki jest zasięgionu, pytamu o energii, 250 mecal na nukleon w wodze, to dle.",
+   "secs": 3.506,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0352",
+   "raw": "podaj zasięg jonu krzemu o energii, czystamy fauna nukleonu w złocie.",
+   "secs": 3.524,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0353",
+   "raw": "jak daleko dotrze proton o energii 20 MeV w plastikutkam kopodobnym a 150?",
+   "secs": 2.243,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0354",
+   "raw": "ile wynosi zasięg cząstki AVNRG 50 na fałów tkance tłuszczowej?",
+   "secs": 2.521,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0355",
+   "raw": "powiedz mi jak daleko zajdzie deuteron ornerlii 205 V w graficie.",
+   "secs": 2.82,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0356",
+   "raw": "Jak głęboko wniknie ją tsenomu? O energii 250, men faunem upiałn w wodze.",
+   "secs": 3.962,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0357",
+   "raw": "jak daleko dotrze do deuteron ONRG i 60 MeV w poliwęglanie.",
+   "secs": 3.733,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0358",
+   "raw": "Jak daleko doleci tryton o energii 15 V kości z bitej?",
+   "secs": 2.17,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0359",
+   "raw": "jak głęboko w nich jon litu o energisto mefau na nukleon w złocie.",
+   "secs": 2.265,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0360",
+   "raw": "ile wynosi zasięg jonu boru ONRG i 200 MeV na nukleonu aluminium.",
+   "secs": 3.521,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0361",
+   "raw": "Powiedz mi, jak daleko zajdzie jon wapnia o energii 200 MeV na nukleon w plastiku tkankopodobnym a 150",
+   "secs": 3.997,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0362",
+   "raw": "i jakiś zasięg nadeł teromu energii 80.av w tkankę tłuszczowej.",
+   "secs": 3.591,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0363",
+   "raw": "jak głęboko wniknie czostka rfa, o.p.n. 5 MeV w aluminium.",
+   "secs": 3.293,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0364",
+   "raw": "Jaki jest zasięg cząstki alfa o energii 2 MeV, PMMA?",
+   "secs": 2.758,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0365",
+   "raw": "oblić zasięg, jon wapnia, energii, 20mV na nukleon, w tkancetłuszczoraj.",
+   "secs": 2.846,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0366",
+   "raw": "jaki zasięg Majona Zotu o energii 350 MeV na nukleon w Ołowiu.",
+   "secs": 2.856,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0367",
+   "raw": "Jak daleko doleci proton o nr220 mnv w graficie?",
+   "secs": 2.89,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0368",
+   "raw": "Powiedz mi, jak daleko zajdzie jon węgla energii 80V na nukleon w kości korowej?",
+   "secs": 3.414,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0369",
+   "raw": "podaj zasięgionu Algonu, ONLV, czysta nerszałna mukleon, tkanka puszczowej.",
+   "secs": 3.652,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0370",
+   "raw": "jak głęboko wniknie tryton o energii 15, myfowości z bitej?",
+   "secs": 3.924,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0371",
+   "raw": "ile wynosi zasięg jonu helu-3 o energii 5 MeV w kości z bitej?",
+   "secs": 3.183,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0372",
+   "raw": "i zarwynosi zasięg jonu tlenu o wenerlisto pięćdziesiątne fauna nukleon w aluminium.",
+   "secs": 3.067,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0373",
+   "raw": "oblicz, zasięg, protonu, o energii 250 na V w praski, kutkanko podobnym, a 150...",
+   "secs": 4.399,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0374",
+   "raw": "Jak daleko doleci jon przemu o energii czysta mefaon na nukleon w kości korowej?",
+   "secs": 2.735,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0375",
+   "raw": "ile wynosi zasięg deuteronu oenergii 60 MeV w kości zbitej?",
+   "secs": 3.038,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0376",
+   "raw": "oblicz, tasięg, protonu, energi, 30 nesał na...",
+   "secs": 2.786,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0377",
+   "raw": "Jaki zasięg macząstka alfa o energii 60V w polietylenie?",
+   "secs": 2.342,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0378",
+   "raw": "obiecz, zasięgionu ardonu o energii, 300 keV w kości zbityj.",
+   "secs": 2.555,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0379",
+   "raw": "jaki zasięg mają krzemu, ale neli 250 MeV na nukleon w Kaptonie.",
+   "secs": 2.541,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0380",
+   "raw": "powiedz mi jak daleko zajdzie proton polyne liczy de Fał w powietrzu.",
+   "secs": 2.672,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0381",
+   "raw": "I jaki jest zasięg jonu, miedzi o energii, 200 MeV na nukleon w graficie?",
+   "secs": 2.433,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0382",
+   "raw": "Jak daleko doleci proton o energii 200 MeV w poliwę w lanie?",
+   "secs": 2.399,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0383",
+   "raw": "jak daleko doleci proton o energię 80V poliwęglanie.",
+   "secs": 2.211,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0384",
+   "raw": "jakie zasięg mają, helu-3, o energii 25, na AMV w poliwę glanie.",
+   "secs": 2.387,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0385",
+   "raw": "owiecnie jak darekko zajdzie Angelu czy Polenelgi, 25 MeV w aluminium.",
+   "secs": 2.533,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0386",
+   "raw": "oblicz, zasięg trytonu o energii, 80 meV w aluminium.",
+   "secs": 2.779,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0387",
+   "raw": "oblicz zasięg trytonu o energii 10 MeV w poliwęglanie.",
+   "secs": 2.896,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0388",
+   "raw": "Jak daleko dolecie proton o energii 20F w dwutlenku krzemu?",
+   "secs": 3.144,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0389",
+   "raw": "jak daleko to leci, jon litu, o energii 40 MeV na nukleon, w politylenie.",
+   "secs": 3.162,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0390",
+   "raw": "jak byłem boko, zniknie deuterom, o energii, czydzieśli, my zauf kości korowej, i podwodowano do wyjonu.",
+   "secs": 4.097,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0391",
+   "raw": "powiedz mi jak daleko zajdzie jon na onu energii 120 mv na nukleon w aluminium",
+   "secs": 3.103,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0392",
+   "raw": "Jak daleko doleci cząstka alfa o energii 60 MeV w tkance tłuszczowej?",
+   "secs": 3.555,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0393",
+   "raw": "obiecz zasięgionu magnezu o energii 150 MeV na nukleonu w kości zbityj.",
+   "secs": 3.378,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0394",
+   "raw": "ile wynosi z asięgią nuklenu o energii 400 MeV na nukleon w poliwęglanie?",
+   "secs": 4.325,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0395",
+   "raw": "Jak głęboko wniknie cząstka alfa o energii 10 MeV w tma?",
+   "secs": 3.536,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0396",
+   "raw": "Jak głęboko wniknie jon węgla o neli, 80nv na nukleon w poliwęglania.",
+   "secs": 4.138,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0397",
+   "raw": "ja ci jest zasięg protonu o nr 10 MeV, aluminium.",
+   "secs": 2.977,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0398",
+   "raw": "Jak daleko doleci jon węgla o energii 180 MeV na nukleon w tkance tłuszczowej?",
+   "secs": 3.445,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0399",
+   "raw": "Jak daleko doleci deuteronu energii 10 MeV w tkance tłuszczowej?",
+   "secs": 3.504,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0400",
+   "raw": "Polic mi, jeb daleko zajdzie proton, o energii 90 MeV w aluminium.",
+   "secs": 2.64,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0401",
+   "raw": "ile wynosi zasięgioną argoną energii 350 keV w wodzie?",
+   "secs": 2.854,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0402",
+   "raw": "ile wynosi zasięg jonu boru o energii 120 MeV na nukleon w tkance mięśniowej?",
+   "secs": 2.924,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0403",
+   "raw": "Jak daleko doczy proton o energii 9 keV w powieciu?",
+   "secs": 2.18,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0404",
+   "raw": "jak głęboko wnikniedeuteron, oranelidziesięć mefałów dwutlenku krzemu.",
+   "secs": 3.598,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0405",
+   "raw": "ierdalekon doleci, cząstka talfa, olenergi, 60, tyna sałspna,",
+   "secs": 3.511,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0406",
+   "raw": "jak daleko do 3 cząstka alfa energii 25MVPMA.",
+   "secs": 2.254,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0407",
+   "raw": "oblicz zasięg trytonu o energistom MeV w tkance tłuszczowej.",
+   "secs": 2.79,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0408",
+   "raw": "oblicz zasięg jonu helu-3 o energisto mefał w powietrzu.",
+   "secs": 3.191,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0409",
+   "raw": "Jak jest zasięg protonu o energii 300 MeV w powieczu?",
+   "secs": 1.919,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0410",
+   "raw": "jak daleko doleci jon litu energiczistam, v na nukleon w kości z bitej?",
+   "secs": 3.308,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0411",
+   "raw": "jak i zasięg matrytom o energii, 10 meV w plastikutkankobodobnym, a 150...",
+   "secs": 2.684,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0412",
+   "raw": "obidż zasięg trytonu, bo ten energiston faw na...",
+   "secs": 1.982,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0413",
+   "raw": "ile wynosi zasięg jonu helu-3 o energii, 20 MeV, polietylenie?",
+   "secs": 2.374,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0414",
+   "raw": "Jak daleko doleci, cytom o energistach, meV w Kaptonie.",
+   "secs": 2.599,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0415",
+   "raw": "jak dane pod oczają trzewu orneli czy stanę fauna nukleon w Kaptonie.",
+   "secs": 3.179,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0416",
+   "raw": "powiedz mi, jak daleko zajdzie jon tytanu o energii 300V na nukleonu wołowiu.",
+   "secs": 3.217,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0417",
+   "raw": "ile wynosi zasięg jonu helu-3 o energii 5 MeV w poliwę glanie?",
+   "secs": 3.082,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0418",
+   "raw": "podaj zasięg protonu o nr 900 keV w powietrzu.",
+   "secs": 3.145,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0419",
+   "raw": "jaki zasięg mają haluczy o energii 50 MeV w aluminium?",
+   "secs": 2.696,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0420",
+   "raw": "ile wynosi zasięg jonu żelaza o energii 350 keV w powieczu?",
+   "secs": 2.496,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0421",
+   "raw": "I jaki jest zasięg protonu o energii 4 GeV w powieczu?",
+   "secs": 1.934,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0422",
+   "raw": "ile wynosi zasięg, cząstki w alfa, o energii, 40 mL cału w tkance mięśniowej.",
+   "secs": 2.811,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0423",
+   "raw": "Jak daleko docze proton o energii 90 MeV w dwutlenku krzemu?",
+   "secs": 2.331,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0424",
+   "raw": "powiedz mi jak daleko zajdzie cząstka awoenergi 8 MeV w złocie.",
+   "secs": 3.033,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0425",
+   "raw": "i zerwynosi zasięg, proton, warunel i 80V plastikut, kankopodobny masto-50.",
+   "secs": 3.915,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0426",
+   "raw": "Jak daleko docze jon węglał energii 60, meV na nukleon w graficie?",
+   "secs": 3.531,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0427",
+   "raw": "Podaj zasięg deutronu o energii 15 MeV ołowiu.",
+   "secs": 2.188,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0428",
+   "raw": "podaj zasięg protonu o tlenu i 20 MeV w dwutlenku krzemu.",
+   "secs": 3.385,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0429",
+   "raw": "Jak daleko doleci jon wapnia o energii 350 kantałów aluminium?",
+   "secs": 2.921,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0430",
+   "raw": "jaki jest zasięg jonu, helu-3, polenel i 20 nfv, wpomina.",
+   "secs": 3.726,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0431",
+   "raw": "Jaki zasięg ma proton o energii? 90 mefałów kości zbitej?",
+   "secs": 3.396,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0432",
+   "raw": "jak głęboko wniknie do uteronu energii z Tomewą w polietylenie.",
+   "secs": 4.369,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0433",
+   "raw": "ja w daleko doczejony żelaza, on energii, 150 kawałów po jetyremie.",
+   "secs": 2.952,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0434",
+   "raw": "Jaki jest zasięg jonu tlenu o energii 20 MeV na nukleonu w plastiku tkankopodobnym a 150?",
+   "secs": 3.538,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0435",
+   "raw": "oblicz zasięg trytono o energii czy 10 MeV w poliwę mlanie.",
+   "secs": 3.085,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0436",
+   "raw": "jak daleko doleci jon tytanu, oal energii 60 mea cauna nukleon w powietrzu.",
+   "secs": 4.005,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0437",
+   "raw": "Powiedz mi jak daleko zajdzi on tytanu o energii dwieś tyna fauna nukleon w kości zbitej",
+   "secs": 3.827,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0438",
+   "raw": "ile wynosi zasięg protonu o energii 350 MeV w dwutlenku krzemu?",
+   "secs": 3.066,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0439",
+   "raw": "Jaki jest zasięg deuteronu o energii czy dziesiemy fał w powietrzu?",
+   "secs": 3.399,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0440",
+   "raw": "podej w zasięgionu magnezu o energii, 250 mefa unamukleon w aluminium.",
+   "secs": 4.287,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0441",
+   "raw": "jaty zasięg, mając MGO, NLG czy 10 MF na nukleon w plastiku tkankopodobnym A150?",
+   "secs": 4.224,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0442",
+   "raw": "Jaki zasięg ma tryton o energii 15 MeV w wodze?",
+   "secs": 3.343,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0443",
+   "raw": "obidż zasięgionu wapniał energii 120 MeV na nukleonów kości zbityj.",
+   "secs": 3.777,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0444",
+   "raw": "Jak daleko dotrze tryton o energii 50V w powietrzu?",
+   "secs": 2.545,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0445",
+   "raw": "Jak daleko doleci proton o energii 120 MeV w kości z bitej?",
+   "secs": 3.378,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0446",
+   "raw": "obiecz, zasięg deuteronu o NRV 5 MeV w dwutlenku krzemu.",
+   "secs": 3.329,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0447",
+   "raw": "jaki zasięg mają, kszemu, renelli, stone fauna, nukleon, tkanka tłuszczowej.",
+   "secs": 2.937,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0448",
+   "raw": "Jak daleko doleci deuteron o energii 50 NV w Kaptonie?",
+   "secs": 2.619,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0449",
+   "raw": "jak głęboko w nic nie deuteron, po renegli 15 MeV w dwutlenku krzemu.",
+   "secs": 3.478,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0450",
+   "raw": "Jak daleko doleci jon tytanu o energii, gwie sie MeV na nukleon w dwutlenku krzemu?",
+   "secs": 3.657,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0451",
+   "raw": "jak w głęboko znipnię jon azotu o energii 150 MeV na nukleon, Kaptonie.",
+   "secs": 3.587,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0452",
+   "raw": "jak daleko doczecząc katalfa, reneldi 80-tym fałów po iwienu lanii.",
+   "secs": 3.005,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0453",
+   "raw": "I jaki jest zasięgionu kryptonu o energii 150 keV w Kaktonie?",
+   "secs": 2.823,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0454",
+   "raw": "Jak daleko doleci proton o energii 40 MeV w tkance mięśniowej?",
+   "secs": 2.529,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0455",
+   "raw": "Jak daleko doczę proton o energii 200 MeV w aluminiu?",
+   "secs": 2.24,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0456",
+   "raw": "podaj zasięgionu helu-3 o energii, stonem to w tkance tłuszczowej.",
+   "secs": 3.166,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0457",
+   "raw": "jak daleko doczę proton po energii 150 V zł.",
+   "secs": 2.094,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0458",
+   "raw": "Jak daleko do leci proton po ryneli, czy to idzieśmy w e-fell w Kaptonie?",
+   "secs": 2.873,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0459",
+   "raw": "ile wynosi zasięg protonu ONL i 250 mefałów poliwęglania?",
+   "secs": 2.151,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0460",
+   "raw": "Jaki zasięg mają żelazy o energii 180 MeV na nukleon w powieczu?",
+   "secs": 2.888,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0461",
+   "raw": "ile wynosi zasięg protonu ONRG 70V w Ołowiu.",
+   "secs": 3.404,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0462",
+   "raw": "oblicz, zasięg jon wapnia, oenerwij, wieś, jak im się zmęcał na nukleon, aluminium, ddddx.",
+   "secs": 4.628,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0463",
+   "raw": "Jaki zasięg ma tryton o energii 20 MeV, PMMA?",
+   "secs": 2.797,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0464",
+   "raw": "jak daleko docze proton o energii 70 V w powietrzu?",
+   "secs": 2.144,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0465",
+   "raw": "Jak głęboko wniknie proton o energii 1.5 GeV w dwutlenku krzemu?",
+   "secs": 3.617,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0466",
+   "raw": "podaj zasięg, proton, LED 80V, PMMA.",
+   "secs": 2.766,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0467",
+   "raw": "jaki zasięg mają wapnia, ONRV-40, na V na nukleon w pojedynie.",
+   "secs": 3.013,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0468",
+   "raw": "jaki jest zasięg jonu węgla o energii 250V na nukleon w Ołowiu.",
+   "secs": 3.704,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0469",
+   "raw": "i jaki zasięg mają bagnezu energii, które gdzieś imetał namuteon w tkance mięśniowej.",
+   "secs": 3.871,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0470",
+   "raw": "obidży zasięg, cząstki alfa o energii 8 MeV w wodze.",
+   "secs": 2.833,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0471",
+   "raw": "Jak daleko doleci cząstka alfa energii 20V w poliwęglanie?",
+   "secs": 2.599,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0472",
+   "raw": "ile wynosi zasięg, protonu, a synergij, czy geV tkancetuszczowy.",
+   "secs": 3.004,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0473",
+   "raw": "Jak głęboko wniknie proton oenergizm top 50 MeV w plastiku tkankopodobnym a 150?",
+   "secs": 3.701,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0474",
+   "raw": "Jak daleko dotrze tryton, ONRV i 30 MeV w Kaptonie?",
+   "secs": 3.597,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0475",
+   "raw": "Jaki zasięg ma tryton o energii 8 MeV w ołowiu?",
+   "secs": 3.336,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0476",
+   "raw": "jaki jest zasięg jonu miedziej o energii, 30 MeV na nukleon w kości korowej.",
+   "secs": 4.03,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0477",
+   "raw": "jaki zasięg ma proton, bo renal lidiż, ty 50 nv po jej tylenie.",
+   "secs": 3.074,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0478",
+   "raw": "obić zasięg protonu o kneli 350V po i węgla nie.",
+   "secs": 2.251,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0479",
+   "raw": "Jaki jest zasięgcząstki alfa, energi, 15 MeV w złocie?",
+   "secs": 3.232,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0480",
+   "raw": "obiecz zasięg protonu o NRG 500 keV w poliwęglanie.",
+   "secs": 2.72,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0481",
+   "raw": "porównaj zasięg, jonu, nagnazów powieczu przy 60V na nukleon i 350V na nukleon.",
+   "secs": 3.026,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0482",
+   "raw": "to obrób najrzasiękiemu argonuzt kancel puszczowej, prys to dwadzieścia meV na nukleon i czysta meV na nukleon.",
+   "secs": 3.482,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0483",
+   "raw": "Porównej zasięgionu argonu w aluminium, 320V na nukleon, 250V i 30V na nukleon",
+   "secs": 2.532,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0484",
+   "raw": "porówna i zasięg protonu w ołowiu przy 300 keV i 220 MeV.",
+   "secs": 2.642,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0485",
+   "raw": "i jaki jest zasięg protonu w tkankę mięśniowej dla energii 350 MeV i 180 MeV?",
+   "secs": 2.677,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0486",
+   "raw": "jaki jest zasięg jonu wapnia, w politylenie, w darenaj, idrysznym, na fauna nukleon, czterystane fauna nukleon i 350 fauna nukleon.",
+   "secs": 3.524,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0487",
+   "raw": "jak jest zasięg protonu w tkanka tłuszczowej dla NRID 250 mv, 300 mv i 250 mv.",
+   "secs": 2.481,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0488",
+   "raw": "Jaki jest zasięg protonu wołowi dla energii 70V?",
+   "secs": 1.941,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0489",
+   "raw": "Jaki jest zasięg protonu w graficie dla energii 60 MeV, 180 MeV i 50 MeV?",
+   "secs": 2.932,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0490",
+   "raw": "Jaki jest zasięg protonu w poliwęglanie dla NLV 700 keV, 40 MeV i 60 MeV?",
+   "secs": 3.223,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0491",
+   "raw": "porównej zasięgionu boru w powieczu przy 150 MeV na nukleon i 180 MeV na nukleon.",
+   "secs": 4.358,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0492",
+   "raw": "Jaki jest zasięg jonu wapnia w pomadle energii 50V na nukleon? Czystam V na nukleon i 120V na nukleon?",
+   "secs": 4.278,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0493",
+   "raw": "porówna i zasięg protonu z wodem, czy 220 mea cał i 700 kału.",
+   "secs": 3.745,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0494",
+   "raw": "Jaki jest zasięg jonu kryptonu w tkance tłuszczowej dla energii 300 keV, 80 MeV na nukleon i 20 MeV na nukleon?",
+   "secs": 3.52,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0495",
+   "raw": "porównej zasięg protonu w wodzie przy 60V, 180V i 20V.",
+   "secs": 2.276,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0496",
+   "raw": "to wywołównaj zasięg jomu wagnezu w kości korowej przydwieście, MeV na nukleon i 180 MeV na nukleon.",
+   "secs": 3.428,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0497",
+   "raw": "jaki jest zasięgion uboru w plastiku tkanku, podobnie na 150, na NLi 80, na nukleon, 120 na nukleon i czysta keV.",
+   "secs": 4.12,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0498",
+   "raw": "porówna i zasięgionu boru w kości zbitej przez 120V na nukleon i 120V na nukleon.",
+   "secs": 2.536,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0499",
+   "raw": "jaki jest zasięg protonu, złocie danierii, 350 mecał, 150 mecał i 100 mecał.",
+   "secs": 3.251,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0500",
+   "raw": "Jaki jest zasięg jonu tytanu w wplenku krzemu dla NLV 80 MeV na nukleon, 100 MeV na nukleon i 350 MeV na nukleon?",
+   "secs": 5.171,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0501",
+   "raw": "Pojbą w najzasięg protonu w kaptonie, przy czysta, pięćdziesiąt mensału i trzysta ptfału, we we we.",
+   "secs": 3.443,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0502",
+   "raw": "Jaki jest zasięg protonu w kości zbitej dla NRV 500 keV, 180 MeV i 100 MeV?",
+   "secs": 3.357,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0503",
+   "raw": "porówna je zasięg jonu neonu w powieczu przy 80 MeV na nukleon, 80 MeV na nukleon i 150 MeV na nukleon.",
+   "secs": 3.358,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0504",
+   "raw": "jaki jest zasięg-protonu wywodzią dla energii sto męsał i dziesięć męsał.",
+   "secs": 2.865,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0505",
+   "raw": "jaki jest zasięg, jonu, aluminium dla analiz to 50V na nukleon, dwieszty 50V na nukleon i 350V na nukleon.",
+   "secs": 2.987,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0506",
+   "raw": "porówna i zasięg, jon wapnia w ołowiu, przy 180 MeV na nukleon, 100 keV i 40 MeV na nukleon.",
+   "secs": 3.263,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0507",
+   "raw": "Porównej zasięg, jonu miedzi w poliwęglanie, czy czydzieśni mefauna nukleon i 60 mefauna nukleon.",
+   "secs": 3.121,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0508",
+   "raw": "o równa i zasięg protonu w złocie przy 50 MeV i dwieście dwadzieścia MeV.",
+   "secs": 3.106,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0509",
+   "raw": "porówny zasięg protonu w polietylenie przy 500 keV, 50 MeV i 350 MeV.",
+   "secs": 3.07,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0510",
+   "raw": "jaki jest zasięg jonu, boru, wołowiu, daeneri, sto keV, czterdzieścinę fauna nukleon i czterdzieścinę fauna nukleon.",
+   "secs": 3.788,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0511",
+   "raw": "dworównej zasięg, protonów złocie, przy 50 mecał, 10 mecał i 500 kemcał.",
+   "secs": 3.368,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0512",
+   "raw": "porówna i zasięgionu argonu w Kaptonie przy 40 MeV na nukleon i 150 MeV na nukleon.",
+   "secs": 4.107,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0513",
+   "raw": "porówna i zasięg protonu w wodze przy 700 keV, 70 meV i 80 meV.",
+   "secs": 3.054,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0514",
+   "raw": "jaki jest zasięg protonu w powietrzu dla energii 50-mentał i 150-mentał.",
+   "secs": 2.903,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0515",
+   "raw": "Jaki jest zasięg protonu w graficie Dynerlist o MeV 40 MeV i 150 MeV?",
+   "secs": 2.493,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0516",
+   "raw": "i jaki jest zasięg protonu w kaptonie dla energii 250 MeV i 120 MeV.",
+   "secs": 2.674,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0517",
+   "raw": "jaki jest zasięg protonów, kaptonie dla NLG 60MV i 150MV.",
+   "secs": 2.545,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0518",
+   "raw": "Jaki jest zasięgion krzemu w graficie dla NRD 250 MeV na nukleon? 350 MeV na nukleon? Isto MeV na nukleon?",
+   "secs": 3.845,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0519",
+   "raw": "porówna i zasięg protonu w złocie przy 200 MeV, 30 MeV i 90 MeV.",
+   "secs": 2.272,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0520",
+   "raw": "Jaki jest zasięg protonu w plastiku tkankopodobnym, a 150 dla energii 3DV, 150 MeV i 40 MeV?",
+   "secs": 2.9,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0521",
+   "raw": "jaki jest zasięg protonu w ołowiu dla energii czysta keV i 90 MeV?",
+   "secs": 2.56,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0522",
+   "raw": "jak jest zasięg protonów tkanka mięśniowej dla energii 180 V i 100 V?",
+   "secs": 3.037,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0523",
+   "raw": "Polównej zasięg protonu w złocie, czy 20 mecał, 180 mecał i 120 mecał.",
+   "secs": 3.024,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0524",
+   "raw": "jaki jest zasięg protonu w złocie dla energii czysta keV i 50 MeV?",
+   "secs": 2.337,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0525",
+   "raw": "Porównaj zasięg protonu w poliietylenie 380MV, 4GV i 50MV.",
+   "secs": 3.014,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0526",
+   "raw": "jak i jest zasięgią ukszenną w kości korowej za MLI, 60 mefa na nukleon i 30 na sauna nukleon.",
+   "secs": 2.751,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0527",
+   "raw": "Równaj zasięg, jonu kryptonów, polietylenie, przy 50V na nukleon, dwie szty 50V na nukleon i sto keV.",
+   "secs": 4.082,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0528",
+   "raw": "dowodorolówna i zasięgionu MagneZub w wodze, czy 200, 50 na fał na nukleon, 80 na fał na nukleon, i 400 na fał na nukleon.",
+   "secs": 4.344,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0529",
+   "raw": "orównaj zasięg protonu w plastiku, tkankopodobny na 150, 340, 80 i 150.",
+   "secs": 2.89,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0530",
+   "raw": "porówna i zasięg protonów PMMA przy 40 MeV i 180 MeV.",
+   "secs": 2.822,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0531",
+   "raw": "porówna i zasięgionu arbenu w kości korowej przy 350 MeV na nukleon, 350 MeV na nukleon i 300 MeV na nukleon.",
+   "secs": 3.886,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0532",
+   "raw": "jaki jest zasięg protonów powietrzuć na NLG 90V, 300V i 60V.",
+   "secs": 2.434,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0533",
+   "raw": "porówna i zasięg platonu w graficie, przy 250 na etau i 40 i mensau.",
+   "secs": 3.067,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0534",
+   "raw": "porówna jest zasięgiem litów kości zbitej przy 40V na nukleon czysta keV i 30V na nukleon.",
+   "secs": 3.443,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0535",
+   "raw": "porówna i zasięg protonu w ołowiu przy 180 MeV i 20 MeV.",
+   "secs": 3.138,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0536",
+   "raw": "Jaki jest zasięg protonu w powietrzu dla energii 40 MeV i 70 MeV?",
+   "secs": 3.136,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0537",
+   "raw": "jaki jest w zasięgion łazotu w graficie dla NNL i osiędziesiątne V na nukleon, czysta pięćdziesiątne V na nukleon i stokę V.",
+   "secs": 4.691,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0538",
+   "raw": "jaki jest w zasięg protonu, aluminium, dZN, listo, 50NV, dwóchty 50NV i 90NV.",
+   "secs": 2.583,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0539",
+   "raw": "porównej zasięg, trotonu, aluminium, 360 MeV, 80 MeV, i 30 MeV.",
+   "secs": 3.148,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0540",
+   "raw": "Jaki jest w zasięgi onu? Miedzi w tkance tłuszczowej dla energii 350 nv na nukleon, 60 nv na nukleon i 180 nv na nukleon.",
+   "secs": 4.409,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0541",
+   "raw": "Jak jest zasięg protonu w powietrzu dla NRD 200 MeV i 220 MeV?",
+   "secs": 3.233,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0542",
+   "raw": "porówna i zasięg jonu azotu w powietrzu przy dwie sie keV i 150 keV.",
+   "secs": 4.212,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0543",
+   "raw": "Porównaj zasięg protonu w Ołowił, przy 100 mecał 150 mecał i 20 mecał",
+   "secs": 3.807,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0544",
+   "raw": "jaki jest zasięg jon przemów po irę ganie dla energii kremset katał, 60 MeV na nukleon i 150 MeV na nukleon.",
+   "secs": 4.096,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0545",
+   "raw": "jaki jest zasięg protonu w kości kolowej, d.n. czy Stanewał i 120 MeV.",
+   "secs": 3.363,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0546",
+   "raw": "Jaki jest zasięg protonu w tkance tłuszczowej dla energii 120 MeV, 70 MeV i 50 MeV?",
+   "secs": 3.203,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0547",
+   "raw": "porówna i zasięg jonu, letu, tkanka mięśniowej, przy osiem dziesiątmy fauna nukleon, czysta pięćdziesiątmy fauna nukleon i trzydzieścimy fauna nukleon.",
+   "secs": 4.696,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0548",
+   "raw": "porównej zasięg protonu wołowi przy dwieście dwadzieścia mv, pięćdziesiąt mv i dwadzieści mv.",
+   "secs": 3.76,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0549",
+   "raw": "to równa i zasięg jomu-3nomu, w powietrzu przy 40 mecaunem nukleon, 20 mecaunem nukleon i 80 mecaunem nukleon.",
+   "secs": 3.471,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0550",
+   "raw": "Jaki jest zasięgioną miedzi w plastiku, tkankopodownym ASTOK 50 dla NRD 250 MeV na nukleon, 350 MeV na nukleon i 60 MeV na nukleon?",
+   "secs": 4.205,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0551",
+   "raw": "jaki jest zasięg protonu w dwutlenku przemu dla neli 20 MeV i 710 MeV.",
+   "secs": 2.606,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0552",
+   "raw": "Jaki jest zasięg protonu w graficie dla energii 250V i 50V?",
+   "secs": 2.599,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0553",
+   "raw": "jaki jest zasięg protonów aluminium dla energii 250 MeV i 1.5 keV?",
+   "secs": 2.922,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0554",
+   "raw": "porównaj zasięg, jonu argonów tkma przy 50 MeV na nukleon i 350 keV.",
+   "secs": 2.877,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0555",
+   "raw": "porówna i zasięgi onokryptonu w poliwęglanie przy 300 keV, 250 MeV na nukleon i 300 MeV na nukleon.",
+   "secs": 3.389,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0556",
+   "raw": "jak i jest zasięgion arbonów z kancetu sztowej dla NMV 250 mezaon na nukleon i 200 mezaon na nukleon.",
+   "secs": 3.796,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0557",
+   "raw": "Porównać zasięg protonu w ułowie przy 90V, 60V i 90V",
+   "secs": 3.207,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0558",
+   "raw": "porówna i zasięg trotomu, poliwęglanie 3,20 mensał i zjeździesiąt mensał.",
+   "secs": 3.754,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0559",
+   "raw": "Jaki jest zasięg protonu w wodzie dla energii 150V, 100V i 40V?",
+   "secs": 2.743,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0560",
+   "raw": "porówna i zasięg protonów PMMA przy 150 MeV, 300 MeV i 80 MeV.",
+   "secs": 2.968,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0561",
+   "raw": "porównaj zasięg protonu o energii 180 MeV w tkance mięśniowej, kaptonie IPMA.",
+   "secs": 3.622,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0562",
+   "raw": "porówna i zasięg protonu o energii 250V w powietrzu i graficie.",
+   "secs": 3.661,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0563",
+   "raw": "korównaść zasięgionu Ergonu, o energii 30 MeV na nukleon, tkanka mięśniowej, aluminium i powietrzu.",
+   "secs": 3.971,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0564",
+   "raw": "kolówna i zasięg, jon żelaza, ONL, czy 10-PMAV na nutę w kości korowe i Kaptonie.",
+   "secs": 2.815,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0565",
+   "raw": "porówna i zasięg protonu o energii 40 MeV, polietylenie i graficie.",
+   "secs": 2.846,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0566",
+   "raw": "porównej zasięgionu magnezu o energii 350 MeV na nukleon w dwutlenku krzemu, tkanka mięśniowej i złocie.",
+   "secs": 3.999,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0567",
+   "raw": "Porównaj zasięg jonu azotu o energii czysta mefa na nukleon w PMMA i aluminium",
+   "secs": 3.093,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0568",
+   "raw": "Porównaj zasięg protonu o energii 70V tkanka mięśniowej i kości zbityj.",
+   "secs": 3.782,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0569",
+   "raw": "porówna i zasięgionu, tytanu energii, zwieście kantał w powietrzu, tkance tłuszczowej i polietylenie, djede.",
+   "secs": 4.046,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0570",
+   "raw": "porówna i zasięg protonu o energii 50 MeV w aluminium i kaptonie.",
+   "secs": 2.719,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0571",
+   "raw": "porównej zasięg, jonu tlenu ONR 400 MeV na nukleonu tkanka tłuszczowej i powieczu.",
+   "secs": 3.594,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0572",
+   "raw": "korów najzasięg i onu litu neli 350, nfm, poliwęglan, litka męśniowej.",
+   "secs": 2.979,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0573",
+   "raw": "poluwej zaświęcielno neonu energii z tomfv na nukleon, aluminium, graficie i tkanka tłuszczowej.",
+   "secs": 3.03,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0574",
+   "raw": "porówna i zasięg protonu energii 60 MeV w tkance tłuszczowej, katonie i PMMA.",
+   "secs": 2.99,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0575",
+   "raw": "porówna i zasięg jonu krzemu, nl. 150, na nukleon, dwutlenku krzemu, powieczu i kości zbity.",
+   "secs": 3.35,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0576",
+   "raw": "porówna i zasięg protonu, o energii, 120 amnavów prostych, kutkankopodobnym, a 150 graficie i tkance mięśniowej.",
+   "secs": 3.89,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0577",
+   "raw": "porównaj zasięg protonu o energii czy dziesim wąkkości zbitej i wodzie.",
+   "secs": 3.172,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0578",
+   "raw": "Polowom pod warurówna i zasięg jonu na łą, o energii 350 mefa unanukleon w kości korowej i polietylenie.",
+   "secs": 3.465,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0579",
+   "raw": "porównej zasięgiem u kryptonu o energii, stokę, Vf plastikutkankopodobnym a 150 i kaptonie.",
+   "secs": 3.447,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0580",
+   "raw": "porówna je zasięgionu LituOenergi 350 MeV na nukleon w polietylenie i poliwę nulanie.",
+   "secs": 2.997,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0581",
+   "raw": "cowniknie głębiej w złocie przy 500 keV, jon miedzi cząstka alfa,",
+   "secs": 2.696,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0582",
+   "raw": "co wniknie głębiej w naprzy 60. V, jon helu-3, czy jon ksenonu.",
+   "secs": 2.267,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0583",
+   "raw": "co wniknie głębiej w aluminium przy 180 Nv na nukleon, jon kryptonuczy, jon żelaza.",
+   "secs": 2.692,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0584",
+   "raw": "Sownik nie głębiej w poliwęglanie przy 20 mefa na nukleon, jon kryptonu, czy jon krzemu?",
+   "secs": 3.114,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0585",
+   "raw": "cowniknie głębiej w tkance puszczowej, przy 120 MeV na nukleon, jon tlenu, czy jon magnezu.",
+   "secs": 4.305,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0586",
+   "raw": "stownik niegłębiej w tkance tłuszczowej przy 200 keV, jon magnezu czy jon węgla.",
+   "secs": 3.524,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0587",
+   "raw": "co wniknie głębiej w polietylenie przy 300 MeV na nukleon, jon tlenu, czy jon litu?",
+   "secs": 3.083,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0588",
+   "raw": "w cofwniknie głębiej w poiwęglanie przy 250 keV, jon neon, czy jon tytanu.",
+   "secs": 2.494,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0589",
+   "raw": "cownik niegłębwy, w tkance tłuszczowej przystoma fauna nukleon, jon neonu, czy deuteron.",
+   "secs": 3.935,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0590",
+   "raw": "co wniknie głębiej w tkance mięśniowej przy 120mv na nukleon, jon boru czy jon tlenu?",
+   "secs": 4.46,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0591",
+   "raw": "co w nich nie głębiej w polietelenie przystome faon na nukleon, jon mannezu czy proton",
+   "secs": 4.013,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0592",
+   "raw": "co wniknie głębiej w plastiku, tkankopodobny na 150 przyczysta keV, proton, czy jon wapnia.",
+   "secs": 4.402,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0593",
+   "raw": "co wniknie głębie w aluminium 350 mevaon na nukleon, jon szemu, jion algomu",
+   "secs": 3.49,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0594",
+   "raw": "co w nich je głębiej w kości korowej przy 180 MeV na nukleon, jon madnezu czy jon argonu?",
+   "secs": 3.697,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0595",
+   "raw": "co wniknie głębiej w tkance mięśniowej przy 200 MeV na nukleon i on ma nezu czy proton.",
+   "secs": 3.724,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0596",
+   "raw": "co wniknie głębiej w kości zbitej przyczyste mefa unamu pleond, jon nagmezu, czy jon wapnia.",
+   "secs": 3.979,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0597",
+   "raw": "cownik nie głębi w powietrzu przy 250MV na nukleon i on idzie tu, czy on miedzi?",
+   "secs": 4.892,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0598",
+   "raw": "co wniknie głębiej w graficie przystone fauna nukleon, jon tlenu, jon helu-3.",
+   "secs": 4.233,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0599",
+   "raw": "co w nic niej głębiej w tkance. Mieśniowej przyczesna 50-mefaonem u pleon ją nie dzi, czy jon kryptonu.",
+   "secs": 4.224,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-rng-0600",
+   "raw": "co wniknie głębiej w kości porowej przy 30mv na nukleon, jon kryptonu czy proton.",
+   "secs": 4.446,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0001",
+   "raw": "Jaka energiada deuteronu odpowiada zasięgowi 30 mm w poliwęglanie?",
+   "secs": 4.022,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0002",
+   "raw": "Jako energię musi mieć trytą, żeby jego zasięg w poliwę tlenie wynosił 3 cm?",
+   "secs": 4.582,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0003",
+   "raw": "jak anerwia jon wapnia, odpowiada zasiędowi 18-ce złocie.",
+   "secs": 3.519,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0004",
+   "raw": "czy jakiej energii proton osiąg mnie zasięg 4C w tkance tłuszczowej?",
+   "secs": 2.945,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0005",
+   "raw": "czy jakiej energii proton osiągnie zasięg 15 mm w polietylenie?",
+   "secs": 2.715,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0006",
+   "raw": "Jaką energię musi mieć jon azotu, żeby jego zasięg w poliwęglanie wynosił 12 cerun?",
+   "secs": 3.223,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0007",
+   "raw": "jaką enelbie musi mieć proton, żeby jego zasiędów w wodze wynosił 12 cym.",
+   "secs": 2.674,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0008",
+   "raw": "ile energii potrzebuje cząstka, alfa na zasięg sześćcem w Łowiu.",
+   "secs": 2.729,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0009",
+   "raw": "Jaka energia protonu odpowiada zasięgowi 15? Ten amtplastki kutkanko podobnym a stopień dzierząd.",
+   "secs": 2.616,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0010",
+   "raw": "czy jakiej energii jon helu trzyło się niezasięg jeden cem w powieczu?",
+   "secs": 2.869,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0011",
+   "raw": "jak Kale Nevia tytonu odpowiada zasięgowi 2CM w poiwędzianie.",
+   "secs": 2.632,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0012",
+   "raw": "czy jaki energii tryton osiągnie zasięg 15, cem w tkance mięśniowej?",
+   "secs": 2.797,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0013",
+   "raw": "Ile energii potrzebuje proton na zasięg czy cM w poliwę glanie?",
+   "secs": 2.684,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0014",
+   "raw": "zianed i potrzebuje jon krypton na zasięg, 12cm, dwutlenku krzemu.",
+   "secs": 2.938,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0015",
+   "raw": "Jej gier energii potrzebuję jon helu-3 na zasięg 18 C rzun, w PMMA.",
+   "secs": 3.036,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0016",
+   "raw": "Jaka energia protonu odpowiada zasięgowi 4 cm w PMMA?",
+   "secs": 2.828,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0017",
+   "raw": "Jaka energia cząstki alfa odpowiada zasięgowi 4Cm w kości korowej?",
+   "secs": 2.898,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0018",
+   "raw": "Jako energie musi mieć deuteron, żeby jego zasięg w powietrzu wynosił 50 m?",
+   "secs": 2.16,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0019",
+   "raw": "Jaką energię musi mieć jon węgla, żeby jego zasięg w powietrzu wynosił dwadzem?",
+   "secs": 2.923,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0020",
+   "raw": "jaką energię musi mieć jon neonu, żeby jego zasięg w złocie wynosił 30 cm?",
+   "secs": 3.466,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0021",
+   "raw": "jaką energię musi mieć proton, żeby jego zasięg w złocie wynosił 20 cm?",
+   "secs": 2.9,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0022",
+   "raw": "czu jakiej energii jon tlenu osiągnie, zasięg 20 celów kości zbitej.",
+   "secs": 3.12,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0023",
+   "raw": "przy jakiej enowideu terenusion nie zasięg dwa cemwna.",
+   "secs": 3.08,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0024",
+   "raw": "Ile energii potrzebuje trytona zasięg 20 cm w ołowiu?",
+   "secs": 2.847,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0025",
+   "raw": "Żyja tej energii jon tszemu, osiągnie zasięg, 12 czerwn w dwutlenku tszemu.",
+   "secs": 3.108,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0026",
+   "raw": "jaką energię musi mieć jon helu, czy żeby jego zasięg w polietylenie wynosił, czy cien.",
+   "secs": 2.684,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0027",
+   "raw": "Przy jakiej energii proton osiągnie zasięg 20 cm w dwudlenku krzemu?",
+   "secs": 2.867,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0028",
+   "raw": "w przyjakiej energi, proton osiągnie zasięg 18 C zł.",
+   "secs": 2.47,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0029",
+   "raw": "jako menergie, musi nieić cząstka alfa, żeby jego zasięd tkance tłuszczowej wynosił pięć tn.",
+   "secs": 3.459,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0030",
+   "raw": "czy jaki energii jon argono osiągnie zasięg 20 cm w dwutlenku krzemu?",
+   "secs": 3.398,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0031",
+   "raw": "Przy jakiej energii on miedzi osiągnię zasięg 5 mm w powietrzu?",
+   "secs": 2.727,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0032",
+   "raw": "ile energii potrzebuje proton na zasięg pięciemem w złocie?",
+   "secs": 2.71,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0033",
+   "raw": "jaką energię musi nieć i on agomu, żeby jego zasięg tkanka tłuszczowej wynosił 30 cm.",
+   "secs": 2.949,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0034",
+   "raw": "jaka energia cząstki alfa odpowiada rozięgowi 20 cm w wodzie.",
+   "secs": 3.24,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0035",
+   "raw": "Jaką energię musi mieć jon azotu, żeby jego zasięg w powietrzu wynosił 20 mm?",
+   "secs": 3.206,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0036",
+   "raw": "jaką energię musi mieć cząstka alfa, żeby jego zasięg w ołowiu wynosił 4Cm?",
+   "secs": 4.017,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0037",
+   "raw": "Jaka energia protonu odpowiada zasięgowi 50 mm w graficie?",
+   "secs": 3.203,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0038",
+   "raw": "jaka energia protonu odpowiada zasiędowi 15 cm w wody.",
+   "secs": 4.213,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0039",
+   "raw": "jaką energią musi mieć deuteron, żeby jego zasięg w plastikut, tkanka podobny, a 150 wynosił czterycerą.",
+   "secs": 4.25,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0040",
+   "raw": "czy jakiej NLB o magnezu osiągnie zasięg 30 cm w aluminium.",
+   "secs": 2.926,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0041",
+   "raw": "jaka energia cząstki alfa odpowiada zasięgowi 2Cm w aluminium.",
+   "secs": 3.394,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0042",
+   "raw": "ile energii potrzebują proton na zasięg kietnaście cef kanka mięśniowej.",
+   "secs": 2.698,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0043",
+   "raw": "Nakomenewdja musi nieć jon krzemu, żeby jego zasięg tkanka tłuszczowej wynosił, czy gdzieś ginie.",
+   "secs": 3.492,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0044",
+   "raw": "przy jakiej energijonach ono się nie zasięg pędźcem waruminim.",
+   "secs": 2.276,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0045",
+   "raw": "Jaką energią musi mieć deuteron, żeby jego zasięg w ołowiu wynosił 20 mm?",
+   "secs": 3.329,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0046",
+   "raw": "Jaka energia cząstki alfa odpowiada zasięgowi 20 mW?",
+   "secs": 2.696,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0047",
+   "raw": "i larynergi, potrzebuję jon helu-3 na zasięg, 15, cRyntgraficiech.",
+   "secs": 2.819,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0048",
+   "raw": "czy jakie energii on boroszą, nie zasięg 15 mm w Kaptonie.",
+   "secs": 2.073,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0049",
+   "raw": "jaką energię musi mieć troton, żeby jego zasięg w to wietrzu wynosił 18 ceruś.",
+   "secs": 3.064,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0050",
+   "raw": "Jaką energią musi mieć proton, żeby jego zasięg w PMMA wynosił jedyncem?",
+   "secs": 3.083,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0051",
+   "raw": "przy jakiej energii te tonosionie zasięg 6 cm w dwutlenku krzemu.",
+   "secs": 3.226,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0052",
+   "raw": "Poświecie jakiej energii proton osiągnie zasięg 2 cm w powietrzu?",
+   "secs": 3.502,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0053",
+   "raw": "Jaka energia trytonu odpowiada zasięgowi 6 cm w aluminiu?",
+   "secs": 4.051,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0054",
+   "raw": "czy jaki energijon kryptonu osiągnie zasięg 25 cm w Kaptonie?",
+   "secs": 3.954,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0055",
+   "raw": "Czy jakiej energijonazoty osiągnie zasięg 4 cm w kości z bitej?",
+   "secs": 3.024,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0056",
+   "raw": "ile energii potrzebujemy, teong na 815, co żo ma aluminium.",
+   "secs": 2.433,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0057",
+   "raw": "przy jakiej energii proton usiągnie zasięg 12 cm w graficie?",
+   "secs": 3.227,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0058",
+   "raw": "jaką energię musi mieć o nazotu, żeby jego zasięg w złocie wynosił 8 cm.",
+   "secs": 3.4,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0059",
+   "raw": "Ile energii potrzebuje proton na zasięg 50 mm w poliwę mlanie?",
+   "secs": 2.941,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0060",
+   "raw": "przy jakiej enelii on wapnia, osiągnie, zasięg 4CM w tkance tłuszczowej.",
+   "secs": 3.608,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0061",
+   "raw": "Czy jaki energii proton osiągnie zasięg 30 cm w tkance tłuszczowej?",
+   "secs": 2.795,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0062",
+   "raw": "jaką energię musi mieć jon neonu, żeby jego zasięg w graficie wynosił 6 cm?",
+   "secs": 2.573,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0063",
+   "raw": "Ile energii potrzebuje, jon wapnia na zasięg, 3 cm w ołowiu?",
+   "secs": 3.339,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0064",
+   "raw": "jako energię musi mieć tąstka alfa, żeby jego zasięg w wodzie wynosił kięć tę jonu.",
+   "secs": 3.041,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0065",
+   "raw": "Taką energię musi mieć cząstka alfa, żeby jego zasięg był graficie, wynosił 20 ccm.",
+   "secs": 3.409,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0066",
+   "raw": "Ile energii potrzebuje protona zasięg 3cm w kaptonie?",
+   "secs": 1.998,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0067",
+   "raw": "Czy jaki energitryton osiągnie zasięg 1 cm w graficie?",
+   "secs": 2.346,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0068",
+   "raw": "jaką energię musi mieć proton, żeby jego zasięg w złocie wynosił 18 cm?",
+   "secs": 2.484,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0069",
+   "raw": "jakaryner biaprotomu, odporiada zasiędowi 15, ceweł w graficie.",
+   "secs": 2.911,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0070",
+   "raw": "Jaką energię musi mieć proton, żeby jego zasięg w graficie wynosił 30 cm?",
+   "secs": 2.778,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0071",
+   "raw": "ile energii potrzebuje jon litu na zasięg 30 jenem w złocie?",
+   "secs": 2.498,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0072",
+   "raw": "jako nie wiem, musi mieć cząstka alfa żeby jego zasięg w polityle nie wynosił 30 licą",
+   "secs": 3.61,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0073",
+   "raw": "Jaka energia tytonu odpowiada zasięgowi, czy gdzieś jemy w powietrzu?",
+   "secs": 3.199,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0074",
+   "raw": "Jak on energie musi mieć jon neonu, żeby jego zasięd kości korowe i wynosił 18 cm.",
+   "secs": 2.715,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0075",
+   "raw": "czy jakiej energii troton osiąbinie zasięg sześć cechm z Kaptonie?",
+   "secs": 2.575,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0076",
+   "raw": "Jaka energia jonu wapnia odpowiada zasięgowi 15-jemem w tkance mięśniowej?",
+   "secs": 2.855,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0077",
+   "raw": "Ile energii potrzebuje proton na zasięg 18 cm w wodze?",
+   "secs": 2.687,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0078",
+   "raw": "jaką energię. Musi mieć proton, żeby jego zasięg w aluminium wynosił 25-cebrony?",
+   "secs": 2.931,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0079",
+   "raw": "czy jakiej energii jon-helu 3 osiągnie zasięg 15 cm w wodzie?",
+   "secs": 2.9,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0080",
+   "raw": "Jaka energia deuteronu odpowiada zasięgowi 8 cm PMMA?",
+   "secs": 2.629,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0081",
+   "raw": "Jaka energia protonu odpowiada zasięgowi 25 cm w graficie?",
+   "secs": 2.647,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0082",
+   "raw": "Ile energii potrzebuje trytom na zasięg cztery cyrbowołowi?",
+   "secs": 3.035,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0083",
+   "raw": "jaka energia jonu neonu odpowiada zasięgowi 20 cm w dwudzenku krzemu.",
+   "secs": 3.053,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0084",
+   "raw": "czy jakiej energii cząstka alfa osiągnie zasięg 30 mm w plastikutkankopodobnym a 150?",
+   "secs": 2.281,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0085",
+   "raw": "Jaką energię musi mieć proton, żeby jego zasięg wyłowił wynosił 50 mm?",
+   "secs": 2.466,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0086",
+   "raw": "jaką nabie musi mieć proton, żeby jego zasięg w powietrzu wynosił 25 cm.",
+   "secs": 2.579,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0087",
+   "raw": "jaką energią musi mieć jon wapnia, żeby jego zasięg w aluminium wynosił 15 cm?",
+   "secs": 2.725,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0088",
+   "raw": "Jaka energia jonu helu-3 odpowiada zasięgowi 25 cm w tkance tłuszczowej?",
+   "secs": 3.093,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0089",
+   "raw": "szyjaki energii, proton osiągnie zasięg 15 cech w powietrzu.",
+   "secs": 2.881,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0090",
+   "raw": "jaka energia deuteronu odpowiada zasięgowi 12 cm w poli tylenie?",
+   "secs": 2.461,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0091",
+   "raw": "Ile energii potrzebuje i on żelaza na zasięg 2 cm w powietrzu?",
+   "secs": 3.033,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0092",
+   "raw": "i na NLD potrzebuję deuteron na zasięg 10 cm w powietrzu.",
+   "secs": 2.635,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0093",
+   "raw": "jaka energia trotonu odpowiada zasiędowi 8CNem w aluminium okazji?",
+   "secs": 2.534,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0094",
+   "raw": "Ile energii potrzebuje cząstka alfa na zasięg 18cm w aluminiu?",
+   "secs": 2.119,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0095",
+   "raw": "czy jakiej enelii proton osiągnie zasięg 5 mm w aluminium?",
+   "secs": 2.193,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0096",
+   "raw": "Jaka energia trząstki Alsta odpowiada na sięgobi 3CN w tkance mięśniowej",
+   "secs": 3.124,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0097",
+   "raw": "Ile energii potrzebuję proton na zasięg 15 Tcm w graficie?",
+   "secs": 3.28,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0098",
+   "raw": "Jaka energia protonu odpowiada za sięgowi 10 cm w kości zbitej?",
+   "secs": 2.619,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0099",
+   "raw": "jaka energia tytonu odpowiada zasięgowi 1 cen w Kaptonie.",
+   "secs": 2.161,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0100",
+   "raw": "szyjaki energii, jon węgla osiągnie dasing 10 stron w plastiku, kankopodobnym, a 150",
+   "secs": 2.819,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0101",
+   "raw": "Jaką energię musi mieć proton, żeby jego zasięg w tkance tłuszczowy wynosił 8 cm?",
+   "secs": 2.941,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0102",
+   "raw": "czy jaki energii proton osiągnie zasięg 30 mm w aluminium?",
+   "secs": 2.383,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0103",
+   "raw": "Jaka energia protonu odpowiada zasięgowi 15 cm w tkance tłuszczowej?",
+   "secs": 2.438,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0104",
+   "raw": "jak anelia tytonu odpowiada za się i bowi 25 cenów złotych.",
+   "secs": 2.701,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0105",
+   "raw": "przyjacie i energi, proton osiągnie zasięg 20 cennems, MA",
+   "secs": 2.394,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0106",
+   "raw": "ile energii potrzebuje, proton na zasięg 1 cm, PMMA.",
+   "secs": 2.09,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0107",
+   "raw": "czy jakiej energii jon węgla osiągnie zasięg 30 cm w tkance mięśniowej?",
+   "secs": 3.684,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0108",
+   "raw": "Czyli jaki energii protonu sięgnie za 5-8 cm w polietylenie?",
+   "secs": 3.275,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0109",
+   "raw": "przy jakiej nelity to nosiągnie zasięg czy cem w dwutlenku krzemu.",
+   "secs": 2.841,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0110",
+   "raw": "jak arenelie belteromu odpowiada zasięgowi 4.0 w wodzie.",
+   "secs": 3.025,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0111",
+   "raw": "przy jakiej energii proton usiądnie zasięg 10 temem wkuna.",
+   "secs": 2.63,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0112",
+   "raw": "Jaka energia protonu odpowiada zasięgowi 10 cm w dwudlenku krzemu?",
+   "secs": 3.396,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0113",
+   "raw": "Ile energii potrzebuje trydon na zasięg 8 cm w dwuplenku krzemu?",
+   "secs": 3.199,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0114",
+   "raw": "przy jakiej enel widać, deuteron osiągnie, zasięg pytnaście całym dwutynku krzemu.",
+   "secs": 2.939,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0115",
+   "raw": "Ile energii potrzebuje cząstka alfa na zasięg 6C w kości korowej?",
+   "secs": 2.611,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0116",
+   "raw": "czy jakiej energii proton osiągnie zasięg 18 cm w tkance tłuszczowej?",
+   "secs": 3.108,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0117",
+   "raw": "ile energii potrzebuje jon boru na zasięg 10 MW Kaptonie.",
+   "secs": 2.434,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0118",
+   "raw": "Jaką energię musi mieć deuteron, żeby jego zasięg w dwutlenku krzemu wynosił pięć cem?",
+   "secs": 2.641,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0119",
+   "raw": "czy jaki energii proton osiągnie zasięg 18 cm w PMMA?",
+   "secs": 2.188,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0120",
+   "raw": "ile energii potrzebuje jon krzemu na zasięg 4M w kości korowej?",
+   "secs": 2.554,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0121",
+   "raw": "Ile energii potrzebuje jon litu na zasięg 20 cm w tkance tłuszczowej?",
+   "secs": 2.34,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0122",
+   "raw": "Jako NLD musi mieć trytom, żeby jego zasięg w poliwęglanie wynosił 20 cm.",
+   "secs": 2.39,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0123",
+   "raw": "jako nenergię, musi mieć tryton, żeby jego zasięg wołowił wynosiłkiem dziesiątnę.",
+   "secs": 3.307,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0124",
+   "raw": "czy jakiej energii proton osiągnie zasięg 10 cm w kości korowej?",
+   "secs": 2.547,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0125",
+   "raw": "i jaką energią musi mieć jon boruł, żeby jego zasięg w kości zbity wynosił pięć cem.",
+   "secs": 2.795,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0126",
+   "raw": "jaka nieenergia protonu odpowiada za shingowi pięć memwołowił",
+   "secs": 2.679,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0127",
+   "raw": "przy jakiej energii cząstka alfa osiągnie zasięg 20 cm w tkance tłuszczowej?",
+   "secs": 3.386,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0128",
+   "raw": "Lakomenalde musi mieć deuteron, żeby jego zasiędów złocie wynosił 3 cm.",
+   "secs": 3.148,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0129",
+   "raw": "jaką energię musi mieć proton, żeby jego zasięg w pości korowej wynosił 20%",
+   "secs": 2.936,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0130",
+   "raw": "jaką energię musi mieć jon haluczy, żeby jego zasięg w wodzie wynosił pięć cem.",
+   "secs": 3.296,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0131",
+   "raw": "Jaka energia deuteronu odpowiada zasięgowi 5M w kości korowej?",
+   "secs": 3.348,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0132",
+   "raw": "Jak on na gie musi mieć proton, żeby jego zasięgów z łocie wynosił pięć tenen.",
+   "secs": 3.367,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0133",
+   "raw": "ile energii potrzebuje proton na zasięg 1,2 w powietrzu?",
+   "secs": 2.976,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0134",
+   "raw": "ile energii potrzebuje jonu na zasięg 5 mm w tkance mięśniowej?",
+   "secs": 2.798,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0135",
+   "raw": "czy jakiej energii tryton osiągnie zasięg 6cm w poliwęglanie.",
+   "secs": 2.634,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0136",
+   "raw": "Jaka energia protonu odpowiada zasięgowi 30 mmWPMA?",
+   "secs": 2.71,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0137",
+   "raw": "Jaka energia protonu odpowiada zasięgowi 8 cm w kaptonie?",
+   "secs": 2.989,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0138",
+   "raw": "przy jakiej energii protonusionnie zasięg 20nm w plastiku tkankopodobny masto-50.",
+   "secs": 3.401,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0139",
+   "raw": "jaką energię musi mieć cząstka alfa, że jego zasięg w tkance mięśniowej wynosił 30 cm.",
+   "secs": 3.505,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0140",
+   "raw": "I jaka energia trytonu odpowiada zasięgowi 15 mm w graficie?",
+   "secs": 2.414,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0141",
+   "raw": "i energii potrzebuje, i on węgla na zasięg 10 tenem w tkance ruszczowej.",
+   "secs": 3.401,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0142",
+   "raw": "ile energii, potrzebuję jon, czenonu na zasięg w 25-cernym wywodzie.",
+   "secs": 2.891,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0143",
+   "raw": "Przy jakiej energii proton osiągnie zasięg 18 cm w wodzie?",
+   "secs": 3.076,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0144",
+   "raw": "przy jakiej energii proton usiągnie zasięt 15 nm w kości korowej.",
+   "secs": 3.171,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0145",
+   "raw": "jaką energię musi mieć deuteron, żeby jego zasimkę wywodzią wynosił w jesięci, no.",
+   "secs": 3.607,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0146",
+   "raw": "je energii potrzebuje proton na zasięg, trzycem w graficie.",
+   "secs": 2.169,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0147",
+   "raw": "Ile energii potrzebuje proton na zasięg 20 mm w poliwę mlanie?",
+   "secs": 2.247,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0148",
+   "raw": "jaką energię musi mieć ją kryptomu, żeby jego zasięg w aluminium wynosił 2 cewronu.",
+   "secs": 2.517,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0149",
+   "raw": "Przy jakiej energii proton osiągnie zasięg 2 cemwołowiu?",
+   "secs": 2.126,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0150",
+   "raw": "jaką energią musi mieć jon helu-3, żeby jego zasięg w kości zbityj wynosił 12 cm?",
+   "secs": 2.806,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0151",
+   "raw": "Ile energii potrzebuje jon azotona zasięg 10 mm w powieczu?",
+   "secs": 2.434,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0152",
+   "raw": "ile energii potrzebuje proton na zasięg 18 cm w poliwęglanie.",
+   "secs": 2.465,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0153",
+   "raw": "Jako energia musi mieć proton, żeby jego zasięg w poliwęglanie wynosił 6 cerawe w mu.",
+   "secs": 3.256,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0154",
+   "raw": "Jaka energia deuteronu odpowiada zasięgowi 4 cm w ołowiu?",
+   "secs": 3.321,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0155",
+   "raw": "JK NRG, jon halu-3, odpowiada zasięgowi 12 cm w plastikutkam kopodobnym a 150 cm",
+   "secs": 3.067,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0156",
+   "raw": "Jako energię musi mieć onargonu, żeby jego zasięg w kaptonie wynosił 25 cm?",
+   "secs": 2.894,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0157",
+   "raw": "w jakiej energii cząstka, alta osiągnie za sięg 8 cm teptoniem.",
+   "secs": 3.125,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0158",
+   "raw": "przy jakiej energii proton usiągnie zasięg 1 cm na...",
+   "secs": 2.434,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0159",
+   "raw": "jaką energię musi mieć jonolitu, żeby jego zasięg w kartonie wynosił 18 cm?",
+   "secs": 3.011,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0160",
+   "raw": "jaką energię musi mieć jon helu-3, żeby jego zasięg w wodzie wynosił czterycem?",
+   "secs": 3.971,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0161",
+   "raw": "czy jaki energii proton osiągnie zasięg 20 mm w pma?",
+   "secs": 2.424,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0162",
+   "raw": "Nizreneldii potrzebuje jon argomuna zasięg 8 cm w pójwęglanie.",
+   "secs": 2.515,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0163",
+   "raw": "czy jakiej energii proton osiągnie zasięg sześćcerzów dwutlenku krzemu.",
+   "secs": 2.544,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0164",
+   "raw": "jaka energia, trząstki, alfa, odpowiada zasięgowi 10 ccm w kości zbitej.",
+   "secs": 2.881,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0165",
+   "raw": "Jaka energia deuteronu odpowiada zasięgowi 15 m w kości korowej?",
+   "secs": 2.814,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0166",
+   "raw": "ile energii potrzebuje deuteron na zasięg 20 mm w graficie?",
+   "secs": 3.332,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0167",
+   "raw": "przyjakiej nelit proton usiągnie zasięg 50-tem w powietrzu.",
+   "secs": 2.749,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0168",
+   "raw": "przy jakiej energii proton usiągnie zasięg 15 cm wody.",
+   "secs": 2.286,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0169",
+   "raw": "Jako mnie nerpiał musi mieć jon argonu, żeby jego zasięg w kości zbitej wynosił 20 ml.",
+   "secs": 2.975,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0170",
+   "raw": "Jaką energię musi mieć jon helu-3, żeby jego zasięg w kości korowej wynosił 20 cm?",
+   "secs": 2.822,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0171",
+   "raw": "czy jakie energii protonu siągnie zasięg jednym celem wołowiu.",
+   "secs": 2.348,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0172",
+   "raw": "jaka energia jon neonu odpowiada zasiędowiczy cemu arminium.",
+   "secs": 2.367,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0173",
+   "raw": "Jaka energia jon helu-3 odpowiada zasięgowi 10 mm w kości korowej?",
+   "secs": 3.436,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0174",
+   "raw": "ile energii potrzebuje, jon tlenu na zasięg 15 mm w Kaptonie.",
+   "secs": 2.388,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0175",
+   "raw": "Przy jakiej energii proton osiągnie zasięg 10 mm w ołowiu?",
+   "secs": 2.671,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0176",
+   "raw": "jaka energia jonu 3nm, odporiada zasiędowi 31 nz kości zvitator.",
+   "secs": 3.596,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0177",
+   "raw": "i energii, potrzebuję proton na zasięg 15 cm w kości konowej.",
+   "secs": 2.178,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0178",
+   "raw": "jak energia trytonu odpowiada za zęgowi 12 cc z plastiku tkankopodobnym a 150 cc",
+   "secs": 3.579,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0179",
+   "raw": "jako energie, musi nieć się oni tu, żeby jego zasięd tkanka mięśniowej wynosił 30 jemen.",
+   "secs": 4.412,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0180",
+   "raw": "jaką energię musi mieć jon żelaza, żeby jego zasięg w PMMA wynosił 20 mm?",
+   "secs": 2.468,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0181",
+   "raw": "Ile energii potrzebuje jon krzemu na zasięg 12 cm w dwudlenku krzemu?",
+   "secs": 2.756,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0182",
+   "raw": "jaka energia jonu, helu czy odpowiada zasiędowi 10 cm w tkancenie śnieowej.",
+   "secs": 3.569,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0183",
+   "raw": "jakajner wiejonu neonu odpowiada zasięgowi 20 nm z plastików kampo podobnym a 150 nm",
+   "secs": 4.068,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0184",
+   "raw": "Jaka energia trytonu odpowiada zasięgowi 5 cm w ołowiu?",
+   "secs": 3.088,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0185",
+   "raw": "czy jaki energijon tlenu osiągnie zasięg jedyncem w powieczu?",
+   "secs": 3.217,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0186",
+   "raw": "Czy jakiej energii jon helu czy osiągnie zasięg 12 cm w kości zbitej?",
+   "secs": 3.433,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0187",
+   "raw": "ilenel i potrzebuje proton na zasięg, cztercejem w kości korowej.",
+   "secs": 2.656,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0188",
+   "raw": "i DNA-li potrzebuje i on żelaza na zasięg 18 cm w puna.",
+   "secs": 3.129,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0189",
+   "raw": "jaka energia trytomu odpowiada zasiędowi 21 stkance puszczowe.",
+   "secs": 3.657,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0190",
+   "raw": "Jaka energia jonu ksenonu odpowiada zasięgowi 2CM w powieciu?",
+   "secs": 2.64,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0191",
+   "raw": "jaką energię musi mieć proton, żeby jego zasięg w aluminium wynosił 2Cm?",
+   "secs": 2.285,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0192",
+   "raw": "Ile energii potrzebuje jon krzemu na zasięg 10 mm w graficie?",
+   "secs": 3.064,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0193",
+   "raw": "czy jakiej energii, proton osiągnie zasięg, kięćce, złocie, te.",
+   "secs": 3.433,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0194",
+   "raw": "czy jakiej energii proton osiągnie zasięg 8Cm w kości korowej?",
+   "secs": 3.3,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0195",
+   "raw": "Jaką energię musi mieć deuteron, żeby jego zasięg w aluminium wynosił 5mm?",
+   "secs": 2.372,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0196",
+   "raw": "jaka NBI o muheru-3, odpowiada we Siemboli-6, cern, powiednianie,",
+   "secs": 3.015,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0197",
+   "raw": "przy jakiej enelidu teron osion nie zasięg 25 cm w dwutlenku krzemu.",
+   "secs": 2.712,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0198",
+   "raw": "Jaka energia jonu-litu, odpowiada zasięgowi 25 cm spowietrzu",
+   "secs": 2.549,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0199",
+   "raw": "i energii, potrzebuję jona, gomu na zasięg, dziesięć cem w kości zbitej.",
+   "secs": 2.848,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0200",
+   "raw": "Jako on interpiał, musi mieć troton, żeby jego zasięg w kości z witej wynosił 10 cewek.",
+   "secs": 3.129,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0201",
+   "raw": "jaką menelie musi mieć proton, aby uzyskać zasięg 30 jemem w tkance tłuszczowej i złocie.",
+   "secs": 3.31,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0202",
+   "raw": "jaką energią musi mieć jon azotu, aby uzyskać zasięg sześćcem w wodzie i złocie?",
+   "secs": 2.661,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0203",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 12 cm w polietylenie, tkance tłuszczowej i złocie.",
+   "secs": 3.291,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0204",
+   "raw": "Jako energię, musi nicie onargo mógł aby uzyskać zasięg 30 GM w pojeczu i arminu.",
+   "secs": 2.845,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0205",
+   "raw": "Jaką energię musi mieć proton, aby uzyskać zasięg 15 mm w kości krowej i powietrzu?",
+   "secs": 2.538,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0206",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 25 cm w ołowiu i plastikutkanko podobnym a 150 cm.",
+   "secs": 3.09,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0207",
+   "raw": "jako energię musi mieć on argonu, aby uzyskać zasięg, dwa ceny w kości korowej, złocie i ołowiu.",
+   "secs": 3.606,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0208",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 10 cm w kości korowej, plastikutka kopodobnym A150 i aluminiu.",
+   "secs": 3.833,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0209",
+   "raw": "Jako energię musi mieć proton, aby uzyskać zasięg osiemcem w Ołowiu, powieczu i złocie?",
+   "secs": 3.577,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0210",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 20 mm w Kaptonie, w MAI Ołowiu?",
+   "secs": 3.301,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0211",
+   "raw": "Jaką energię musi mieć proton, aby uzyskać zasięg 2CM w powieczu IPMA?",
+   "secs": 3.534,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0212",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 15 cm w plastiku tkankopodobnym a 150 i kości zbitej?",
+   "secs": 4.913,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0213",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 2cm w kaptonie i plastiku tkankopodobnym, a 150.",
+   "secs": 4.176,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0214",
+   "raw": "jako enebio musi mieć proton, aby uzyskać zasięgnięciem aluminium, tkanka podobnym, a 150 kości korowy.",
+   "secs": 3.637,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0215",
+   "raw": "Jako energię musi mieć ją wapnia, aby uzyskać zasięg 50 m w złocie, ołowiu i poliwęglanie?",
+   "secs": 3.88,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0216",
+   "raw": "jaką energię musi mieć jon ksenonu, aby uzyskać zasięg 20 cm w tkanka mięśniowej, polietylenie i poliwęglanie.",
+   "secs": 3.373,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0217",
+   "raw": "jaką energią musi mieć proton, aby uzyskać zasięg pięć mem w plastiku tkankopodobnym a 150 poliwęglanie i aluminium.",
+   "secs": 2.913,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0218",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 15cm w graficie i aluminium.",
+   "secs": 3.144,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0219",
+   "raw": "jako menelbie musi mieć proton, aby uzyskać zasięg, czy cenu, wołowióbna i powietrzu.",
+   "secs": 4.728,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0220",
+   "raw": "jako energię musi mieć proton, aby uzyskać zasięg 30 lcern valumijum, kość korowej i plastikutka podobnym, a 150...",
+   "secs": 3.15,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0221",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 10 cm w polietylenie i graficie?",
+   "secs": 3.554,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0222",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 5 mm w złocie, poliwę mlani i aluminium.",
+   "secs": 3.322,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0223",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięg czterycem w polietylenie, wodzie i tkance mięśniowej?",
+   "secs": 4.001,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0224",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięd 20 cm w kości korowej i wody.",
+   "secs": 3.243,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0225",
+   "raw": "Jako energię musi mieć proton, aby uzyskać zasięg 25 cm w poliwęglanie, dwudlenku krzemu i tkance tłuszczowej.",
+   "secs": 3.782,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0226",
+   "raw": "Jako energię musi mieć proton, aby uzyskać zasięg 15 cm w powietrzu, w wodzie, w plastiku tkankopodobnym a 150?",
+   "secs": 4.155,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0227",
+   "raw": "Jako energia musi mieć proton, aby uzyskać zasięg 3-strę w kości korowej dwutlenku, krzemu i aluminiumu.",
+   "secs": 2.904,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0228",
+   "raw": "Jaką energię musi mieć proton, aby uzyskać zasiny 20 mmMA i ołowiu?",
+   "secs": 2.82,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0229",
+   "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 30 cm w kaptonie i wodze.",
+   "secs": 3.094,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0230",
+   "raw": "Jaką energię musi mieć proton, aby uzyskać zasięg 25 cm w graficie, a PMA i złocie?",
+   "secs": 3.236,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0231",
+   "raw": "Jaką energię potrzebuje jon ksenonu na zasięg 20 mm w graficie, a jon miedzi?",
+   "secs": 3.414,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0232",
+   "raw": "jaką energię potrzebuje jon tlenu na zasięg 12CM w tkance mięśniowej, a jon tytanu.",
+   "secs": 3.672,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0233",
+   "raw": "Jako menagium potrzebuję mionitu na zasięg jeden, co to, a nie.",
+   "secs": 3.089,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0234",
+   "raw": "jaką energię potrzebuje jon haluczy na zasięg 30 cm w powietrzu, a tryton?",
+   "secs": 3.157,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0235",
+   "raw": "i jaką energię potrzebuje jon helu-3 na zasięg 1cm w wodze, a jon ma wnezu.",
+   "secs": 3.693,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0236",
+   "raw": "jaką energię potrzebuje jon tlenu na zasięg 20 Nmwołowi,",
+   "secs": 2.975,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0237",
+   "raw": "jaką energię potrzebuję proton na zasięg 1 w aluminiu? Ion węgla?",
+   "secs": 3.646,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0238",
+   "raw": "Jaką energię potrzebuje jon ksenonu na zasięg 4cm w powietrzu, a cząstka alfa?",
+   "secs": 3.368,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0239",
+   "raw": "jaką węglie potrzebuje i on kryptonu naza się 12 cm w wodze. Ha, Proto.",
+   "secs": 2.844,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0240",
+   "raw": "Jako energię potrzebuje jon lituna zasięg 18 cm w dwutlenku krzemu? Ajon, helu-3?",
+   "secs": 3.436,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0241",
+   "raw": "jaką energią potrzebują jon, deungla na zasięg 20, tkanka mięśniowej, to...",
+   "secs": 2.13,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0242",
+   "raw": "jaką energię potrzebuje, on nie dzi na zasięg pięćdziesiąt tenem w tkance mięśniowej, a jon węgl.",
+   "secs": 2.685,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0243",
+   "raw": "jaką energię potrzebuje jonu na zasięg czy cem w złocie, a jon żelaza?",
+   "secs": 3.074,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0244",
+   "raw": "Jaką energię potrzebuje jon mannezu na zasięg 20 cm w dwuplenku krzemu? A jon azotu?",
+   "secs": 3.868,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0245",
+   "raw": "jaką energię potrzebuję jon xenonu na zasięg, osiemdzem w złocie, atryton,",
+   "secs": 4.038,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0246",
+   "raw": "ja po energię, potrzebuję trycon na zasięg, gięć, hebem w wodrze,",
+   "secs": 2.993,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0247",
+   "raw": "jaką energię potrzebuje jon neonu na zasięg 4-celem w wodzy, ali jon bówu.",
+   "secs": 2.893,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0248",
+   "raw": "jaką enagie potrzebuje i jon żelaza na zasięg 25 cm w grafici, a rion bowu.",
+   "secs": 3.51,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0249",
+   "raw": "Jaką energię potrzebuję deuteronna zasięg 15 cm, PMMA, a jon xenonu?",
+   "secs": 3.316,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-invrng-0250",
+   "raw": "jako energię potrzebuję cząstka walca na zasięg 3 cm w kości zbitej",
+   "secs": 3.366,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0001",
+   "raw": "ile wynosi masowa zdolność hamowania jonu Madnesu o energii 350 MeV na nukleon w złocie.",
+   "secs": 3.402,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0002",
+   "raw": "Ile energii traci, i ona agonu o energii 60V na mukę, ona centymny do drogi w wodzie.",
+   "secs": 3.855,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0003",
+   "raw": "ile energii traciteutelą o energii stome, cała na centymetr drobii w graficie.",
+   "secs": 4.219,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0004",
+   "raw": "to daj je reżem zajął helu, czy energii, czy 10 na cał w tym na",
+   "secs": 3.78,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0005",
+   "raw": "ile wynosi masowa zdolność hamowania jonu midzie, energii, stom, fauna, nukleon w wodzie?",
+   "secs": 3.816,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0006",
+   "raw": "Jaka jest zdolność hamowania jonulitu energii 40 MeV na nukleonu Wołowiu?",
+   "secs": 3.413,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0007",
+   "raw": "poddaj jeletebdze, jonu, xenonu, neli, 20anv na nukleon w plastiku tkankopodobny, masto, 50.",
+   "secs": 4.259,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0008",
+   "raw": "Jaki jest elet etrytonu o energii 2 MeV w plastiku tkankopodobnym A150?",
+   "secs": 2.685,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0009",
+   "raw": "podaj, letet, zadeł teronu, reneli, czydzieszcinę, fałw, poliwęglanie.",
+   "secs": 3.511,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0010",
+   "raw": "jaki jest elety protonu o energii 90 MeV w Kaptonie?",
+   "secs": 2.661,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0011",
+   "raw": "podaj ds-dx dla tytonu energii 30V w powietrzu.",
+   "secs": 2.831,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0012",
+   "raw": "i za wynosi masowa zdolność hamowania protonu, LNM i dwie sztyme fałów kości zbitej.",
+   "secs": 2.959,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0013",
+   "raw": "ile wynosi masowa zdolność hamowania jonu, tytanu, o energii, 40 MeV na nukleonu, aluminium.",
+   "secs": 3.337,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0014",
+   "raw": "ile wynosi masowa zdolność hamowania jonu, przemu o energii 50 MeV na nukleon w kości zbitej?",
+   "secs": 3.59,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0015",
+   "raw": "podejelety dla protonu o energii 250 MeV w aluminium.",
+   "secs": 1.924,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0016",
+   "raw": "podaję leptemu dla protonu o energii, 70 metrów zła cie.",
+   "secs": 3.063,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0017",
+   "raw": "podaj retet zajął ksenonu energii 50 MeV na nukleon w wodzie.",
+   "secs": 2.712,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0018",
+   "raw": "jaki jest te protonu, renergi, czydzieś limewał w plastiku, tkankopodobny ma 150.",
+   "secs": 3.071,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0019",
+   "raw": "podej LTE blayonu magnezu o energii 120 MeV na nukleonu w złocie.",
+   "secs": 2.647,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0020",
+   "raw": "i lewyności masowa zdolność hamowania, jonu, helu, czy konyna, giczne, dzieślinne fałów złocie.",
+   "secs": 3.914,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0021",
+   "raw": "podaj, eletem zadeł teronu, a energii, 80 mektał w dwutlenku krzemu.",
+   "secs": 3.301,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0022",
+   "raw": "podajelety dla cząstki alfa, energii 60MV, PMMA.",
+   "secs": 2.567,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0023",
+   "raw": "podejel tedlają żelaza o energii 40 MeV na nukleon w powieczu.",
+   "secs": 2.763,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0024",
+   "raw": "podajeletem z jonu helu, szy o energii 20, wmfa w kości z bitej, wylu.",
+   "secs": 3.215,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0025",
+   "raw": "podajeletę dla tytonu energii, 15 FOPMA",
+   "secs": 1.902,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0026",
+   "raw": "podejeletetlionu wapnia o energii 400 MeV na nukleon w PMMA.",
+   "secs": 3.039,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0027",
+   "raw": "ile energii traci cząstka alfa energii, sto mefał na cenotywę de drogi w PMMA.",
+   "secs": 3.283,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0028",
+   "raw": "Jaki jest leteyonu neonu o energii 20 MeV na nukleon w powieczu?",
+   "secs": 2.393,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0029",
+   "raw": "Jaka jest zdolność hamowania jomu przymu oenergi 150 MeV na nukleonu w polietylenie?",
+   "secs": 3.875,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0030",
+   "raw": "jaka jest zdolność hamowania jonu, helu-3, olenergi, 50 MeV w kościu zbitej.",
+   "secs": 3.594,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0031",
+   "raw": "o daj rytę dla jonu, chemlu, czy energi, pięć mefał w tkance tłuszczowej.",
+   "secs": 3.813,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0032",
+   "raw": "Jakie jest eletyjonu xanonu o energii 120 MeV na nukleon w PMMA?",
+   "secs": 3.154,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0033",
+   "raw": "podej lete dlayonu litu o energii 50 MeV na nukleon w tkance tłuszczowej.",
+   "secs": 3.305,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0034",
+   "raw": "Jakie jest le Teonu Kryptonu ONRG400V na nukleon w graficie?",
+   "secs": 2.598,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0035",
+   "raw": "padaje lecją dzajomu argomu, a ja nieergi, wieś nie mecał na nukleon złocie.",
+   "secs": 3.181,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0036",
+   "raw": "i ze wynosi masowa zdolność hamowania jonu azotu, o energii dwieszpieme fauna, mukaon w złocie.",
+   "secs": 2.707,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0037",
+   "raw": "pod ELETE-LION-u, miedzi o energii, 300 MeV na nukleon w kości korowej.",
+   "secs": 4.101,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0038",
+   "raw": "podaj LET dla trytonu o energii 20 MeV w złocie.",
+   "secs": 2.667,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0039",
+   "raw": "Jaki jest elety protonu o energistome fał w aluminium?",
+   "secs": 2.684,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0040",
+   "raw": "Jak jest tutaj te protonu o energii 70V w Kaptonie?",
+   "secs": 3.165,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0041",
+   "raw": "jaki jest LTE protonu o energii 350 MeV w złocie?",
+   "secs": 3.624,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0042",
+   "raw": "jaki jest weletetrytonu, energii do amnefałów, no.",
+   "secs": 3.021,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0043",
+   "raw": "od ELETE'em, zadeuteron, o energii, w amęsał, w polietylenie, dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+   "secs": 15.776,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0044",
+   "raw": "podejd s hleżd dEy z tlajonu azotu o energii 180 MeV na nukleon w tkance mięśniowej.",
+   "secs": 3.405,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0045",
+   "raw": "jaki jest LET protonu NRD 10 MeV w graficie?",
+   "secs": 1.937,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0046",
+   "raw": "podej, eletynt zajął węgla o energii, 150 mezał na nukleon w poliwęglanie.",
+   "secs": 2.583,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0047",
+   "raw": "podaj dS już, dEx, DLionu, krzemu, ONRG, czystamy fauna nukleon w plastikutkankopodobnym A150",
+   "secs": 3.657,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0048",
+   "raw": "ile wynosi masowa zdolność hamowania, jon umiedzi o energii 400 MeV na nukleon w polietylenie.",
+   "secs": 3.255,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0049",
+   "raw": "podaj retetze, jon uprzemłon energii, czte dziesięte fauna, nukleon w plastiku, tkankopodobny masto pięćdziesiąt.",
+   "secs": 3.777,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0050",
+   "raw": "to woda i retem zatrytonu o energii 20 MeV aluminiumody.",
+   "secs": 2.646,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0051",
+   "raw": "izien energii, traci czostka alfa, renergistone, fauna centynne do drogi w tkancetuszczowej.",
+   "secs": 3.358,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0052",
+   "raw": "podaj eletę dla trytonu o energii 8 MeV w ołowiu.",
+   "secs": 2.852,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0053",
+   "raw": "podaj, DS, leż, DX, DL, Tytanu, ONRGY, 120MV na nukleon, złocie.",
+   "secs": 2.902,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0054",
+   "raw": "jaka jest zdolność hamowania deuteronu o węgla, litwa mefa w graficie.",
+   "secs": 2.62,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0055",
+   "raw": "Jaki jest eletę trytonu o energii 50 meV w tkance mięśniowej?",
+   "secs": 2.819,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0056",
+   "raw": "podaj alety dla jonu wapnia, energii, dwieście pięćdziesiąt keV w plastiku tkankopodobnym, o sto pięćdziesiąt.",
+   "secs": 4.252,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0057",
+   "raw": "podlelele, jon za jon helu-3, o energi, dziesięć mecał w wodze.",
+   "secs": 3.569,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0058",
+   "raw": "Jaka jest zdolność hamowania cząstki AVNR-li 60 myf, fałów kości korowej?",
+   "secs": 2.95,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0059",
+   "raw": "podej eleted, layom, helu-3, o energii 50 MeV, kości korowej.",
+   "secs": 3.151,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0060",
+   "raw": "jakiś telet, w którym jon węgla o energii, czysta, męcał na nukleon, w kości korowej.",
+   "secs": 2.907,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0061",
+   "raw": "Jak jest ale te protonu energii 60V polietylenie?",
+   "secs": 2.475,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0062",
+   "raw": "podejelety dla protonu o energii 250 MeV w Kaptonie.",
+   "secs": 2.877,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0063",
+   "raw": "ile energii traci jon neonu o energii 20 MeV na nukleon na centymetr drobii w kości krowej?",
+   "secs": 2.974,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0064",
+   "raw": "ile energii traci jon helu, 3 konegi, 8 meV na centynę do drogi w tkance mięśniowej.",
+   "secs": 3.13,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0065",
+   "raw": "jak nie jest wyleczał protonu o energii 710, cał w Kaptonie.",
+   "secs": 3.214,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0066",
+   "raw": "Jaki jest eletyjonu tlenu ONR 350 MeV na nukleon w aluminium?",
+   "secs": 2.21,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0067",
+   "raw": "ile energii traci cząstka alfa o energii czy 10 MeV na centymetr drogi w poliwęglanie.",
+   "secs": 2.679,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0068",
+   "raw": "jaki jest leteczonstki alfa o energii 5 MeV w powieczu?",
+   "secs": 2.626,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0069",
+   "raw": "ile NRD traci tryton o NRD 60 MeV na centymetr drogi w graficie?",
+   "secs": 3.27,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0070",
+   "raw": "ilen energii, kreatywion, matinasu, energii, 400mV na nukleon na centymetr drogi w kości zbitej.",
+   "secs": 4.037,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0071",
+   "raw": "i zawynosimosowa zdolność hamowania, jonu, helu-3, konnena D80, nEV w wodzie.",
+   "secs": 2.666,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0072",
+   "raw": "Jakie jest eletajonu tytanu ONR-60V na mną pełne w poliwęglanie?",
+   "secs": 3.418,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0073",
+   "raw": "podejelety dla protonu o energii 50 MeV-PMA.",
+   "secs": 2.999,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0074",
+   "raw": "i że wynosi masowa zdolność hamowania jonu żelaza o energii 180 Nm, nukleon w ołowiu.",
+   "secs": 3.585,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0075",
+   "raw": "Jaka jest zdolność hamowania jonu helu-3, energi 80V w kości tzbitej?",
+   "secs": 3.394,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0076",
+   "raw": "ile wynosi masowa zdolność hamowania jonu węgla o energii 350 MeV na nukleon w poliwęglanie.",
+   "secs": 4.046,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0077",
+   "raw": "ile wynosi masowa zdolność hamowania deuteronu energii 30V wołowi?",
+   "secs": 2.227,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0078",
+   "raw": "Ile energii traci proton o energii 60 MeV na centymedry drogi w tkance tłuszczowej?",
+   "secs": 2.7,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0079",
+   "raw": "podajelety dla jonu węglała energii, dwie siemy fauna nukleon w ołowie.",
+   "secs": 2.821,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0080",
+   "raw": "podejdę s.dxglaion, malnezu oenerwii, 200 MeV na nukleonów kości zbitej.",
+   "secs": 2.68,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0081",
+   "raw": "i zawynosić masowa zdolność hamowania tyton-lorenel i 50 nv pojetylenie.",
+   "secs": 2.463,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0082",
+   "raw": "Jaka jest zdolność hamowania cząstki alfa energii, czy dziesięjmy V w powietrzu?",
+   "secs": 2.685,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0083",
+   "raw": "podejeletedlająu tytanu o energii 400 keV w tkance tłuszczowej.",
+   "secs": 3.378,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0084",
+   "raw": "Jaka jest zdolność hamowania protonu o energii 220 MeV w wodze?",
+   "secs": 3.392,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0085",
+   "raw": "Jak jest eletytrytonu energii 25V tkanka mięśniowej?",
+   "secs": 2.187,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0086",
+   "raw": "jak jest teren trotonu, o energii, 1,5 GeV w poliwę blanie.",
+   "secs": 2.658,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0087",
+   "raw": "ile wynosi masowa zdolność hamowania deuteronu energii 20V w politylenie?",
+   "secs": 3.117,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0088",
+   "raw": "Jaka jest zdolność hamowania trytonu ONL i 50MV tkancet uszczowej?",
+   "secs": 3.854,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0089",
+   "raw": "jaki jest eletejonu helu-3 o energii 40 MeV w kości z bitej?",
+   "secs": 3.786,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0090",
+   "raw": "jaki jest lepe protonu, orenergi czy stanę fał w mumę.",
+   "secs": 2.226,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0091",
+   "raw": "Jak jest eletajonu azotua NR-Listopin, 10 keV, aluminium,",
+   "secs": 2.312,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0092",
+   "raw": "podaj, LET dla cząstki alfa o energii 2MV w złocie.",
+   "secs": 2.335,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0093",
+   "raw": "podaj rierę dajonu tlenu, o energii, gyn dziesiąt kęsał w tkancenie śniowej.",
+   "secs": 2.848,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0094",
+   "raw": "jakich jest eleciom jonu? Algonu o nRi, czysta 50 kansałów poli jedyne.",
+   "secs": 3.386,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0095",
+   "raw": "oddajelety dla protonu, lenergi, pięćdziesiątny fał w tkanka mięśniowej.",
+   "secs": 3.337,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0096",
+   "raw": "podejdę slash dEy sLayonu Litu o energii 50 keV politylenie.",
+   "secs": 3.817,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0097",
+   "raw": "Jaka jest zdolność hamowania deuteronu energii 20VW?",
+   "secs": 3.081,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0098",
+   "raw": "Ile energii traci proton o energii 350 MeV na centymetr drogi w wodze?",
+   "secs": 3.157,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0099",
+   "raw": "Jaka jest zdolność hamowania protonu o energii 3GV w aluminiu?",
+   "secs": 2.048,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0100",
+   "raw": "ile energii traci jon argoną o energii 400 MeV na nukleon na centymed drogi w aluminiu?",
+   "secs": 2.637,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0101",
+   "raw": "Jak jest to jonu węgla o energii? 60 mesał na nukleon, aluminiuma.",
+   "secs": 3.002,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0102",
+   "raw": "jaka jest zdolność hamowania jonu i tu ornelisto, 20 nefauna, nukleon w dwutlenku, przemu.",
+   "secs": 3.591,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0103",
+   "raw": "podaj dE-s-dx dla jonu helu 3 o energii 15 MeV w graficie",
+   "secs": 3.11,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0104",
+   "raw": "jaki jest teda dżumionu magnezu o energii 250 kW w wodze.",
+   "secs": 2.72,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0105",
+   "raw": "jaki jest tteteton, o rennerli, 30 nefałów dwutlenku krzemu.",
+   "secs": 3.001,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0106",
+   "raw": "Jak jest elety protonu ONRV180 MeV w plastiku tkankopodobnym A150?",
+   "secs": 2.557,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0107",
+   "raw": "podejeletę dla deuteronu o energii 40 MeV w Ołowiu.",
+   "secs": 2.185,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0108",
+   "raw": "podaj TEDR-a protonu renellii 60V w aluminiu.",
+   "secs": 2.191,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0109",
+   "raw": "podejde s-leż, dx dla jonu, węglał energi 20, MeV na nukleon w Kaptonie.",
+   "secs": 2.791,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0110",
+   "raw": "jaki jest te leterę jonu trzemnomu o energii 180 meunfauna nukleon w kości zbitej, dole, dole, dole.",
+   "secs": 3.285,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0111",
+   "raw": "podaj, deslerz, dyx dla deuteronu o energię 80-tym, w kości korowej.",
+   "secs": 3.128,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0112",
+   "raw": "jaka jest zdolność hamowania cząstki alfa o energii 2 MeV w kości z bitej?",
+   "secs": 2.406,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0113",
+   "raw": "Ile energii traci deuteronu energii? 30 MeV na centymener drobi w kości korowej?",
+   "secs": 3.112,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0114",
+   "raw": "hodajeretet z jonu tlenu eneli 350 Nfmkn w dwutlenku pszem.",
+   "secs": 3.146,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0115",
+   "raw": "odegretę, zadeuteromu, ONR, dwa męsa ustowieczu.",
+   "secs": 2.989,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0116",
+   "raw": "Jaka jest zdolność hamowania jonu tlenu o energii 350V na nukleon w graficie?",
+   "secs": 3.292,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0117",
+   "raw": "podejelety dla deuteronu o energii 50 MeV w tkance mięśniowej.",
+   "secs": 2.107,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0118",
+   "raw": "Jakie jest eletycząstki AVNR G8, mefałów kości zbityj?",
+   "secs": 2.638,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0119",
+   "raw": "idę, wynosi masowa zdolność hamowania, jon u waknia, veneli 60. MeV, me mukrę w tkancenie śniowej.",
+   "secs": 3.305,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0120",
+   "raw": "Jaka jest zdolność hamowania jonu azotu o energii 30 MeV na nukleonu w wodze?",
+   "secs": 3.084,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0121",
+   "raw": "porówna i zdolność hamowania jonu tytanu w kości zbitej przez to MeV na nukleon, 30 MeV na nukleon i 200 keV.",
+   "secs": 3.825,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0122",
+   "raw": "o równe, ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja ja",
+   "secs": 13.576,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0123",
+   "raw": "porówna jenetennionu i tu w kości korowej przy 50 nv na nukleon i 20 nv na nukleon.",
+   "secs": 2.729,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0124",
+   "raw": "porównej zdolność hamowania protonu w Kaptonie przy 250 MeV, 700 keV i 250 MeV.",
+   "secs": 2.765,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0125",
+   "raw": "Porównaj zdolność hamowania jonu argonu w kości zbitej przyczysta 50mv na nukleon i 50mv na nukleon",
+   "secs": 3.08,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0126",
+   "raw": "porówna jest zdolność hamowania jonu boru w aluminium przy dwieszpie na fauna nuklem, dwieszpie 50 na fauna nuklem, liczysana fauna nuklem.",
+   "secs": 3.382,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0127",
+   "raw": "porówna i zdolność hamowania protonu w ołowiu przy 90 MeV, 40 MeV i 2 deV.",
+   "secs": 2.641,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0128",
+   "raw": "porówna i zdolność hamowania jonu węgla w tkance mięśniowej, przy 80 MeV na nukleon i 100 keV.",
+   "secs": 3.571,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0129",
+   "raw": "porówna i zdolność hamowania protonów kości zbitej przy 150V, 120NV i 600KV.",
+   "secs": 2.747,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0130",
+   "raw": "porównaj eleteprotonu w graficie przy 40 MeV i 350 MeV.",
+   "secs": 2.21,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0131",
+   "raw": "porównaj LT1, Tytanów, MAPSZ-20, MeV na nukleon, 400 MeV na nukleon i 30 MeV na nukleon.",
+   "secs": 3.645,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0132",
+   "raw": "porówna jest zdolność hamowania jonu szenomu w złacie przy 80 mefa na nukleon i 50 mefa na nukleon.",
+   "secs": 3.101,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0133",
+   "raw": "porównej zdolność hamowania protonu w złocie przy dwie siem V i czystam V.",
+   "secs": 2.615,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0134",
+   "raw": "Porównaj LTEonu Miedzi w kości korowej przy 350 NV na nukleon i 60 NV na nukleon.",
+   "secs": 2.788,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0135",
+   "raw": "kolów, na dete tutonów powietrzu przy dwieście dwadzieścia na V i pięćsetkę V.",
+   "secs": 2.967,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0136",
+   "raw": "porówny LTEONu kryptonu w graficie przy 120V na nukleon i 20V na nukleon.",
+   "secs": 3.6,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0137",
+   "raw": "porównaj elety protonów PMMA przy 80 MeV i 300 MeV.",
+   "secs": 2.879,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0138",
+   "raw": "porówna i zdolność hamowania protonu w złocie 380 mechał, 90 mechał i 350 mechał.",
+   "secs": 3.104,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0139",
+   "raw": "Porówna jest zdolność hamowania jonu magnezu w dwutlenku krzemu przystome fauna nukleon, 40 my fauna nukleon i 250 my fauna nukleon.",
+   "secs": 3.706,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0140",
+   "raw": "porówna i zdolność hamowania protonów tkanka mięśniowej przy 90V i 10V.",
+   "secs": 2.454,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0141",
+   "raw": "porówna jest zdolność hamowania protonu o energii 300 MeV w graficie powietrzą IPMA.",
+   "secs": 3.161,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0142",
+   "raw": "porówna i zdolność hamowania, on umiedzi o energii 30 MeV na nukleon w polietylenie, kości korowej i aluminium.",
+   "secs": 3.832,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0143",
+   "raw": "porówność zdolność hamowania protonu o energii 250V w dwutlenku krzemu i tkance mięśniowej.",
+   "secs": 3.104,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0144",
+   "raw": "Porówna i zdolność hamowania jonu tlenu o energii 80m na nukleon, w kości zbitej graficie i wodzie.",
+   "secs": 3.163,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0145",
+   "raw": "korówna jest zdolność hamowania protonu, olenel i 80V w kości zbityj plastikut, kankopodobny masto, 50 i dwutlenku, pszemu.",
+   "secs": 3.537,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0146",
+   "raw": "porównaj LTE, jonu magnezu i jonu węgla w kaktonie 350 keV.",
+   "secs": 2.761,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0147",
+   "raw": "porównaj eletyjonu boru, jonu azotów tkanka tłuszczowej przyczysta 550 MeV na nukleon.",
+   "secs": 3.31,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0148",
+   "raw": "porównej, letejonu żelaza i jonu, miedziw, ma przydwie się, mv na nukleon.",
+   "secs": 3.462,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0149",
+   "raw": "to równaj, letę trytomu i cząstki alfa w powietrzu, czy 80 mesał.",
+   "secs": 2.769,
+   "error": null,
+   "usedPromptFallback": false
+  },
+  {
+   "id": "pl-sp-0150",
+   "raw": "porówna i zdolność hamowania, jonu tytanu i jonu żelaza w ołowiu przy 400 keV.",
+   "secs": 3.059,
+   "error": null,
+   "usedPromptFallback": false
+  }
+ ]
+}
