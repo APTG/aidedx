@@ -22,6 +22,7 @@ import { ELECTRON_ID } from "../wasm/libdedx.ts";
 import type { LibdedxService } from "../wasm/types.ts";
 import { formatEnergyPerNucleon } from "../format.ts";
 import {
+  atomicMassForConversion,
   energyToMeVPerNucl,
   programName,
   programSupportsCombination,
@@ -229,8 +230,7 @@ export function validateIntent(intent: QueryIntent, service: LibdedxService): Va
     if (isInverse || intent.energies.length === 0) continue;
     const min = service.getMinEnergy(programId, particle.id);
     const max = service.getMaxEnergy(programId, particle.id);
-    const atomicMass =
-      particle.massNumber > 1 ? service.getAtomicMass(particle.id) : particle.massNumber;
+    const atomicMass = atomicMassForConversion(particle, service);
     intent.energies.forEach((e, index) => {
       const meVPerNucl = energyToMeVPerNucl(e, particle.massNumber, atomicMass);
       if (meVPerNucl >= min && meVPerNucl <= max) return;

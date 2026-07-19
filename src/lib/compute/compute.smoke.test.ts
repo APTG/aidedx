@@ -16,7 +16,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { LibdedxServiceImpl } from "../wasm/libdedx.ts";
 import type { LibdedxModuleFactory, LibdedxService } from "../wasm/types.ts";
-import { computeIntent, energyToMeVPerNucl } from "./compute.ts";
+import { atomicMassForConversion, computeIntent, energyToMeVPerNucl } from "./compute.ts";
 import type { QueryIntent } from "../intent/query-intent.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -320,5 +320,40 @@ describe("energyToMeVPerNucl", () => {
     expect(
       energyToMeVPerNucl({ value: 240, unit: "keV", perNucleonAssumed: false }, 12, 12),
     ).toBeCloseTo(0.02, 6);
+  });
+});
+
+describe("atomicMassForConversion — issue #103", () => {
+  it("uses libdedx's atomic mass for the default isotope (alpha, He-4)", () => {
+    // He's default isotope IS He-4, so service.getAtomicMass(2) is valid here.
+    expect(atomicMassForConversion({ id: 2, massNumber: 4 }, service)).toBeCloseTo(4.0, 1);
+  });
+
+  it("falls back to the isotope's own mass number for a non-default isotope (deuteron)", () => {
+    // Z=1's default isotope is H-1; service.getAtomicMass(1) would wrongly describe H-1's
+    // mass here, not the deuteron's — the fallback keeps the conversion factor close to 1
+    // instead of off by a wrong-isotope factor (~1.008/2 ≈ 0.5).
+    expect(atomicMassForConversion({ id: 1, massNumber: 2 }, service)).toBe(2);
+  });
+
+  it("falls back to the isotope's own mass number for helium-3 (helion)", () => {
+    // Z=2's default isotope is He-4; service.getAtomicMass(2) would wrongly describe He-4's
+    // mass here (~4.0026/3 ≈ 1.33), not He-3's.
+    expect(atomicMassForConversion({ id: 2, massNumber: 3 }, service)).toBe(3);
+  });
+
+  it("a deuteron's 100 MeV/u lands close to 100 MeV/nucl, not ~50", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "csdaRange",
+        particles: [{ match: "deuteron" }],
+        materials: [{ match: "water" }],
+        energies: [{ value: 100, unit: "MeV/u" }],
+      }),
+      service,
+    );
+    const point = req(result.series[0]?.points[0]);
+    expect(point.energyMeVPerNucl).toBeGreaterThan(95);
+    expect(point.energyMeVPerNucl).toBeLessThan(105);
   });
 });

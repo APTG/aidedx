@@ -270,7 +270,6 @@ function isNegativeAt(text: string, matchStart: number): boolean {
 interface EnergyRegexes {
   energyRe: RegExp;
   energyListRe: RegExp;
-  listSplitRe: RegExp;
 }
 
 /**
@@ -292,7 +291,6 @@ function energyRegexesFor(pack: LangPack): EnergyRegexes {
     `(\\d+(?:\\.\\d+)?)[\\s-]*(gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
     "gi",
   );
-  const listSplitRe = buildListSplitRe(pack);
   // A coordinated list of values sharing one trailing unit: "100 and 200 MeV",
   // "50, 100, and 150 MeV", "100 and 400 MeV per nucleon".
   const energyListRe = new RegExp(
@@ -300,7 +298,7 @@ function energyRegexesFor(pack: LangPack): EnergyRegexes {
     "gi",
   );
 
-  const regexes: EnergyRegexes = { energyRe, energyListRe, listSplitRe };
+  const regexes: EnergyRegexes = { energyRe, energyListRe };
   energyRegexCache.set(pack, regexes);
   return regexes;
 }
@@ -310,7 +308,7 @@ function energyRegexesFor(pack: LangPack): EnergyRegexes {
  * excluded from later material matching) but must not be used as a slot
  * value — see `isNegativeAt`. */
 function extractEnergies(text: string, pack: LangPack): RawEnergy[] {
-  const { energyRe, energyListRe, listSplitRe } = energyRegexesFor(pack);
+  const { energyRe, energyListRe } = energyRegexesFor(pack);
 
   const out: RawEnergy[] = [];
   const consumed: Span[] = [];
@@ -320,11 +318,15 @@ function extractEnergies(text: string, pack: LangPack): RawEnergy[] {
   for (const m of text.matchAll(energyListRe)) {
     const start = m.index ?? 0;
     const span = { start, end: start + m[0].length };
-    const negative = isNegativeAt(text, start);
     const base = m[2] ?? "mev";
     const suffix = perNuclSuffixFrom(m);
-    const rawValues = (m[1] ?? "").split(listSplitRe).filter(Boolean).map(Number);
-    for (const raw of rawValues) {
+    const listText = m[1] ?? "";
+    // Each member's own position (not just the list's start) decides its sign — a leading
+    // "-" on the first value must not be attributed to every later value in the list.
+    const numberRe = /\d+(?:\.\d+)?/g;
+    for (const nm of listText.matchAll(numberRe)) {
+      const raw = Number(nm[0]);
+      const negative = isNegativeAt(text, start + (nm.index ?? 0));
       const { value, unit } = toEnergyValueUnit(raw, base, pack, suffix);
       out.push({ value, unit, perNucleon: suffix !== undefined, span, negative });
     }

@@ -20,6 +20,7 @@
  */
 import type { CompareDim, Quantity, QueryIntent } from "../intent/query-intent.ts";
 import { resolveMaterial, resolveParticle } from "../aliases/lookup.ts";
+import { particleById } from "../aliases/particles.ts";
 import { PROGRAMS, ELECTRON_ID } from "../wasm/libdedx.ts";
 import { LibdedxError, type LibdedxService } from "../wasm/types.ts";
 import { formatEnergyPerNucleon } from "../format.ts";
@@ -289,13 +290,34 @@ function stpTargetToMassUnits(
   return target.value; // assume mass stopping power if unitless/unknown
 }
 
+/**
+ * Atomic mass (in u) for the `MeV/u` <-> `MeV/nucl` conversion ratio in
+ * `energyToMeVPerNucl`. `service.getAtomicMass()` is keyed on the particle's
+ * element (Z) only, so it always returns that element's *default*-isotope
+ * atomic mass — valid when `massNumber` actually is that default (e.g.
+ * alpha/He-4, proton/H-1), but wrong for any other isotope the resolver can
+ * produce (deuteron, triton, helium-3, an explicit "carbon-13", …), where the
+ * numerator would describe a different nuclide than the denominator (issue
+ * #103: "100 MeV/u deuteron" was computing ~half the intended energy). Those
+ * cases fall back to the isotope's own mass number — off by only the small
+ * (≤1%) mass-excess libdedx's table would otherwise correct for, instead of a
+ * wrong-isotope factor.
+ */
+export function atomicMassForConversion(
+  particle: { id: number; massNumber: number },
+  service: LibdedxService,
+): number {
+  if (particle.massNumber <= 1) return particle.massNumber > 0 ? particle.massNumber : 1;
+  const isDefaultIsotope = particleById(particle.id)?.defaultMassNumber === particle.massNumber;
+  return isDefaultIsotope ? service.getAtomicMass(particle.id) : particle.massNumber;
+}
+
 function energiesMeVPerNucl(
   intent: QueryIntent,
   particle: ResolvedParticle,
   service: LibdedxService,
 ): number[] {
-  const atomicMass =
-    particle.massNumber > 1 ? service.getAtomicMass(particle.id) : particle.massNumber;
+  const atomicMass = atomicMassForConversion(particle, service);
   return intent.energies.map((e) => energyToMeVPerNucl(e, particle.massNumber, atomicMass));
 }
 

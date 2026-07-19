@@ -33,14 +33,14 @@ export const INDIRECT_IDIOMS: ReadonlyArray<{ pattern: RegExp; quantity: Quantit
   { pattern: /\bgo(?:es)? in\b/, quantity: "csdaRange" },
   { pattern: /\bget into\b/, quantity: "csdaRange" },
   { pattern: /\bmake it\b/, quantity: "csdaRange" },
-  // stoppingPower — "how quickly / at what rate … loses / sheds energy per length".
-  { pattern: /\blose[s]? energy\b/, quantity: "stoppingPower" },
+  // stoppingPower — "how quickly / at what rate … loses / sheds / lost energy per length".
+  { pattern: /\b(?:lose[s]?|lost)\s+energy\b/, quantity: "stoppingPower" },
   { pattern: /\bshed[s]? energy\b/, quantity: "stoppingPower" },
   { pattern: /\bslowed down\b/, quantity: "stoppingPower" },
   { pattern: /\bat what rate\b/, quantity: "stoppingPower" },
   { pattern: /\bhow quickly\b/, quantity: "stoppingPower" },
   {
-    pattern: /\blose[s]?\b[^.?!]*\bper\s+(?:centimeter|millimeter|cm|mm|unit length)\b/,
+    pattern: /\b(?:lose[s]?|lost)\b[^.?!]*\bper\s+(?:centimeter|millimeter|cm|mm|unit length)\b/,
     quantity: "stoppingPower",
   },
   {
@@ -90,9 +90,18 @@ export function mentionsStoppingPowerSynonym(lower: string, text: string): boole
  * transfer" and "energy deposition (density)" both contain "energy" but neither is a request
  * to solve for energy. (Issue #26's other new synonyms — specific ionisation, Bethe-Bloch,
  * retarding force, dose per micrometer — don't contain "energy" and need no blanking.)
+ *
+ * The third alternative blanks a forward "energy (is/was) lost/lose[s]/shed[s]/loss per
+ * <length>" idiom for the same reason — "what energy is lost per centimeter…" is asking for
+ * the *rate*, not solving for an unknown energy, but naming "energy" right after a wh-word
+ * would otherwise trip `asksForEnergy` before the forward idiom ever gets a chance to fire
+ * (issue #103). The verb must sit *directly* against "energy" (only "is"/"was" allowed
+ * between) so a genuine inverse query with a different grammatical subject between them —
+ * "which energy makes a proton lose 2 MeV per cm" (eval `inv-stp-003`) — is left alone: there
+ * "energy" is the cause being solved for, not the thing being lost.
  */
 export const BLANK_BEFORE_INVERSE_RE =
-  /\blinear energy transfer\b|\benergy deposition(?:\s+density)?\b/g;
+  /\blinear energy transfer\b|\benergy deposition(?:\s+density)?\b|\benergy\b\s+(?:is\s+|was\s+)?(?:lost|lose[s]?|shed[s]?|loss)\s+per\s+(?:centimeter|millimeter|cm|mm|unit length)\b/g;
 
 /**
  * Inverse ("solve for energy") cue: the query must ask for *energy* as the
@@ -111,7 +120,7 @@ export function asksForEnergy(deSynonym: string): boolean {
 export function mentionsStoppingPowerKeyword(lower: string): boolean {
   return (
     /\bstopping power\b/.test(lower) ||
-    /\blose[s]?\b[^.?!]*\bmev per cm\b/.test(lower) ||
+    /\b(?:lose[s]?|lost)\b[^.?!]*\bmev per cm\b/.test(lower) ||
     /\bmev per cm\b/.test(lower)
   );
 }
@@ -225,11 +234,18 @@ const PARTICLE_LIST_HEAD_SRC = "ions?|particles?|nuclei|nucleus";
 const NAMED_PARTICLE_SRC =
   "protons?|deuterons?|tritons?|alpha particles?|alphas?|helions?|electrons?|positrons?|beta minus|betas?";
 
+/** One list/head member: a bare element name, optionally with an isotope mass number
+ * suffix ("carbon-13", "carbon 13", "helium, 3") — shared between the coordinated-list and
+ * single-head regexes below so a list member can be an isotope, not just a bare element
+ * (issue #103: "neon-20 and carbon-12 ions" previously fell through the list regex entirely,
+ * since its member class excluded digits, silently dropping every member but the last). */
+const PARTICLE_MEMBER_SRC = "[a-z][a-z]*(?:[-,\\s]+\\d{1,3})?";
+
 // A coordinated list sharing a trailing head: "carbon and neon ions",
-// "protons, helium, and carbon ions". Requires ≥1 connector so it only fires on
-// genuine lists; single "<element> ion(s)" is handled separately below.
+// "protons, helium, and carbon ions", "neon-20 and carbon-12 ions". Requires ≥1 connector so
+// it only fires on genuine lists; single "<element> ion(s)" is handled separately below.
 export const PARTICLE_LIST_RE = new RegExp(
-  `((?:[a-z][a-z-]*${LIST_SEP_SRC})+[a-z][a-z-]*)\\s+(${PARTICLE_LIST_HEAD_SRC})\\b`,
+  `((?:${PARTICLE_MEMBER_SRC}${LIST_SEP_SRC})+${PARTICLE_MEMBER_SRC})\\s+(${PARTICLE_LIST_HEAD_SRC})\\b`,
   "gi",
 );
 // A single "<element/isotope> ion(s)/particle(s)/nuclei" head. The isotope suffix accepts a
@@ -240,7 +256,7 @@ export const PARTICLE_LIST_RE = new RegExp(
 // tolerates the space form once this regex actually captures it as part of the same match
 // (particleHeadResolveText below strips the comma itself before resolving).
 export const PARTICLE_HEAD_RE = new RegExp(
-  `\\b([a-z][a-z]*(?:[-,\\s]+\\d{1,3})?)\\s+(${PARTICLE_LIST_HEAD_SRC})\\b`,
+  `\\b(${PARTICLE_MEMBER_SRC})\\s+(${PARTICLE_LIST_HEAD_SRC})\\b`,
   "gi",
 );
 /** English's head word trails the element, and the whole match ("carbon ion") already

@@ -374,3 +374,39 @@ describe("issue #26 — fuzzy quantity-keyword tolerance", () => {
     );
   });
 });
+
+describe("issue #103 — bughunt regressions", () => {
+  it("keeps every member of a coordinated isotope list, not just the one before the head noun", () => {
+    const intent = matchQueryIntent("Range of neon-20 and carbon-12 ions at 100 MeV in water.");
+    expect(intent.particles).toEqual([{ match: "neon-20" }, { match: "carbon-12" }]);
+    expect(intent.compareDim).toBe("particle");
+  });
+
+  it("keeps both isotopes of the same element in a coordinated list", () => {
+    const intent = matchQueryIntent("Compare carbon-12 and carbon-13 ions at 100 MeV in water.");
+    expect(intent.particles).toEqual([{ match: "carbon-12" }, { match: "carbon-13" }]);
+    expect(intent.compareDim).toBe("particle");
+  });
+
+  it("drops only the negative member of a shared-unit energy list, not the whole list", () => {
+    const intent = matchQueryIntent("Range of protons at -50, 100, and 200 MeV in water.");
+    expect(intent.energies).toEqual([
+      { value: 100, unit: "MeV" },
+      { value: 200, unit: "MeV" },
+    ]);
+  });
+
+  it("reads a forward 'what energy is lost per length' idiom as stoppingPower, not inverse", () => {
+    const intent = matchQueryIntent(
+      "What energy is lost per centimeter by a 100 MeV proton in water?",
+    );
+    expect(intent.quantity).toBe("stoppingPower");
+    expect(intent.energies).toEqual([{ value: 100, unit: "MeV" }]);
+  });
+
+  it("still reads a genuine inverse query with a different subject between 'energy' and 'lose'", () => {
+    const intent = matchQueryIntent("Which energy makes a proton lose 2 MeV per cm in PMMA?");
+    expect(intent.quantity).toBe("energyFromStp");
+    expect(intent.target).toEqual({ value: 2, unit: "MeV/cm" });
+  });
+});
