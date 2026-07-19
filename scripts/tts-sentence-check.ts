@@ -8,7 +8,7 @@
  * result — matching this project's "numbers only ever from libdedx" rule.
  *
  * Usage:
- *   node --experimental-strip-types scripts/tts-sentence-check.ts <sentences.json> [--json out.json]
+ *   node --experimental-strip-types scripts/tts-sentence-check.ts <sentences.json> [--json out.json] [--lang en|pl]
  *
  * <sentences.json>: [{ "id": "...", "text": "..." }, ...]
  * Exit code 0 iff every candidate passes; otherwise prints each failure's reason so
@@ -21,6 +21,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { LibdedxServiceImpl } from "../src/lib/wasm/libdedx.ts";
 import type { LibdedxModuleFactory, LibdedxService } from "../src/lib/wasm/types.ts";
 import { matchIntent } from "../src/lib/intent/matcher.ts";
+import type { Lang } from "../src/lib/intent/lang/types.ts";
 import { computeIntent, ComputeError } from "../src/lib/compute/compute.ts";
 import { validateQueryIntent, type QueryIntent } from "../src/lib/intent/query-intent.ts";
 
@@ -68,9 +69,13 @@ function summarizePoint(intent: QueryIntent, point: Record<string, unknown>): st
 }
 
 /** Check one candidate. Never throws — failures are reported, not raised. */
-export function checkCandidate(candidate: Candidate, service: LibdedxService): CheckResult {
+export function checkCandidate(
+  candidate: Candidate,
+  service: LibdedxService,
+  lang: Lang = "en",
+): CheckResult {
   const { id, text } = candidate;
-  const { intent, quantitySource, incomplete } = matchIntent(text);
+  const { intent, quantitySource, incomplete } = matchIntent(text, lang);
 
   // "default" means the matcher never recognized *any* quantity keyword/idiom and
   // silently fell back to csdaRange — a wrong guess that can still compute a number.
@@ -177,10 +182,19 @@ async function main() {
   const args = process.argv.slice(2);
   const jsonOutIdx = args.indexOf("--json");
   const jsonOutPath = jsonOutIdx >= 0 ? args[jsonOutIdx + 1] : undefined;
-  const inputPath = args.filter((a) => a !== "--json" && a !== jsonOutPath)[0];
+  const langIdx = args.indexOf("--lang");
+  const lang = (langIdx >= 0 ? args[langIdx + 1] : "en") as Lang;
+  // A missing flag must contribute no indices at all — `-1 + 1 === 0` would
+  // otherwise wrongly mark the first real argument (index 0) as a flag's value,
+  // so each pair is only added once its own flag was actually found.
+  const consumed = new Set([
+    ...(jsonOutIdx >= 0 ? [jsonOutIdx, jsonOutIdx + 1] : []),
+    ...(langIdx >= 0 ? [langIdx, langIdx + 1] : []),
+  ]);
+  const inputPath = args.find((_, i) => !consumed.has(i));
   if (!inputPath) {
     console.error(
-      "Usage: node --experimental-strip-types scripts/tts-sentence-check.ts <sentences.json> [--json out.json]",
+      "Usage: node --experimental-strip-types scripts/tts-sentence-check.ts <sentences.json> [--json out.json] [--lang en|pl]",
     );
     process.exit(1);
   }
@@ -188,7 +202,7 @@ async function main() {
   const candidates: Candidate[] = JSON.parse(readFileSync(inputPath, "utf-8"));
   const service = await loadService();
 
-  const results = candidates.map((c) => checkCandidate(c, service));
+  const results = candidates.map((c) => checkCandidate(c, service, lang));
   const passed = results.filter((r) => r.ok);
   const failed = results.filter((r) => !r.ok);
 

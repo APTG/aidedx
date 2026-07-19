@@ -70,6 +70,15 @@ const SUFFIX_NOISE = [
   "medium",
 ];
 
+// Decorative *leading* words — the Polish mirror of SUFFIX_NOISE. Polish names an ion
+// head-first ("jon węgla" = "ion of-carbon"), so the decorative head sits in front of the
+// element rather than trailing it; the matcher's `pl.ts` pack stores the whole phrase
+// (including "jon"/"jonu") as a particle slot's `match` text, same as English stores the
+// whole "carbon ion" phrase — any consumer that re-resolves a raw `match` string (not just
+// the matcher itself, which already knows to strip this before calling `resolveParticle`)
+// needs the same stripping, e.g. `computeIntent()` re-resolving `intent.particles[].match`.
+const PREFIX_NOISE = ["jonu", "jon"];
+
 /**
  * The phrase reduced to its head token with case preserved: noise words removed
  * (case-insensitively), the rest rejoined. Used only for the case-sensitive
@@ -83,9 +92,15 @@ function coreToken(phrase: string): string {
   return tokens.filter((t) => !SUFFIX_NOISE.includes(t.toLowerCase())).join(" ");
 }
 
-/** Drop trailing decorative words and a single plural "s". */
+/** Drop a leading decorative head word, trailing decorative words, and a single plural "s". */
 function stripNoise(normalized: string): string {
   let s = normalized;
+  for (const w of PREFIX_NOISE) {
+    if (s.startsWith(`${w} `)) {
+      s = s.slice(w.length + 1).trim();
+      break;
+    }
+  }
   let changed = true;
   while (changed) {
     changed = false;

@@ -12,7 +12,7 @@
  * resubmit, instead of losing all completed transcriptions — `outFile` used to be written
  * once at the very end, so a mid-loop kill discarded everything.
  *
- * Usage: node scripts/asr-transcribe-manifest.mjs <audioDir> <manifest.json> <modelId> <dtype> <outFile> [--no-prompt]
+ * Usage: node scripts/asr-transcribe-manifest.mjs <audioDir> <manifest.json> <modelId> <dtype> <outFile> [--no-prompt] [--lang en|pl]
  */
 import { pipeline, env } from "@huggingface/transformers";
 import { execFileSync } from "child_process";
@@ -31,15 +31,27 @@ const modelId = process.argv[4];
 const dtype = process.argv[5];
 const outFile = process.argv[6];
 const withPrompt = !process.argv.includes("--no-prompt");
+const langFlagIdx = process.argv.indexOf("--lang");
+const lang = langFlagIdx >= 0 ? process.argv[langFlagIdx + 1] : "en";
 
 // Kept in sync by hand with src/lib/asr/transcribe.ts's own copy (issue #92) — this script
 // can't import that module directly (Node/onnxruntime-node here vs. the browser
 // transformers.js pipeline there), same reason the two have always been separate literals.
-const DOMAIN_PROMPT =
+const DOMAIN_PROMPT_EN =
   "MeV, keV, GeV, MeV/u, MeV/nucl, dE/dx, CSDA, PMMA, ASTAR, PSTAR, " +
   "nucleon, proton, deuteron, carbon ion, neon ion, oxygen ion, " +
   "helium-3, carbon-13, stopping power, LET, linear energy transfer, keV/um, " +
   "Lucite, adipose tissue, Kapton, Mylar, Teflon, Pyrex glass, sodium iodide, cesium iodide";
+// Polish vocabulary, restricted to the physicist-vetted forms in src/lib/aliases/*.ts and
+// eval/RECORDING.pl.md — no guessed translations for terms outside that vetted set (e.g. no
+// Polish "Lucite"/"linear energy transfer" equivalent, since neither is in the vetted vocabulary).
+const DOMAIN_PROMPT_PL =
+  "MeV, keV, GeV, MeV na nukleon, dE/dx, CSDA, PMMA, zasięg, zdolność hamowania, LET, " +
+  "nukleon, proton, deuteron, tryton, cząstka alfa, jon węgla, jon tlenu, jon neonu, " +
+  "jon żelaza, jon wapnia, helu-3, węgla-12, Kapton, grafit, poliwęglan, polietylen, " +
+  "dwutlenek krzemu, złoto, ołów, aluminium, tkanka mięśniowa, tkanka tłuszczowa, " +
+  "kość korowa, kość zbita";
+const DOMAIN_PROMPT = lang === "pl" ? DOMAIN_PROMPT_PL : DOMAIN_PROMPT_EN;
 
 function loadAudio(file) {
   // execFileSync, not execSync — spawns ffmpeg directly with an argv array, no shell
@@ -79,16 +91,21 @@ try {
     );
   }
 }
+// Manifests written before `--lang` existed have no `lang` field at all — they were always
+// implicitly English, so treat a missing field as "en" rather than a mismatch against a
+// fresh default-lang run.
+const existingLang = existingMeta?.lang ?? "en";
 if (
   existingMeta &&
   (existingMeta.modelId !== modelId ||
     existingMeta.dtype !== dtype ||
-    existingMeta.withPrompt !== withPrompt)
+    existingMeta.withPrompt !== withPrompt ||
+    existingLang !== lang)
 ) {
-  const describe = (id, dt, wp) => `${id} [${dt}]${wp ? " +prompt" : " --no-prompt"}`;
+  const describe = (id, dt, wp, l) => `${id} [${dt}] lang=${l}${wp ? " +prompt" : " --no-prompt"}`;
   throw new Error(
-    `${outFile} already has results for ${describe(existingMeta.modelId, existingMeta.dtype, existingMeta.withPrompt)}, ` +
-      `not ${describe(modelId, dtype, withPrompt)} — use a different outFile instead of resuming into it`,
+    `${outFile} already has results for ${describe(existingMeta.modelId, existingMeta.dtype, existingMeta.withPrompt, existingLang)}, ` +
+      `not ${describe(modelId, dtype, withPrompt, lang)} — use a different outFile instead of resuming into it`,
   );
 }
 const doneIds = new Set(records.map((r) => r.id));
@@ -108,7 +125,9 @@ if (remaining.length === 0) {
 // (docs/tts-eval-audio.md §4, confirmed there but not fixed at pilot scale; fixed here before
 // a 1000-clip run would otherwise take hours longer than necessary for no benefit).
 const nproc = os.availableParallelism ? os.availableParallelism() : os.cpus().length;
-console.log(`[${modelId} ${dtype}${withPrompt ? " +prompt" : ""}] loading... (nproc=${nproc})`);
+console.log(
+  `[${modelId} ${dtype} lang=${lang}${withPrompt ? " +prompt" : ""}] loading... (nproc=${nproc})`,
+);
 const t0 = Date.now();
 const asr = await pipeline("automatic-speech-recognition", modelId, {
   dtype,
@@ -138,13 +157,19 @@ if (promptEnabled) {
     const SOT_PREV = prevIds[0];
     console.log(`<|startofprev|> = ${SOT_PREV}`);
     const SOT = Number(gc.decoder_start_token_id);
-    const LANG_EN = Number(gc.lang_to_id["<|en|>"]);
+    const langToken = `<|${lang}|>`;
+    if (gc.lang_to_id[langToken] === undefined) {
+      throw new Error(
+        `Whisper has no language token ${langToken} — check --lang against the model's own gc.lang_to_id`,
+      );
+    }
+    const LANG = Number(gc.lang_to_id[langToken]);
     const TRANSCRIBE = Number(gc.task_to_id["transcribe"]);
     const NO_TS = Number(gc.no_timestamps_token_id);
     const encoded = await asr.tokenizer(DOMAIN_PROMPT, { add_special_tokens: false });
     const promptTokenIds = Array.from(encoded.input_ids.data).map(Number);
     genOpts = {
-      decoder_input_ids: [SOT_PREV, ...promptTokenIds, SOT, LANG_EN, TRANSCRIBE, NO_TS],
+      decoder_input_ids: [SOT_PREV, ...promptTokenIds, SOT, LANG, TRANSCRIBE, NO_TS],
       forced_decoder_ids: [],
     };
     promptPrefix = (
@@ -194,7 +219,7 @@ for (let i = 0; i < remaining.length; i++) {
   const tmpFile = `${outFile}.tmp`;
   writeFileSync(
     tmpFile,
-    JSON.stringify({ modelId, dtype, withPrompt: promptEnabled, loadS, records }, null, 1),
+    JSON.stringify({ modelId, dtype, lang, withPrompt: promptEnabled, loadS, records }, null, 1),
   );
   renameSync(tmpFile, outFile);
   if ((i + 1) % 25 === 0 || i === remaining.length - 1) {
