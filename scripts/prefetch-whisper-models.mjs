@@ -9,6 +9,12 @@
  *   node scripts/prefetch-whisper-models.mjs --bench  # full whisper-model-bench matrix (issue #27
  *                                                      # follow-up: all 7 multilingual sizes x
  *                                                      # {q8, fp32}) — see scripts/submit-whisper-bench.sh
+ *   node scripts/prefetch-whisper-models.mjs --pairs "modelId:dtype" ["modelId:dtype" ...]
+ *                                                      # explicit list, one lane's worth — this is
+ *                                                      # what scripts/submit-whisper-bench.sh calls
+ *                                                      # itself (as its own first step, inside the
+ *                                                      # sbatch job) so no separate manual `node`
+ *                                                      # invocation is needed before submitting.
  */
 import { AutoProcessor, WhisperForConditionalGeneration, env } from "@huggingface/transformers";
 import { fileURLToPath } from "url";
@@ -20,6 +26,7 @@ env.allowLocalModels = false;
 
 const newOnly = process.argv.includes("--new");
 const benchOnly = process.argv.includes("--bench");
+const pairsIdx = process.argv.indexOf("--pairs");
 
 const MODELS_EXISTING = [
   ["onnx-community/whisper-tiny", "q8"],
@@ -65,11 +72,21 @@ const MODELS_BENCH = [
   ["onnx-community/whisper-large-v3-turbo", "fp32"],
 ];
 
-const MODELS = benchOnly
-  ? MODELS_BENCH
-  : newOnly
-    ? MODELS_NEW
-    : [...MODELS_EXISTING, ...MODELS_NEW];
+// `--pairs` takes every remaining CLI arg as a "modelId:dtype" string (same single-colon
+// format submit-whisper-bench.sh already uses for its own MODELS bash arrays) rather than a
+// fixed array, so a caller can prefetch an arbitrary subset without editing this file.
+const MODELS =
+  pairsIdx >= 0
+    ? process.argv.slice(pairsIdx + 1).map((pair) => {
+        const sep = pair.indexOf(":");
+        if (sep < 0) throw new Error(`--pairs entry "${pair}" must be "modelId:dtype"`);
+        return [pair.slice(0, sep), pair.slice(sep + 1)];
+      })
+    : benchOnly
+      ? MODELS_BENCH
+      : newOnly
+        ? MODELS_NEW
+        : [...MODELS_EXISTING, ...MODELS_NEW];
 
 let failed = false;
 for (const [modelId, dtype] of MODELS) {

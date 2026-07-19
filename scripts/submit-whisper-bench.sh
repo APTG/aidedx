@@ -46,10 +46,12 @@
 # accessible under this grant; if a CPU-only partition exists on your allocation, prefer that
 # for this job instead, since the GPU sits idle throughout.
 #
-# --- Prerequisite ---
-# Prefetch all 14 (model, dtype) pairs onto the shared .hf-cache/ once, on a fast connection,
-# before submitting (docs/local-model-cache.md's convention):
-#   node scripts/prefetch-whisper-models.mjs --bench
+# --- No manual prerequisite ---
+# Each lane prefetches its own (model, dtype) pairs itself, as Step 0 below, via
+# `prefetch-whisper-models.mjs --pairs` — no separate `node` invocation needed before
+# submitting, unlike docs/local-model-cache.md's usual "run on a fast connection first"
+# convention for the shipped app's models. Every model's already cached read is a fast no-op
+# on resubmit, same as everything else in this script.
 #
 # --- Time budget ---
 # 24h per lane, generous rather than measured (issue #27 follow-up: no prior run of
@@ -131,6 +133,9 @@ case "$SLURM_ARRAY_TASK_ID" in
 esac
 
 echo "=== Lane $SLURM_ARRAY_TASK_ID ($LANE_NAME): ${#MODELS[@]} model/dtype pairs x ${#DATASETS[@]} datasets ==="
+
+echo "=== Step 0: prefetch this lane's ${#MODELS[@]} model/dtype pairs ==="
+node scripts/prefetch-whisper-models.mjs --pairs "${MODELS[@]}"
 
 for model_entry in "${MODELS[@]}"; do
   IFS=':' read -r model_id dtype <<<"$model_entry"
