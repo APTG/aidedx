@@ -62,6 +62,9 @@
  */
 import { MODEL_MANIFEST } from "../models/manifest.ts";
 import { MODEL_MIRROR_HOST } from "../models/remote.ts";
+import { threadCountForCores } from "../system/threading.ts";
+
+export { threadCountForCores };
 
 const whisperEntry = MODEL_MANIFEST.find((entry) => entry.id === "whisper");
 if (!whisperEntry) throw new Error("manifest.ts is missing the 'whisper' entry");
@@ -71,11 +74,23 @@ if (!whisperEntry) throw new Error("manifest.ts is missing the 'whisper' entry")
 const WHISPER_REPO = whisperEntry.repo;
 const WHISPER_DTYPE = whisperEntry.dtype;
 
-/** Short domain vocabulary hint — keep it brief, prompt tokens add prefill cost linearly (feasibility report §5.0). */
+/**
+ * Short domain vocabulary hint — keep it brief, prompt tokens add prefill cost linearly
+ * (feasibility report §5.0). Extended per issue #83/#92 with the material trade names and
+ * quantity terms `docs/tts-eval-1000.md` §6.4 and `docs/tts-eval-1000-v2.md` §8 both found
+ * whisper-small fails *consistently* on (not occasionally — every occurrence, e.g. "Kapton"
+ * → "captain" every time), plus the LET/keV-µm terms issue #86 taught the matcher to
+ * recognize but this prompt never biased toward.
+ *
+ * `scripts/asr-transcribe.mjs` and `scripts/asr-transcribe-manifest.mjs` each carry their
+ * own literal copy of this same string (can't import this module from a plain Node
+ * benchmark script) — keep all three in sync by hand when this one changes.
+ */
 const DOMAIN_PROMPT =
   "MeV, keV, GeV, MeV/u, MeV/nucl, dE/dx, CSDA, PMMA, ASTAR, PSTAR, " +
   "nucleon, proton, deuteron, carbon ion, neon ion, oxygen ion, " +
-  "helium-3, carbon-13, stopping power, Lucite, adipose tissue";
+  "helium-3, carbon-13, stopping power, LET, linear energy transfer, keV/um, " +
+  "Lucite, adipose tissue, Kapton, Mylar, Teflon, Pyrex glass, sodium iodide, cesium iodide";
 
 /** Multilingual-vocab `<|startofprev|>` id, used only if the tokenizer can't resolve it (it always should). */
 const FALLBACK_START_OF_PREV = 50361;
@@ -107,18 +122,10 @@ interface LoadedPipeline {
 
 let pipelinePromise: Promise<LoadedPipeline> | null = null;
 
-/** Cap on the ORT WASM thread pool — whisper-small's encoder stops scaling
- * meaningfully past this (`docs/threading-coop-coep.md`), and a fixed ceiling
- * keeps memory and thread-spawn overhead bounded on many-core desktops. */
-const MAX_ASR_THREADS = 8;
-
 /**
- * ORT WASM thread count for a given logical-core count.
- *
- * Only meaningful when the page is cross-origin isolated (SharedArrayBuffer
- * available) — otherwise onnxruntime-web forces single-threaded regardless.
- * Policy: **half the logical cores** (onnxruntime-web's own default heuristic)
- * but with the cap raised from 4 to `MAX_ASR_THREADS`. Measurements in
+ * Policy: **half the logical cores** (onnxruntime-web's own default
+ * heuristic) but with the cap raised from 4 to
+ * `threading.ts`'s `MAX_ASR_THREADS` (8). Measurements in
  * `docs/threading-coop-coep.md` show whisper-small's prefill keeps improving
  * from 4→8 threads (~5.7 s → ~4.7 s steady-state, ~2.5 s best-case on a 12-core
  * box), which ORT's default cap of 4 leaves on the table. Half — rather than
@@ -127,15 +134,9 @@ const MAX_ASR_THREADS = 8;
  * big.LITTLE hardware, where the extra logical cores add little for this
  * matmul-bound workload. Conservative by design; tune via the `?debug` panel
  * (`ThreadDebugPanel.svelte`) against real target hardware before raising it.
- *
- * @param cores `navigator.hardwareConcurrency`, or `undefined` if unknown
- *   (rare) → treated as a modest 4-core machine.
+ * `threadCountForCores()` itself lives in `system/threading.ts`, shared with
+ * the status panel's "CPU threads" row (issue #42).
  */
-export function threadCountForCores(cores: number | undefined): number {
-  const usable = cores && cores > 0 ? cores : 4;
-  return Math.max(1, Math.min(MAX_ASR_THREADS, Math.floor(usable / 2)));
-}
-
 function resolveThreadCount(): number {
   return threadCountForCores(globalThis.navigator?.hardwareConcurrency);
 }
@@ -277,9 +278,21 @@ export async function transcribe(
     });
   }
 
-  const result = await asr(pcm, streamer ? { ...genOpts, streamer } : genOpts);
+  let result: { text: string };
+  let usedPromptFallback = false;
+  try {
+    result = await asr(pcm, streamer ? { ...genOpts, streamer } : genOpts);
+  } catch (error) {
+    // Rare empty-output decode under prompt mode (issue #25, e.g. Whisper's "token_ids
+    // must be a non-empty array", ~1% of clips in the eval benchmark) — retry once
+    // without the domain prompt rather than surfacing a hard failure for the user's query.
+    console.warn("[asr] prompt-mode decode failed, retrying without prompt", error);
+    result = await asr(pcm, streamer ? { streamer } : {});
+    usedPromptFallback = true;
+  }
+
   let text = result.text.trim();
-  if (promptPrefix && text.startsWith(promptPrefix)) {
+  if (!usedPromptFallback && promptPrefix && text.startsWith(promptPrefix)) {
     text = text.slice(promptPrefix.length).trimStart();
   }
   return text;

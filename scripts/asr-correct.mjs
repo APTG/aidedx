@@ -29,7 +29,11 @@ export function correct(text) {
   // --- dE/dx variants ---
   t = t.replace(/\bthe\s+edx\b/gi, "dE/dx");
   t = t.replace(/\bedx\b/gi, "dE/dx");
-  t = t.replace(/\bde\s*[-/]?\s*dx\b/gi, "dE/dx");
+  // "dE, dx" is a punctuation habit the prompt-biased decoder picks up (issue #25 §2.4)
+  t = t.replace(/\bde\s*[-/,]?\s*dx\b/gi, "dE/dx");
+
+  // --- hyphenated length targets: prompt-mode punctuation drift (issue #25 §2.4) ---
+  t = t.replace(/\b(\d+(?:\.\d+)?)-cm\b/gi, "$1 cm");
 
   // --- MeV → mm/ml acoustic confusion ---
   // "60mm proton" → "60 MeV proton" (number + mm/ml before a particle word)

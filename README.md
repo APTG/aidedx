@@ -1,127 +1,103 @@
 # aidedx
 
-AI-assisted, in-browser front-end for stopping-power (dE/dx) queries. Ask a
-question in plain language and get an answer computed **entirely on your
-machine** — nothing is sent to a server.
+**Ask about the range, kinetic energy, or stopping power of protons and heavy ions — just speak or
+type the question in plain language and get a real answer, computed entirely on your own machine.**
 
-> **Status:** Voice input is live — press the mic, speak, and see a transcript
-> (Whisper via transformers.js, lazy-imported so the shell still ships zero ML
-> in the initial bundle). Wiring that transcript through the deterministic NLU
-> matcher to a computed, on-screen answer is in progress (issue #39). Model
-> weights download on first use with explicit consent and a visible status
-> panel — see [`docs/status-panel-design.md`](docs/status-panel-design.md).
+Questions like _"how far does a 5 MeV alpha particle go in air?"_ or _"what's the stopping power of
+200 MeV/nucl carbon ions in water?"_ normally mean digging through a form or a data table. aidedx
+lets you simply ask:
 
-## Stack
+> 🎤 _"What is the range of 40 MeV protons in PMMA?"_
+>
+> → _"The CSDA range of 40 MeV protons in PMMA is 1.285 cm (PSTAR)."_
 
-- **SvelteKit** + **Svelte 5** (runes only) + **TypeScript** (strict)
-- **Tailwind CSS v4**
-- **`@sveltejs/adapter-static`** — prerendered SPA, deployed to GitHub Pages
-- **Vitest** for unit tests
-- **Node 24 LTS**, package manager **pnpm**
+The key point: **the answer comes from trusted reference data — NIST (PSTAR/ASTAR), ICRU, and
+Bethe–Bloch calculations — not from an AI making numbers up.** The AI only listens to your question
+and works out what you're asking; the physics is then computed (via the
+[libdedx](https://github.com/APTG/libdedx) library). It's a **free web app** — no registration, no
+install, nothing you type or say ever leaves your device.
 
-## Develop
+## How to use it
 
-```sh
-pnpm install
-pnpm dev            # dev server
-pnpm build          # static production build → build/
-pnpm preview        # preview the production build
-pnpm check          # svelte-check + tsc typecheck
-pnpm lint           # ESLint
-pnpm format         # Prettier (write)
-pnpm test           # Vitest unit tests
-```
+1. **Open the app** at <https://aptg.github.io/aidedx/> — nothing to install.
+2. **Allow the one-time download** when prompted. aidedx fetches its AI models (a few hundred MB) and
+   caches them in your browser, so this happens only on your first visit.
+3. **Ask your question** — press 🎤 and speak, or type it. For example: _"stopping power of 150 MeV
+   protons in water"_.
+4. **Read the answer.** Any assumptions aidedx made (isotope, energy interpretation, program) are
+   noted alongside it.
 
-## Deployment
+It's just a web app: no repo to clone, no app to install, no login needed.
 
-Pushing to `main` triggers `.github/workflows/deploy.yml`, which builds the
-static site (with `BASE_PATH=/aidedx`) and publishes it to GitHub Pages at
-<https://aptg.github.io/aidedx/>. CI (`.github/workflows/ci.yml`) runs format,
-lint, typecheck, unit tests, and a build on every push/PR.
+## How it works
 
-## Eval set
+aidedx runs in two phases. The **first time** you visit, it downloads its AI models once and caches
+them in your browser. **After that**, every question is handled entirely on your machine, in four
+steps that each feed the next — speech/text in, then:
 
-[`eval/intents.jsonl`](eval/intents.jsonl) is a hand-labeled set of ~110
-natural-language queries mapped to the shared
-[`QueryIntent`](src/lib/intent/query-intent.ts) schema. It is the project's
-frozen regression suite — reused by the ASR/NLU spikes and the deterministic
-matcher — covering direct/indirect/conversational phrasing, comparisons, unit
-variety, isotope and total-vs-per-nucleon ambiguity, and inverse queries.
+<p align="center">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="docs/assets/pipeline-dark.svg"
+    />
+    <img
+      alt="aidedx pipeline: a one-time AI-model download that's cached in your browser, then every question flows on your device through speech recognition, understand, compute (from NIST, ICRU and Bethe–Bloch data via libdedx), and explain — ending in a plain-language answer such as 'the CSDA range of 5 MeV alpha particles in air is 3.644 cm (ASTAR)'."
+      src="docs/assets/pipeline-light.svg"
+      width="820"
+    />
+  </picture>
+</p>
 
-```sh
-pnpm validate:eval   # validate the dataset + print tag coverage
-```
+Speech recognition is tuned to physics vocabulary rather than everyday speech, and retries if a
+decode ever fails outright. See the [technical documentation](docs/development.md) for the
+specifics.
 
-See [`eval/README.md`](eval/README.md) for the schema, labeling conventions,
-and tag taxonomy. The validator also runs in CI and as a Vitest test.
+## Why "on your machine" matters
 
-## Alias tables
+Most AI tools send your words to a company's servers. aidedx does the opposite — the models run
+**locally, in your browser**:
 
-[`src/lib/aliases/`](src/lib/aliases/) maps natural-language phrases ("PMMA",
-"carbon ions", "lung tissue") to canonical **libdedx** materials and particles —
-the deterministic matcher's accuracy backbone, also reusable by dedx_web's text
-search. `resolveMaterial()` / `resolveParticle()` do exact → normalized → fuzzy
-matching and parse explicit isotopes ("carbon-13", "³He"). Tables are seeded
-from libdedx (via dedx_web) plus the periodic table and shipped as both typed TS
-and JSON ([`static/aliases/`](static/aliases/)).
+<p align="center">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="docs/assets/local-vs-cloud-dark.svg"
+    />
+    <img
+      alt="Where inference runs: a typical cloud AI round-trips every question between your device and company servers that run the model — it needs a paid API and a backend, gives no answer without a network, and your words may be logged. aidedx instead downloads just the model weights and web app to your device one time, then answers every question there: offline, free to host, with your questions never touching the network."
+      src="docs/assets/local-vs-cloud-light.svg"
+      width="820"
+    />
+  </picture>
+</p>
 
-```sh
-pnpm generate:aliases   # regenerate the JSON artifacts from the TS tables
-```
+The only trade-off is that one-time download — fetching the AI's "brain" the first time you use it.
+After that, it works offline too, handy in an experiment hall or anywhere with no signal.
 
-See [`docs/aliases.md`](docs/aliases.md) for provenance and how to regenerate
-when libdedx updates.
+## Project status
 
-## libdedx compute
+Early-stage prototype under active development:
 
-[`src/lib/wasm/`](src/lib/wasm/) is a thin, dependency-free TypeScript wrapper
-over the vendored **libdedx** WebAssembly module
-([`static/wasm/`](static/wasm/)) — forward stopping power / CSDA range, inverse
-lookups, and entity lists. It is lazy-loaded (`getService()`) so the shell ships
-zero WASM until a query needs a number, and is kept clean of any
-aidedx-specific concept so it can later be extracted as `@aptg/libdedx-wasm`
-(issue #1 §17).
+- ✅ **Works:** typed or spoken question → understood → computed → answered, with assumptions noted;
+  the one-time model download asks first and shows a progress panel.
+- 🚧 **In progress:** smarter correction for phrasings the built-in rules miss.
+- 🐢 **Slow / open:** fast-inference hosting is still being worked out for GPU-less machines.
+- 🔭 **Planned:** Polish-language support ([#63](https://github.com/APTG/aidedx/issues/63)), spoken
+  answers, editable assumption chips ([#10](https://github.com/APTG/aidedx/issues/10)), deep links
+  into dedx_web for full plots, wider phrasing coverage.
 
-[`src/lib/compute/`](src/lib/compute/) bridges the two worlds:
-`computeIntent(intent, service)` resolves a [`QueryIntent`](src/lib/intent/query-intent.ts)'s
-particle/material phrases via the alias tables, converts energies to MeV/nucl
-(honoring the total-vs-per-nucleon assumption), auto-selects a program, and
-fans out over the comparison dimension — returning **real libdedx numbers,
-never the LLM**. The end-to-end smoke suite
-([`compute.smoke.test.ts`](src/lib/compute/compute.smoke.test.ts)) drives the
-actual WASM under Node for the issue #1 §7 examples.
+## Documentation & resources
 
-The binaries are prebuilt and checked in. See [`docs/wasm.md`](docs/wasm.md) for
-the wrapper boundary, provenance, and how to regenerate them.
+- 📖 **[User guide](docs/user-guide.md)** — _coming soon._
+- 🛠 **[Technical documentation](docs/development.md)** — stack, dev workflow, internals, and pointers to every deep-dive doc.
+- 🧮 **[APTG/libdedx](https://github.com/APTG/libdedx)** — the library computing every number, built on NIST [PSTAR](https://physics.nist.gov/PhysRefData/Star/Text/PSTAR.html)/[ASTAR](https://physics.nist.gov/PhysRefData/Star/Text/ASTAR.html) and ICRU data.
+- 🌐 **[APTG/dedx_web](https://github.com/APTG/dedx_web)** — the form-driven web tool aidedx complements and reuses.
 
-## Documentation
+## License
 
-Deeper write-ups live in [`docs/`](docs/):
+**GPL-3.0-or-later** ([`LICENSE`](LICENSE)) — see [third-party licenses](docs/development.md#third-party-licenses).
 
-- [`docs/design.md`](docs/design.md) — the original design & prototyping plan (issue #1):
-  architecture, the `QueryIntent` schema, and phasing.
-- [`docs/voice-pipeline-feasibility.md`](docs/voice-pipeline-feasibility.md) — 2026-07-05 audit of
-  the ASR/NLU spikes' findings, with a revised architecture and measured numbers.
-- [`docs/apple-silicon-benchmark.md`](docs/apple-silicon-benchmark.md) — the same benchmarks
-  re-run on Apple Silicon (M5): ASR latency, LLM-NLU-fallback viability, KV-cache reuse.
-- [`docs/aliases.md`](docs/aliases.md) — material/particle alias table provenance and
-  regeneration.
-- [`docs/wasm.md`](docs/wasm.md) — the libdedx WASM wrapper boundary and how to rebuild the
-  binaries.
-- [`docs/answer-pipeline.md`](docs/answer-pipeline.md) — matcher → compute → NLG → UI state, the
-  layer after Whisper: unit conversion, error-message formatting, input validation.
-- [`docs/local-model-cache.md`](docs/local-model-cache.md) — the Node-side `.hf-cache/` prefetch
-  convention used by the benchmark scripts.
-- [`docs/model-hosting-cyfronet.md`](docs/model-hosting-cyfronet.md) — mirroring model weights to
-  Cyfronet S3 instead of Hugging Face's CDN.
-- [`docs/status-panel-design.md`](docs/status-panel-design.md) — the model-status header,
-  download-consent, and clear-cache UX.
+---
 
-## Cross-origin isolation (deferred)
-
-In-browser ML backends need `SharedArrayBuffer`, which requires the page to be
-[cross-origin isolated](https://developer.mozilla.org/en-US/docs/Web/API/Window/crossOriginIsolated)
-(COOP/COEP headers). GitHub Pages cannot set those headers, so the planned
-workaround is [`coi-serviceworker`](https://github.com/gzuidhof/coi-serviceworker).
-A documented, intentionally-inert hook is left in `src/app.html`; the actual
-hosting/runtime decision is deferred to Spike 3.
+Happily vibe-coded with Claude by [grzanka](https://github.com/grzanka).

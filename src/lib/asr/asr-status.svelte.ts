@@ -18,11 +18,17 @@
  * a live clock during prefill (no tokens yet), which `+page.svelte` already
  * owns for `elapsedLabel`, so that derivation stays there rather than
  * duplicating a ticking timer here.
+ *
+ * `transcript` is the *corrected* text, not Whisper's raw output — `stop()`
+ * runs it through `correctTranscript()` (issue #87 Part B) before publishing,
+ * so the query box and the matcher both see the same domain-vocabulary-fixed
+ * string.
  */
 import { MicRecorder } from "./recorder.ts";
 import { decodeToMono16k } from "./pcm.ts";
 import { createTranscribeWorkerClient, type TranscribeWorkerClient } from "./worker-client.ts";
 import { recordCompletedTranscription } from "./transcribe-progress.ts";
+import { correctTranscript } from "./correct/core.ts";
 
 export type AsrPhase = "idle" | "recording" | "transcribing" | "done" | "error";
 
@@ -104,12 +110,19 @@ class AsrStore {
     try {
       const blob = await this.#recorder.stop();
       const pcm = await decodeToMono16k(await blob.arrayBuffer());
-      this.transcript = await this.#getWorkerClient().transcribe(pcm, (tokensSoFar) => {
+      const rawTranscript = await this.#getWorkerClient().transcribe(pcm, (tokensSoFar) => {
         const now = Date.now();
         firstTokenAt ??= now;
         lastTokenAt = now;
         this.tokensSoFar = tokensSoFar;
       });
+      // Domain-vocabulary correction (issue #87 Part B, issue #28) runs here,
+      // once, on the final transcript — not inside the per-token callback
+      // above — so it sees the whole sentence a rule's context (e.g. "before
+      // a particle word") may need, and so the query box + matcher agree on
+      // one corrected string. `substitutions` (the phonetic pass's "heard X ->
+      // read as Y" log) isn't surfaced yet — that's the trust UX, issue #10.
+      this.transcript = correctTranscript(rawTranscript).text;
       this.phase = "done";
       if (firstTokenAt !== null && lastTokenAt !== null) {
         recordCompletedTranscription({

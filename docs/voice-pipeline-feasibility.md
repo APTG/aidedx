@@ -202,6 +202,74 @@ hardcode), make the domain prompt the default in the production ASR path, and re
 prompt content variants (e.g. adding material names helped: "Lucite" transcribed
 correctly in all prompt-mode clips).
 
+### 2.4.1 Update (2026-07-15, issue #25): fix landed, turbo+prompt measured
+
+`scripts/asr-batch.mjs` now resolves `<|startofprev|>` from the tokenizer instead of
+hardcoding it, matching `scripts/asr-transcribe.mjs`; both scripts make domain-prompt
+biasing the default (`--no-prompt` to opt out), with a feature-detection guard that
+disables it cleanly on non-Whisper models (e.g. moonshine) instead of crashing on a
+missing `generation_config` field. The production path
+(`src/lib/asr/transcribe.ts`) already had the correct tokenizer-resolved fix and
+already defaulted the prompt on — it referenced this issue in its own comments before
+the fix — but was missing the retry guard below; that gap is now closed there too,
+with a regression test.
+
+**Retry-without-prompt guard**, added to both scripts and the production module: on a
+decode failure under prompt mode, retry once without the prompt rather than losing the
+clip. Verified against real audio: it fires exactly once across both re-runs below
+(`lg/stress-002`, whisper-small — the same clip §2.4 flagged as returning empty output)
+and recovers it; it never fires for turbo (0/89), so the empty-decode failure is
+whisper-small/vocab-specific, not a general hazard of prompt mode.
+
+**Two corrector rules** landed in `asr-correct.mjs` for the punctuation drift prompt
+mode introduces: `dE, dx` → `dE/dx` (extends the existing dE/dx regex to accept a
+comma separator) and `10-cm` → `10 cm` (hyphenated length targets). Verified against
+"km/inv-rng-001" and "lg/sp-008" style clips from the sets below.
+
+Re-running the full 3-speaker/89-clip matrix with the fixed code:
+
+| Model                                  | median s/clip | clip pass raw   | + ext corr      | slot tokens raw | + ext corr |
+| -------------------------------------- | ------------- | --------------- | --------------- | --------------- | ---------- |
+| whisper-small q8, no prompt (§2.1)     | 2.7 s         | 57% (51/89)     | 89% (79/89)     | 88.0%           | 97.7%      |
+| **whisper-small q8 + prompt (fixed)**  | **2.3 s**     | **80% (71/89)** | **93% (83/89)** | **95.4%**       | **98.6%**  |
+| whisper-large-v3-turbo q8, no prompt   | 8.1 s         | 60% (53/89)     | 90% (80/89)     | 88.4%           | 98.1%      |
+| **whisper-large-v3-turbo q8 + prompt** | **5.0 s**     | **73% (65/89)** | **91% (81/89)** | **91.9%**       | **98.1%**  |
+
+E2E audio→intent (saved transcripts → ext corrector → deterministic matcher →
+`compareIntent`):
+
+| Pipeline                                           | audio→intent slot match |
+| -------------------------------------------------- | ----------------------- |
+| whisper-small, no prompt → ext corrector           | 85% (76/89)             |
+| **whisper-small + prompt (fixed) → ext corrector** | **91% (81/89)**         |
+| turbo, no prompt → ext corrector                   | 87% (77/89)             |
+| **turbo + prompt → ext corrector**                 | **90% (80/89)**         |
+| _text-only ceiling_                                | _100% (30/30)_          |
+
+whisper-small's E2E number improves on the 89% reported in §2.3/§2.4 — the retry guard
+recovers the previously-lost `lg/stress-002` clip, and the two new corrector rules
+eliminate the "dE, dx" and "10-cm" failure modes §2.3 had listed as open matcher gaps.
+
+Turbo's raw slot-token accuracy also benefits from prompt biasing (+3.5 pp), and its
+ext-corrected ceiling is unchanged at 98.1% (the extended corrector already closed
+most of turbo's gap even without the prompt; the prompt's contribution for turbo is on
+the raw/uncorrected side). This confirms turbo as a real _accuracy_ candidate now that
+domain-prompt biasing is verified to help it too, but issue #60's WebGPU measurement
+(`docs/threading-coop-coep.md` addendum) found the actual WebGPU-tier latency doesn't
+hold up — real in-browser prefill is ~10× worse than the Node number below. This doesn't
+change the CPU-tier recommendation either way: whisper-small + prompt is still both more
+accurate (91% vs 90% E2E) and ~2× faster per clip. Turbo's median per-clip latency in
+this run (5.0 s) was notably lower than §2.1's 8.1 s under otherwise-similar
+conditions; treat that gap as environment/load noise (§2.1's number was measured with
+other CPU-bound work running concurrently, per §2.5) rather than a reproducible
+speedup, and prefer the 8.1 s figure as the conservative planning number.
+
+Not done in this pass (left for a follow-up): tuning prompt content variants (§5.0's
+"tune prompt content" experiment) — the current `DOMAIN_PROMPT` string is unchanged
+from §2.4.
+
+Raw transcripts (committed, text only): `eval/results/asr-2026-07-15/{small-q8-prompt,turbo-q8-prompt}.json`.
+
 ### 2.5 LLM NLU: single-token constrained classification (new experiment)
 
 Rationale: the deterministic matcher's 10 misses fail **only on the `quantity` slot** —
@@ -274,7 +342,8 @@ evaluated end-to-end (audio→intent), never on transcript fidelity.
  │
  ▼
 ASR        whisper-small q8 + domain prompt biasing (§2.4) — CPU/WASM tier
- │           (WebGPU tier: re-test turbo *with* prompt biasing before choosing)
+ │           (WebGPU tier: measured, issue #60 — not worth it; see
+ │            docs/threading-coop-coep.md addendum)
  │           per-tier correction rule sets — error distributions differ (§2.1)
  ▼
 CORRECT    closed-vocabulary phonetic lexicon matcher (§5.1)
@@ -423,8 +492,10 @@ idea, don't schedule.
 4. **Physicist sign-off still pending** (issue #1 §17) on isotope defaults,
    total-vs-per-nucleon reading, and now also plausibility windows for §5.3.
 5. **Prompt-mode edge cases.** One empty-output decode in 89 clips under prompt mode;
-   punctuation drift ("dE, dx"). Both handled with a retry guard + two corrector rules,
-   but watch for more across model variants.
+   punctuation drift ("dE, dx"). Both handled with a retry guard + two corrector rules
+   (§2.4.1); the retry guard never fired for turbo (0/89), so treat the empty-output
+   failure as whisper-small/vocab-specific rather than assuming it recurs on every
+   model — watch for it on new model variants regardless.
 6. **Latency numbers for LLM experiments** (§2.5) were taken under concurrent CPU load;
    treat as upper bounds only.
 
@@ -432,8 +503,14 @@ idea, don't schedule.
 
 - **#7 (closed)** — post the multi-speaker + multi-model results (§2.1–§2.4): turbo and
   moonshine questions from its "next steps" comment are now answered, and the
-  `initial_prompt` conclusion is retracted (harness bug, §2.4). File the
-  `asr-batch.mjs` `SOT_PREV` fix as a small PR (§5.0).
+  `initial_prompt` conclusion is retracted (harness bug, §2.4). The `asr-batch.mjs`
+  `SOT_PREV` fix landed as issue #25 (§2.4.1).
+- **#25 (closed)** — `SOT_PREV` fix, retry guard, and the two corrector rules landed
+  (§2.4.1); turbo+prompt measured. Prompt-content tuning (§5.0's follow-up experiment)
+  remains open for a future pass.
+- **#60** — turbo+prompt's WebGPU-tier latency measured (`docs/threading-coop-coep.md`
+  addendum): WebGPU execution provider works, but real in-browser prefill is ~10× worse
+  than the Node number here, on either backend. Not worth shipping as a tier.
 - **#8 (LLM NLU)** — rescope: (a) land the quantity-synonym table (deterministic
   120/120); (b) if an LLM fallback is kept at all, single-token constrained
   classification per §5.6, with label-bias controls in the eval; (c) drop full-JSON
@@ -456,18 +533,20 @@ idea, don't schedule.
 
 Scripts from this session (in `scripts/`):
 
-| Script                                                     | What it does                                                                                                                                           |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- | --------------- |
-| `asr-transcribe.mjs <model> <dtype> <out.json> [--prompt]` | transcribes all speakers' clips, saves raw transcripts + timing to JSON (so scoring is offline/re-runnable); `--prompt` uses the correctly resolved `< | startofprev | >` token (§2.4) |
-| `asr-score-slots.mjs [--ext] <out.json>…`                  | slot-token + clip-level scoring, raw vs corrector (`--ext` = `asr-correct-ext.mjs`, default = `asr-correct.mjs`)                                       |
-| `asr-correct-ext.mjs`                                      | extended correction rules (experiment, §2.2)                                                                                                           |
-| `e2e-audio-intents.ts <out.json> [--base]`                 | end-to-end audio→intent vs eval labels (§2.3)                                                                                                          |
-| `nlu-quantity-prepass.ts`                                  | synonym pre-pass → 120/120 (§2.6)                                                                                                                      |
-| `llm-quantity-classify.mjs [model]`                        | single-token constrained quantity classification with LogitsProcessor + label-bias controls (§2.5)                                                     |
+| Script                                                        | What it does                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `asr-transcribe.mjs <model> <dtype> <out.json> [--no-prompt]` | transcribes all speakers' clips, saves raw transcripts + timing to JSON (so scoring is offline/re-runnable); domain-prompt biasing is on by default since issue #25 (pass `--no-prompt` to disable) and resolves the `<\|startofprev\|>` token from the tokenizer at runtime (§2.4) |
+| `asr-score-slots.mjs [--ext] <out.json>…`                     | slot-token + clip-level scoring, raw vs corrector (`--ext` = `asr-correct-ext.mjs`, default = `asr-correct.mjs`)                                                                                                                                                                    |
+| `asr-correct-ext.mjs`                                         | extended correction rules (experiment, §2.2)                                                                                                                                                                                                                                        |
+| `e2e-audio-intents.ts <out.json> [--base]`                    | end-to-end audio→intent vs eval labels (§2.3)                                                                                                                                                                                                                                       |
+| `nlu-quantity-prepass.ts`                                     | synonym pre-pass → 120/120 (§2.6)                                                                                                                                                                                                                                                   |
+| `llm-quantity-classify.mjs [model]`                           | single-token constrained quantity classification with LogitsProcessor + label-bias controls (§2.5)                                                                                                                                                                                  |
 
 Raw transcripts (committed, text only — audio stays local per `.gitignore`):
 `eval/results/asr-2026-07-05/{small-q8,turbo-q8,moonshine-q8,small-q8-prompt,small-q8-prompt-fixed}.json`
 (`small-q8-prompt` = broken 50362 token, kept as evidence; `-fixed` = 50361).
+Issue #25's re-run with the shipped fix (§2.4.1):
+`eval/results/asr-2026-07-15/{small-q8-prompt,turbo-q8-prompt}.json`.
 
 Scorer notes: per-nucleon unit variants are normalized before matching; decimal points
 and number words ("one" → 1) are handled; two scorer bugs (case-sensitive normalization

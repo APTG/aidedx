@@ -9,6 +9,8 @@
   // DEBUG (#9 threading experiment, revertable): live ORT thread-count control, gated behind ?debug.
   import ThreadDebugPanel from "$lib/components/asr/ThreadDebugPanel.svelte";
   import AnswerCard from "$lib/components/answer/AnswerCard.svelte";
+  import ExampleQueries from "$lib/components/answer/ExampleQueries.svelte";
+  import { EXAMPLE_QUERIES } from "$lib/components/answer/example-queries.ts";
   import { asrStatus } from "$lib/asr/asr-status.svelte.ts";
   import { answerStatus } from "$lib/answer/answer-status.svelte.ts";
   import { modelStatus } from "$lib/models/model-status.svelte.ts";
@@ -21,6 +23,8 @@
 
   let query = $state("");
   let now = $state(Date.now());
+  let examplesOpen = $state(false);
+  let queryInput: HTMLInputElement | undefined = $state();
 
   // DEBUG (#9 threading experiment, revertable): show the thread-count panel
   // only when the URL has ?debug, so ordinary visitors never see it. `location`
@@ -97,6 +101,20 @@
     event.preventDefault();
     void answerStatus.submit(query);
   }
+
+  // Selecting an example behaves exactly like typing it and hitting submit —
+  // same field, same answerStatus.submit() path as typed and mic input
+  // (issue #39) — then collapses the panel. The clicked example button is
+  // removed from the DOM by that collapse, so focus is moved to the query
+  // input explicitly rather than left to land wherever the browser defaults
+  // (usually <body>), which would strand keyboard/screen-reader users
+  // (Copilot review, PR #68).
+  function selectExample(text: string) {
+    query = text;
+    examplesOpen = false;
+    queryInput?.focus();
+    void answerStatus.submit(text);
+  }
 </script>
 
 <svelte:head>
@@ -114,9 +132,17 @@
     </p>
   </header>
 
+  <ExampleQueries
+    examples={EXAMPLE_QUERIES}
+    open={examplesOpen}
+    onToggle={() => (examplesOpen = !examplesOpen)}
+    onSelect={selectExample}
+  />
+
   <form class="flex flex-col gap-3" onsubmit={handleSubmit}>
     <div class="flex flex-col gap-2 sm:flex-row">
       <input
+        bind:this={queryInput}
         type="text"
         name="query"
         bind:value={query}

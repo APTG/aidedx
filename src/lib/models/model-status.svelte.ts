@@ -18,7 +18,8 @@ import {
   listCacheEntries,
 } from "$lib/system/cache.ts";
 import { detectHardware, type HardwareInfo } from "$lib/system/hardware.ts";
-import { getMemoryEstimateMB } from "$lib/system/memory.ts";
+import { getMemoryEstimate, type MemoryEstimate } from "$lib/system/memory.ts";
+import { detectCpuThreads, type CpuInfo } from "$lib/system/threading.ts";
 import { formatEta, formatMegabytes } from "$lib/format.ts";
 
 export type ModelPhase = "checking" | "fresh" | "downloading" | "ready";
@@ -38,7 +39,8 @@ class ModelStatusStore {
   fileProgress: Record<string, FileProgress> = $state({});
   cacheBreakdown: CacheBreakdownItem[] = $state([]);
   diskUsedMB = $state(0);
-  ramMB: number | null = $state(null);
+  ramEstimate: MemoryEstimate = $state({ source: "unsupported" });
+  cpu: CpuInfo = $state({ logicalCores: null, threadsUsed: 1, crossOriginIsolated: false });
   hardware: HardwareInfo = $state({ kind: "cpu", label: "CPU only" });
   downloadStartedAt: number | null = $state(null);
   errorMessage: string | null = $state(null);
@@ -99,7 +101,41 @@ class ModelStatusStore {
   }
 
   get ramLabel(): string {
-    return this.ramMB === null ? "—" : formatMegabytes(this.ramMB);
+    switch (this.ramEstimate.source) {
+      case "heap":
+        return formatMegabytes(this.ramEstimate.mb);
+      case "device":
+        return `≈${this.ramEstimate.gb} GB total`;
+      case "unsupported":
+        return "Not supported";
+    }
+  }
+
+  get ramTooltip(): string {
+    switch (this.ramEstimate.source) {
+      case "heap":
+        return "JS heap in use (performance.memory) — Chrome/Edge only";
+      case "device":
+        return "Approximate total device RAM (navigator.deviceMemory), not current usage — Chromium only";
+      case "unsupported":
+        return "This browser doesn't report memory usage";
+    }
+  }
+
+  get cpuLabel(): string {
+    const { logicalCores, threadsUsed, crossOriginIsolated } = this.cpu;
+    if (logicalCores === null) return "Unknown";
+    if (!crossOriginIsolated) return `1 of ${logicalCores}`;
+    return `${threadsUsed} of ${logicalCores}`;
+  }
+
+  get cpuTooltip(): string {
+    const { logicalCores, crossOriginIsolated } = this.cpu;
+    if (logicalCores === null) return "This browser doesn't report navigator.hardwareConcurrency";
+    if (!crossOriginIsolated) {
+      return "Cross-origin isolation unavailable — in-browser transcription runs single-threaded";
+    }
+    return "WASM threads used for in-browser transcription (half of logical cores, capped at 8)";
   }
 
   get showClear(): boolean {
@@ -150,7 +186,8 @@ class ModelStatusStore {
     if (this.#initialized) return;
     this.#initialized = true;
     try {
-      this.ramMB = getMemoryEstimateMB();
+      this.ramEstimate = getMemoryEstimate();
+      this.cpu = detectCpuThreads();
       this.hardware = await detectHardware();
       await this.#refreshDiskUsage();
       this.phase = (await areModelsCached()) ? "ready" : "fresh";

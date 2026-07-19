@@ -33,6 +33,12 @@ describe("normalizeText", () => {
   it("strips diacritics", () => {
     expect(normalizeText("Café")).toBe("cafe");
   });
+
+  it("folds Polish ł/Ł, which NFKD does not decompose (issue #87)", () => {
+    expect(normalizeText("ołów")).toBe("olow");
+    expect(normalizeText("łuk")).toBe("luk");
+    expect(normalizeText("Łuk")).toBe("luk");
+  });
 });
 
 describe("formatIsotope", () => {

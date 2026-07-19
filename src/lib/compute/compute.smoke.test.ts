@@ -230,7 +230,9 @@ describe("computeIntent — issue #6 smoke cases", () => {
     );
     const s = req(result.series[0]);
     expect(s.error).toMatch(/outside the valid range .+ to .+ for this program\/particle/);
-    expect(s.error).toMatch(/\d (?:ke|Me|Ge)V\/nucl/);
+    // A = 1 (protons) drop the "/nucl" suffix (issue #66) — plain keV/MeV/GeV.
+    expect(s.error).toMatch(/\d (?:ke|Me|Ge)V/);
+    expect(s.error).not.toMatch(/\/nucl/);
     expect(s.error).not.toMatch(/\[[\d.]/); // no more raw "[0.00025, 250]" bracket
   });
 
@@ -248,6 +250,57 @@ describe("computeIntent — issue #6 smoke cases", () => {
     // "bethe ext" / "bethe_ext" / "BETHE-EXT" all fold to Bethe-ext, not the
     // auto-selected PSTAR.
     expect(req(result.series[0]).program.name).toBe("Bethe-ext");
+  });
+
+  it("falls back to Bethe for proton + Boron, where PSTAR has no tabulated data (dedx_web#845)", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "stoppingPower",
+        particles: [{ match: "protons" }],
+        materials: [{ match: "boron" }],
+        energies: [{ value: 40, unit: "MeV" }],
+      }),
+      service,
+    );
+    const s = req(result.series[0]);
+    expect(s.error).toBeUndefined();
+    expect(s.material.id).toBe(5); // elemental Boron
+    expect(s.program.name).toBe("Bethe");
+    expect(req(req(s.points[0]).stoppingPower)).toBeGreaterThan(0);
+  });
+
+  it("falls back to Bethe for calcium and heavier ions, which MSTAR doesn't tabulate at all (docs/tts-eval-1000.md §2.2)", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "csdaRange",
+        particles: [{ match: "calcium ions" }],
+        materials: [{ match: "water" }],
+        energies: [{ value: 100, unit: "MeV/nucl" }],
+      }),
+      service,
+    );
+    const s = req(result.series[0]);
+    const p = req(s.points[0]);
+    expect(s.error).toBeUndefined();
+    expect(s.particle.id).toBe(20); // calcium
+    expect(s.program.name).toBe("Bethe");
+    expect(p.stoppingPower).toBeGreaterThan(0);
+    expect(p.csdaRange).toBeGreaterThan(0);
+  });
+
+  it("still uses MSTAR for argon, the heaviest ion MSTAR actually tabulates", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "stoppingPower",
+        particles: [{ match: "argon ions" }],
+        materials: [{ match: "water" }],
+        energies: [{ value: 100, unit: "MeV/nucl" }],
+      }),
+      service,
+    );
+    const s = req(result.series[0]);
+    expect(s.error).toBeUndefined();
+    expect(s.program.name).toBe("MSTAR");
   });
 });
 

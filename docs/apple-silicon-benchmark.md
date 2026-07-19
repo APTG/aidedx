@@ -166,9 +166,10 @@ committed).
   that's actually interactive, on CPU, without a GPU. Still gated on real-world need per the
   feasibility report's §5.6 ("only worth shipping if telemetry shows novel phrasings escaping the
   synonym table").
-- **#9 (runtime/hosting)** — the CPU/WASM tier now has a second favorable hardware reference point
-  (M5 alongside the Linux no-GPU baseline); both are comfortably interactive for whisper-small. The
-  WebGPU-tier question (turbo, re-tested with prompt biasing) is still open.
+- **#9 (runtime/hosting)** — the CPU/WASM tier now has a third hardware reference point (M1,
+  addendum below, alongside M5 and the Linux no-GPU baseline); all three are comfortably interactive
+  for whisper-small. The WebGPU-tier question (turbo, re-tested with prompt biasing) is answered —
+  see `docs/threading-coop-coep.md`'s addendum (issue #60): not worth it.
 - **#20 (multi-speaker holdout)** — unaffected; this session reused the same 3-speaker recordings
   and didn't add new speakers.
 
@@ -179,10 +180,79 @@ Scripts used (all in `scripts/`, same as the Linux session unless noted):
 `llm-nlu-eval.ts`, `llm-correct.mjs`, `llm-quantity-classify.mjs`, and `llm-kvcache-bench.mjs`
 (Task F's benchmark — kept local, not committed).
 
+## Addendum (2026-07-16, issue #60): M1 CPU-only ASR benchmark — a second Apple Silicon data point
+
+_Session report. Apple M1 (MacBookAir10,1), 8 cores (4P+4E), 16 GB RAM, macOS 26.3, Node 24.18,
+`@huggingface/transformers` 4.2.0 on `onnxruntime-node` (CPU execution provider — same caveat as the
+M5 session above: this is a CPU figure, not the in-browser WebGPU number, which is covered
+separately in `docs/threading-coop-coep.md`'s addendum). Same audio (`eval/audio/{km,lg,mn}/`, 89
+clips / 3 speakers) and eval set as the Linux and M5 sessions. Scored with the same scripts
+(`asr-transcribe.mjs` → `asr-score-slots.mjs --ext` → `e2e-audio-intents.ts`), so every column below
+is directly comparable to the Linux and M5 numbers, not just latency._
+
+### Results
+
+| Model (q8)                          | median/clip | load   | E2E audio→intent (ext) | slot-token (ext) |
+| ----------------------------------- | ----------- | ------ | ---------------------- | ---------------- |
+| whisper-tiny                        | 0.3 s       | 2.2 s  | 0%→**6%** (5/89)       | 42.9%→49.9%      |
+| whisper-base                        | 0.5 s       | 2.9 s  | 22%→**52%** (45/86)    | 69.2%→87.3%      |
+| whisper-small                       | 1.3 s       | 7.0 s  | 56%→**88%** (78/89)    | 88.8%→98.1%      |
+| **whisper-small + prompt**          | **1.4 s**   | 0.9 s  | 79%→**90%** (80/89)    | 94.8%→97.9%      |
+| whisper-large-v3-turbo              | 5.5 s       | 25.4 s | 57%→**82%** (73/89)    | 87.8%→97.3%      |
+| **whisper-large-v3-turbo + prompt** | **5.7 s**   | 1.3 s  | 75%→**87%** (77/89)    | 92.1%→97.7%      |
+| moonshine-base                      | 0.2 s       | 4.0 s  | 15%→**20%** (18/89)    | 72.0%→76.6%      |
+
+("load" is the one-time model/session load; ignore the outlier 25.4 s turbo-no-prompt row — that's a
+cold weight fetch into `.hf-cache/`, not a steady-state number, same caveat the M5 doc notes for its
+own load column.)
+
+### M1 vs M5 vs Linux — same model, same script, three machines
+
+| Model                              | metric      | M1 (this session) | M5                        | Linux CPU ref |
+| ---------------------------------- | ----------- | ----------------- | ------------------------- | ------------- |
+| whisper-small + prompt             | median/clip | **1.4 s**         | **0.82 s**                | 2.8 s         |
+| whisper-small + prompt             | E2E (ext)   | 90% (80/89)       | 86% (76/88)               | 89% (78/88)   |
+| whisper-large-v3-turbo + prompt    | median/clip | **5.7 s**         | not measured¹             | 5.0 s         |
+| whisper-large-v3-turbo + prompt    | E2E (ext)   | 87% (77/89)       | not measured¹             | ~91%²         |
+| whisper-large-v3-turbo (no prompt) | median/clip | 5.5 s             | 2.70 s (exact-match run)³ | 8.1 s         |
+
+¹ The prompt-biasing fix (issue #25) landed 2026-07-15, five days after the M5 session — M5 has no
+turbo+prompt number at all, only un-prompted.
+² Read off `docs/voice-pipeline-feasibility.md` §2.4.1's clip-pass figure (81/89, "corrected"); that
+session didn't print this exact `e2e-audio-intents.ts` line for turbo+prompt in the excerpt kept
+here, so treat this one figure as approximate, unlike every other number in this table.
+³ M5's only turbo number comes from Task B's cruder `asr-batch.mjs` exact-match harness, not
+`asr-transcribe.mjs`+`e2e-audio-intents.ts` — latency is comparable, the accuracy metric is not.
+
+**Takeaways:**
+
+- **M5 really is faster than M1 for this workload — roughly 1.7–2× on whisper-small, once compared
+  on identical audio/scripts.** That's a plausible two-generation Apple Silicon CPU gap (M1 2020 →
+  M5 2025), not noise.
+- **Accuracy is hardware-invariant, as expected.** whisper-small+prompt E2E lands at 86–90% across
+  M1, M5, and Linux — the same weights doing the same math, run-to-run noise on an 89-clip set, not a
+  hardware effect. Model-choice conclusions (small over turbo/tiny/base/moonshine on the CPU tier)
+  transfer across all three machines without re-litigating.
+- **M1 is still comfortably interactive.** 1.4 s/clip for the shipped whisper-small+prompt config is
+  well inside the same "fast enough" bucket as M5's 0.82 s and Linux's 2.8 s — this doesn't change
+  the CPU-tier recommendation, it just adds a second real Apple-Silicon-generation calibration point
+  to it.
+- **Bonus data the M5 session didn't have:** real E2E/slot-token numbers (not just exact-match) for
+  whisper-tiny, whisper-base, and turbo-un-prompted, plus the first-ever turbo**+prompt** CPU number
+  on Apple Silicon (5.7 s, 87% E2E) — useful context for the WebGPU-tier verdict in
+  `docs/threading-coop-coep.md`'s addendum, since native CPU already beats what that addendum
+  measures in-browser by a wide margin.
+
+Raw transcripts (committed): `eval/results/asr-2026-07-16/*.json`.
+
 ## Related
 
 - [`docs/voice-pipeline-feasibility.md`](./voice-pipeline-feasibility.md) — the Linux CPU-only
   baseline this session re-measures on Apple Silicon.
+- [`docs/threading-coop-coep.md`](./threading-coop-coep.md) — the WebGPU-tier measurement (issue
+  #60) this addendum's turbo+prompt CPU number gives context to.
 - Issue #8 — LLM NLU fallback decision (Task A).
 - Issue #9 — runtime/hosting spike (Tasks B, D feed its CPU/WASM-tier evidence).
 - Issue #21 — the M5 benchmark task list (Tasks A–F) this doc reports on.
+- Issue #60 — the M1 hardware this addendum's benchmark ran on, and the WebGPU tier it was
+  originally scoped to answer.

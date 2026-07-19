@@ -130,6 +130,19 @@ describe("transcribe", () => {
     expect(text).toBe("what is the range of protons");
   });
 
+  it("retries without the domain prompt when prompt-mode decoding fails (issue #25 empty-output guard)", async () => {
+    const asr = makeAsr({ resultText: "what is the range of protons" });
+    asr.mockRejectedValueOnce(new Error("token_ids must be a non-empty array"));
+    mocks.pipeline.mockResolvedValue(asr);
+
+    const { transcribe } = await import("./transcribe.ts");
+    const text = await transcribe(new Float32Array([0, 0, 0]));
+
+    expect(text).toBe("what is the range of protons");
+    expect(asr).toHaveBeenCalledTimes(2);
+    expect(asr.mock.calls[1]?.[1]).not.toHaveProperty("decoder_input_ids");
+  });
+
   it("points env.remoteHost at the Cyfronet S3 mirror so it hits the cache the download flow populated", async () => {
     const asr = makeAsr({ resultText: `${PROMPT_PREFIX_TEXT} test` });
     mocks.pipeline.mockResolvedValue(asr);

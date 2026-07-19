@@ -31,6 +31,18 @@ yarn.lock
 # Python venv for s3cmd (Cyfronet mirror tooling)
 /.venv/
 
+# Python venv for local TTS eval-audio synthesis (issue #30 pilot, docs/tts-eval-audio.md)
+/.venv-tts/
+
+# Python venv for the Qwen3-TTS feasibility check (issue #30, docs/tts-eval-audio.md §6)
+/.venv-qwen/
+
+# Athena/PLGrid environment (docs/athena-setup.md, scripts/athena-env.sh) — every cache that
+# would otherwise write into $HOME's 10GB quota (pip, npm, huggingface_hub) redirects here instead
+/.cache/
+/.npm-global/
+/.hf-cache-py/
+
 # s3cmd credentials (Cyfronet mirror tooling) — contains a live secret key, never commit
 /.s3cmd
 /.s3cfg
@@ -41,3 +53,16 @@ yarn.lock
 # Playwright browser profile for scripts/asr-browser-benchmark.mjs (caches downloaded model weights
 # across runs) — regenerated on demand, not committed
 /.tmp-pw-profile*/
+
+# 1000-sentence eval batch (issue #30): the sentence set is fully regenerable from
+# scripts/generate-1000-sentences.mjs's fixed seed — not committed, same as build output.
+# SLURM sbatch log files from submit.sh land at the repo root — also not committed.
+/scripts/tts-1000-sentences.json
+/aidedx-tts1000-*.out
+/aidedx-tts1000-*.err
+
+# v2 batch (issue #83, expanded ion/material pools + LET phrasing, submit-v2.sh) — same
+# regenerable-artifact rationale as the v1 files above.
+/scripts/tts-1000-sentences-v2.json
+/aidedx-tts1000-v2-*.out
+/aidedx-tts1000-v2-*.err

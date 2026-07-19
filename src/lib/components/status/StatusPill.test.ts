@@ -9,7 +9,10 @@ const baseProps = {
   modelDotClass: "bg-success",
   diskLabel: "1.13 GB",
   diskClass: "",
-  ramLabel: "—",
+  ramLabel: "Not supported",
+  ramTooltip: "This browser doesn't report memory usage",
+  cpuLabel: "4 of 8",
+  cpuTooltip: "WASM threads used for in-browser transcription (half of logical cores, capped at 8)",
   hardwareLabel: "GPU · WebGPU",
   showClear: true,
   onClear: vi.fn(),
@@ -38,8 +41,15 @@ describe("StatusPill", () => {
   it("renders the panel rows and a Clear button when open with cached data", () => {
     const { getByText, getByRole } = render(StatusPill, { props: { ...baseProps, open: true } });
     expect(getByText("Memory (RAM)")).toBeInTheDocument();
+    expect(getByText("CPU threads")).toBeInTheDocument();
     expect(getByText("Hardware")).toBeInTheDocument();
     expect(getByRole("button", { name: "Clear" })).toBeInTheDocument();
+  });
+
+  it("shows the CPU threads value and exposes the policy explanation via a title tooltip", () => {
+    const { getByText } = render(StatusPill, { props: { ...baseProps, open: true } });
+    const value = getByText("4 of 8");
+    expect(value).toHaveAttribute("title", baseProps.cpuTooltip);
   });
 
   it("truncates a long hardware renderer string and exposes the full text via a title tooltip", () => {

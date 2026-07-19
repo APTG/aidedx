@@ -32,12 +32,19 @@ export const PROGRAMS = {
   ICRU73: 6,
   ICRU49: 7,
   ICRU: 9,
+  AUTO: 10,
   DEFAULT: 100,
   BETHE_EXT00: 101,
 } as const;
 
-/** Programs that must not surface as user-selectable (internal auto-selector). */
-const EXCLUDED_PROGRAMS = new Set<number>([PROGRAMS.ICRU]);
+/**
+ * Programs that must not surface as user-selectable (internal auto-selectors).
+ * DEDX_ICRU (9) picks the best ICRU dataset at the C layer; DEDX_AUTO (10,
+ * added in libdedx#144 / dedx_web#845) is libdedx's own auto-select program.
+ * Neither is a real physics table — aidedx does its own auto-selection in
+ * `autoProgramForParticle()` instead.
+ */
+const EXCLUDED_PROGRAMS = new Set<number>([PROGRAMS.ICRU, PROGRAMS.AUTO]);
 
 /** Electron particle id; ESTAR-only and not implemented in libdedx v1.4.0. */
 export const ELECTRON_ID = 1001;

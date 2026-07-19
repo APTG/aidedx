@@ -7,6 +7,9 @@
     diskLabel: string;
     diskClass: string;
     ramLabel: string;
+    ramTooltip: string;
+    cpuLabel: string;
+    cpuTooltip: string;
     hardwareLabel: string;
     showClear: boolean;
     onClear: () => void;
@@ -20,6 +23,9 @@
     diskLabel,
     diskClass,
     ramLabel,
+    ramTooltip,
+    cpuLabel,
+    cpuTooltip,
     hardwareLabel,
     showClear,
     onClear,
@@ -63,7 +69,11 @@
         </div>
         <div class="flex justify-between">
           <span class="text-muted-foreground">Memory (RAM)</span>
-          <span class="font-semibold">{ramLabel}</span>
+          <span class="font-semibold" title={ramTooltip}>{ramLabel}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-muted-foreground">CPU threads</span>
+          <span class="font-semibold" title={cpuTooltip}>{cpuLabel}</span>
         </div>
         <div class="flex items-center justify-between gap-2">
           <span class="shrink-0 text-muted-foreground">Hardware</span>

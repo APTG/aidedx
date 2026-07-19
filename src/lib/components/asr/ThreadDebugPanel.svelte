@@ -21,6 +21,7 @@
    * message plumbing to revert.
    */
   import { onMount } from "svelte";
+  import { threadCountForCores } from "$lib/system/threading.ts";
 
   const OPTIONS = ["off", "1", "2", "4", "6", "8", "12"];
 
@@ -29,9 +30,9 @@
   let hardwareConcurrency = $state(0);
   let ready = $state(false);
 
-  // Mirror of resolveThreadCount() in transcribe.ts — what "off" resolves to.
+  // Same policy as resolveThreadCount() in transcribe.ts applies — what "off" resolves to.
   const policyThreads = $derived(
-    Math.max(1, Math.min(8, Math.floor((hardwareConcurrency > 0 ? hardwareConcurrency : 4) / 2))),
+    threadCountForCores(hardwareConcurrency > 0 ? hardwareConcurrency : undefined),
   );
 
   onMount(() => {

@@ -1,0 +1,69 @@
+
+=== onnx-community/whisper-small [q8] +prompt base-corrector ===
+clips: 1000   median inference: 2.0s   load: 1.8s
+clip-level all-slots-correct:  raw 650/1000 (65.0%)   corrected 652/1000 (65.2%)
+
+by quantity (corrected):
+  csdaRange        382/600 (63.7%)
+  energyFromRange  176/250 (70.4%)
+  stoppingPower    94/150 (62.7%)
+
+by scenario type (corrected):
+  single     521/800 (65.1%)
+  energy     70/100 (70.0%)
+  material   26/55 (47.3%)
+  particle   35/45 (77.8%)
+
+by voice profile (corrected), worst 10:
+  custom-onoAnna-en                5/17 (29.4%)
+  south-african-female-curious     7/18 (38.9%)
+  custom-dylan-formal              7/17 (41.2%)
+  indian-male-confident            8/17 (47.1%)
+  custom-vivian-en                 8/17 (47.1%)
+  us-female-calm                   9/18 (50.0%)
+  canadian-male-neutral            9/18 (50.0%)
+  german-accented-female-brisk     9/17 (52.9%)
+  polish-accented-male-precise     9/17 (52.9%)
+  custom-ryan-happy                9/17 (52.9%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   98.4% ->  98.5%  (n=1250)
+  particle   96.9% ->  96.9%  (n=1045)
+  material   84.8% ->  84.8%  (n=1085)
+  number     92.2% ->  92.3%  (n=1158)
+  unit       84.8% ->  84.9%  (n=1158)
+  ALL        91.5% ->  91.6%  (n=5696)
+
+failing clips after correction (348 total, showing first 30):
+  rng-0001 missing[number,unit]: Quick one, how far does a 2MeV-helium-3 ion go in mylar?
+  rng-0005 missing[particle,number,unit]: Before coming to rest, how far does an 8MeV-healium-3 ion get through silicon dioxide?
+  rng-0017 missing[number,unit]: Quick one, how far does a 350eMeV proton go in polycarbonate?
+  rng-0018 missing[material,unit]: Find the CSDA range for 100 MIV protons in aluminum.
+  rng-0022 missing[unit]: Find the CSDA range for 250 MFv per nucleon, neon-20 ions and silicon dioxide.
+  rng-0023 missing[particle]: How deep does a 40-MeV-duteron penetrate into cesium iodide?
+  rng-0025 missing[material,unit]: What is the CSDA range of a 70-mFase proton in aluminum oxide?
+  rng-0028 missing[particle]: How deep does a 50 MeV-healium-3 ion penetrate into muscle tissue?
+  rng-0031 missing[material]: So roughly how far would a 40 MeV per nucleon fluorine 19 ion make it into aluminum?
+  rng-0032 missing[number,unit]: So roughly how far would a 100V NEATMEV per nucleon argon-40 ion make it into PMMA?
+  rng-0034 missing[material]: Quick one, how far does a 15 MeV deuteron go in aluminum oxide?
+  rng-0035 missing[material]: What is the CSDA range of a 300 keV neon-20 ion in Czm iodide?
+  rng-0039 missing[material]: Before coming to rest, how far does a 40 MeV proton get through aluminum?
+  rng-0049 missing[unit]: Range of a 60 MAV alpha particle in mylar, please?
+  rng-0050 missing[material]: How far will a 60 MeV Triton travel through captain?
+  rng-0054 missing[material]: What is the CSDA range of a 180 MeV per nucleon boron-11 ion in aluminum?
+  rng-0058 missing[material]: What is the CSDA range of a 250 MeV proton in aluminum oxide?
+  rng-0059 missing[material]: Find the CSDA range for 150 MeV per nucleon lithium-7 ions in captain.
+  rng-0060 missing[material]: How deep does a 50 keV oxygen-16 ion penetrate into aluminum?
+  rng-0065 missing[unit]: Determine the range of 50 MAV per nucleon boron 11, ions in PMMA.
+  rng-0069 missing[material]: Find the CSDA range for 300 MeV per nucleon fluorine 19 ions in aluminum oxide.
+  rng-0075 missing[material]: What's the range of a 70 MeV proton and aluminum oxide?
+  rng-0078 missing[unit]: What is the CSDA range of a 180-mYakatsiya per nucleon beryllium-9 ion and gold?
+  rng-0081 missing[material]: What's the range of 80 MeV per nucleon magnesium-24 ion in captain?
+  rng-0083 missing[material]: How deep does a 60 MeV per nucleon chlorine 35 ion penetrate into aluminum oxide?
+  rng-0086 missing[material]: Find the CSDA range for 300 MeV per nucleon lithium, 7 ions, incisium iodide.
+  rng-0087 missing[unit]: Range of a 10 NEV deuteron and cortical bone, please.
+  rng-0088 missing[unit]: How deep does a 250 MAV proton penetrate into a 150 tissue equivalent plastic?
+  rng-0089 missing[material]: How deep does a 70 MeV proton penetrate an acesium iodide?
+  rng-0090 missing[number,unit]: Rangervay, adiMeV, Triton and polycarbonate, please.
+
+wrote eval/results/tts-1000-2026-07-16/score-base.json

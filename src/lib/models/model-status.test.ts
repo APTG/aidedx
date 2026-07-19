@@ -10,7 +10,8 @@ const mocks = vi.hoisted(() => ({
   clearModelCache: vi.fn(),
   listCacheEntries: vi.fn(),
   detectHardware: vi.fn(),
-  getMemoryEstimateMB: vi.fn(),
+  getMemoryEstimate: vi.fn(),
+  detectCpuThreads: vi.fn(),
 }));
 
 class FakeDownloadCancelledError extends Error {
@@ -37,7 +38,10 @@ vi.mock("$lib/system/hardware.ts", () => ({
   detectHardware: mocks.detectHardware,
 }));
 vi.mock("$lib/system/memory.ts", () => ({
-  getMemoryEstimateMB: mocks.getMemoryEstimateMB,
+  getMemoryEstimate: mocks.getMemoryEstimate,
+}));
+vi.mock("$lib/system/threading.ts", () => ({
+  detectCpuThreads: mocks.detectCpuThreads,
 }));
 
 const CPU_HARDWARE: HardwareInfo = { kind: "cpu", label: "CPU only" };
@@ -51,7 +55,10 @@ describe("modelStatus store", () => {
     mocks.clearModelCache.mockReset().mockResolvedValue(undefined);
     mocks.listCacheEntries.mockReset().mockResolvedValue([]);
     mocks.detectHardware.mockReset().mockResolvedValue(CPU_HARDWARE);
-    mocks.getMemoryEstimateMB.mockReset().mockReturnValue(null);
+    mocks.getMemoryEstimate.mockReset().mockReturnValue({ source: "unsupported" });
+    mocks.detectCpuThreads
+      .mockReset()
+      .mockReturnValue({ logicalCores: null, threadsUsed: 1, crossOriginIsolated: false });
   });
 
   afterEach(() => {
@@ -240,10 +247,52 @@ describe("modelStatus store", () => {
     expect(store.showBlockingPrompt).toBe(false);
   });
 
-  it("renders '—' for RAM when no estimate is available", async () => {
+  it("renders 'Not supported' for RAM when no estimate is available (issue #42 §9)", async () => {
     const store = await loadStore();
     await store.init();
-    expect(store.ramLabel).toBe("—");
+    expect(store.ramLabel).toBe("Not supported");
+  });
+
+  it("renders the JS heap estimate in MB when performance.memory is available", async () => {
+    mocks.getMemoryEstimate.mockReturnValue({ source: "heap", mb: 50 });
+    const store = await loadStore();
+    await store.init();
+    expect(store.ramLabel).toBe("50 MB");
+  });
+
+  it("renders the device memory estimate in GB when only navigator.deviceMemory is available", async () => {
+    mocks.getMemoryEstimate.mockReturnValue({ source: "device", gb: 8 });
+    const store = await loadStore();
+    await store.init();
+    expect(store.ramLabel).toBe("≈8 GB total");
+  });
+
+  it("reports 1 of N CPU threads used when the page isn't cross-origin isolated", async () => {
+    mocks.detectCpuThreads.mockReturnValue({
+      logicalCores: 12,
+      threadsUsed: 6,
+      crossOriginIsolated: false,
+    });
+    const store = await loadStore();
+    await store.init();
+    expect(store.cpuLabel).toBe("1 of 12");
+  });
+
+  it("reports the policy thread count when cross-origin isolated", async () => {
+    mocks.detectCpuThreads.mockReturnValue({
+      logicalCores: 12,
+      threadsUsed: 6,
+      crossOriginIsolated: true,
+    });
+    const store = await loadStore();
+    await store.init();
+    expect(store.cpuLabel).toBe("6 of 12");
+  });
+
+  it("reports 'Unknown' CPU threads when hardwareConcurrency isn't reported", async () => {
+    const store = await loadStore();
+    await store.init();
+    expect(store.cpuLabel).toBe("Unknown");
   });
 
   it("marks disk usage over the warning threshold with the danger class", async () => {

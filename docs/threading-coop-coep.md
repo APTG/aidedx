@@ -121,7 +121,7 @@ sufficient; no CORP header needs to be added there.
   `onnxruntime-web` build; not measured here.
 - **WebGPU tier untouched.** This is purely the WASM-threading lever. `whisper-large-v3-turbo` on
   WebGPU (the other #9 lever, and the highest-accuracy option per `docs/asr-model-comparison.md`) is
-  a separate measurement.
+  a separate measurement — now answered below (issue #60).
 
 ## Recommendation / implementation plan
 
@@ -143,3 +143,145 @@ cost and no model swap. As a follow-up PR (needs the issue #9 hosting decision r
 Expected outcome: the "Warming up…" wait drops from ~8–10 s to ~3–5 s for the same model and same
 accuracy — the single biggest voice-latency improvement available without changing the model or the
 runtime tier.
+
+## Addendum (2026-07-16, issue #60): the WebGPU tier, measured — verdict is "not worth it"
+
+_Session report. Apple M1 (MacBookAir10,1), 8 cores (4P+4E), 16 GB RAM, Metal 4, macOS 26.3. Real
+(non-headless) Google Chrome via `playwright.chromium.launch({ channel: "chrome", headless: false })`
+— headless Chromium's WebGPU support is inconsistent, so this deliberately used a real windowed
+browser to get a genuine GPU adapter. Same stack versions as the rest of this doc: transformers.js
+4.2.0 / `onnxruntime-web` 1.27.0._
+
+### TL;DR
+
+- **WebGPU works.** `navigator.gpu.requestAdapter()` succeeds, `pipeline(..., { device: "webgpu" })`
+  builds a real Whisper encoder+decoder session and runs real inference — no silent fallback to WASM,
+  no thrown errors, for either whisper-tiny or whisper-large-v3-turbo.
+- **WebGPU is consistently faster than WASM in-browser, but only by ~15–20%** — not the multiples a
+  properly GPU-resident large model's matmuls should show. whisper-tiny: 1045 ms vs 1264 ms prefill.
+  whisper-large-v3-turbo: ~51.6 s vs ~61.3 s prefill. The similar percentage gain at both model sizes
+  (rather than a much bigger win for turbo) is itself evidence that a lot of turbo's WebGPU run is
+  still falling back to CPU per-op, not genuinely GPU-resident end to end (see Caveats).
+- **The number that actually matters: turbo's real in-browser prefill (either backend) is ~10× worse
+  than the reference numbers this issue was chasing.** `docs/asr-model-comparison.md` measured
+  turbo's Node (`onnxruntime-node`) prefill at **8.1 s**; the shipped WASM whisper-small tier above
+  measures **~5 s** (threaded, cold). This session's real-browser turbo prefill is **~52 s
+  (WebGPU) / ~61 s (WASM)** for the same ~5 s of audio — roughly 6–12× slower than either reference
+  point, on both browser backends.
+- **Verdict: do not ship turbo-on-WebGPU as an optional tier.** The premise that WebGPU would unlock
+  turbo's already-measured accuracy advantage at competitive latency doesn't hold on this hardware
+  with this stack — the bottleneck isn't which in-browser backend you pick, it's that the in-browser
+  path (both of them) is far slower than the Node number this issue's comparisons were built on. The
+  manifest/UX scoping (device detection, a second model download, tier-select UI) is moot until that
+  gap is closed, so it's not attempted here.
+- **Update, same session, real audio:** once real eval clips were available (see "real audio"
+  results below), a second finding emerged that the synthetic-tone test was blind to — **decode
+  flips the other way.** WebGPU wins prefill by ~10–15%, same direction as the tone test, but WASM
+  decodes real multi-token output **2–3× faster** than WebGPU. Autoregressive decode is a sequential
+  chain of single-token steps, and each step's GPU-dispatch round-trip appears to cost more than
+  WASM's native call overhead — the opposite tradeoff from prefill's one big batched matmul, which is
+  exactly where WebGPU helps. Net effect on total latency is a wash to a slight WASM win; it doesn't
+  change the verdict above, since both are still far behind the Node CPU number.
+
+### Method
+
+No app code changes — a throwaway SvelteKit route (`src/routes/webgpu-probe/+page.svelte`, never
+committed) called `pipeline("automatic-speech-recognition", modelId, { dtype: "q8", device })`
+directly, bypassing `src/lib/asr/transcribe.ts` (which has no `device` option today). This was
+necessary rather than optional: this machine's local `eval/audio/` is empty (per-machine, gitignored,
+never synced — `eval/RECORDING.md`), so `scripts/asr-browser-benchmark.mjs`'s real-clip harness
+couldn't run here. Audio was instead a 5 s synthetic 220 Hz tone at 16 kHz mono. This is a valid proxy
+for **prefill** (the encoder's cost scales with audio duration/frame count, not content) but not for
+**decode** or **accuracy** — the tone produces a near-empty transcript (1–2 tokens), so decode timing
+below is not meaningful and no E2E/slot-token score exists from this session. Turbo's accuracy number
+remains whatever `docs/voice-pipeline-feasibility.md` §2.4.1 already measured on CPU/Node (91% E2E
+prompted) — this session only adds the missing browser-latency half of the picture.
+
+Each `(model, device)` pair built the pipeline once, then ran inference 5× back-to-back in the same
+session (matching this doc's "repeated same-session" methodology above) to get a steady-state mean
+uncontaminated by one-time session-build cost. whisper-tiny (~40 MB) ran first as a harness sanity
+check before spending bandwidth/time on turbo (~650 MB, q8).
+
+One environment note: this session started on a **completely full disk** (0 bytes free, mid-way
+through unrelated work) which broke `pnpm`/Vite entirely until the user freed space. Once free space
+was healthy (15+ GB), Chrome's Cache Storage still threw `QuotaExceededError` / `UnknownError` while
+caching turbo's weights on every run — likely a stale per-origin quota calculated while the disk was
+still near-full. This made "session load" (pipeline build time, ~24–26 s, dominated by re-fetching
+uncached weights over the network) unreliable and it's excluded from the headline numbers above;
+`prefill`/`decode` are measured strictly inside the `asr()` call, after the session already exists in
+memory, so they're unaffected by whether the weight bytes were cache-hit or network-fetched.
+
+### Results (mean over 5 warm repeats, one loaded session per row)
+
+| model                       | device | prefill     | decode\* |
+| --------------------------- | ------ | ----------- | -------- |
+| whisper-tiny (q8)           | webgpu | **1045 ms** | 36 ms    |
+| whisper-tiny (q8)           | wasm   | 1264 ms     | 10 ms    |
+| whisper-large-v3-turbo (q8) | webgpu | **51.6 s**  | 95 ms    |
+| whisper-large-v3-turbo (q8) | wasm   | ~61.3 s¹    | 51 ms    |
+
+\* Not a meaningful per-token decode cost — see Method (synthetic audio decodes to 1–2 tokens).
+
+¹ Mean of 4/5 planned runs (60.1, 60.6, 61.1, 63.5 s) — the harness's own 10-minute timeout closed the
+browser before run 5. The trend across those 4 was flat-to-slightly-rising, not falling, so a 5th run
+would not change the conclusion.
+
+### Update: real eval audio (same session, once available)
+
+The disk-space blocker above was resolved mid-session and the user copied the real 89-clip eval set
+(`eval/audio/{km,lg,mn}/`) onto this machine, so the synthetic-tone limitation could be lifted for
+turbo specifically. Same throwaway route, extended to accept real WAV files (decoded via `ffmpeg` in
+the Node-side Playwright driver, injected into the page as a plain array reconstructed into a
+`Float32Array` — `window.__clips`, set via `page.addInitScript`). Three clips spanning all three
+speakers (`km/sp-005`, `mn/pernuc-001`, `lg/stress-001`; 5.25–8.6 s each), one inference per clip per
+backend, no domain-prompt biasing (this probe calls `pipeline()` directly, bypassing
+`transcribe.ts`'s prompt logic — a deliberate scope cut, not an oversight):
+
+| clip          | device | prefill | decode | tokens | transcript                                                      |
+| ------------- | ------ | ------- | ------ | ------ | --------------------------------------------------------------- |
+| km/sp-005     | webgpu | 19.5 s  | 1.38 s | 16     | "Stopping power for 80 MeV per nucleon carbon ions in water."   |
+| km/sp-005     | wasm   | 21.7 s  | 0.53 s | 16     | (identical text)                                                |
+| mn/pernuc-001 | webgpu | 20.5 s  | 1.21 s | 16     | "Range of carbon ions in water at 290 mEV per u."               |
+| mn/pernuc-001 | wasm   | 23.9 s  | 0.51 s | 16     | (identical text)                                                |
+| lg/stress-001 | webgpu | 22.3 s  | 1.32 s | 17     | "I am curious how far in water the 240k EV carbon ion will go." |
+| lg/stress-001 | wasm   | 25.9 s  | 0.57 s | 17     | (identical text)                                                |
+
+Three things this settles that the synthetic tone couldn't:
+
+1. **Transcripts are correct and identical between backends.** `km/sp-005`'s transcript is an exact
+   match to the gold sentence; the other two show the same acoustic confusions this domain's own
+   corrector already targets (`"290 MeV/u"` → `"290 mEV per u"`, `"240 keV"` → `"240k EV"` — the
+   well-documented number+unit garbling from `docs/voice-pipeline-feasibility.md`, not a WebGPU
+   artifact). WebGPU and WASM produced byte-identical text on all three clips — no numeric-precision
+   regression from running on GPU.
+2. **Prefill confirms the tone test: WebGPU is consistently ~10–14% faster**, real speech included.
+3. **Decode does not confirm the tone test — it couldn't, at 1–2 tokens.** With 16–17 real tokens,
+   WASM decodes in ~0.5–0.6 s vs WebGPU's ~1.2–1.4 s, a consistent 2–3× WASM advantage across all
+   three clips (see TL;DR above for why: per-step GPU dispatch overhead on a sequential, one-token-
+   at-a-time loop).
+
+Total (prefill + decode) is **~21–24 s (WebGPU) / ~22–26 s (WASM)** per clip — the two backends land
+within a few percent of each other overall, decode's WASM win largely offsetting prefill's WebGPU
+win. Both remain **~4–5× slower than this same M1's own Node/CPU number for turbo** (see
+`docs/apple-silicon-benchmark.md`'s addendum: 5.5–5.7 s/clip) — reinforcing, not softening, the "not
+worth it" verdict: this isn't a WebGPU-vs-WASM question, native CPU beats the entire in-browser path
+either way.
+
+### Caveats / what this does _not_ prove
+
+- **One machine, still no full E2E/slot-token score.** The real-audio update above spot-checks three
+  transcripts by eye against gold text (one exact match, two showing the domain's known, already-
+  corrected acoustic confusions) — a good sanity check, but not the full 89-clip scored run
+  `scripts/asr-browser-benchmark.mjs` would give. That script still can't drive this comparison
+  directly (no `device` option in `transcribe.ts`), so a full scored browser run remains future work
+  if the latency gap ever closes enough to justify it.
+- **The ~15–20% WebGPU-over-WASM gap is suspiciously small for a 650 MB model's matmuls**, and worth
+  a follow-up before fully writing WebGPU off: `dtype: "q8"` may not have good WebGPU kernel coverage
+  in this `onnxruntime-web` version, forcing many ops back onto the CPU/WASM path even under
+  `device: "webgpu"` (transformers.js has been reported to pair `device: "webgpu"` better with
+  `dtype: "fp16"` or `"q4"` than `"q8"` for exactly this reason). This session did not test other
+  dtypes — it used `q8` throughout to stay consistent with every other number in this doc and
+  `docs/asr-model-comparison.md`. A `dtype: "fp16"` re-run is the natural next experiment if turbo's
+  accuracy advantage is ever worth revisiting.
+- **Doesn't retest whisper-small on WebGPU.** The shipped CPU/WASM model was left alone; only the
+  turbo/WebGPU pairing this issue asked about was measured.

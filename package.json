@@ -2,6 +2,7 @@
   "name": "aidedx",
   "version": "0.0.1",
   "private": true,
+  "license": "GPL-3.0-or-later",
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "engines": {
@@ -22,7 +23,10 @@
     "coverage:intents": "node scripts/coverage-intents.ts",
     "llm:nlu-eval": "node scripts/llm-nlu-eval.ts",
     "generate:aliases": "node scripts/generate-aliases.ts",
-    "bench:asr-browser": "node scripts/asr-browser-benchmark.mjs"
+    "bench:asr-browser": "node scripts/asr-browser-benchmark.mjs",
+    "asr:transcribe": "node scripts/asr-transcribe.mjs",
+    "asr:score": "node scripts/asr-score-slots.mjs",
+    "eval:e2e": "node scripts/e2e-audio-intents.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -54,7 +58,9 @@
   },
   "pnpm": {
     "overrides": {
-      "onnxruntime-web": "1.27.0"
+      "onnxruntime-web": "1.27.0",
+      "adm-zip": ">=0.6.0",
+      "cookie": ">=0.7.0 <1"
     }
   }
 }

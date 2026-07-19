@@ -120,7 +120,7 @@ const PROGRAM_ID_TO_NAME: Record<number, string> = {
   [PROGRAMS.BETHE_EXT00]: "Bethe-ext",
 };
 
-function programName(id: number): string {
+export function programName(id: number): string {
   return PROGRAM_ID_TO_NAME[id] ?? `program ${id}`;
 }
 
@@ -137,16 +137,50 @@ function withDensity(series: ComputeSeries, density: number | undefined): Comput
 }
 
 /**
+ * True when `programId` has tabulated data for both `particleId` and
+ * `materialId`, per libdedx's own ion/material-availability lists for that
+ * program (`getParticles()` / `getMaterials()`). Two independent gaps hit
+ * this: a program's material table may be missing one element (PSTAR has no
+ * Boron data) while its ion table is missing a whole particle regardless of
+ * material (MSTAR only tabulates Z=2..18 — helium through argon — so it has
+ * no calcium/heavier-ion data at all, see docs/tts-eval-1000.md §2.2).
+ */
+export function programSupportsCombination(
+  service: LibdedxService,
+  programId: number,
+  particleId: number,
+  materialId: number,
+): boolean {
+  return (
+    service.getParticles(programId).some((p) => p.id === particleId) &&
+    service.getMaterials(programId).some((m) => m.id === materialId)
+  );
+}
+
+/**
  * Auto-select a stopping-power program for a particle, mirroring dedx_web's
  * "Auto" behavior closely enough for the deterministic path:
  *   proton → PSTAR, alpha → ASTAR, heavier ions → MSTAR.
- * The general Bethe (`DEFAULT`) program is avoided as an auto pick because its
- * adaptive CSDA integrator can recurse unboundedly at very low energies.
+ * Falls back to the general Bethe (`DEFAULT`) program when the specialized
+ * program has no data for the target particle or material — e.g. proton +
+ * Boron, where a stale libdedx materials-availability table used to falsely
+ * claim PSTAR covered Boron/Ni/Zr/In/Gd/Ta (fixed upstream by libdedx#144 /
+ * dedx_web#845); or calcium and heavier ions, which MSTAR doesn't tabulate at
+ * all regardless of material or energy (docs/tts-eval-1000.md §2.2). DEFAULT
+ * is otherwise avoided as an auto pick because its adaptive CSDA integrator
+ * can recurse unboundedly at very low energies; that risk is only taken here
+ * for combinations the specialized program can't compute anyway.
  */
-export function autoProgramForParticle(particleId: number): number {
-  if (particleId === 1) return PROGRAMS.PSTAR;
-  if (particleId === 2) return PROGRAMS.ASTAR;
-  return PROGRAMS.MSTAR;
+export function autoProgramForParticle(
+  particleId: number,
+  materialId: number,
+  service: LibdedxService,
+): number {
+  const specialized =
+    particleId === 1 ? PROGRAMS.PSTAR : particleId === 2 ? PROGRAMS.ASTAR : PROGRAMS.MSTAR;
+  return programSupportsCombination(service, specialized, particleId, materialId)
+    ? specialized
+    : PROGRAMS.DEFAULT;
 }
 
 /** Candidate programs to fan out over for a `compareDim: "program"` query. */
@@ -156,12 +190,17 @@ function compareProgramsForParticle(particleId: number): number[] {
   return [PROGRAMS.MSTAR, PROGRAMS.ICRU73, PROGRAMS.DEFAULT];
 }
 
-function resolveProgramId(intent: QueryIntent, particleId: number): number {
+export function resolveProgramId(
+  intent: QueryIntent,
+  particleId: number,
+  materialId: number,
+  service: LibdedxService,
+): number {
   if (intent.program) {
     const id = PROGRAM_NAME_TO_ID[normalizeProgramName(intent.program)];
     if (id !== undefined) return id;
   }
-  return autoProgramForParticle(particleId);
+  return autoProgramForParticle(particleId, materialId, service);
 }
 
 /** First element of a known-non-empty array, without a non-null assertion. */
@@ -274,15 +313,15 @@ function energiesMeVPerNucl(
 function energyBoundsError(
   service: LibdedxService,
   programId: number,
-  particleId: number,
+  particle: ResolvedParticle,
   energies: number[],
 ): string | null {
-  const min = service.getMinEnergy(programId, particleId);
-  const max = service.getMaxEnergy(programId, particleId);
+  const min = service.getMinEnergy(programId, particle.id);
+  const max = service.getMaxEnergy(programId, particle.id);
   for (const e of energies) {
     if (!Number.isFinite(e)) return `Energy ${e} is not a finite number`;
     if (e < min || e > max) {
-      return `Energy ${formatEnergyPerNucleon(e)} is outside the valid range ${formatEnergyPerNucleon(min)} to ${formatEnergyPerNucleon(max)} for this program/particle`;
+      return `Energy ${formatEnergyPerNucleon(e, particle.massNumber)} is outside the valid range ${formatEnergyPerNucleon(min, particle.massNumber)} to ${formatEnergyPerNucleon(max, particle.massNumber)} for this program/particle`;
     }
   }
   return null;
@@ -306,7 +345,7 @@ function forwardSeries(
     points: [],
   };
   withDensity(base, service.getDensity(material.id));
-  const boundsError = energyBoundsError(service, programId, particle.id, energies);
+  const boundsError = energyBoundsError(service, programId, particle, energies);
   if (boundsError) {
     base.error = boundsError;
     return base;
@@ -436,16 +475,18 @@ export function computeIntent(intent: QueryIntent, service: LibdedxService): Com
 
   if (intent.compareDim === "material") {
     const particle = resolveParticleOrThrow(reqFirst(intent.particles, "particle").match);
-    const programId = resolveProgramId(intent, particle.id);
     for (const m of intent.materials) {
       const material = resolveMaterialOrThrow(m.match);
+      // Resolved per material: the same particle can need different programs
+      // across materials (e.g. proton in water → PSTAR, proton in Boron → Bethe).
+      const programId = resolveProgramId(intent, particle.id, material.id, service);
       series.push(build(particle, material, programId, material.name));
     }
   } else if (intent.compareDim === "particle") {
     const material = resolveMaterialOrThrow(reqFirst(intent.materials, "material").match);
     for (const p of intent.particles) {
       const particle = resolveParticleOrThrow(p.match);
-      const programId = resolveProgramId(intent, particle.id);
+      const programId = resolveProgramId(intent, particle.id, material.id, service);
       series.push(build(particle, material, programId, particle.isotope || particle.name));
     }
   } else if (intent.compareDim === "program") {
@@ -459,7 +500,7 @@ export function computeIntent(intent: QueryIntent, service: LibdedxService): Com
     // points via the energies list.
     const particle = resolveParticleOrThrow(reqFirst(intent.particles, "particle").match);
     const material = resolveMaterialOrThrow(reqFirst(intent.materials, "material").match);
-    const programId = resolveProgramId(intent, particle.id);
+    const programId = resolveProgramId(intent, particle.id, material.id, service);
     series.push(build(particle, material, programId, material.name));
   }
 

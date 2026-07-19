@@ -22,6 +22,9 @@
     diskLabel={modelStatus.diskLabel}
     diskClass={modelStatus.diskClass}
     ramLabel={modelStatus.ramLabel}
+    ramTooltip={modelStatus.ramTooltip}
+    cpuLabel={modelStatus.cpuLabel}
+    cpuTooltip={modelStatus.cpuTooltip}
     hardwareLabel={modelStatus.hardware.label}
     showClear={modelStatus.showClear}
     onClear={() => modelStatus.openClearCache()}

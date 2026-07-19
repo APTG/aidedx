@@ -165,11 +165,11 @@ describe("renderAnswer — single (compareDim: none)", () => {
     });
 
     expect(renderAnswer(i, r)).toEqual([
-      "The energy for protons in water to reach a range of 10 cm is 100 MeV/nucl (PSTAR).",
+      "The energy for protons in water to reach a range of 10 cm is 100 MeV (PSTAR).",
     ]);
   });
 
-  it("renders an energyFromStp sentence", () => {
+  it("renders an energyFromStp sentence, using MeV/nucl for a heavier ion (issue #66)", () => {
     const i = intent({
       quantity: "energyFromStp",
       particles: [{ match: "carbon ion" }],
@@ -181,6 +181,7 @@ describe("renderAnswer — single (compareDim: none)", () => {
       quantity: "energyFromStp",
       series: [
         series({
+          particle: { id: 6, name: "Carbon", massNumber: 12, isotope: "¹²C" },
           program: { id: 16, name: "MSTAR" },
           points: [{ energyMeVPerNucl: 12, energy: 12 }],
         }),

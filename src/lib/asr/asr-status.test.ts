@@ -132,6 +132,16 @@ describe("asrStatus", () => {
     expect(store.transcribingStartedAt).toBeNull();
   });
 
+  it("runs the domain-vocabulary corrector (issue #87 Part B) on the final transcript", async () => {
+    mocks.workerTranscribe.mockResolvedValue("how far will a 60mm proton go");
+
+    const store = await loadStore();
+    await store.start();
+    await store.stop();
+
+    expect(store.transcript).toBe("how far will a 60 MeV proton go");
+  });
+
   it("updates tokensSoFar live as the worker reports tokens, and clears it on the next start()", async () => {
     mocks.workerTranscribe.mockImplementation(
       async (_pcm: Float32Array, onToken: (count: number) => void) => {
