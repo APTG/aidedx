@@ -20,18 +20,35 @@ comparison table. See `scripts/submit-whisper-bench.sh` for the full plan (7 Whi
 completed combo is `fp32`, English (`tts-qwen-1000-v3`) only. No Polish data (`tts-piper-1000-pl`,
 `tts-qwen-1000-pl`) at all. `base`/`tiny` (lane 4) never started.
 
-**Why it stopped so early is not established.** All 3 completed combos finished within a roughly
-40-minute window of each other (17:54–18:36) despite very different per-clip costs (small ~2.3s/clip
-vs. medium/turbo ~4.5s/clip) — consistent with all 5 lanes being cut off near-simultaneously rather
-than each lane independently exhausting a 24h walltime on its own schedule. The per-lane `.log`
-scoring files this job itself produced were all empty (0 bytes) — same pattern
-`docs/tts-eval-1000-v3.md`/`docs/tts-eval-1000-pl.md` hit before, where the job's own scoring step
-didn't finish before the run ended — so all scoring below was computed locally from the (genuinely
-complete, 1000/1000-record) transcripts, not taken from the job's own output. **Next step: check
-`sacct -j 2804461 --format=JobID,Elapsed,State,ExitCode` on Athena** to see whether this was an
-actual walltime/QOS cutoff (the requested 24h may exceed an undocumented real cap — see
-`scripts/submit-whisper-bench.sh`'s own "no documented cluster-imposed max walltime exists" note)
-or something else (cancellation, node failure), before resubmitting the remaining lanes.
+**Root cause found — two distinct bugs, not a walltime cutoff.** Reading the `.err` logs (thread-
+affinity warnings from `onnxruntime-node` aside) turned up the real errors:
+
+1. **Lanes 0 and 1 (large-v3, large-v2): the fp32 `encoder_model.onnx_data` download failed.**
+   Models over ~2GB get split by ONNX into a small `.onnx` header plus a `.onnx_data` companion
+   holding the actual weights; for both lanes the header downloaded but the companion didn't
+   (`ls .hf-cache/.../onnx/` confirmed it was simply absent, not a partial/corrupt file).
+   `large-v3-turbo` needs the identical split-file shape and downloaded fine, so this looks like
+   HF CDN contention from 5 lanes fetching concurrently at job start, not a hard library bug (a
+   real bug would fail every external-data model, not 2 of 3). `prefetch-whisper-models.mjs`
+   exits 1 on any failed model in its batch, and `submit-whisper-bench.sh`'s `set -euo pipefail`
+   turned that single failed download into the **entire lane dying before it transcribed a single
+   clip** — losing the other model (q8, which had already succeeded) along with it.
+2. **Lanes 2, 3, 4 (turbo, medium, small/base/tiny): died right at the first scoring call**, with
+   an empty `.log` and no `.json` output — the exact same symptom `docs/tts-eval-1000-v3.md` and
+   `docs/tts-eval-1000-pl.md` both attributed to "the job's own scoring step didn't finish," an
+   explanation that was never actually confirmed (no `sacct`/exit-code check was done for either
+   prior run). Given the identical symptom recurring 3-for-3, this reads more like a reproducible
+   scoring-stage failure under `set -e` than three independent walltime coincidences, but the
+   `.err` content for these specific combos wasn't captured this time to confirm the exact
+   exception — still an open thread if it recurs.
+
+**Fixed in this PR:** `submit-whisper-bench.sh`'s per-model/per-combo steps (prefetch, transcribe,
+each scoring pass) are now wrapped so a single failure is logged and skipped (`continue`) rather
+than fatal to the rest of the lane — a flaky download for one model can no longer cost you the
+other 5. `prefetch-whisper-models.mjs` also gained a 3-attempt retry with backoff on each model
+fetch, directly targeting the demonstrated transient-download-failure mode. All scoring below was
+computed locally from the (genuinely complete, 1000/1000-record) transcripts, matching the existing
+convention from the prior two runs.
 
 ## 2. What the 3 completed combos show (English, fp32, `tts-qwen-1000-v3`)
 
@@ -87,10 +104,13 @@ signal that these specific synthesized voices are hard for reasons upstream of t
 
 Not enough data yet to answer the benchmark's actual question (how do all 7 sizes compare, in both
 languages, at both precisions). What's here is a real but small slice: 3 English-only fp32 points.
-**Before resubmitting:** check why job 2804461 stopped after ~1 combo per lane instead of running
-toward its 24h budget — if there's a real, lower walltime cap on this partition/QOS, the lane
-structure in `scripts/submit-whisper-bench.sh` needs to shrink (e.g., one combo per array task
-instead of 2–18) rather than just resubmitting the same lanes and hitting the same wall again.
+Root cause is now understood and fixed (§1) — `scripts/submit-whisper-bench.sh` no longer lets one
+model's flaky download or one scoring pass's failure take down an entire lane's remaining work, and
+`prefetch-whisper-models.mjs` retries a failed fetch 3 times before giving up. **Ready to resubmit**
+(`sbatch scripts/submit-whisper-bench.sh` — safe to resubmit the whole array; already-transcribed
+combos are skipped via the existing per-clip resume). Still worth watching for lanes 2–4's
+scoring-stage failure recurring, since its exact cause wasn't confirmed this round (their `.err`
+content wasn't captured) — if it does, capture the `.err` for whichever combo dies next.
 
 ## 4. Files
 

@@ -88,19 +88,46 @@ const MODELS =
         ? MODELS_NEW
         : [...MODELS_EXISTING, ...MODELS_NEW];
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// A whisper-model-bench run (job 2804461) hit transient download failures for two of the four
+// large-model fp32 fetches (large-v2-ONNX, large-v3-ONNX both failed to fetch their multi-GB
+// ".onnx_data" external-weights companion; large-v3-turbo, needing the identical file shape,
+// succeeded) while 5 SLURM array lanes downloaded concurrently at job start — inconsistent with
+// a hard library bug (that would fail every external-data model, not 2 of 3), consistent with
+// HF CDN contention/timeouts under concurrent load. 3 attempts with backoff absorbs that class
+// of transient failure without masking a genuinely missing/renamed model repo (which fails
+// identically on every attempt and still surfaces as FAILED below).
+const RETRY_DELAYS_MS = [5000, 15000];
+
+async function fetchModel(modelId, dtype) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      console.log(`  processor...${attempt > 0 ? ` (retry ${attempt})` : ""}`);
+      await AutoProcessor.from_pretrained(modelId);
+      console.log("  model weights...");
+      await WhisperForConditionalGeneration.from_pretrained(modelId, { dtype });
+      console.log("  done.");
+      return true;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (attempt >= RETRY_DELAYS_MS.length) {
+        console.error(`  FAILED after ${attempt + 1} attempts: ${message}`);
+        return false;
+      }
+      const delayMs = RETRY_DELAYS_MS[attempt];
+      console.error(`  attempt ${attempt + 1} failed: ${message} — retrying in ${delayMs}ms`);
+      await sleep(delayMs);
+    }
+  }
+}
+
 let failed = false;
 for (const [modelId, dtype] of MODELS) {
   console.log(`\n=== ${modelId} [${dtype}] ===`);
-  try {
-    console.log("  processor...");
-    await AutoProcessor.from_pretrained(modelId);
-    console.log("  model weights...");
-    await WhisperForConditionalGeneration.from_pretrained(modelId, { dtype });
-    console.log("  done.");
-  } catch (err) {
-    console.error(`  FAILED: ${err instanceof Error ? err.message : String(err)}`);
-    failed = true;
-  }
+  if (!(await fetchModel(modelId, dtype))) failed = true;
 }
 
 if (failed) {

@@ -47,11 +47,23 @@
 # for this job instead, since the GPU sits idle throughout.
 #
 # --- No manual prerequisite ---
-# Each lane prefetches its own (model, dtype) pairs itself, as Step 0 below, via
-# `prefetch-whisper-models.mjs --pairs` — no separate `node` invocation needed before
+# Each lane prefetches its own (model, dtype) pairs itself, as part of the per-model loop below,
+# via `prefetch-whisper-models.mjs --pairs` — no separate `node` invocation needed before
 # submitting, unlike docs/local-model-cache.md's usual "run on a fast connection first"
 # convention for the shipped app's models. Every model's already cached read is a fast no-op
 # on resubmit, same as everything else in this script.
+#
+# --- Failure isolation (issue #27 follow-up job 2804461) ---
+# A first run hit two distinct failures: (1) large-v2-ONNX's fp32 encoder/decoder need an
+# external-data ".onnx_data" companion file (anything over ~2GB gets split by ONNX) that failed
+# to download — confirmed via `ls .hf-cache/.../onnx/`: the small ".onnx" header landed but its
+# ".onnx_data" companion never did, not a partial/corrupt file, just absent; (2) prefetching one
+# model in a lane's `--pairs` list exits 1 on ANY failure in the batch, which under this script's
+# `set -euo pipefail` killed the ENTIRE lane before it transcribed a single clip — losing every
+# other (working) model in that lane along with the one that failed to download. Each
+# model/dataset combo below is now wrapped so a failure (prefetch, transcribe, or score) is
+# logged and skipped via `continue`, not fatal to the rest of the lane — a flaky multi-GB
+# download for one model shouldn't cost you the other 5.
 #
 # --- Time budget ---
 # 24h per lane, generous rather than measured (issue #27 follow-up: no prior run of
@@ -134,14 +146,27 @@ esac
 
 echo "=== Lane $SLURM_ARRAY_TASK_ID ($LANE_NAME): ${#MODELS[@]} model/dtype pairs x ${#DATASETS[@]} datasets ==="
 
-echo "=== Step 0: prefetch this lane's ${#MODELS[@]} model/dtype pairs ==="
-node scripts/prefetch-whisper-models.mjs --pairs "${MODELS[@]}"
+FAILED_STEPS=()
 
 for model_entry in "${MODELS[@]}"; do
   IFS=':' read -r model_id dtype <<<"$model_entry"
   # Filesystem-safe short name for output filenames: strip the "onnx-community/" prefix only
   # (every model id here is already slash-free after that, no further sanitizing needed).
   model_short="${model_id#onnx-community/}"
+
+  # Prefetch is per-model, not once for the whole lane's MODELS list — so one model's download
+  # failure (transient or not) can't take the other models in this lane down with it. Wrapped in
+  # `if` rather than relying on `set -e`: a failure here just skips this one model's combos
+  # (`continue` to the outer loop) instead of killing the rest of the lane (issue #27 follow-up:
+  # job 2804461's large-v2/large-v3 fp32 downloads both failed transiently, and because prefetch
+  # used to run once for the whole lane under `set -e`, that took every other model in the same
+  # lane down too — including ones that would have downloaded and transcribed fine).
+  echo "[prefetch] $model_id [$dtype]"
+  if ! node scripts/prefetch-whisper-models.mjs --pairs "$model_entry"; then
+    echo "SKIPPING $model_id [$dtype] — prefetch failed, see output above" >&2
+    FAILED_STEPS+=("prefetch:$model_entry")
+    continue
+  fi
 
   for dataset_entry in "${DATASETS[@]}"; do
     IFS=':' read -r audio_dir manifest lang dataset_label <<<"$dataset_entry"
@@ -150,19 +175,30 @@ for model_entry in "${MODELS[@]}"; do
 
     echo "--- $combo_label ---"
     echo "[transcribe] $model_id [$dtype] lang=$lang over $audio_dir"
-    node scripts/asr-transcribe-manifest.mjs "$audio_dir" "$manifest" "$model_id" "$dtype" \
-      "$transcript_out" --lang "$lang"
+    if ! node scripts/asr-transcribe-manifest.mjs "$audio_dir" "$manifest" "$model_id" "$dtype" \
+      "$transcript_out" --lang "$lang"; then
+      echo "SKIPPING $combo_label scoring — transcription failed, see output above" >&2
+      FAILED_STEPS+=("transcribe:$combo_label")
+      continue
+    fi
 
     echo "[score] $combo_label"
     for mode in base ext new; do
       flag=""
       [ "$mode" = "ext" ] && flag="--ext"
       [ "$mode" = "new" ] && flag="--new"
-      node scripts/asr-score-slots-generic.mjs "$manifest" "$transcript_out" $flag \
+      if ! node scripts/asr-score-slots-generic.mjs "$manifest" "$transcript_out" $flag \
         --json "$RESULTS_DIR/${combo_label}__score-${mode}.json" \
-        | tee "$RESULTS_DIR/${combo_label}__score-${mode}.log"
+        | tee "$RESULTS_DIR/${combo_label}__score-${mode}.log"; then
+        echo "SKIPPING $combo_label score-${mode} — scorer failed, see output above" >&2
+        FAILED_STEPS+=("score-${mode}:${combo_label}")
+      fi
     done
   done
 done
 
 echo "=== Lane $SLURM_ARRAY_TASK_ID ($LANE_NAME) done — results in $RESULTS_DIR ==="
+if [ "${#FAILED_STEPS[@]}" -gt 0 ]; then
+  echo "=== ${#FAILED_STEPS[@]} step(s) failed and were skipped (rest of the lane still ran): ==="
+  printf '  %s\n' "${FAILED_STEPS[@]}"
+fi
