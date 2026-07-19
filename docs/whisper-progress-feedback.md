@@ -396,17 +396,17 @@ class of problem takes everywhere, so §1-§3's findings aren't a one-library pe
 All paths relative to `node_modules/@huggingface/transformers/` at the pinned `4.2.0` (reproduce
 via `pnpm install` on this branch):
 
-| Claim                                                              | File : lines                                                         |
+| Claim | File : lines |
 | ------------------------------------------------------------------ | -------------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------ |
-| Streamer classes + public re-export                                | `src/generation/streamers.js` (whole file); `src/transformers.js:45` |
-| `generate()` calls `streamer.put()`/`.end()`                       | `src/models/modeling_utils.js:944-946,1013-1015,1030-1032`           |
-| Pipeline forwards call kwargs (incl. `streamer`) into `generate()` | `src/pipelines/automatic-speech-recognition.js` (`_call_whisper`)    |
-| `WhisperTimeStampLogitsProcessor` gated on `return_timestamps`     | `src/models/whisper/modeling_whisper.js:125-128`                     |
+| Streamer classes + public re-export | `src/generation/streamers.js` (whole file); `src/transformers.js:45` |
+| `generate()` calls `streamer.put()`/`.end()` | `src/models/modeling_utils.js:944-946,1013-1015,1030-1032` |
+| Pipeline forwards call kwargs (incl. `streamer`) into `generate()` | `src/pipelines/automatic-speech-recognition.js` (`_call_whisper`) |
+| `WhisperTimeStampLogitsProcessor` gated on `return_timestamps` | `src/models/whisper/modeling_whisper.js:125-128` |
 | `<                                                                 | notimestamps                                                         | >`auto-strip only runs when caller omits`decoder_input_ids` | `src/models/whisper/modeling_whisper.js:79-94,120-123` |
-| `_generate_with_seek` still forwards `streamer` via `kwargs`       | `src/models/whisper/modeling_whisper.js:157-165,248-256`             |
-| 30s native segment size                                            | `src/models/whisper/modeling_whisper.js:207-212`                     |
-| Seek loop's single-pass behavior for short audio                   | `src/models/whisper/modeling_whisper.js:310-329`                     |
-| Processor defensively handles a trailing `no_timestamps_token_id`  | `src/generation/logits_process.js:286-288`                           |
+| `_generate_with_seek` still forwards `streamer` via `kwargs` | `src/models/whisper/modeling_whisper.js:157-165,248-256` |
+| 30s native segment size | `src/models/whisper/modeling_whisper.js:207-212` |
+| Seek loop's single-pass behavior for short audio | `src/models/whisper/modeling_whisper.js:310-329` |
+| Processor defensively handles a trailing `no_timestamps_token_id` | `src/generation/logits_process.js:286-288` |
 
 ### Ready-to-run timing script (not yet executed successfully — §2)
 

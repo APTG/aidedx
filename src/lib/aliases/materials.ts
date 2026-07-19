@@ -190,9 +190,11 @@ const COMPOUND_MATERIALS: ReadonlyArray<[number, string]> = [
 
 /** Full canonical catalogue: elemental targets (Z=1..98) + compounds. */
 export const MATERIALS: readonly CanonicalMaterial[] = [
-  ...ELEMENTS.filter((e) => e.z <= 98).map(
-    (e): CanonicalMaterial => ({ id: e.z, name: e.name, kind: "element" }),
-  ),
+  ...ELEMENTS.filter((e) => e.z <= 98).map((e): CanonicalMaterial => ({
+    id: e.z,
+    name: e.name,
+    kind: "element",
+  })),
   ...COMPOUND_MATERIALS.map(([id, name]): CanonicalMaterial => ({ id, name, kind: "compound" })),
 ];
 
