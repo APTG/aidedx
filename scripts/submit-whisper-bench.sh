@@ -98,10 +98,18 @@ RESULTS_DIR="${RESULTS_DIR:-eval/results/whisper-bench-${SLURM_ARRAY_JOB_ID}}"
 mkdir -p "$RESULTS_DIR"
 
 # --- Datasets: audio dir : manifest : lang : short label ---
+# issue #106: the two Chatterbox Polish batches (pl-chat-clone, pl-chat-native) only exist once
+# scripts/submit-chatterbox-pl.sh has completed on Athena — resubmitting this benchmark before
+# that job finishes won't crash (each combo below is already individually failure-isolated,
+# `continue`s past a missing manifest.json like any other per-combo failure), but will just log
+# those 2x14=28 combos as skipped for nothing. Confirm both
+# eval/audio/tts-chatterbox-{clone,native}-1000-pl/manifest.json exist first.
 DATASETS=(
   "eval/audio/tts-qwen-1000-v3:eval/audio/tts-qwen-1000-v3/manifest.json:en:en-v3"
   "eval/audio/tts-piper-1000-pl:eval/audio/tts-piper-1000-pl/manifest.json:pl:pl-piper"
   "eval/audio/tts-qwen-1000-pl:eval/audio/tts-qwen-1000-pl/manifest.json:pl:pl-qwen"
+  "eval/audio/tts-chatterbox-clone-1000-pl:eval/audio/tts-chatterbox-clone-1000-pl/manifest.json:pl:pl-chat-clone"
+  "eval/audio/tts-chatterbox-native-1000-pl:eval/audio/tts-chatterbox-native-1000-pl/manifest.json:pl:pl-chat-native"
 )
 
 # --- Lanes: one per SLURM_ARRAY_TASK_ID, each a list of "modelId:dtype" pairs ---
