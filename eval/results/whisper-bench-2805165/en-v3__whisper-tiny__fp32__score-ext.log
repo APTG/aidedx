@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-tiny [fp32] +prompt ext-corrector ===
+clips: 1000   median inference: 1.0s   load: 0.9s
+clip-level all-slots-correct:  raw 457/1000 (45.7%)   corrected 504/1000 (50.4%)
+
+by quantity (corrected):
+  csdaRange        274/600 (45.7%)
+  energyFromRange  176/250 (70.4%)
+  stoppingPower    54/150 (36.0%)
+
+by scenario type (corrected):
+  single     399/800 (49.9%)
+  energy     52/100 (52.0%)
+  material   37/55 (67.3%)
+  particle   16/45 (35.6%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      351/698 (50.3%)
+  clinical-core  153/302 (50.7%)
+
+by voice profile (corrected), worst 10:
+  custom-ryan-happy                5/21 (23.8%)
+  irish-male-sleepy                6/21 (28.6%)
+  nigerian-female-hurried          4/14 (28.6%)
+  japanese-accented-female-cheerful 8/24 (33.3%)
+  british-female-excited-fast      5/14 (35.7%)
+  scottish-female-brisk            5/14 (35.7%)
+  german-accented-female-brisk     9/25 (36.0%)
+  singaporean-male-hurried         8/22 (36.4%)
+  jamaican-female-relaxed          4/11 (36.4%)
+  australian-female-cheerful       8/21 (38.1%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   97.5% ->  97.5%  (n=1250)
+  particle   83.0% ->  83.0%  (n=1045)
+  material   96.3% ->  96.3%  (n=1085)
+  number     91.4% ->  91.5%  (n=1152)
+  unit       61.8% ->  70.2%  (n=1152)
+  ALL        86.1% ->  87.9%  (n=5684)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         47.7% ->  60.2%  (n=482)
+  MeV/nucl    48.8% ->  59.6%  (n=322)
+  keV         92.8% ->  92.8%  (n=83)
+  GeV         26.7% ->  40.0%  (n=15)
+  cm          98.4% ->  98.4%  (n=184)
+  mm          95.5% ->  95.5%  (n=66)
+
+failing clips after correction (496 total, showing first 30):
+  rng-0003 missing[unit]: determine the range of 20mmV per nucleon carbon, 12 ions in gold
+  rng-0005 missing[number,unit]: before coming to rest, how far does the AMEV helium-3 ion get through gold?
+  rng-0007 missing[particle]: range of a 60-MeV-dueteron in gold, please
+  rng-0010 missing[unit]: range of 100 MAV, proton, and silicon dioxide, please?
+  rng-0012 missing[particle]: Von the CSDA range for 15 MEV trytons and graphite.
+  rng-0014 missing[unit]: How far will a 15NEV helium-3 ion travel through boron oxide?
+  rng-0016 missing[particle,unit]: How far will a 400-in EV per nucleon ion 56-ion travel through skin?
+  rng-0017 missing[number]: Quick one, how far does a 360-MeV proton go in boron oxide?
+  rng-0018 missing[unit]: Find the CSDA range for 100MAV protons in graphite
+  rng-0019 missing[unit]: Before coming to rest, how far does a 100-mov proton get through PMMA?
+  rng-0021 missing[particle]: before coming to rest, how far does a 40-MeV try to get through polycarbonate?
+  rng-0022 missing[unit]: Find the CSDA range for 250 MAV, per nucleon, sulfur-32 ions, and graphite
+  rng-0023 missing[particle,unit]: How deep does a 40-MV-Duteron penetrate into brain?
+  rng-0025 missing[unit]: What is the CSTA range of a 70-MV proton and polystyrene?
+  rng-0030 missing[particle]: determine the range of 10 MeV-duteron's and cortical bone.
+  rng-0031 missing[particle]: So, roughly how far would a 40-MeV per nucleon phosphorous 31 ion make it into polyethylene?
+  rng-0032 missing[particle,number,unit]: So roughly how far would I want to get EMEV per nucleon, let 288 ion make it into cortical bone?
+  rng-0033 missing[unit]: How deep does a 50mmV per Nucleon uranium 238 ion penetrate into water?
+  rng-0034 missing[particle,material]: Quick one, how far does a 15 MV dooderon go in captain?
+  rng-0036 missing[particle,unit]: Before coming to rest, how far does a 400 MAV per nucleon crypton 84 ion get through soft tissue?
+  rng-0038 missing[particle]: quick one, how far does it 8 MeV dooteron go in muscle tissue?
+  rng-0040 missing[unit]: What's the range of a 400-MV-Pernucleon lithium-7 ion in boron oxide?
+  rng-0041 missing[particle]: What's the range of a 20-MeV trighten in air?
+  rng-0044 missing[particle,number,unit]: range of ADMEV, DODERON, and Pyrex glass, please?
+  rng-0048 missing[particle]: determine the range of 15 MeV-duteron's in gold.
+  rng-0049 missing[unit]: range of a 60-MV alpha particle in polycarbonate, please
+  rng-0050 missing[unit]: How far will a 60-MAV triton travel through polycarbonate?
+  rng-0051 missing[material]: How deep does a 15-MeV triton penetrate into captain?
+  rng-0053 missing[particle]: before coming to rest, how far does a 40MEV dooderon get through silicon dioxide?
+  rng-0057 missing[unit]: What's the range of a 250 MIV proton in a 150 tissue equivalent plastic?
+
+wrote eval/results/whisper-bench-2805165/en-v3__whisper-tiny__fp32__score-ext.json

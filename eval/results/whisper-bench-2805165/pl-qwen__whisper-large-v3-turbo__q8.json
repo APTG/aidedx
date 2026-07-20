@@ -1,0 +1,1654 @@
+{
+  "modelId": "onnx-community/whisper-large-v3-turbo",
+  "dtype": "q8",
+  "lang": "pl",
+  "withPrompt": true,
+  "loadS": 2.185,
+  "records": [
+    {
+      "id": "pl-rng-0001",
+      "raw": "A blitz, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazieg, dazie",
+      "secs": 16.701,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0002",
+      "raw": "Jaka leko doleci protona oczu, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie",
+      "secs": 15.587,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0003",
+      "raw": "Jak daleko dotzyło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło, jak doło",
+      "secs": 17.097,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0004",
+      "raw": "Powitsmi, jak dole, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita zbita, kość zbita zbita, kość zbita zbita zbita, kość zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zb",
+      "secs": 17.3,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0005",
+      "raw": "Obliszcząc zazieg, potonu, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węg",
+      "secs": 17.814,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0006",
+      "raw": "Po wwesmi, jak doleko, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita",
+      "secs": 16.501,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0007",
+      "raw": "Człagęg, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka,",
+      "secs": 18.088,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0008",
+      "raw": "Czaki, zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna",
+      "secs": 16.656,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0009",
+      "raw": "Ilewe nośc zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg zazieg",
+      "secs": 17.877,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0010",
+      "raw": "Jak daleko, doktor, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa, nukleon, kwa,",
+      "secs": 15.233,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0011",
+      "raw": "Jak lebo ko niekni, dżon, węgla, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon,",
+      "secs": 16.313,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0012",
+      "raw": "Obliczca się zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, z",
+      "secs": 17.452,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0013",
+      "raw": "I lewwinozyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzy",
+      "secs": 16.922,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0014",
+      "raw": "Jak te leko, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita zbita, kość zbita zbita, kość zbita zbita, kość zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zb",
+      "secs": 15.751,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0015",
+      "raw": "Czbita, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwa",
+      "secs": 15.857,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0016",
+      "raw": "Poddać za sięg, protona, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna",
+      "secs": 18.334,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0017",
+      "raw": "Poet zmięg, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko, jak toleko,",
+      "secs": 16.803,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0018",
+      "raw": "Jaki zazieg ma protona energi, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie, zezpie",
+      "secs": 17.545,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0019",
+      "raw": "Powietzmi, jak doleko zacijon, lietu ołow, jak zbita, węgla, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, z",
+      "secs": 15.333,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0020",
+      "raw": "Obliczazza sek dojtero ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, oj",
+      "secs": 16.457,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0021",
+      "raw": "Jak daleko do tleku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku,ku, doku, doku,ku, doku, doku, doku, doku,ku, doku,ku, doku,ku, doku, doku,ku, doku,ku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku, doku",
+      "secs": 15.661,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0022",
+      "raw": "Powdżazja zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita z",
+      "secs": 15.705,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0023",
+      "raw": "Dioak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak, dalak",
+      "secs": 18.61,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0024",
+      "raw": "Ilewino zizazieg, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezwęgla-3, zezw",
+      "secs": 17.197,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0025",
+      "raw": "I'llwinna si, zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna",
+      "secs": 16.65,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0026",
+      "raw": "Podasz, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita",
+      "secs": 18.928,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0027",
+      "raw": "Obliet zasyg, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita",
+      "secs": 17.092,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0028",
+      "raw": "Oblicza się zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zb",
+      "secs": 18.145,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0029",
+      "raw": "Iac lebo, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, ko",
+      "secs": 17.95,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0030",
+      "raw": "Jakie zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg,",
+      "secs": 18.33,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0031",
+      "raw": "Jaka dalek o doleci proton o energię, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, oj",
+      "secs": 17.181,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0032",
+      "raw": "Jak lebo koch u niekni, proton, ołów, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, niek, nie",
+      "secs": 16.724,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0033",
+      "raw": "iak kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, k",
+      "secs": 15.997,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0034",
+      "raw": "Podasz zaziek pro tano, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, o",
+      "secs": 17.501,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0035",
+      "raw": "Dzbita, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwa",
+      "secs": 18.581,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0036",
+      "raw": "Żak daleko doce trójton o energii Czwa i M.",
+      "secs": 5.646,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0037",
+      "raw": "Ile venosi zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasy",
+      "secs": 18.725,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0038",
+      "raw": "Iluwinnozy zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zaz",
+      "secs": 15.566,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0039",
+      "raw": "Ablec zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita",
+      "secs": 16.166,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0040",
+      "raw": "Jak daleko do trezonka, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zb",
+      "secs": 17.139,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0041",
+      "raw": "Żak dalek oj, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon",
+      "secs": 18.412,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0042",
+      "raw": "jak daleko dolec, zj, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon",
+      "secs": 15.212,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0043",
+      "raw": "Czakweboko, nikt nie, kwa, nikt nie, kwa, nikt nie, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt, kwa, nikt",
+      "secs": 18.139,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0044",
+      "raw": "Padaż zaśięg, konu, ksęg, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zb",
+      "secs": 15.61,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0045",
+      "raw": "Podaż zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita",
+      "secs": 17.844,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0046",
+      "raw": "Oblicza zjeg, jon węgla, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, zjeg, z",
+      "secs": 18.646,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0047",
+      "raw": "Jak daleko dolego dolego, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita,",
+      "secs": 15.228,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0048",
+      "raw": "Czaki jesna zzaki, zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna",
+      "secs": 15.087,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0049",
+      "raw": "Dzja, kiw, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa",
+      "secs": 17.6,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0050",
+      "raw": "Jaggi zaziagm maja, ksamo, ołów, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, ksamo, k",
+      "secs": 15.777,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0051",
+      "raw": "Człaki zazji, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni",
+      "secs": 15.695,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0052",
+      "raw": "Jak to leko, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, k",
+      "secs": 19.363,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0053",
+      "raw": "Jak lebok, mwęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nę",
+      "secs": 18.453,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0054",
+      "raw": "Jak daleko doleci, jon węgla, o energi, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, z",
+      "secs": 16.81,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0055",
+      "raw": "I levinno zizacza się zbita, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie",
+      "secs": 17.346,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0056",
+      "raw": "Dzbita, kważywęglan, zbita, kważywęglan, zbita, kważywęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawę",
+      "secs": 17.66,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0057",
+      "raw": "Czbita, kwa, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita zbita, kość zbita zbita, kość zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zb",
+      "secs": 17.608,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0058",
+      "raw": "Jak daleko doleczi, jon wapnia, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, o",
+      "secs": 16.335,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0059",
+      "raw": "Podach zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg,",
+      "secs": 16.609,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0060",
+      "raw": "Powiedz mi, jak daleko za to, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do, jak do",
+      "secs": 16.159,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0061",
+      "raw": "Jaglebowo, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, ko",
+      "secs": 16.74,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0062",
+      "raw": "Jakkolepoko, nikdypoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko, niepoko",
+      "secs": 17.86,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0063",
+      "raw": "Jak to leko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko doko",
+      "secs": 16.587,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0064",
+      "raw": "Obliczca zjegg, tritonuwa, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nrgla, nr",
+      "secs": 15.67,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0065",
+      "raw": "I levinno zizazja zjagprotojnę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę zjagrę z",
+      "secs": 16.868,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0066",
+      "raw": "Poda za zazieg, doktoronu o energi ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, ojnę, oj",
+      "secs": 15.524,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0067",
+      "raw": "Jakta leko, doktor, doktor, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon,",
+      "secs": 15.896,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0068",
+      "raw": "Ilewęgnozysza się zbita, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie, nie,",
+      "secs": 15.261,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0069",
+      "raw": "Podbog, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, kwa, zbita, k",
+      "secs": 16.716,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0070",
+      "raw": "Czaki zaz jak ma zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską, zaską",
+      "secs": 17.854,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0071",
+      "raw": "Jak dalek odlewęgla, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa",
+      "secs": 17.236,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0072",
+      "raw": "Powwęcmi, jak tlę, jak tlę, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa",
+      "secs": 16.568,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0073",
+      "raw": "jak tlęgla, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa",
+      "secs": 15.467,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0074",
+      "raw": "jak daleko do trego, żon, męgla, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna,",
+      "secs": 14.546,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0075",
+      "raw": "Żak, dalek, doku, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, z",
+      "secs": 16.472,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0076",
+      "raw": "Żak daleko dolecijon argonu uenergi a 30 meV na nukleon dwutlenku krzemu.",
+      "secs": 4.906,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0077",
+      "raw": "Powwitzwc mię, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęgla, jak dęg",
+      "secs": 15.4,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0078",
+      "raw": "Wszelkie, kważywęglan, zbita, kważywęglan, zbita, kważywęglan, zbita, kważywęglan, zbita, kważywęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawęglan, zbitawę",
+      "secs": 16.6,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0079",
+      "raw": "Obličc zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasyg, zasy",
+      "secs": 16.189,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0080",
+      "raw": "Dzeki jest zzazieg, zzazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, z",
+      "secs": 19.131,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0081",
+      "raw": "Chyakweboko, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon,",
+      "secs": 15.603,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0082",
+      "raw": "Dziaki, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zeski, zes",
+      "secs": 19.799,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0083",
+      "raw": "Poddaż zazieg, dżon nukleon, nukleon, węgla, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, z",
+      "secs": 16.908,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0084",
+      "raw": "Čakujcie z zjejg, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej",
+      "secs": 16.382,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0085",
+      "raw": "Ili w nocleon, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, z",
+      "secs": 17.071,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0086",
+      "raw": "Dzjaki, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dzia, dz",
+      "secs": 17.981,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0087",
+      "raw": "Jakta leko doleczy, jon żelaza, ojnęgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla, nukleon, węgla,",
+      "secs": 18,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0088",
+      "raw": "Obliczza, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, z",
+      "secs": 15.723,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0089",
+      "raw": "Jagda leko dole, czy, jon węgla, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita",
+      "secs": 17.78,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0090",
+      "raw": "Paśmi, jak, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita zbita, kość zbita, kość zbita zbita, kość zbita zbita, kość zbita zbita, kość zbita zbita zbita z",
+      "secs": 17.564,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0091",
+      "raw": "Jak lepoko niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek niek",
+      "secs": 18.506,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0092",
+      "raw": "Powiedzmy, jak daleko zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak",
+      "secs": 17.701,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0093",
+      "raw": "jak daleko do trezywęglan, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol węgla, kol",
+      "secs": 15.415,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0094",
+      "raw": "Dzbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, z",
+      "secs": 17.862,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0095",
+      "raw": "Podarzaższażżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżżż",
+      "secs": 16.714,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0096",
+      "raw": "Paraj, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza, zza,",
+      "secs": 16.315,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0097",
+      "raw": "Jak daleko dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolegogo, dolegogo, dolego, dolegogo, dolegogo, dolegogo, dolego, dolego, dolegogo, dolego, dolegogo, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego, dolego,",
+      "secs": 21.209,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0098",
+      "raw": "Powwitzmi, jak, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita zbita, kość zbita zbita, kość zbita zbita, kość zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita",
+      "secs": 16.031,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0099",
+      "raw": "Podetz, jak, żonu, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon, żon,",
+      "secs": 18.486,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0100",
+      "raw": "Czjaki jesdziwęg, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni kwaśni, kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni",
+      "secs": 16.676,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0101",
+      "raw": "Jak daleko do trego, jaka, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita,",
+      "secs": 17.685,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0102",
+      "raw": "Pozaższa, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita,",
+      "secs": 16.319,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0103",
+      "raw": "Powwęc, jak, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę, zbę",
+      "secs": 16.994,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0104",
+      "raw": "Powietzmi, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te leko, jak te",
+      "secs": 16.047,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0105",
+      "raw": "Jak doleko doleko, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, k",
+      "secs": 16.764,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0106",
+      "raw": "Oblicz, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zb",
+      "secs": 15.853,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0107",
+      "raw": "Czaki za sijagma, doktoronu, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi, nrgi,",
+      "secs": 15.524,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0108",
+      "raw": "Czaki zasyagma, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, z",
+      "secs": 15.159,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0109",
+      "raw": "Jak daleko doktor, doktor, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor, kwa, doktor,",
+      "secs": 16.64,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0110",
+      "raw": "Iluwinnozy, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, z",
+      "secs": 16.051,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0111",
+      "raw": "Powwitzwaj, jak, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zb",
+      "secs": 15.635,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0112",
+      "raw": "jak daleko doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita, jak doce zbita zbita, jak doce zbita, jak doce zbita zbita zbita zbita zbita zbita zbita z",
+      "secs": 16.59,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0113",
+      "raw": "Czaki jest zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zb",
+      "secs": 15.229,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0114",
+      "raw": "Podaś, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazię",
+      "secs": 16.332,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0115",
+      "raw": "powietz, mięgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęgla-nęg",
+      "secs": 15.086,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0116",
+      "raw": "Powwitzwajmy, jak węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla",
+      "secs": 18.212,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0117",
+      "raw": "Jak daleko dolecicęsza, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaś",
+      "secs": 16.665,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0118",
+      "raw": "Pa, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dz",
+      "secs": 15.442,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0119",
+      "raw": "Jak, jak, liby, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli, koli",
+      "secs": 17.634,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0120",
+      "raw": "Oblicz, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa",
+      "secs": 17.193,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0121",
+      "raw": "Iakdaleko, doktor, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność, ddolność",
+      "secs": 17.268,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0122",
+      "raw": "Dziaki za zjegma proton o energie zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmywęglan, zjmyglan, zjmywęglan, zjmywęglan, zjmyglan, zjmyglan, zjmyglan, zjmyglan, zjmyglan, zjmyglan, zjmyglan, zjmyglan, zjmyglan, zjmyglan, zjmyglan, zjmyglan, zjmyglan, zj",
+      "secs": 15.731,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0123",
+      "raw": "Jadda leko dolecitszaska alfa oenergi oktame węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węg",
+      "secs": 16.333,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0124",
+      "raw": "Oblidz, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, z",
+      "secs": 15.833,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0125",
+      "raw": "Iliwino zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna zna",
+      "secs": 17.238,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0126",
+      "raw": "Poderzażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zbitażęg, zb",
+      "secs": 16.402,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0127",
+      "raw": "Porajzazja iżegg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg, kważywęg",
+      "secs": 15.908,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0128",
+      "raw": "Czek i zazjęg, ma doktoron, kwa, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita zbita, kość zbita",
+      "secs": 16.919,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0129",
+      "raw": "Żakta leko do trzono, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa",
+      "secs": 16.126,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0130",
+      "raw": "Czjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, zjaki, z",
+      "secs": 15.431,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0131",
+      "raw": "Jaki jesna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna,",
+      "secs": 16.929,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0132",
+      "raw": "Ile vynozizazieg, jak zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, z",
+      "secs": 15.516,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0133",
+      "raw": "Jak lebo, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita zbita, kość zbita zbita, kość zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita",
+      "secs": 15.169,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0134",
+      "raw": "Dzjaki jest zesza się zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, zesza, z",
+      "secs": 15.221,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0135",
+      "raw": "Ilewino znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znawaj, znaw",
+      "secs": 15.453,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0136",
+      "raw": "Oblicz zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zza sięg, zzag, zza sięg, zza sięg, zzag, zza sięg, zzag, zza sięg, zzag, zzag, zzag, zzag, zzag, zzag, zzag",
+      "secs": 17.702,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0137",
+      "raw": "Jak lebo koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch, koch,",
+      "secs": 16.907,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0138",
+      "raw": "Hoda zazięg, jdziwęg, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni k",
+      "secs": 18.525,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0139",
+      "raw": "Taki gjest zazieg, të tëronu energii, sende mefu aluminium.",
+      "secs": 6.191,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0140",
+      "raw": "Poddażaziek, saskiaf, owo, energi, fintmef, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla,",
+      "secs": 16.892,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0141",
+      "raw": "Powwetcmi, jak dala koza, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla, zbęgla,",
+      "secs": 15.705,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0142",
+      "raw": "ijwęgla, zbita, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaś",
+      "secs": 15.265,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0143",
+      "raw": "Powwitza mięśniowa, jak doleko, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaśniowa, kwaś",
+      "secs": 17.56,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0144",
+      "raw": "jak dalej kodę, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolewęgla, jak dolew",
+      "secs": 16.477,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0145",
+      "raw": "Jaktareko doleci proton ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, o",
+      "secs": 15.029,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0146",
+      "raw": "Jaki za zazieg ma tritano energi, oczu mwęgla, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna",
+      "secs": 16.776,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0147",
+      "raw": "Czbita, kwa, kość zbita, kwa, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita zbita, kość zbita zbita, kość zbita zbita, kość zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zb",
+      "secs": 18.561,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0148",
+      "raw": "Jaktaleko doczrepróton o energii 350 MeV, dwutlenku krzemu, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew, krew",
+      "secs": 15.14,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0149",
+      "raw": "Poddezazja zjejeg, protona, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, zjej, z",
+      "secs": 18.027,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0150",
+      "raw": "Jak lebo, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość",
+      "secs": 16.223,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0151",
+      "raw": "Jak lebo koch, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon,",
+      "secs": 15.173,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0152",
+      "raw": "Ilewinosisz azieg protona ojnę zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, kwaśni zbita, k",
+      "secs": 16.44,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0153",
+      "raw": "Czak i zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazię",
+      "secs": 19.523,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0154",
+      "raw": "i lewinawna, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita",
+      "secs": 19.402,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0155",
+      "raw": "Człaki jesna zza, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla, kważywęgla,",
+      "secs": 15.198,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0156",
+      "raw": "Gakta leko, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita,",
+      "secs": 16.523,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0157",
+      "raw": "Obletycz, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, z",
+      "secs": 15.738,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0158",
+      "raw": "Oblicz, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zb",
+      "secs": 14.722,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0159",
+      "raw": "Jak ta leko, jak, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla,",
+      "secs": 17.736,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0160",
+      "raw": "Oblijczna zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita z",
+      "secs": 17.272,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0161",
+      "raw": "Powwitz mię, jak daleko, zadzi, proton, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, ołów, oł",
+      "secs": 18.231,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0162",
+      "raw": "Dzauki, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, zauwęg, z",
+      "secs": 16.221,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0163",
+      "raw": "Jak lebo, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukle",
+      "secs": 17.837,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0164",
+      "raw": "Zakizacza się, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita,",
+      "secs": 15.837,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0165",
+      "raw": "Pawwetcmi, jaka, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni k",
+      "secs": 17.227,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0166",
+      "raw": "Poddaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaższaż",
+      "secs": 15.205,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0167",
+      "raw": "Jaki jest zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg, zazieg",
+      "secs": 17.425,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0168",
+      "raw": "Powwitzmi, jak dalek, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak",
+      "secs": 15.792,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0169",
+      "raw": "Jak li boku nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukle",
+      "secs": 15.569,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0170",
+      "raw": "Oblietz, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, z",
+      "secs": 15.696,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0171",
+      "raw": "Dzbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, z",
+      "secs": 14.896,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0172",
+      "raw": "Podaścjęg, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni",
+      "secs": 15.835,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0173",
+      "raw": "Ilu wynosi za z jak dzaski alfa o energii C, mię, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, w",
+      "secs": 15.84,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0174",
+      "raw": "jak daleko doleczi, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec, jak dolec",
+      "secs": 17.403,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0175",
+      "raw": "Podasz zasyg, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew, dziew,",
+      "secs": 15.372,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0176",
+      "raw": "Ilu w nozi zazieg, jon węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, zna węgla, z",
+      "secs": 16.688,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0177",
+      "raw": "Podażazja zjag tritonu, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla",
+      "secs": 15.338,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0178",
+      "raw": "Hauwesmi, czak, dAleko, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, kawa, k",
+      "secs": 16.127,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0179",
+      "raw": "Jak daleko doleči protona, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, ojnęg, oj",
+      "secs": 16.039,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0180",
+      "raw": "Bodat, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita",
+      "secs": 15.969,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0181",
+      "raw": "Obieczce zjegonu, ksęmu, ołó, energii, tracę, mw, iw, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg, na nukleon, wg",
+      "secs": 15.303,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0182",
+      "raw": "Porajczszaścic protonu o energiez, 20 mf, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, wę",
+      "secs": 16.835,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0183",
+      "raw": "Ilevinos zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazię",
+      "secs": 15.361,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0184",
+      "raw": "I levinosiszazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zazja, zaz",
+      "secs": 15.604,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0185",
+      "raw": "Jaki jesz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz, zz,z, zz, zz, zz, zz,z, zz,z, zz,z,z,z,",
+      "secs": 16.206,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0186",
+      "raw": "poda, poda, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita,",
+      "secs": 16.219,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0187",
+      "raw": "Teknę, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa",
+      "secs": 17.242,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0188",
+      "raw": "Jak gleboko, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nuk",
+      "secs": 16.457,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0189",
+      "raw": "Jak lepoko, nik nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna, nieczna,",
+      "secs": 16.281,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0190",
+      "raw": "Jak daleko do to zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do zbita, jak do z",
+      "secs": 17.657,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0191",
+      "raw": "Śsza, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni kwaśni, kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni k",
+      "secs": 16.178,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0192",
+      "raw": "Jak daleko doleczu trzyspę, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla",
+      "secs": 18.548,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0193",
+      "raw": "Oblizacza sięg, przysza, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwa",
+      "secs": 17.598,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0194",
+      "raw": "Jak daleko doleci dojteron, o energiei, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, w",
+      "secs": 17.587,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0195",
+      "raw": "obicz, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zb",
+      "secs": 17.001,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0196",
+      "raw": "Podestwa zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita",
+      "secs": 17.173,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0197",
+      "raw": "Jaknebo konikni, proton o energi, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, z",
+      "secs": 15.641,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0198",
+      "raw": "Ilewęgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla,",
+      "secs": 17.555,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0199",
+      "raw": "Iliwinozizacza, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, z",
+      "secs": 17.003,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0200",
+      "raw": "Człupę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę, kważywę,",
+      "secs": 15.573,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0201",
+      "raw": "Ilevi nozi zazieg dojteru, ojenergi brinti zynku mevu, poliwęglan, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni",
+      "secs": 19.182,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0202",
+      "raw": "jak daleko doce protona oczu, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak doce protona, jak",
+      "secs": 15.771,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0203",
+      "raw": "Jak to leko dutreproton o energii, 40 mavi, wytsłosi.",
+      "secs": 4.265,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0204",
+      "raw": "Jakie zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg, zazięg,",
+      "secs": 18.348,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0205",
+      "raw": "Powwitza mię, jak daleko, jak daleko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko, jak doko",
+      "secs": 17.319,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0206",
+      "raw": "Oblik, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija",
+      "secs": 15.619,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0207",
+      "raw": "Czaki jesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna zesna",
+      "secs": 17.279,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0208",
+      "raw": "Pozmy, jak te reklam, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj, zj,",
+      "secs": 16.389,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0209",
+      "raw": "Jacki jest zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita, jak zbita,",
+      "secs": 15.973,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0210",
+      "raw": "Jak daleko do tracjon, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żelaza, żel",
+      "secs": 16.087,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0211",
+      "raw": "Obliza sijegjonu argonu o energii 355 mevina nukleon W polietilini.",
+      "secs": 5.621,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0212",
+      "raw": "Obličzj, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija,",
+      "secs": 15.793,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0213",
+      "raw": "Czajki, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, cz",
+      "secs": 16.466,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0214",
+      "raw": "Czaki jest zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zbita, zb",
+      "secs": 16.847,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0215",
+      "raw": "Oblicza zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita zbita",
+      "secs": 18.099,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0216",
+      "raw": "Jaki jest ziag, trwę, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęgla, nrwęg",
+      "secs": 17.465,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0217",
+      "raw": "Powwitzn.",
+      "secs": 3.271,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0218",
+      "raw": "Jaka lebo, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, kość, ko",
+      "secs": 16.591,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0219",
+      "raw": "Powizmy, jak dalej, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita",
+      "secs": 14.779,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0220",
+      "raw": "Czjaki, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, czasy, cz",
+      "secs": 15.358,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0221",
+      "raw": "I'llwina sizazieg, jon węgla, jon węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, w",
+      "secs": 18.654,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0222",
+      "raw": "Pada zaścją, kwa, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nukleon, nuk",
+      "secs": 15.539,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0223",
+      "raw": "Il, wi noc, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna, zna,",
+      "secs": 16.09,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0224",
+      "raw": "Podajzda się zbita, kważywęglan, dAwgla, kważywęglan, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla, dAwgla",
+      "secs": 18.452,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0225",
+      "raw": "Jak lebo, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość",
+      "secs": 15.432,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0226",
+      "raw": "Jak te leko, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, kość zbita, ko",
+      "secs": 16.742,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0227",
+      "raw": "Poradzazza zzajag tritonu oczu, Pw, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni",
+      "secs": 18.383,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0228",
+      "raw": "jak daleko doluci tszka alfa o energi fintzy dmav wakuysi korowi",
+      "secs": 4.322,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0229",
+      "raw": "Powitsmię, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, cząstka, czą",
+      "secs": 18.044,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0230",
+      "raw": "Jak daleko doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor, doktor,",
+      "secs": 15.553,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0231",
+      "raw": "Ia, kudaleko, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kudala, kud",
+      "secs": 15.142,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0232",
+      "raw": "Obwiczsazja, jon wborywęglę, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, węgla, w",
+      "secs": 18.436,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0233",
+      "raw": "Dzak i za zaziega maproto, nrg, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni, kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni kwaśni k",
+      "secs": 15.135,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0234",
+      "raw": "Jak le bok unwek ni zbita, jak lwęgla, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija, zbija,",
+      "secs": 15.747,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "pl-rng-0235",
+      "raw": "Powietzmi, jak dolewęgla, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa, kwa",
+      "secs": 16.226,
+      "error": null,
+      "usedPromptFallback": false
+    }
+  ]
+}

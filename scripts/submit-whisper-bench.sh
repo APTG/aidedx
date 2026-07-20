@@ -187,7 +187,13 @@ for model_entry in "${MODELS[@]}"; do
       flag=""
       [ "$mode" = "ext" ] && flag="--ext"
       [ "$mode" = "new" ] && flag="--new"
-      if ! node scripts/asr-score-slots-generic.mjs "$manifest" "$transcript_out" $flag \
+      # --experimental-strip-types: asr-score-slots-generic.mjs imports
+      # ../src/lib/asr/correct/core.ts directly, same as submit-v3.sh/submit-pl.sh already do for
+      # their own .ts imports. Athena's `module load nodejs/22.17.1` (scripts/athena-env.sh) needs
+      # this flag explicitly — Node 22 throws ERR_UNKNOWN_FILE_EXTENSION on a bare .ts import
+      # before any output is produced, which is why job 2805165's scoring step wrote a 0-byte
+      # .log and no .json for all 36 completed transcripts across every lane, not just some.
+      if ! node --experimental-strip-types scripts/asr-score-slots-generic.mjs "$manifest" "$transcript_out" $flag \
         --json "$RESULTS_DIR/${combo_label}__score-${mode}.json" \
         | tee "$RESULTS_DIR/${combo_label}__score-${mode}.log"; then
         echo "SKIPPING $combo_label score-${mode} — scorer failed, see output above" >&2

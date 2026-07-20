@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-large-v3-turbo [fp32] +prompt base-corrector ===
+clips: 1000   median inference: 4.7s   load: 4.9s
+clip-level all-slots-correct:  raw 783/1000 (78.3%)   corrected 783/1000 (78.3%)
+
+by quantity (corrected):
+  csdaRange        467/600 (77.8%)
+  energyFromRange  225/250 (90.0%)
+  stoppingPower    91/150 (60.7%)
+
+by scenario type (corrected):
+  single     609/800 (76.1%)
+  energy     86/100 (86.0%)
+  material   50/55 (90.9%)
+  particle   38/45 (84.4%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      553/698 (79.2%)
+  clinical-core  230/302 (76.2%)
+
+by voice profile (corrected), worst 10:
+  custom-aiden-curious             13/24 (54.2%)
+  spanish-accented-male-animated   14/25 (56.0%)
+  nigerian-female-hurried          8/14 (57.1%)
+  custom-ryan-happy                13/21 (61.9%)
+  jamaican-female-relaxed          7/11 (63.6%)
+  custom-eric-hurried              13/20 (65.0%)
+  british-male-skeptical           17/25 (68.0%)
+  german-accented-female-brisk     17/25 (68.0%)
+  italian-accented-male-animated   19/27 (70.4%)
+  indian-female-brisk              17/24 (70.8%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   97.8% ->  97.8%  (n=1250)
+  particle   97.4% ->  97.4%  (n=1045)
+  material   99.5% ->  99.5%  (n=1085)
+  number     96.5% ->  96.5%  (n=1152)
+  unit       87.1% ->  87.1%  (n=1152)
+  ALL        95.6% ->  95.6%  (n=5684)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         86.5% ->  86.5%  (n=482)
+  MeV/nucl    77.0% ->  77.0%  (n=322)
+  keV         96.4% ->  96.4%  (n=83)
+  GeV         73.3% ->  73.3%  (n=15)
+  cm         100.0% -> 100.0%  (n=184)
+  mm          95.5% ->  95.5%  (n=66)
+
+failing clips after correction (217 total, showing first 30):
+  rng-0010 missing[unit]: Range of 100 MAV proton and silicon dioxide, please.
+  rng-0018 missing[unit]: Find the CSDA range for 100 MAV protons in graphite.
+  rng-0022 missing[unit]: Find the CSDA range for 250 MAV per nucleon, sulfur-32 ions, and graphite
+  rng-0025 missing[unit]: What is the CSDA range of a 70mFe proton and polystyrene?
+  rng-0032 missing[particle,number,unit]: So, roughly how far would a 1-8-MeAV-pernucleon-led 208 ion make it into cortical bone?
+  rng-0033 missing[unit]: How deep does a 50MV per nucleon uranium-238 ion penetrate into water?
+  rng-0034 missing[unit]: Quick one, how far does a 15MV deuteron go in Kapton?
+  rng-0036 missing[unit]: Before coming to rest, how far does a 400 MAV per nucleon krypton-84 ion get through soft tissue?
+  rng-0040 missing[unit]: What's the range of a 400 MAV per nucleon lithium-7 ion in boron oxide?
+  rng-0041 missing[unit]: What's the range of a 20m EV Triton in air?
+  rng-0044 missing[particle]: Range of 80 MeV, doteron, and Pyrex glass, please?
+  rng-0048 missing[particle]: determine the range of 15 MeV deuterans in gold.
+  rng-0057 missing[unit]: What's the range of a 250MIV proton in A150 tissue equivalent plastic?
+  rng-0061 missing[unit]: Find the CSDA range for 40 MAV protons in PMMA
+  rng-0064 missing[unit]: How deep does a 100-yev-alpha particle penetrate into graphite?
+  rng-0069 missing[unit]: Find the CSDA range for 300 MAV per nucleon silicon 28 ions in polystyrene
+  rng-0073 missing[unit]: Range of a 1GV proton in graphite, please.
+  rng-0076 missing[particle]: What's the range of a 400 MeV per nucleon phosphorous 31 ion in silicon dioxide?
+  rng-0077 missing[unit]: How far will a 120MAV proton travel through soft tissue?
+  rng-0078 missing[number]: What is the CSDA range of a 1080 MeV per nucleon boron-11 ion in Kapton?
+  rng-0093 missing[unit]: What's the range of a 250MIV per nucleon, gold-197 ion in polyethylene?
+  rng-0096 missing[number]: Determine the range of two MeV tritons in a 150-tissue equivalent plastic
+  rng-0103 missing[unit]: What's the range of a 400 MAV per nucleon krypton-84 ion in muscle tissue?
+  rng-0109 missing[unit]: What's the range of a 400 MAV per nucleon carbon-13 ion in aluminum oxide?
+  rng-0110 missing[unit]: Find the CSDA range for 200 MAV per nucleon lithium-7 ions in brain
+  rng-0113 missing[unit]: What's the range of a 100-MV alpha particle in polystyrene?
+  rng-0118 missing[number]: How deep does a 1-hatei MeV per nucleon phosphorus-31 ion penetrate into a 150-tissue equivalent plastic?
+  rng-0129 missing[particle,unit]: Quick one, how far does a 60 MiAV per nucleon lid, U08, ion go in polystyrene?
+  rng-0130 missing[unit]: What is the CSDA range of a 100 MAV proton in Mylar?
+  rng-0133 missing[unit]: Find the CSDA range for 350 MAV per nucleon boron 11 ions in adipose tissue
+
+wrote eval/results/whisper-bench-2805165/en-v3__whisper-large-v3-turbo__fp32__score-base.json

@@ -1,0 +1,76 @@
+
+=== onnx-community/whisper-base [fp32] +prompt base-corrector ===
+clips: 1000   median inference: 1.5s   load: 1.3s
+clip-level all-slots-correct:  raw 65/1000 (6.5%)   corrected 65/1000 (6.5%)
+
+by quantity (corrected):
+  csdaRange        48/600 (8.0%)
+  energyFromRange  12/250 (4.8%)
+  stoppingPower    5/150 (3.3%)
+
+by scenario type (corrected):
+  single     59/800 (7.4%)
+  energy     4/100 (4.0%)
+  material   2/55 (3.6%)
+  particle   0/45 (0.0%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      52/608 (8.6%)
+  clinical-core  13/392 (3.3%)
+
+by voice profile (corrected), worst 10:
+  pl_PL-bass-high                  1/197 (0.5%)
+  pl_PL-mls_6892-low               4/201 (2.0%)
+  pl_PL-mc_speech-medium           5/200 (2.5%)
+  pl_PL-darkman-medium             15/201 (7.5%)
+  pl_PL-gosia-medium               40/201 (19.9%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   68.5% ->  68.5%  (n=1250)
+  particle   65.5% ->  65.5%  (n=1045)
+  material   40.8% ->  40.8%  (n=1085)
+  number     74.6% ->  74.6%  (n=1156)
+  unit       26.0% ->  26.0%  (n=1156)
+  ALL        55.3% ->  55.3%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         31.0% ->  31.0%  (n=464)
+  MeV/nucl    27.3% ->  27.3%  (n=344)
+  keV         12.7% ->  12.7%  (n=79)
+  GeV          0.0% ->   0.0%  (n=19)
+  mm          44.4% ->  44.4%  (n=63)
+  cm          13.4% ->  13.4%  (n=187)
+
+failing clips after correction (935 total, showing first 30):
+  pl-rng-0001 missing[number,unit]: obiż zasięg protonu o energii z tomę fałów aluminium.
+  pl-rng-0002 missing[material,number,unit]: jak daleko dole ci proton o energii sto menfał w woda?
+  pl-rng-0003 missing[particle,unit]: jak daleko oddoczeją magne, złoenek, 50 na nukleon, w dwutlenku, krzemu.
+  pl-rng-0004 missing[material]: powiedz mi, jak daleko zajdzie ją litu o energii 30 MeV na nukleon w wodze.
+  pl-rng-0006 missing[particle,material,number,unit]: Powiedz mi, jak Dareko zajdzieją kryptomu energii 4, stamy faMMA, m.k, on w tkancemie śniory.
+  pl-rng-0007 missing[quantity,particle,material,unit]: jak jest CSY, alfa, energii 60 mental, węgla-12.
+  pl-rng-0008 missing[particle,number,unit]: Jak jest zasięg jon węglał energii, czystą e-faonanupleon w kości korowej?
+  pl-rng-0009 missing[material,unit]: i ja wynosi zasięg protonu, orynelgi, 40.5.
+  pl-rng-0011 missing[number,unit]: Jak głęboko wniknie, jon węgla, energii, dwie siemy fał na nukleon, w kości zbitej?
+  pl-rng-0012 missing[quantity,number,unit]: obicz za się proton rolnierli, czysta, na fał w polietylenie.
+  pl-rng-0013 missing[number,unit]: i dla wynosi zasięg protonu, renałki dwyżnym 50.V w wodzie
+  pl-rng-0014 missing[particle,material,unit]: Jak daleko doczyjonną oenergi 250 na fał na nukleon w wody?
+  pl-rng-0015 missing[particle,number,unit]: jak głęboko wniknilionneonu o energii stockę FAW w złocie?
+  pl-rng-0016 missing[unit]: podaj zasięg protonu energii 50.V, kości zbitej
+  pl-rng-0018 missing[material]: jakichś zasięg ma proton po energii 60 MeV w pojedynie
+  pl-rng-0019 missing[particle,material,unit]: powiedz mi, jak daleko zajdzieje o nolitu o energii 80 na fałon, na nukleon w wwoce.
+  pl-rng-0021 missing[material]: Jak daleko doczę cząstka alfa o energii 25MeV w wodę?
+  pl-rng-0022 missing[material,number,unit]: poddaj zasięg proton, węgla-155, Kapton
+  pl-rng-0023 missing[particle,unit]: jak daleko doczeją, przemu, energii, 30 na sał na nukleon, w polietylenie.
+  pl-rng-0024 missing[material]: i lewności, zasięg ją helu-3, ojner, d5, MeV pojeczu.
+  pl-rng-0025 missing[particle,material,unit]: ile wynosi zasięgwiono na unii energii 120, fał na nukleon, w tkancę mięśniowej?
+  pl-rng-0026 missing[quantity,particle,material,number,unit]: podaj za się jon węgla, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12, jon węgla-12,
+  pl-rng-0027 missing[quantity,number,unit]: obicz zasiemk protonu, borynęglistony fałów kości zbitej
+  pl-rng-0028 missing[material,unit]: oblić zasięg deuteron, węgla-15 mefał w pojętylenie.
+  pl-rng-0029 missing[quantity,material,unit]: jak uęboko, w nitlijon węgla, a energii 50 kcał w kacztonie.
+  pl-rng-0030 missing[material,unit]: jaki zasięgna, jon żelaza, ojnerii, 60, małem cząstka, nukleon, tn.
+  pl-rng-0031 missing[material,number,unit]: jak daleko dyleci proton, polenelistod 20FV ułołowił
+  pl-rng-0032 missing[material,unit]: Jak głębokownik nie proton o energii 220 mf w powieczu?
+  pl-rng-0033 missing[particle,material,unit]: jak głębokownicjon magnetzą, energii 150, fał na nukleon, w tkancę mięśniowej?
+  pl-rng-0034 missing[quantity,unit]: podejdziesięg protonu ONRG 150.V powietrzu.
+
+wrote eval/results/whisper-bench-2805165/pl-piper__whisper-base__fp32__score-base.json

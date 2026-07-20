@@ -1,0 +1,76 @@
+
+=== onnx-community/whisper-large-v3-ONNX [q8] +prompt ext-corrector ===
+clips: 1000   median inference: 7.8s   load: 5.4s
+clip-level all-slots-correct:  raw 450/1000 (45.0%)   corrected 496/1000 (49.6%)
+
+by quantity (corrected):
+  csdaRange        339/600 (56.5%)
+  energyFromRange  117/250 (46.8%)
+  stoppingPower    40/150 (26.7%)
+
+by scenario type (corrected):
+  single     396/800 (49.5%)
+  energy     52/100 (52.0%)
+  material   33/55 (60.0%)
+  particle   15/45 (33.3%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      326/608 (53.6%)
+  clinical-core  170/392 (43.4%)
+
+by voice profile (corrected), worst 10:
+  pl_PL-mls_6892-low               43/201 (21.4%)
+  pl_PL-bass-high                  47/197 (23.9%)
+  pl_PL-darkman-medium             127/201 (63.2%)
+  pl_PL-mc_speech-medium           129/200 (64.5%)
+  pl_PL-gosia-medium               150/201 (74.6%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   91.6% ->  91.8%  (n=1250)
+  particle   88.2% ->  88.2%  (n=1045)
+  material   84.0% ->  84.0%  (n=1085)
+  number     88.8% ->  88.8%  (n=1156)
+  unit       68.4% ->  75.1%  (n=1156)
+  ALL        84.3% ->  85.6%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         63.8% ->  77.2%  (n=464)
+  MeV/nucl    77.0% ->  79.4%  (n=344)
+  keV         74.7% ->  83.5%  (n=79)
+  GeV         15.8% ->  15.8%  (n=19)
+  mm          68.3% ->  68.3%  (n=63)
+  cm          66.8% ->  66.8%  (n=187)
+
+failing clips after correction (504 total, showing first 30):
+  pl-rng-0002 missing[material]: Jak daleko doleci proton o energii 100 MeV w wodze?
+  pl-rng-0003 missing[number,unit]: Jak daleko do Czejon, magnezu, energii, pięćdziesiątne fauna, nukleon w dwutlenku, krzemu
+  pl-rng-0004 missing[material]: Powiedz mi, jak daleko zajdzie jon litu o energii 30 MeV na nukleon w wodze?
+  pl-rng-0006 missing[particle]: Powiedz mi, jak daleko zajdzie jon kryptomu energii 400 MeV na nukleon w tkance mięśniowej?
+  pl-rng-0007 missing[material]: Jaki jest zasięg cząstki alfa o energii 60 mEV?
+  pl-rng-0008 missing[number]: Jaki jest zasięg jonu węgla o energii 30 MeV na nukleon w kości korowej?
+  pl-rng-0009 missing[unit]: IA wynosi zasięg protonu, a energii 40 nF w graficie?
+  pl-rng-0011 missing[number,unit]: Jak głęboko wniknie jon węgla o energii 2,7 V na nukleon w kości zbitej?
+  pl-rng-0013 missing[unit]: Ile wynosi zasięg protonu o energii 250 na V w wodzie?
+  pl-rng-0014 missing[material]: Jak daleko dotrze jon neonu o energii 250 MeV na nukleon w wodzy?
+  pl-rng-0019 missing[particle,material]: Powiedz mi, jak daleko zajdzie jonolitu o energii 80 MeV na nukleon w wodze?
+  pl-rng-0021 missing[material]: Jak daleko docze cząstka alfa o energii 25 MeV w wodze?
+  pl-rng-0022 missing[unit]: Podaj zasięg protonu od energii 150 NeV w Kaptonie
+  pl-rng-0023 missing[particle]: Jak daleko? Do Czajomu. Czemu? O energii. 30 MeV na nukleon w polietylenie.
+  pl-rng-0024 missing[unit]: ile wynosi zasięgi ołów helu-3, oła energii-5, metol w powietrzu
+  pl-rng-0027 missing[number,unit]: oblicz zasięg, proton, ubor energii, stronę V w kości zbitej
+  pl-rng-0028 missing[material]: Oblicz zasięg deuteronu, eneli, 15 MeV, w politylenie
+  pl-rng-0029 missing[material,unit]: i jak głęboko wnikli jon węgla. Olaenergi50TV w Kacztonie.
+  pl-rng-0030 missing[material,unit]: Jaki zasięg ma jon, żelaza, o energii? 60, MeV, MeV, MeV
+  pl-rng-0033 missing[particle]: Jak głęboko wniknie on magnezą o energii 150 MeV na nukleon w tkance mięśniowej?
+  pl-rng-0035 missing[unit]: Jaki zasięg ma proton o energii 80 ms w aluminium?
+  pl-rng-0038 missing[number,unit]: Ile wynosi zasięg protonu o energii 1,5 kV w plastiku tkankopodobnym a 150?
+  pl-rng-0041 missing[number]: Jak daleko do Czejon, helu-3, polenergi, pięć MeV, PMMA?
+  pl-rng-0042 missing[particle]: jak daleko do leci, jon witu, o energii, 250 MeV na nukleon w polietylenie
+  pl-rng-0046 missing[unit]: oblicz zasięgu jonu żelaza, oneli-20, nF, na nukleon, w poliwęglanie.
+  pl-rng-0047 missing[unit]: Jak daleko do 3 tryton? O energii. 40 męsał w tkance mięśniowej.
+  pl-rng-0056 missing[number,unit]: Jaki jest zasięg jonu krzemu o energii, czy dziesimy fał na nukleon w kości zbitej?
+  pl-rng-0057 missing[particle,material]: Jaki zasięg mają wapnie o energii? 400 MeV na nukleon, kości krowej
+  pl-rng-0060 missing[unit]: Powiedz mi, jak daleko zajdzie proton, on nerywi 200 metrów w poliwęglanie.
+  pl-rng-0061 missing[particle,material,number,unit]: Jak głęboko wniknie on w neoną energię, czy to jest taka fałsba?
+
+wrote eval/results/whisper-bench-2805165/pl-piper__whisper-large-v3-ONNX__q8__score-ext.json

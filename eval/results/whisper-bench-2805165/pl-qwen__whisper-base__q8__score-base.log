@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-base [q8] +prompt base-corrector ===
+clips: 1000   median inference: 2.1s   load: 0.9s
+clip-level all-slots-correct:  raw 1/1000 (0.1%)   corrected 1/1000 (0.1%)
+
+by quantity (corrected):
+  csdaRange        1/600 (0.2%)
+  energyFromRange  0/250 (0.0%)
+  stoppingPower    0/150 (0.0%)
+
+by scenario type (corrected):
+  single     1/800 (0.1%)
+  energy     0/100 (0.0%)
+  material   0/55 (0.0%)
+  particle   0/45 (0.0%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      1/608 (0.2%)
+  clinical-core  0/392 (0.0%)
+
+by voice profile (corrected), worst 10:
+  pl-female-tired                  0/39 (0.0%)
+  pl-female-stressed               0/42 (0.0%)
+  pl-male-hurried                  0/46 (0.0%)
+  pl-male-serious                  0/43 (0.0%)
+  pl-male-excited                  0/42 (0.0%)
+  pl-elderly-female-sleepy         0/44 (0.0%)
+  custom-ryan                      0/43 (0.0%)
+  pl-female-relaxed                0/45 (0.0%)
+  custom-eric                      0/48 (0.0%)
+  pl-male-casual                   0/47 (0.0%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   16.2% ->  16.2%  (n=1250)
+  particle   40.9% ->  40.9%  (n=1045)
+  material   10.5% ->  10.5%  (n=1085)
+  number     31.1% ->  31.1%  (n=1156)
+  unit       18.5% ->  18.5%  (n=1156)
+  ALL        23.2% ->  23.2%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV          5.2% ->   5.2%  (n=464)
+  MeV/nucl     6.1% ->   6.1%  (n=344)
+  keV          3.8% ->   3.8%  (n=79)
+  GeV         15.8% ->  15.8%  (n=19)
+  mm          46.0% ->  46.0%  (n=63)
+  cm          71.7% ->  71.7%  (n=187)
+
+failing clips after correction (999 total, showing first 30):
+  pl-rng-0001 missing[quantity,unit]: Oblits, to jest jak protonu, o energii, 100 mew, o aluminium
+  pl-rng-0002 missing[quantity,particle,material,number,unit]: Jak to leko do leci proto, no, energii, sanem, we, w, w, w, z,
+  pl-rng-0003 missing[quantity,particle,material,unit]: jak to leko dotrzej jon magnesu, energii 50, mw na nukleon, we dwutlenku, ksemu?
+  pl-rng-0004 missing[quantity,particle,material,number,unit]: o to, co to, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co, co,
+  pl-rng-0005 missing[quantity,particle,number,unit]: Oblicz zazieg, potonuwo, energii, 270, mew, wew, o aluminium
+  pl-rng-0006 missing[quantity,material,unit]: powrócz, Jack Deleko, Zadzion, Kryptonu, Oenegi, 400, mewnanucleon, we to konsumentio.
+  pl-rng-0007 missing[quantity,particle,material,number,unit]: Jackie, to jest Jektsowski, Alfa, a Niergi, to jest Czes, to co mam, to to wszystko,
+  pl-rng-0008 missing[quantity,particle,material,unit]: Jackie, jest Saziak, Ronu, Wegla, o energety, 300-op, maf na nukleon, o blakos, korowe?
+  pl-rng-0009 missing[quantity,material,number,unit]: i lewo nocy, zaziek, protonu, o energii, korantach, MEF, wew, grafit, sie?
+  pl-rng-0010 missing[quantity,material,number,unit]: jak to leko dotrzez jon tlenu, o energii 500Mav na nukleon w slossi.
+  pl-rng-0011 missing[quantity,material,number,unit]: Jak lebo konikni, John, węgla, o energii, dzułają, new, na miękle, o nukosty, zbittesz.
+  pl-rng-0012 missing[quantity,material,unit]: oblicz, saz jak, protonu o energii, 300 mf, ale polietelenie.
+  pl-rng-0013 missing[quantity,material,number,unit]: i wynosz zeziek, protonu ONG 2550, m i w wody,
+  pl-rng-0014 missing[quantity,particle,material,number,unit]: Jak to leko, to jest oczon, nie o nio, no, energii i 150, maje, nie, nukleon, 12, u, wódź,
+  pl-rng-0015 missing[quantity,particle,material,unit]: Czaklęboko, nicknij, jon, woł, energii, 100 kw, bali, sosii.
+  pl-rng-0016 missing[material,number,unit]: podać zasięg, protonu, o energii, symfii, IMFFFBU, cost, zbitaż.
+  pl-rng-0017 missing[quantity,unit]: Powiedz mi, jak to lekozacji protonu energii 70 cm i we w aluminium
+  pl-rng-0018 missing[quantity,particle,material,number,unit]: Jaki zazieg, ma, protono, energii, szef, tv, vel, wiódł, poli, delień?
+  pl-rng-0019 missing[quantity,particle,material,number,unit]: powietrzmi jak dolekol, że cie, o, nie, to o, energii, akcy, M, a, if, na, nukleon, w, w, c,
+  pl-rng-0020 missing[quantity,particle,material,unit]: abyt, za szekt, dojtarony, ojnęgii, 40, m.f. opał i dzu.
+  pl-rng-0021 missing[quantity,particle,material,number,unit]: Jak to leko, do trutzerska, alfa, energii, pinta, i fingła, sam, w co?
+  pl-rng-0022 missing[quantity,material,unit]: potrza z jak protonu o energii 150, meff, well, Kaptoni.
+  pl-rng-0023 missing[particle,material,number,unit]: duark, daleko, doda, to jonka, mowa, energii, traci, szemi, fina, nukleon, w poli, teleni,
+  pl-rng-0024 missing[quantity,particle,material,number]: i lewino, Cizazie, Jonu, Helu, 3, o Energy A, find MEV, we wupo, i itzuu.
+  pl-rng-0025 missing[quantity,material,number,unit]: Wynąsiedź, za serc, jonu, neonu, o energi, Jęthanti, me, wynan, nukleon, by, kans mięśniowa?
+  pl-rng-0026 missing[quantity,particle,material,unit]: połatrz, sazieg, jon, no, no, energii, 150, ma, na nukleon, wła, blasty, kut, kanka, podobnie, ma 150?
+  pl-rng-0027 missing[quantity,particle,material,unit]: obleć sasiak, protano, o energy, 100, maf, wochosti, spotesz.
+  pl-rng-0028 missing[quantity,particle,material,number,unit]: oblicy, sazie, doj, to, ronu, o energii 16, MAV, poliwę, tylanie.
+  pl-rng-0029 missing[quantity,material,unit]: Jakle boko, mój kni, jon węgla, onergi, 50 kf, Kaptoni.
+  pl-rng-0030 missing[quantity,material,number,unit]: Jackie Tazieg, ma, jon, żelaza, o energii, sysent, ep, na nukleon, węgla,
+
+wrote eval/results/whisper-bench-2805165/pl-qwen__whisper-base__q8__score-base.json
