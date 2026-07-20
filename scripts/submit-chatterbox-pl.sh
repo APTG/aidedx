@@ -29,15 +29,18 @@
 # dependency on submit-pl.sh having run first.
 #
 # --- venv: .venv-chatterbox must already exist ---
-# chatterbox-tts depends on torch (CUDA-specific wheel) the same way qwen-tts does — auto-
-# provisioning that blind in a batch job risks silently pulling a CPU-only torch build from
-# plain PyPI (docs/athena-setup.md's Qwen precedent: `pip install qwen-tts` alone pulled a
-# mismatched torchaudio once already, docs/tts-eval-audio.md §6.2 point 1 — the same class of
-# footgun is plausible here). One-time interactive setup, mirroring .venv-qwen's:
+# chatterbox-tts hard-pins torch==2.6.0/torchaudio==2.6.0 exactly (confirmed from a real install
+# log, not assumed) — unlike qwen-tts, do NOT pre-install torch/torchaudio from the cu128 index
+# first; pip's resolver just overrides it to match chatterbox's pin anyway, and forcing cu128
+# back afterward (the .venv-qwen-style fix) breaks the pin the other direction instead. Plain
+# PyPI's torch==2.6.0 already bundles CUDA 12.4 runtime deps on its own, so this is still a
+# GPU-capable build without the cu128 index. One-time interactive setup (needs --gres=gpu:a100:1
+# on the srun allocation used to build/verify it, or torch.cuda.is_available() reads False for a
+# reason that has nothing to do with the venv):
 #   python3 -m venv .venv-chatterbox
 #   source .venv-chatterbox/bin/activate
-#   pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu128
 #   pip install chatterbox-tts
+#   python -c "import torch; print(torch.cuda.is_available())"   # expect True
 # This script fails fast with a clear message if it's missing, same as submit-pl.sh does for
 # .venv-qwen.
 #

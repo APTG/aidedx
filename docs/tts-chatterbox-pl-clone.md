@@ -102,12 +102,14 @@ On Athena, after `git pull`ing this branch:
 cd /net/tscratch/people/plgkongruencj/aidedx
 source scripts/athena-env.sh
 
-# One-time only, if .venv-chatterbox doesn't exist yet:
+# One-time only, if .venv-chatterbox doesn't exist yet (see setup-venv-chatterbox.md for the
+# full walkthrough, including why NOT to pre-install torch/torchaudio from the cu128 index here
+# the way .venv-qwen does — chatterbox-tts hard-pins torch==2.6.0/torchaudio==2.6.0 exactly):
 python3 -m venv .venv-chatterbox
 source .venv-chatterbox/bin/activate
 pip install --upgrade pip
-pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu128
 pip install chatterbox-tts
+python -c "import torch; print(torch.cuda.is_available())"   # expect True — needs --gres=gpu:a100:1 on this shell's allocation
 deactivate
 
 sbatch scripts/submit-chatterbox-pl.sh
@@ -123,7 +125,10 @@ sbatch scripts/submit-whisper-bench.sh                                          
 
 ## 5. Open risk, not yet verified
 
-`chatterbox-tts`'s `pip install` behavior on Athena (whether it needs the same `torchaudio`
-CUDA-wheel-mismatch workaround `docs/tts-eval-audio.md` §6.2 point 1 already hit for `qwen-tts`,
-and actual A100 VRAM/inference-speed cost for the 0.5B multilingual model) is unconfirmed —
-issue #106 flagged this explicitly and it's still open pending the first real Athena run.
+`chatterbox-tts`'s actual A100 VRAM/inference-speed cost for the 0.5B multilingual model is
+unconfirmed — issue #106 flagged this explicitly and it's still open pending the first real
+generation run. Its `pip install` behavior itself is now confirmed (2026-07-20, real Athena
+attempt): it hard-pins `torch==2.6.0`/`torchaudio==2.6.0` exactly, a _different_ dependency
+footgun than `qwen-tts` hit (`docs/tts-eval-audio.md` §6.2 point 1) — see
+`setup-venv-chatterbox.md` for the corrected setup sequence and why the original
+pre-install-from-cu128-index instructions above don't work for this package.
