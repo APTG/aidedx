@@ -86,14 +86,23 @@ def main() -> None:
     args = ap.parse_args()
 
     # stdout is fully block-buffered when not a TTY (e.g. redirected to sbatch's %x-%j.out) —
-    # same fix as every other 1000-sentence script here, for live progress.
-    sys.stdout.reconfigure(line_buffering=True)
+    # same fix as every other 1000-sentence script here, for live progress. encoding="utf-8" is
+    # load-bearing, not cosmetic: a real Athena run hit `UnicodeEncodeError: 'ascii' codec can't
+    # encode character 'ę'` writing the manifest checkpoint below, because this job's
+    # environment resolves Python's default text encoding to ASCII rather than UTF-8 (unlike an
+    # interactive login shell) — every text read/write in this script is explicit about UTF-8
+    # now, not just this one, since the sentences/manifest files are full of Polish diacritics.
+    sys.stdout.reconfigure(line_buffering=True, encoding="utf-8")
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    sentences = json.loads(args.sentences_path.read_text())
+    sentences = json.loads(args.sentences_path.read_text(encoding="utf-8"))
 
     manifest_path = args.out_dir / "manifest.json"
-    manifest = json.loads(manifest_path.read_text())["clips"] if manifest_path.exists() else []
+    manifest = (
+        json.loads(manifest_path.read_text(encoding="utf-8"))["clips"]
+        if manifest_path.exists()
+        else []
+    )
     done_ids = {c["id"] for c in manifest}
     remaining = [s for s in sentences if s["id"] not in done_ids]
     print(f"{len(done_ids)} already done, {len(remaining)} remaining of {len(sentences)}")
@@ -154,7 +163,8 @@ def main() -> None:
                     {"voicePool": [v[0] for v in voice_pool], "mode": mode, "clips": manifest},
                     indent=2,
                     ensure_ascii=False,
-                )
+                ),
+                encoding="utf-8",
             )
             os.replace(tmp_path, manifest_path)
             print(f"  [{len(done_ids) + i + 1}/{len(sentences)}] {sid} ({tag}) FAILED: {e}")
@@ -189,7 +199,8 @@ def main() -> None:
                 {"voicePool": [v[0] for v in voice_pool], "mode": mode, "clips": manifest},
                 indent=2,
                 ensure_ascii=False,
-            )
+            ),
+            encoding="utf-8",
         )
         os.replace(tmp_path, manifest_path)
 
