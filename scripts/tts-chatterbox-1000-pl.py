@@ -43,6 +43,16 @@ import sys
 import time
 from pathlib import Path
 
+# Must be set before any huggingface_hub/tqdm-using import below — sbatch redirects stdout to a
+# real file (%x-%j.out), not a TTY, and neither of these bars behaves well there:
+# huggingface_hub's own (via its hf_xet backend, the "Fetching N files"/"Download complete" bars
+# from ChatterboxMultilingualTTS.from_pretrained()'s first-run weight download) has an official
+# env toggle; the "Sampling: NN%|...|" bar inside Chatterbox's own generate() loop isn't exposed
+# as a kwarg (confirmed against the real installed API, chatterbox-tts 0.1.7 — see
+# setup-venv-chatterbox.md), so tqdm's own documented env toggle is the only way to reach it.
+os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
+os.environ.setdefault("TQDM_DISABLE", "1")
+
 import torch
 import torchaudio
 
@@ -96,8 +106,11 @@ def main() -> None:
     print(f"mode={mode}  voices={[v[0] for v in voice_pool]}")
 
     print(f"cuda available: {torch.cuda.is_available()}")
+    # No t3_model kwarg — confirmed against the real installed API (chatterbox-tts 0.1.7 via
+    # inspect.signature, not the README, which is ahead of what's on PyPI): from_pretrained()
+    # only takes device.
     model = ChatterboxMultilingualTTS.from_pretrained(
-        device="cuda" if torch.cuda.is_available() else "cpu", t3_model="v3"
+        device="cuda" if torch.cuda.is_available() else "cpu"
     )
 
     t_start = time.time()

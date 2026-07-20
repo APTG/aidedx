@@ -57,20 +57,27 @@ atomic manifest checkpoint, stable-hash-of-id voice assignment) via the `chatter
 package's `ChatterboxMultilingualTTS` class:
 
 ```python
-model = ChatterboxMultilingualTTS.from_pretrained(device="cuda", t3_model="v3")
+model = ChatterboxMultilingualTTS.from_pretrained(device="cuda")
 wav = model.generate(text, language_id="pl", audio_prompt_path=ref_path_or_None)
 ```
 
 - `--clone-refs eval/audio/tts-clone-refs-pl` → Option A: each sentence's stable hash picks 1 of
   the 10 `clone-*.wav` references as `audio_prompt_path` (~100 sentences/voice).
-- no `--clone-refs` → Option B: `audio_prompt_path=None`, confirmed (via the Chatterbox repo's
-  own README, not assumed) to fall back to the model's built-in default voice — this resolves
-  issue #106's open question ("does `ChatterboxMultilingualTTS` have a usable default voice
-  without `audio_prompt_path`") in the affirmative.
+- no `--clone-refs` → Option B: `audio_prompt_path=None`, confirmed (a real smoke test on Athena,
+  2026-07-20, not just the README) to fall back to the model's built-in default voice — this
+  resolves issue #106's open question ("does `ChatterboxMultilingualTTS` have a usable default
+  voice without `audio_prompt_path`") in the affirmative.
 
 Unlike `tts-qwen-1000-pl.py`, there's no `language="Polish"` → `"Auto"` fallback dance — Polish is
 a confirmed-supported language for Chatterbox's multilingual model (23 languages, `pl` explicitly
 named), so `language_id="pl"` is used directly and unconditionally.
+
+**API note**: `from_pretrained()` takes only `device` — the README (and this doc's first draft)
+implied a `t3_model` kwarg that `chatterbox-tts` 0.1.7 (the version actually on PyPI) doesn't
+accept; fixed after `inspect.signature()` against the real installed package on Athena.
+`generate()`'s real signature also exposes `exaggeration`/`cfg_weight`/`temperature`/
+`repetition_penalty`/`min_p`/`top_p` beyond `text`/`language_id`/`audio_prompt_path` — left at
+their defaults here, not tuned.
 
 ### 3.3 Athena job (`scripts/submit-chatterbox-pl.sh`)
 
