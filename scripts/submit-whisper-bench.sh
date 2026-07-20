@@ -86,8 +86,15 @@ cd /net/tscratch/people/plgkongruencj/aidedx
 source scripts/athena-env.sh
 
 # Shared across every array task (unlike `date +%F`, which could differ between tasks if the
-# array spans midnight) so all 5 lanes write into the same results directory.
-RESULTS_DIR="eval/results/whisper-bench-${SLURM_ARRAY_JOB_ID}"
+# array spans midnight) so all 5 lanes write into the same results directory. Overridable via
+# env var so a targeted resubmit (e.g. just the lanes that failed to download last time) can
+# point at a *previous* job's directory instead of starting a fresh empty one — otherwise every
+# `sbatch` invocation gets a new $SLURM_ARRAY_JOB_ID and thus a new empty dir, silently defeating
+# asr-transcribe-manifest.mjs's own per-clip resume (it only skips ids already in *its own*
+# outFile, so pointing at a fresh dir makes it redo every already-completed combo from scratch —
+# the "just resubmit" claim in this file's header comment only actually holds with this set):
+#   RESULTS_DIR=eval/results/whisper-bench-2805165 sbatch --array=0,1 scripts/submit-whisper-bench.sh
+RESULTS_DIR="${RESULTS_DIR:-eval/results/whisper-bench-${SLURM_ARRAY_JOB_ID}}"
 mkdir -p "$RESULTS_DIR"
 
 # --- Datasets: audio dir : manifest : lang : short label ---
