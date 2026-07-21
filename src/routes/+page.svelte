@@ -175,6 +175,9 @@
     phase={answerStatus.phase}
     lines={answerStatus.lines}
     message={answerStatus.message}
+    intent={answerStatus.intent}
+    result={answerStatus.result}
+    onEditIntent={(next) => answerStatus.recompute(next)}
   />
 
   <ModelDownloadBanner />

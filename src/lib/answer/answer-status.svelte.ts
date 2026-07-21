@@ -8,9 +8,10 @@
  * `asr-status.svelte.ts` / `model-status.svelte.ts`.
  */
 import { matchIntent } from "../intent/matcher.ts";
-import { computeIntent } from "../compute/compute.ts";
+import { computeIntent, type ComputeResult } from "../compute/compute.ts";
 import { getService } from "../wasm/sveltekit.ts";
 import { renderAnswer } from "../nlg/render.ts";
+import type { QueryIntent } from "../intent/query-intent.ts";
 
 export type AnswerPhase = "idle" | "computing" | "answered" | "unmatched" | "error";
 
@@ -32,16 +33,20 @@ class AnswerStore {
   phase: AnswerPhase = $state("idle");
   lines: string[] = $state([]);
   message: string | null = $state(null);
+  /** The resolved intent behind the current answer — powers the editable slot chips (issue #10). */
+  intent: QueryIntent | null = $state(null);
+  /** The compute result behind the current answer — powers provenance details (issue #10). */
+  result: ComputeResult | null = $state(null);
 
   /**
-   * Bumped by every submit()/reset() call and captured locally at the start
-   * of submit(). getService() is a cached promise, so a slower call already
-   * in flight (e.g. Enter + a follow-up click, or the mic transcript landing
-   * mid-request) can resolve *after* a newer call — the guard after the only
-   * await in submit() drops that stale continuation instead of letting it
-   * overwrite the current answer. Everything before that await is fully
-   * synchronous (matchIntent() included), so no other call can interleave
-   * there and no earlier guard is needed.
+   * Bumped by every submit()/recompute()/reset() call and captured locally at
+   * the start of the async method. getService() is a cached promise, so a
+   * slower call already in flight (e.g. Enter + a follow-up click, or the mic
+   * transcript landing mid-request) can resolve *after* a newer call — the
+   * guard after the only await drops that stale continuation instead of
+   * letting it overwrite the current answer. Everything before that await is
+   * fully synchronous (matchIntent() included), so no other call can
+   * interleave there and no earlier guard is needed.
    */
   #requestId = 0;
 
@@ -62,6 +67,8 @@ class AnswerStore {
     this.phase = "computing";
     this.message = null;
     this.lines = [];
+    this.intent = null;
+    this.result = null;
 
     const { intent } = matchIntent(trimmed);
     if (intent.confidence < CONFIDENCE_THRESHOLD) {
@@ -70,10 +77,30 @@ class AnswerStore {
       return;
     }
 
+    await this.#computeAndRender(intent, requestId);
+  }
+
+  /**
+   * Recomputes from a manually-edited intent (issue #10 tap-to-correct
+   * chips), bypassing the text matcher entirely — the edit already carries a
+   * confirmed slot value, not raw text to re-parse. Shares `#requestId` with
+   * submit() so a chip edit and a fresh submit() (or two rapid edits) can't
+   * race each other.
+   */
+  async recompute(nextIntent: QueryIntent): Promise<void> {
+    const requestId = ++this.#requestId;
+    this.phase = "computing";
+    this.message = null;
+    await this.#computeAndRender(nextIntent, requestId);
+  }
+
+  async #computeAndRender(intent: QueryIntent, requestId: number): Promise<void> {
     try {
       const service = await getService();
-      if (requestId !== this.#requestId) return; // superseded by a newer submit()/reset()
+      if (requestId !== this.#requestId) return; // superseded by a newer submit()/recompute()/reset()
       const result = computeIntent(intent, service);
+      this.intent = intent;
+      this.result = result;
       this.lines = renderAnswer(intent, result);
       this.phase = "answered";
     } catch (error) {
@@ -89,6 +116,8 @@ class AnswerStore {
     this.phase = "idle";
     this.lines = [];
     this.message = null;
+    this.intent = null;
+    this.result = null;
   }
 }
 
