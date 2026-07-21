@@ -14,11 +14,13 @@
     intent: QueryIntent | null;
     /** The compute result behind the answer — powers the provenance details (issue #10). */
     result: ComputeResult | null;
+    /** Set when one or more slots were filled with defaults rather than recognized (issue #10 extension); only read when `phase === "answered"`. */
+    defaultsNotice: string | null;
     /** Called with a manually-corrected intent when a chip edit is committed. */
     onEditIntent: (next: QueryIntent) => void;
   }
 
-  let { phase, lines, message, intent, result, onEditIntent }: Props = $props();
+  let { phase, lines, message, intent, result, defaultsNotice, onEditIntent }: Props = $props();
 
   // Collapsed by default: program names (PSTAR/MSTAR/etc.) are a niche detail
   // most users don't need on every answer, so they're opt-in rather than
@@ -28,8 +30,15 @@
   // Collapsed by default: the slot chips are a correction tool, not part of
   // the answer itself — most users read the sentence and move on, so the
   // chips (and the assumptions panel that lives inside them) stay hidden
-  // until the user deliberately asks to edit a value.
+  // until the user deliberately asks to edit a value. Exception: when the
+  // query was incomplete and defaults were filled in, correcting those
+  // defaults *is* the primary action, so the chips open automatically
+  // whenever a fresh defaults notice arrives (the user can still collapse
+  // them again — this only forces them open once per new notice).
   let chipsOpen = $state(false);
+  $effect(() => {
+    if (defaultsNotice) chipsOpen = true;
+  });
 
   const provenance = $derived(
     result
@@ -74,6 +83,11 @@
   </div>
 {:else if phase === "answered"}
   <div role="status" class="flex flex-col gap-2 rounded-lg border border-input bg-card px-4 py-3">
+    {#if defaultsNotice}
+      <p class="rounded-md border border-warning/40 bg-warning/5 px-3 py-2 text-sm text-warning">
+        {defaultsNotice}
+      </p>
+    {/if}
     {#each blocks as block, i (i)}
       {#if block.kind === "list"}
         <ul class="list-disc space-y-1 pl-5 text-sm">

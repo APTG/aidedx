@@ -109,6 +109,55 @@ describe("answerStatus", () => {
     expect(store.result).toBeNull();
     expect(mocks.getService).not.toHaveBeenCalled();
     expect(mocks.computeIntent).not.toHaveBeenCalled();
+    expect(store.defaultsNotice).toBeNull();
+  });
+
+  it("fills missing slots with defaults and computes when the quantity is recognized but incomplete", async () => {
+    const i = intent({
+      quantity: "stoppingPower",
+      particles: [{ match: "proton" }],
+      materials: [],
+      energies: [],
+      confidence: 0.4,
+    });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: true });
+    mocks.getService.mockResolvedValue({});
+    mocks.computeIntent.mockReturnValue(computeResult());
+
+    const store = await loadStore();
+    await store.submit("stopping power of a proton");
+
+    expect(store.phase).toBe("answered");
+    expect(store.defaultsNotice).toMatch(/material not specified → water/);
+    expect(store.defaultsNotice).toMatch(/energy not specified → 100 MeV/);
+    expect(store.intent).toEqual(
+      expect.objectContaining({
+        particles: [{ match: "proton" }],
+        materials: [{ match: "water" }],
+        energies: [{ value: 100, unit: "MeV" }],
+      }),
+    );
+    expect(mocks.computeIntent).toHaveBeenCalledWith(
+      expect.objectContaining({ materials: [{ match: "water" }] }),
+      {},
+    );
+  });
+
+  it("stays unmatched when the quantity itself is only a guess, even if some slots were recognized", async () => {
+    const i = intent({
+      particles: [{ match: "proton" }],
+      materials: [],
+      energies: [{ value: 100, unit: "MeV" }],
+      confidence: 0.4,
+    });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "default", incomplete: true });
+
+    const store = await loadStore();
+    await store.submit("what does a 100 MeV proton do");
+
+    expect(store.phase).toBe("unmatched");
+    expect(store.defaultsNotice).toBeNull();
+    expect(mocks.computeIntent).not.toHaveBeenCalled();
   });
 
   it("surfaces a computeIntent error inline instead of throwing", async () => {
@@ -231,6 +280,7 @@ describe("answerStatus", () => {
     expect(store.message).toBeNull();
     expect(store.intent).toBeNull();
     expect(store.result).toBeNull();
+    expect(store.defaultsNotice).toBeNull();
   });
 
   describe("recompute", () => {
@@ -247,6 +297,27 @@ describe("answerStatus", () => {
       expect(store.phase).toBe("answered");
       expect(store.intent).toEqual(edited);
       expect(store.result).toEqual(computeResult());
+    });
+
+    it("clears a defaults notice once the user commits a correction", async () => {
+      const i = intent({
+        quantity: "stoppingPower",
+        particles: [{ match: "proton" }],
+        materials: [],
+        energies: [],
+        confidence: 0.4,
+      });
+      mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: true });
+      mocks.getService.mockResolvedValue({});
+      mocks.computeIntent.mockReturnValue(computeResult());
+
+      const store = await loadStore();
+      await store.submit("stopping power of a proton");
+      expect(store.defaultsNotice).not.toBeNull();
+
+      await store.recompute(intent({ materials: [{ match: "PMMA" }] }));
+
+      expect(store.defaultsNotice).toBeNull();
     });
 
     it("surfaces a computeIntent error inline instead of throwing", async () => {

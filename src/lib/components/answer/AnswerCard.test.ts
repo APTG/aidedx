@@ -16,9 +16,9 @@ function firstCallArg<T>(mock: { mock: { calls: unknown[][] } }): T {
   return call[0] as T;
 }
 
-// intent/result default to null and onEditIntent to a no-op so existing
-// phase-focused tests don't need to restate them on every call.
-const BASE_PROPS = { intent: null, result: null, onEditIntent: () => {} };
+// intent/result/defaultsNotice default to null and onEditIntent to a no-op
+// so existing phase-focused tests don't need to restate them on every call.
+const BASE_PROPS = { intent: null, result: null, defaultsNotice: null, onEditIntent: () => {} };
 
 const TEST_INTENT: QueryIntent = {
   quantity: "csdaRange",
@@ -168,6 +168,7 @@ describe("AnswerCard", () => {
         message: null,
         intent: TEST_INTENT,
         result: TEST_RESULT,
+        defaultsNotice: null,
         onEditIntent: () => {},
       },
     });
@@ -207,6 +208,7 @@ describe("AnswerCard", () => {
         message: null,
         intent: TEST_INTENT,
         result: TEST_RESULT,
+        defaultsNotice: null,
         onEditIntent: () => {},
       },
     });
@@ -230,6 +232,7 @@ describe("AnswerCard", () => {
         message: null,
         intent: TEST_INTENT,
         result: TEST_RESULT,
+        defaultsNotice: null,
         onEditIntent,
       },
     });
@@ -246,5 +249,42 @@ describe("AnswerCard", () => {
     const next = firstCallArg<QueryIntent>(onEditIntent);
     expect(next.materials[0]).toEqual({ match: "water" });
     expect(next.assumptions).toEqual([]);
+  });
+
+  it("shows a defaults notice and auto-opens the chips when slots were defaulted", () => {
+    const { getByRole, getByText } = render(AnswerCard, {
+      props: {
+        phase: "answered",
+        lines: ["The CSDA range of 40 MeV protons in PMMA is 1.529 g/cm² (PSTAR)."],
+        message: null,
+        intent: TEST_INTENT,
+        result: TEST_RESULT,
+        defaultsNotice:
+          "Your question was missing some details, so I filled them in: material not specified → water.",
+        onEditIntent: () => {},
+      },
+    });
+
+    expect(getByText(/Your question was missing some details/)).toBeInTheDocument();
+    // The chips should already be visible without clicking "Edit" first.
+    expect(getByRole("button", { name: "Hide edit" })).toHaveAttribute("aria-expanded", "true");
+    expect(getByRole("button", { name: /edit particle: proton/i })).toBeInTheDocument();
+  });
+
+  it("omits the defaults notice for a normal, fully-specified answer", () => {
+    const { queryByText, getByRole } = render(AnswerCard, {
+      props: {
+        phase: "answered",
+        lines: ["The CSDA range of 40 MeV protons in PMMA is 1.529 g/cm² (PSTAR)."],
+        message: null,
+        intent: TEST_INTENT,
+        result: TEST_RESULT,
+        defaultsNotice: null,
+        onEditIntent: () => {},
+      },
+    });
+
+    expect(queryByText(/missing some details/)).not.toBeInTheDocument();
+    expect(getByRole("button", { name: "Edit" })).toHaveAttribute("aria-expanded", "false");
   });
 });

@@ -177,6 +177,7 @@
     message={answerStatus.message}
     intent={answerStatus.intent}
     result={answerStatus.result}
+    defaultsNotice={answerStatus.defaultsNotice}
     onEditIntent={(next) => answerStatus.recompute(next)}
   />
 

@@ -12,6 +12,11 @@ import { computeIntent, type ComputeResult } from "../compute/compute.ts";
 import { getService } from "../wasm/sveltekit.ts";
 import { renderAnswer } from "../nlg/render.ts";
 import type { QueryIntent } from "../intent/query-intent.ts";
+import {
+  buildDefaultsNotice,
+  fillMissingSlots,
+  isRecoverableIncomplete,
+} from "../intent/fill-defaults.ts";
 
 export type AnswerPhase = "idle" | "computing" | "answered" | "unmatched" | "error";
 
@@ -37,6 +42,13 @@ class AnswerStore {
   intent: QueryIntent | null = $state(null);
   /** The compute result behind the current answer — powers provenance details (issue #10). */
   result: ComputeResult | null = $state(null);
+  /**
+   * Set when the current answer's intent had one or more slots filled with
+   * defaults rather than recognized from the query text (issue #10 extension
+   * — "stopping power of a proton" fills in material/energy). Null for a
+   * normal, fully-specified answer.
+   */
+  defaultsNotice: string | null = $state(null);
 
   /**
    * Bumped by every submit()/recompute()/reset() call and captured locally at
@@ -69,11 +81,22 @@ class AnswerStore {
     this.lines = [];
     this.intent = null;
     this.result = null;
+    this.defaultsNotice = null;
 
-    const { intent } = matchIntent(trimmed);
+    const match = matchIntent(trimmed);
+    const { intent } = match;
     if (intent.confidence < CONFIDENCE_THRESHOLD) {
-      this.phase = "unmatched";
-      this.message = UNMATCHED_MESSAGE;
+      if (!isRecoverableIncomplete(match)) {
+        this.phase = "unmatched";
+        this.message = UNMATCHED_MESSAGE;
+        return;
+      }
+      // The quantity was confidently recognized but a slot came up empty
+      // ("stopping power of a proton") — fill the gap with a sensible
+      // default and compute anyway, rather than a dead-end error message.
+      const defaults = fillMissingSlots(intent);
+      this.defaultsNotice = buildDefaultsNotice(defaults.filled);
+      await this.#computeAndRender(defaults.intent, requestId);
       return;
     }
 
@@ -91,6 +114,10 @@ class AnswerStore {
     const requestId = ++this.#requestId;
     this.phase = "computing";
     this.message = null;
+    // A manual correction is the user acting on the defaults notice — once
+    // they've edited a value, the "I guessed at some of this" banner has
+    // served its purpose and would otherwise linger stale.
+    this.defaultsNotice = null;
     await this.#computeAndRender(nextIntent, requestId);
   }
 
@@ -118,6 +145,7 @@ class AnswerStore {
     this.message = null;
     this.intent = null;
     this.result = null;
+    this.defaultsNotice = null;
   }
 }
 
