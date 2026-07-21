@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { ELEMENTS } from "./elements.ts";
 import { MATERIALS, MATERIAL_ALIAS_INDEX, MATERIAL_BY_ID } from "./materials.ts";
-import { PARTICLES, PARTICLE_ALIAS_INDEX, ELECTRON_ID } from "./particles.ts";
+import { PARTICLES, PARTICLE_ALIAS_INDEX, ELECTRON_ID, particleDisplayLabel } from "./particles.ts";
 import { normalizeText, formatIsotope, boundedLevenshtein } from "./normalize.ts";
 import { resolveMaterial, resolveParticle } from "./lookup.ts";
 import { parseEvalRecords } from "../intent/query-intent.ts";
@@ -210,6 +210,30 @@ describe("resolveParticle", () => {
 
   it("returns null for unknown phrases", () => {
     expect(resolveParticle("phlogiston")).toBeNull();
+  });
+});
+
+describe("particleDisplayLabel", () => {
+  it("prefers common hydrogen isotope names over element-mass notation", () => {
+    expect(particleDisplayLabel(1, 1)).toBe("proton");
+    expect(particleDisplayLabel(1, 2)).toBe("deuteron");
+    expect(particleDisplayLabel(1, 3)).toBe("triton");
+  });
+
+  it("prefers 'alpha particle' over 'helium-4'", () => {
+    expect(particleDisplayLabel(2, 4)).toBe("alpha particle");
+  });
+
+  it("labels the electron directly", () => {
+    expect(particleDisplayLabel(ELECTRON_ID, 0)).toBe("electron");
+  });
+
+  it("uses a simple '{element} ion' name for an assumed default isotope", () => {
+    expect(particleDisplayLabel(6, 12)).toBe("carbon ion");
+  });
+
+  it("spells out the mass number for an explicit non-default isotope", () => {
+    expect(particleDisplayLabel(6, 13)).toBe("carbon-13 ion");
   });
 });
 

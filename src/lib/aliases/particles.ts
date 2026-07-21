@@ -178,3 +178,21 @@ export function particleById(id: number): CanonicalParticle | undefined {
   if (!e) return undefined;
   return { id: e.z, symbol: e.symbol, name: e.name, defaultMassNumber: e.defaultMassNumber };
 }
+
+/**
+ * Friendly display name for a resolved particle (issue #10 trust-loop chips):
+ * common names ("proton", "alpha particle") take priority over element+mass
+ * notation, and an *assumed default* isotope reads as a simple "{element}
+ * ion" rather than spelling out its mass number.
+ */
+export function particleDisplayLabel(id: number, massNumber: number): string {
+  if (id === ELECTRON_ID) return "electron";
+  if (id === 1 && massNumber === 1) return "proton";
+  if (id === 1 && massNumber === 2) return "deuteron";
+  if (id === 1 && massNumber === 3) return "triton";
+  if (id === 2 && massNumber === 4) return "alpha particle";
+  const el = particleById(id);
+  if (!el) return `particle ${id}`;
+  const name = el.name.toLowerCase();
+  return massNumber === el.defaultMassNumber ? `${name} ion` : `${name}-${massNumber} ion`;
+}

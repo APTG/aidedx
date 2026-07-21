@@ -91,6 +91,8 @@ describe("answerStatus", () => {
     ]);
     expect(store.message).toBeNull();
     expect(mocks.computeIntent).toHaveBeenCalledWith(i, {});
+    expect(store.intent).toEqual(i);
+    expect(store.result).toEqual(computeResult());
   });
 
   it("shows a 'couldn't understand' message for a low-confidence match, without calling compute", async () => {
@@ -103,7 +105,58 @@ describe("answerStatus", () => {
     expect(store.phase).toBe("unmatched");
     expect(store.message).toMatch(/couldn't understand/i);
     expect(store.lines).toEqual([]);
+    expect(store.intent).toBeNull();
+    expect(store.result).toBeNull();
     expect(mocks.getService).not.toHaveBeenCalled();
+    expect(mocks.computeIntent).not.toHaveBeenCalled();
+    expect(store.defaultsNotice).toBeNull();
+  });
+
+  it("fills missing slots with defaults and computes when the quantity is recognized but incomplete", async () => {
+    const i = intent({
+      quantity: "stoppingPower",
+      particles: [{ match: "proton" }],
+      materials: [],
+      energies: [],
+      confidence: 0.4,
+    });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: true });
+    mocks.getService.mockResolvedValue({});
+    mocks.computeIntent.mockReturnValue(computeResult());
+
+    const store = await loadStore();
+    await store.submit("stopping power of a proton");
+
+    expect(store.phase).toBe("answered");
+    expect(store.defaultsNotice).toMatch(/material not specified → water/);
+    expect(store.defaultsNotice).toMatch(/energy not specified → 100 MeV/);
+    expect(store.intent).toEqual(
+      expect.objectContaining({
+        particles: [{ match: "proton" }],
+        materials: [{ match: "water" }],
+        energies: [{ value: 100, unit: "MeV" }],
+      }),
+    );
+    expect(mocks.computeIntent).toHaveBeenCalledWith(
+      expect.objectContaining({ materials: [{ match: "water" }] }),
+      {},
+    );
+  });
+
+  it("stays unmatched when the quantity itself is only a guess, even if some slots were recognized", async () => {
+    const i = intent({
+      particles: [{ match: "proton" }],
+      materials: [],
+      energies: [{ value: 100, unit: "MeV" }],
+      confidence: 0.4,
+    });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "default", incomplete: true });
+
+    const store = await loadStore();
+    await store.submit("what does a 100 MeV proton do");
+
+    expect(store.phase).toBe("unmatched");
+    expect(store.defaultsNotice).toBeNull();
     expect(mocks.computeIntent).not.toHaveBeenCalled();
   });
 
@@ -121,6 +174,8 @@ describe("answerStatus", () => {
     expect(store.phase).toBe("error");
     expect(store.message).toBe("Electron stopping powers are not available in libdedx v1.4.0");
     expect(store.lines).toEqual([]);
+    expect(store.intent).toBeNull();
+    expect(store.result).toBeNull();
   });
 
   it("surfaces a WASM load failure inline", async () => {
@@ -209,17 +264,108 @@ describe("answerStatus", () => {
     expect(store.message).toBeNull();
   });
 
-  it("reset() clears phase/lines/message back to idle", async () => {
-    const i = intent({ confidence: 0.4 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "default", incomplete: true });
+  it("reset() clears phase/lines/message/intent/result back to idle", async () => {
+    const i = intent({ confidence: 0.97 });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.getService.mockResolvedValue({});
+    mocks.computeIntent.mockReturnValue(computeResult());
     const store = await loadStore();
-    await store.submit("gibberish");
-    expect(store.phase).toBe("unmatched");
+    await store.submit("range of 40 MeV protons in water");
+    expect(store.phase).toBe("answered");
 
     store.reset();
 
     expect(store.phase).toBe("idle");
     expect(store.lines).toEqual([]);
     expect(store.message).toBeNull();
+    expect(store.intent).toBeNull();
+    expect(store.result).toBeNull();
+    expect(store.defaultsNotice).toBeNull();
+  });
+
+  describe("recompute", () => {
+    it("computes and renders directly from an edited intent, without running the matcher", async () => {
+      mocks.getService.mockResolvedValue({});
+      mocks.computeIntent.mockReturnValue(computeResult());
+      const edited = intent({ energies: [{ value: 240, unit: "keV" }] });
+
+      const store = await loadStore();
+      await store.recompute(edited);
+
+      expect(mocks.matchIntent).not.toHaveBeenCalled();
+      expect(mocks.computeIntent).toHaveBeenCalledWith(edited, {});
+      expect(store.phase).toBe("answered");
+      expect(store.intent).toEqual(edited);
+      expect(store.result).toEqual(computeResult());
+    });
+
+    it("clears a defaults notice once the user commits a correction", async () => {
+      const i = intent({
+        quantity: "stoppingPower",
+        particles: [{ match: "proton" }],
+        materials: [],
+        energies: [],
+        confidence: 0.4,
+      });
+      mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: true });
+      mocks.getService.mockResolvedValue({});
+      mocks.computeIntent.mockReturnValue(computeResult());
+
+      const store = await loadStore();
+      await store.submit("stopping power of a proton");
+      expect(store.defaultsNotice).not.toBeNull();
+
+      await store.recompute(intent({ materials: [{ match: "PMMA" }] }));
+
+      expect(store.defaultsNotice).toBeNull();
+    });
+
+    it("surfaces a computeIntent error inline instead of throwing", async () => {
+      mocks.getService.mockResolvedValue({});
+      mocks.computeIntent.mockImplementation(() => {
+        throw new Error("particle not found");
+      });
+
+      const store = await loadStore();
+      await store.recompute(intent({}));
+
+      expect(store.phase).toBe("error");
+      expect(store.message).toBe("particle not found");
+    });
+
+    it("keeps the newer result when a slower, earlier recompute() resolves after a faster, later one", async () => {
+      let resolveFirst!: (service: unknown) => void;
+      let resolveSecond!: (service: unknown) => void;
+      mocks.getService
+        .mockImplementationOnce(
+          () =>
+            new Promise((resolve) => {
+              resolveFirst = resolve;
+            }),
+        )
+        .mockImplementationOnce(
+          () =>
+            new Promise((resolve) => {
+              resolveSecond = resolve;
+            }),
+        );
+      mocks.computeIntent.mockReturnValue(computeResult());
+
+      const firstEdit = intent({ particles: [{ match: "first-edit" }] });
+      const secondEdit = intent({ particles: [{ match: "second-edit" }] });
+
+      const store = await loadStore();
+      const firstCall = store.recompute(firstEdit);
+      const secondCall = store.recompute(secondEdit);
+
+      resolveSecond({});
+      await secondCall;
+      expect(store.intent).toEqual(secondEdit);
+
+      resolveFirst({});
+      await firstCall;
+
+      expect(store.intent).toEqual(secondEdit);
+    });
   });
 });
