@@ -24,7 +24,7 @@ Example interaction:
 
 > 🎤 _"What is the range of 40 MeV protons in PMMA?"_
 > → _"The CSDA range of a 40 MeV proton in PMMA is 1.42 g/cm², about 12 mm."_ (spoken + displayed,
-> with an "Open full plot →" link into dedx_web)
+> with an "Open in calculator →" link into dedx_web)
 
 The app targets users with capable local hardware (e.g. Apple-silicon MacBooks) but **must also
 work, more slowly, on machines without a GPU**.
@@ -180,10 +180,13 @@ Many curious users will lack WebGPU; they must still be able to run the LLM, slo
   `@aptg/libdedx-wasm` package** from `dedx_web/src/lib/wasm/` (the `LibdedxService` is already
   fully specified in `docs/06-wasm-api-contract.md`). Do **not** maintain a second Emscripten
   build.
-- **Deep-link handoff:** aidedx emits **dedx_web `urlv=2` shareable URLs**, so every answer can
-  carry an "Open full plot / calculator →" link that lands in dedx_web pre-filled. This keeps the
-  two apps complementary (aidedx = conversational entry; dedx_web = deep analysis) instead of
-  duplicating the calculator/plot UI.
+- **Deep-link handoff:** aidedx emits **dedx_web `urlv=3` shareable URLs targeting the basic
+  calculator page** (not the plot page), so a single-entity or energy-comparison answer can
+  carry an "Open in calculator →" link that lands in dedx_web pre-filled with the same
+  particle, material, program, and energy/energies. This keeps the two apps complementary
+  (aidedx = conversational entry; dedx_web = deep analysis) instead of duplicating the
+  calculator UI. Multi-entity comparisons (material/particle/program) aren't representable in
+  the basic calculator and don't get a deep link in v1 — see issue #10.
 - **Synonym tables are reusable both ways:** the material/particle alias map (e.g. PMMA / Lucite /
   Perspex / Plexiglas → one ICRU material) also improves dedx_web's existing text search.
 
