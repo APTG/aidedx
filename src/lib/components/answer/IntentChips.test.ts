@@ -51,6 +51,16 @@ describe("IntentChips", () => {
     expect(getByRole("button", { name: /edit energy: 214 keV/i })).toBeInTheDocument();
   });
 
+  it("renders the energy chip's visible text with an explicit space, not template whitespace", () => {
+    // toHaveTextContent() normalizes whitespace and would hide a build where
+    // the number and unit render glued together ("214keV") — read
+    // .textContent directly to catch that.
+    const { getByRole } = render(IntentChips, {
+      props: { intent: baseIntent(), onEditIntent: () => {} },
+    });
+    expect(getByRole("button", { name: /edit energy: 214 keV/i }).textContent).toBe("214 keV");
+  });
+
   it("renders the assumptions panel verbatim", () => {
     const intent = baseIntent({ assumptions: ["heard: watre → read as: water"] });
     const { getByText } = render(IntentChips, { props: { intent, onEditIntent: () => {} } });
@@ -207,6 +217,17 @@ describe("IntentChips", () => {
       props: { intent: inverse, onEditIntent: () => {} },
     });
     expect(getByRole("button", { name: /edit target: 10 cm/i })).toBeInTheDocument();
+  });
+
+  it("renders the target chip's visible text with explicit spaces, not template whitespace", () => {
+    const inverse = baseIntent({
+      quantity: "energyFromRange",
+      target: { value: 10, unit: "cm" },
+    });
+    const { getByRole } = render(IntentChips, {
+      props: { intent: inverse, onEditIntent: () => {} },
+    });
+    expect(getByRole("button", { name: /edit target: 10 cm/i }).textContent).toBe("target: 10 cm");
   });
 
   it("omits the target chip for a forward query", () => {

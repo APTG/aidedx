@@ -278,8 +278,7 @@
           onclick={() => startEnergyEdit(i)}
           class="rounded-full border border-input bg-muted px-2.5 py-1 text-sm hover:bg-card focus-visible:ring-2 focus-visible:ring-ring"
         >
-          {e.value}
-          {e.unit}
+          {`${e.value} ${e.unit}`}
         </button>
       {/if}
     {/each}
@@ -369,8 +368,7 @@
           onclick={startTargetEdit}
           class="rounded-full border border-input bg-muted px-2.5 py-1 text-sm hover:bg-card focus-visible:ring-2 focus-visible:ring-ring"
         >
-          target: {intent.target.value}
-          {intent.target.unit}
+          {`target: ${intent.target.value} ${intent.target.unit}`}
         </button>
       {/if}
     {/if}
