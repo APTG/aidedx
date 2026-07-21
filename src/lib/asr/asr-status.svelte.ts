@@ -22,13 +22,15 @@
  * `transcript` is the *corrected* text, not Whisper's raw output — `stop()`
  * runs it through `correctTranscript()` (issue #87 Part B) before publishing,
  * so the query box and the matcher both see the same domain-vocabulary-fixed
- * string.
+ * string. `substitutions` is that same call's "heard X -> read as Y" log,
+ * kept alongside `transcript` so `+page.svelte` can hand both to
+ * `answerStatus.submit()` for the trust UX (issue #10).
  */
 import { MicRecorder } from "./recorder.ts";
 import { decodeToMono16k } from "./pcm.ts";
 import { createTranscribeWorkerClient, type TranscribeWorkerClient } from "./worker-client.ts";
 import { recordCompletedTranscription } from "./transcribe-progress.ts";
-import { correctTranscript } from "./correct/core.ts";
+import { correctTranscript, type PhoneticSubstitution } from "./correct/core.ts";
 
 export type AsrPhase = "idle" | "recording" | "transcribing" | "done" | "error";
 
@@ -47,6 +49,8 @@ function describeError(error: unknown): string {
 class AsrStore {
   phase: AsrPhase = $state("idle");
   transcript = $state("");
+  /** Phonetic-pass substitutions behind the current `transcript` (issue #10 trust UX); cleared on start()/reset(). */
+  substitutions: PhoneticSubstitution[] = $state([]);
   /** Decoder tokens generated so far while transcribing (issue #46); cleared on start()/reset(). */
   tokensSoFar = $state(0);
   errorMessage: string | null = $state(null);
@@ -76,6 +80,7 @@ class AsrStore {
     if (this.isBusy) return;
     this.errorMessage = null;
     this.transcript = "";
+    this.substitutions = [];
     this.tokensSoFar = 0;
     // Kick off pipeline loading (Cache Storage read + ONNX Runtime Web
     // session creation) now, in parallel with the recording the user is
@@ -121,8 +126,10 @@ class AsrStore {
       // above — so it sees the whole sentence a rule's context (e.g. "before
       // a particle word") may need, and so the query box + matcher agree on
       // one corrected string. `substitutions` (the phonetic pass's "heard X ->
-      // read as Y" log) isn't surfaced yet — that's the trust UX, issue #10.
-      this.transcript = correctTranscript(rawTranscript).text;
+      // read as Y" log) is kept for the trust UX, issue #10.
+      const corrected = correctTranscript(rawTranscript);
+      this.transcript = corrected.text;
+      this.substitutions = corrected.substitutions;
       this.phase = "done";
       if (firstTokenAt !== null && lastTokenAt !== null) {
         recordCompletedTranscription({
@@ -144,6 +151,7 @@ class AsrStore {
   reset(): void {
     this.phase = "idle";
     this.transcript = "";
+    this.substitutions = [];
     this.tokensSoFar = 0;
     this.errorMessage = null;
     this.recordingStartedAt = null;

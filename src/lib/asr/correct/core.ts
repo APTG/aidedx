@@ -42,6 +42,11 @@ export interface PhoneticSubstitution {
   slot: LexiconEntry["slot"];
 }
 
+/** Renders one substitution as an `assumptions[]`-style note (issue #10 trust UX). */
+export function formatSubstitutionNote(s: PhoneticSubstitution): string {
+  return `heard "${s.heard}" → read as "${s.readAs}"`;
+}
+
 interface Span {
   start: number;
   end: number;

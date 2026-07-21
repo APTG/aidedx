@@ -142,6 +142,34 @@ describe("asrStatus", () => {
     expect(store.transcript).toBe("how far will a 60 MeV proton go");
   });
 
+  it("populates substitutions from the phonetic pass alongside the corrected transcript (issue #10 trust UX)", async () => {
+    mocks.workerTranscribe.mockResolvedValue("100 NEV protons in water");
+
+    const store = await loadStore();
+    await store.start();
+    await store.stop();
+
+    expect(store.transcript).toBe("100 MeV protons in water");
+    expect(store.substitutions).toEqual([{ heard: "NEV", readAs: "MeV", slot: "unit" }]);
+  });
+
+  it("clears substitutions on start() and reset()", async () => {
+    mocks.workerTranscribe.mockResolvedValue("100 NEV protons in water");
+
+    const store = await loadStore();
+    await store.start();
+    await store.stop();
+    expect(store.substitutions).not.toEqual([]);
+
+    await store.start();
+    expect(store.substitutions).toEqual([]);
+
+    await store.stop();
+    expect(store.substitutions).not.toEqual([]);
+    store.reset();
+    expect(store.substitutions).toEqual([]);
+  });
+
   it("updates tokensSoFar live as the worker reports tokens, and clears it on the next start()", async () => {
     mocks.workerTranscribe.mockImplementation(
       async (_pcm: Float32Array, onToken: (count: number) => void) => {

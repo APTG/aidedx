@@ -17,6 +17,8 @@ import {
   fillMissingSlots,
   isRecoverableIncomplete,
 } from "../intent/fill-defaults.ts";
+import { buildReAskNotice, validateIntent, type PlausibilitySlot } from "../compute/validate.ts";
+import { formatSubstitutionNote, type PhoneticSubstitution } from "../asr/correct/core.ts";
 
 export type AnswerPhase = "idle" | "computing" | "answered" | "unmatched" | "error";
 
@@ -49,6 +51,15 @@ class AnswerStore {
    * normal, fully-specified answer.
    */
   defaultsNotice: string | null = $state(null);
+  /**
+   * Set when `validateIntent()` flags exactly one implausible slot on the
+   * current answer (issue #10 targeted re-ask) — a banner inviting the user
+   * to confirm/correct that one chip, rather than a generic error. Null
+   * otherwise, including when zero or multiple slots are flagged.
+   */
+  reAskNotice: string | null = $state(null);
+  /** The chip `reAskNotice` is about, so the UI can highlight it (issue #10). */
+  reAskTarget: { slot: PlausibilitySlot; index: number } | null = $state(null);
 
   /**
    * Bumped by every submit()/recompute()/reset() call and captured locally at
@@ -66,9 +77,11 @@ class AnswerStore {
    * Runs text -> intent -> compute -> text end to end. Called directly from
    * the query form's submit handler and from the mic-transcript effect once
    * a transcript lands (issue #39 acceptance criteria: no separate code path
-   * for typed vs. spoken input).
+   * for typed vs. spoken input). `substitutions` is the mic path's phonetic-
+   * correction log (issue #10 trust UX) — typed/example submits pass none,
+   * since `correctTranscript()` only ever runs on ASR output.
    */
-  async submit(text: string): Promise<void> {
+  async submit(text: string, substitutions: PhoneticSubstitution[] = []): Promise<void> {
     const trimmed = text.trim();
     if (!trimmed) {
       this.reset();
@@ -82,9 +95,20 @@ class AnswerStore {
     this.intent = null;
     this.result = null;
     this.defaultsNotice = null;
+    this.reAskNotice = null;
+    this.reAskTarget = null;
 
     const match = matchIntent(trimmed);
-    const { intent } = match;
+    const intent =
+      substitutions.length > 0
+        ? {
+            ...match.intent,
+            assumptions: [
+              ...match.intent.assumptions,
+              ...substitutions.map(formatSubstitutionNote),
+            ],
+          }
+        : match.intent;
     if (intent.confidence < CONFIDENCE_THRESHOLD) {
       if (!isRecoverableIncomplete(match)) {
         this.phase = "unmatched";
@@ -116,7 +140,9 @@ class AnswerStore {
     this.message = null;
     // A manual correction is the user acting on the defaults notice — once
     // they've edited a value, the "I guessed at some of this" banner has
-    // served its purpose and would otherwise linger stale.
+    // served its purpose and would otherwise linger stale. Re-ask is
+    // re-evaluated fresh in #computeAndRender() below, since the edit may
+    // have fixed (or newly introduced) a plausibility issue.
     this.defaultsNotice = null;
     await this.#computeAndRender(nextIntent, requestId);
   }
@@ -126,6 +152,25 @@ class AnswerStore {
       const service = await getService();
       if (requestId !== this.#requestId) return; // superseded by a newer submit()/recompute()/reset()
       const result = computeIntent(intent, service);
+      // Targeted re-ask (issue #10): a single implausible slot gets a
+      // specific banner + highlighted chip instead of silently showing a
+      // possibly-wrong number. Zero issues (the common case) or more than
+      // one both leave it unset — this is deliberately scoped to the
+      // single-slot case the issue describes, not a general warnings list.
+      const validation = validateIntent(intent, service);
+      const [onlyIssue] = validation.issues;
+      if (validation.issues.length === 1 && onlyIssue) {
+        this.reAskNotice = buildReAskNotice(onlyIssue);
+        // Only highlight a chip when the issue actually names one — index is
+        // optional on PlausibilityIssue, and defaulting a missing index to 0
+        // would highlight an unrelated chip. The banner alone still conveys
+        // the issue either way.
+        this.reAskTarget =
+          onlyIssue.index !== undefined ? { slot: onlyIssue.slot, index: onlyIssue.index } : null;
+      } else {
+        this.reAskNotice = null;
+        this.reAskTarget = null;
+      }
       this.intent = intent;
       this.result = result;
       this.lines = renderAnswer(intent, result);
@@ -146,6 +191,8 @@ class AnswerStore {
     this.intent = null;
     this.result = null;
     this.defaultsNotice = null;
+    this.reAskNotice = null;
+    this.reAskTarget = null;
   }
 }
 

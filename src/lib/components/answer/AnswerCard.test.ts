@@ -16,9 +16,17 @@ function firstCallArg<T>(mock: { mock: { calls: unknown[][] } }): T {
   return call[0] as T;
 }
 
-// intent/result/defaultsNotice default to null and onEditIntent to a no-op
-// so existing phase-focused tests don't need to restate them on every call.
-const BASE_PROPS = { intent: null, result: null, defaultsNotice: null, onEditIntent: () => {} };
+// intent/result/defaultsNotice/reAskNotice/reAskTarget default to null and
+// onEditIntent to a no-op so existing phase-focused tests don't need to
+// restate them on every call.
+const BASE_PROPS = {
+  intent: null,
+  result: null,
+  defaultsNotice: null,
+  reAskNotice: null,
+  reAskTarget: null,
+  onEditIntent: () => {},
+};
 
 const TEST_INTENT: QueryIntent = {
   quantity: "csdaRange",
@@ -169,6 +177,8 @@ describe("AnswerCard", () => {
         intent: TEST_INTENT,
         result: TEST_RESULT,
         defaultsNotice: null,
+        reAskNotice: null,
+        reAskTarget: null,
         onEditIntent: () => {},
       },
     });
@@ -209,6 +219,8 @@ describe("AnswerCard", () => {
         intent: TEST_INTENT,
         result: TEST_RESULT,
         defaultsNotice: null,
+        reAskNotice: null,
+        reAskTarget: null,
         onEditIntent: () => {},
       },
     });
@@ -233,6 +245,8 @@ describe("AnswerCard", () => {
         intent: TEST_INTENT,
         result: TEST_RESULT,
         defaultsNotice: null,
+        reAskNotice: null,
+        reAskTarget: null,
         onEditIntent,
       },
     });
@@ -251,6 +265,58 @@ describe("AnswerCard", () => {
     expect(next.assumptions).toEqual([]);
   });
 
+  it("shows a re-ask notice, reuses the defaults-notice styling, auto-opens the chips, highlights the flagged chip, and doesn't steal focus", () => {
+    const { getByRole, getByText } = render(AnswerCard, {
+      props: {
+        phase: "answered",
+        lines: ["The CSDA range of 240 keV protons in PMMA is 1.529 g/cm² (PSTAR)."],
+        message: null,
+        intent: TEST_INTENT,
+        result: TEST_RESULT,
+        defaultsNotice: null,
+        reAskNotice: "240 keV is outside the valid range. Did you mean 240 MeV?",
+        reAskTarget: { slot: "energy", index: 0 },
+        onEditIntent: () => {},
+      },
+    });
+
+    const notice = getByText("240 keV is outside the valid range. Did you mean 240 MeV?");
+    expect(notice).toHaveAttribute("id", "answer-reask");
+    expect(notice).toHaveClass("border-warning/40", "bg-warning/5", "text-warning");
+
+    // Chips are already open, without clicking "Edit" first.
+    expect(getByRole("button", { name: "Hide edit" })).toHaveAttribute("aria-expanded", "true");
+
+    // The flagged chip carries the highlight in its accessible name (not
+    // color alone, per WCAG 1.4.1) and points back at the banner.
+    const energyChip = getByRole("button", {
+      name: "Edit energy: 40 MeV — needs confirmation",
+    });
+    expect(energyChip).toHaveAttribute("aria-describedby", "answer-reask");
+
+    // Nothing moved focus off the document body.
+    expect(document.activeElement).not.toBe(energyChip);
+  });
+
+  it("omits the re-ask notice and highlight when there is none", () => {
+    const { queryByText, getByRole } = render(AnswerCard, {
+      props: {
+        phase: "answered",
+        lines: ["The CSDA range of 40 MeV protons in PMMA is 1.529 g/cm² (PSTAR)."],
+        message: null,
+        intent: TEST_INTENT,
+        result: TEST_RESULT,
+        defaultsNotice: null,
+        reAskNotice: null,
+        reAskTarget: null,
+        onEditIntent: () => {},
+      },
+    });
+
+    expect(queryByText(/needs confirmation/)).not.toBeInTheDocument();
+    expect(getByRole("button", { name: "Edit" })).toHaveAttribute("aria-expanded", "false");
+  });
+
   it("shows a defaults notice and auto-opens the chips when slots were defaulted", () => {
     const { getByRole, getByText } = render(AnswerCard, {
       props: {
@@ -261,6 +327,8 @@ describe("AnswerCard", () => {
         result: TEST_RESULT,
         defaultsNotice:
           "Your question was missing some details, so I filled them in: material not specified → water.",
+        reAskNotice: null,
+        reAskTarget: null,
         onEditIntent: () => {},
       },
     });
@@ -280,6 +348,8 @@ describe("AnswerCard", () => {
         intent: TEST_INTENT,
         result: TEST_RESULT,
         defaultsNotice: null,
+        reAskNotice: null,
+        reAskTarget: null,
         onEditIntent: () => {},
       },
     });
@@ -297,6 +367,8 @@ describe("AnswerCard", () => {
         intent: TEST_INTENT,
         result: TEST_RESULT,
         defaultsNotice: null,
+        reAskNotice: null,
+        reAskTarget: null,
         onEditIntent: () => {},
       },
     });
@@ -314,6 +386,8 @@ describe("AnswerCard", () => {
       intent: null,
       result: null,
       defaultsNotice: null,
+      reAskNotice: null,
+      reAskTarget: null,
       onEditIntent: () => {},
     });
     await rerender({
@@ -323,6 +397,8 @@ describe("AnswerCard", () => {
       intent: { ...TEST_INTENT, materials: [{ match: "water" }] },
       result: TEST_RESULT,
       defaultsNotice: null,
+      reAskNotice: null,
+      reAskTarget: null,
       onEditIntent: () => {},
     });
 
@@ -339,6 +415,8 @@ describe("AnswerCard", () => {
         intent: TEST_INTENT,
         result: TEST_RESULT,
         defaultsNotice: null,
+        reAskNotice: null,
+        reAskTarget: null,
         onEditIntent: () => {},
       },
     });
@@ -355,6 +433,8 @@ describe("AnswerCard", () => {
       intent: TEST_INTENT,
       result: TEST_RESULT,
       defaultsNotice: null,
+      reAskNotice: null,
+      reAskTarget: null,
       onEditIntent: () => {},
     });
     await rerender({
@@ -364,6 +444,8 @@ describe("AnswerCard", () => {
       intent: { ...TEST_INTENT, materials: [{ match: "water" }] },
       result: TEST_RESULT,
       defaultsNotice: null,
+      reAskNotice: null,
+      reAskTarget: null,
       onEditIntent: () => {},
     });
 
