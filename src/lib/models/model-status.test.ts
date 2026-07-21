@@ -301,4 +301,17 @@ describe("modelStatus store", () => {
     await store.init();
     expect(store.diskClass).toBe("text-danger");
   });
+
+  it("closePanel() sets panelOpen to false regardless of the current state (issue #17)", async () => {
+    const store = await loadStore();
+    store.togglePanel();
+    expect(store.panelOpen).toBe(true);
+
+    store.closePanel();
+    expect(store.panelOpen).toBe(false);
+
+    // Idempotent — calling it again while already closed is a no-op, not an error.
+    store.closePanel();
+    expect(store.panelOpen).toBe(false);
+  });
 });

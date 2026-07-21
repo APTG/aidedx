@@ -52,15 +52,20 @@ describe("StatusPill", () => {
     expect(value).toHaveAttribute("title", baseProps.cpuTooltip);
   });
 
-  it("truncates a long hardware renderer string and exposes the full text via a title tooltip", () => {
+  it("wraps a long hardware renderer string in full, rather than truncating it away (regression)", () => {
+    // A one-line `truncate` treatment (ellipsis + hover-only title) previously
+    // clipped real-world WebGL renderer strings mid-word with no way to read
+    // the rest without a mouse. The row now stacks label-above-value and lets
+    // the value wrap, so the complete string is always visible.
     const longLabel =
       "CPU only (render: ANGLE (Intel, Intel(R) UHD Graphics 620 (0x00003EA0) Direct3D11 vs_5_0 ps_5_0, D3D11))";
     const { getByText } = render(StatusPill, {
       props: { ...baseProps, open: true, hardwareLabel: longLabel },
     });
     const value = getByText(longLabel);
-    expect(value).toHaveClass("truncate");
-    expect(value).toHaveAttribute("title", longLabel);
+    expect(value).not.toHaveClass("truncate");
+    expect(value).toHaveClass("break-words");
+    expect(value).not.toHaveAttribute("title");
   });
 
   it("hides the Clear button when there's nothing to clear", () => {

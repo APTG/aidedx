@@ -202,6 +202,12 @@ class ModelStatusStore {
     this.panelOpen = !this.panelOpen;
   }
 
+  /** Called when Basic mode unmounts the status pill (issue #17), so a later
+   * switch back to Advanced doesn't remount it already expanded. */
+  closePanel(): void {
+    this.panelOpen = false;
+  }
+
   dismissPrompt(): void {
     this.promptDismissed = true;
   }

@@ -75,9 +75,9 @@
           <span class="text-muted-foreground">CPU threads</span>
           <span class="font-semibold" title={cpuTooltip}>{cpuLabel}</span>
         </div>
-        <div class="flex items-center justify-between gap-2">
-          <span class="shrink-0 text-muted-foreground">Hardware</span>
-          <span class="min-w-0 truncate font-semibold" title={hardwareLabel}>{hardwareLabel}</span>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-muted-foreground">Hardware</span>
+          <span class="font-semibold break-words">{hardwareLabel}</span>
         </div>
       </div>
     </div>

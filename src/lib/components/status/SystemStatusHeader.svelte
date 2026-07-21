@@ -24,6 +24,11 @@
   function toggleMode() {
     mode = mode === "advanced" ? "basic" : "advanced";
     storeAppMode(mode);
+    // Leaving Advanced mode unmounts the pill but doesn't reset its own
+    // expanded state — without this, switching back to Advanced later would
+    // remount it already open, popping the panel up with no fresh click
+    // (Copilot review, PR #110).
+    if (mode === "basic") modelStatus.closePanel();
   }
 </script>
 
