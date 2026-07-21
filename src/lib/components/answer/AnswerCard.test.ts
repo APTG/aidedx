@@ -235,6 +235,73 @@ describe("AnswerCard", () => {
     expect(getByText(/PSTAR · libdedx 1\.4\.0/)).toBeInTheDocument();
   });
 
+  it("renders the dedx_web 'Open in calculator' link for a representable answer", () => {
+    const { getByRole } = render(AnswerCard, {
+      props: {
+        phase: "answered",
+        lines: ["The CSDA range of 40 MeV protons in PMMA is 1.529 g/cm² (PSTAR)."],
+        message: null,
+        intent: TEST_INTENT,
+        result: TEST_RESULT,
+        defaultsNotice: null,
+        reAskNotice: null,
+        reAskTarget: null,
+        onEditIntent: () => {},
+      },
+    });
+
+    // Full accessible name includes the sr-only new-tab/destination suffix —
+    // the WCAG-relevant assertion, not just the visible "Open in calculator →" text.
+    const link = getByRole("link", {
+      name: "Open in calculator → (opens dedx_web in a new tab)",
+    });
+    expect(link).toHaveAttribute(
+      "href",
+      "https://aptg.github.io/web_dev/calculator?urlv=3&mode=basic&particle=1&material=224&program=2&energies=40&uanchor=MeV",
+    );
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("omits the dedx_web link for a multi-entity comparison answer", () => {
+    const comparisonIntent: QueryIntent = {
+      ...TEST_INTENT,
+      compareDim: "material",
+      materials: [{ match: "PMMA" }, { match: "water" }],
+    };
+    const pmmaSeries = {
+      label: "PMMA",
+      particle: { id: 1, name: "Hydrogen", massNumber: 1, isotope: "¹H" },
+      material: { id: 224, name: "Lucite, Perspex, Plexiglas" },
+      program: { id: 2, name: "PSTAR" },
+      points: [{ energyMeVPerNucl: 40, csdaRange: 1.529 }],
+    };
+    const comparisonResult: ComputeResult = {
+      ...TEST_RESULT,
+      compareDim: "material",
+      series: [pmmaSeries, { ...pmmaSeries, label: "water", material: { id: 276, name: "Water" } }],
+    };
+    const { queryByRole } = render(AnswerCard, {
+      props: {
+        phase: "answered",
+        lines: [
+          "CSDA range of 40 MeV protons, by material:",
+          "- PMMA: 1.529 g/cm² (PSTAR)",
+          "- water: 1.6 g/cm² (PSTAR)",
+        ],
+        message: null,
+        intent: comparisonIntent,
+        result: comparisonResult,
+        defaultsNotice: null,
+        reAskNotice: null,
+        reAskTarget: null,
+        onEditIntent: () => {},
+      },
+    });
+
+    expect(queryByRole("link", { name: /open in calculator/i })).not.toBeInTheDocument();
+  });
+
   it("calls onEditIntent with a corrected intent when a chip edit is committed", async () => {
     const onEditIntent = vi.fn();
     const { getByRole } = render(AnswerCard, {

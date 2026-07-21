@@ -2,6 +2,7 @@
   import type { AnswerPhase } from "$lib/answer/answer-status.svelte.ts";
   import type { QueryIntent } from "$lib/intent/query-intent.ts";
   import type { ComputeResult } from "$lib/compute/compute.ts";
+  import { buildDedxWebCalculatorUrl } from "$lib/nlg/dedx-web-link.ts";
   import IntentChips from "./IntentChips.svelte";
 
   interface Props {
@@ -79,6 +80,11 @@
     result
       ? `${[...new Set(result.series.map((s) => s.program.name))].join(", ")} · libdedx ${result.libdedxVersion}`
       : null,
+  );
+
+  /** dedx_web basic-calculator deep link (issue #10); null for shapes it can't represent — see dedx-web-link.ts. */
+  const calculatorUrl = $derived(
+    intent && result ? buildDedxWebCalculatorUrl(intent, result) : null,
   );
 
   // Groups renderAnswer()'s flat lines into paragraph/list blocks so a run of
@@ -167,6 +173,17 @@
           >
             {detailsOpen ? "Hide details" : "Details"}
           </button>
+        {/if}
+        {#if calculatorUrl}
+          <a
+            href={calculatorUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open in calculator → (opens dedx_web in a new tab)"
+            class="self-start text-xs text-muted-foreground underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            Open in calculator →
+          </a>
         {/if}
       </div>
       {#if chipsOpen && intent}
