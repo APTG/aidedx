@@ -276,13 +276,15 @@ describe("buildReAskNotice — issue #10 targeted re-ask (pure formatter, no WAS
     ).toBe("240 keV is outside the valid range. Did you mean 240 MeV?");
   });
 
-  it("falls back to a generic prompt when there is no suggestion", () => {
+  it("falls back to a generic prompt (worded to fit a non-numeric slot too) when there is no suggestion", () => {
     expect(
       buildReAskNotice({
         slot: "particle",
         index: 0,
         message: "Carbon-30 is not a plausible isotope of Carbon (Z=6)",
       }),
-    ).toBe("Carbon-30 is not a plausible isotope of Carbon (Z=6). Please check this value.");
+    ).toBe(
+      "Carbon-30 is not a plausible isotope of Carbon (Z=6). Please double-check this before trusting the result.",
+    );
   });
 });

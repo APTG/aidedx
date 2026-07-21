@@ -358,6 +358,29 @@ describe("answerStatus", () => {
     expect(store.reAskTarget).toEqual({ slot: "energy", index: 0 });
   });
 
+  it("sets the notice but leaves the target null when the single issue has no index", async () => {
+    // PlausibilityIssue.index is optional; defaulting a missing index to 0
+    // would highlight an unrelated chip, so the highlight is omitted while
+    // the banner (which doesn't need an index) still shows.
+    const i = intent({ confidence: 0.97 });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.getService.mockResolvedValue({});
+    mocks.computeIntent.mockReturnValue(computeResult());
+    const issueWithoutIndex: PlausibilityIssue = { slot: "particle", message: "bad particle" };
+    mocks.validateIntent.mockReturnValue({
+      plausible: false,
+      issues: [issueWithoutIndex],
+    });
+
+    const store = await loadStore();
+    await store.submit("range of 40 MeV protons in water");
+
+    expect(store.reAskNotice).toBe(
+      "bad particle. Please double-check this before trusting the result.",
+    );
+    expect(store.reAskTarget).toBeNull();
+  });
+
   it("leaves the re-ask notice/target null when validateIntent() finds nothing implausible", async () => {
     const i = intent({ confidence: 0.97 });
     mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });

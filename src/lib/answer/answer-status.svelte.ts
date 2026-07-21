@@ -161,7 +161,12 @@ class AnswerStore {
       const [onlyIssue] = validation.issues;
       if (validation.issues.length === 1 && onlyIssue) {
         this.reAskNotice = buildReAskNotice(onlyIssue);
-        this.reAskTarget = { slot: onlyIssue.slot, index: onlyIssue.index ?? 0 };
+        // Only highlight a chip when the issue actually names one — index is
+        // optional on PlausibilityIssue, and defaulting a missing index to 0
+        // would highlight an unrelated chip. The banner alone still conveys
+        // the issue either way.
+        this.reAskTarget =
+          onlyIssue.index !== undefined ? { slot: onlyIssue.slot, index: onlyIssue.index } : null;
       } else {
         this.reAskNotice = null;
         this.reAskTarget = null;

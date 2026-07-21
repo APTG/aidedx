@@ -252,5 +252,5 @@ export function validateIntent(intent: QueryIntent, service: LibdedxService): Va
 export function buildReAskNotice(issue: PlausibilityIssue): string {
   return issue.suggestion
     ? `${issue.message}. ${issue.suggestion}`
-    : `${issue.message}. Please check this value.`;
+    : `${issue.message}. Please double-check this before trusting the result.`;
 }
