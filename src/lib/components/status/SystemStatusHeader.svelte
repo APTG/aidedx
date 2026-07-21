@@ -2,33 +2,55 @@
   import { onMount } from "svelte";
   import { modelStatus } from "$lib/models/model-status.svelte.ts";
   import { formatMegabytes } from "$lib/format.ts";
+  import { resolveInitialAppMode, storeAppMode, type AppMode } from "$lib/theme/app-mode.ts";
   import StatusPill from "./StatusPill.svelte";
+  import AppModeToggle from "./AppModeToggle.svelte";
   import DarkModeToggle from "./DarkModeToggle.svelte";
   import DownloadPromptDialog from "./DownloadPromptDialog.svelte";
   import DownloadProgressDialog from "./DownloadProgressDialog.svelte";
   import ClearCacheDialog from "./ClearCacheDialog.svelte";
 
+  // Seeded to "basic" for SSR/prerender safety and corrected in onMount once
+  // localStorage is readable — a brief flash on load for a returning
+  // Advanced-mode user, accepted for the same reason dark-mode.ts's own
+  // client-only read is (issue #17).
+  let mode = $state<AppMode>("basic");
+
   onMount(() => {
     void modelStatus.init();
+    mode = resolveInitialAppMode();
   });
+
+  function toggleMode() {
+    mode = mode === "advanced" ? "basic" : "advanced";
+    storeAppMode(mode);
+    // Leaving Advanced mode unmounts the pill but doesn't reset its own
+    // expanded state — without this, switching back to Advanced later would
+    // remount it already open, popping the panel up with no fresh click
+    // (Copilot review, PR #110).
+    if (mode === "basic") modelStatus.closePanel();
+  }
 </script>
 
 <div class="flex items-center gap-2">
-  <StatusPill
-    open={modelStatus.panelOpen}
-    onToggle={() => modelStatus.togglePanel()}
-    modelLabel={modelStatus.modelLabel}
-    modelDotClass={modelStatus.modelDotClass}
-    diskLabel={modelStatus.diskLabel}
-    diskClass={modelStatus.diskClass}
-    ramLabel={modelStatus.ramLabel}
-    ramTooltip={modelStatus.ramTooltip}
-    cpuLabel={modelStatus.cpuLabel}
-    cpuTooltip={modelStatus.cpuTooltip}
-    hardwareLabel={modelStatus.hardware.label}
-    showClear={modelStatus.showClear}
-    onClear={() => modelStatus.openClearCache()}
-  />
+  <AppModeToggle {mode} onToggle={toggleMode} />
+  {#if mode === "advanced"}
+    <StatusPill
+      open={modelStatus.panelOpen}
+      onToggle={() => modelStatus.togglePanel()}
+      modelLabel={modelStatus.modelLabel}
+      modelDotClass={modelStatus.modelDotClass}
+      diskLabel={modelStatus.diskLabel}
+      diskClass={modelStatus.diskClass}
+      ramLabel={modelStatus.ramLabel}
+      ramTooltip={modelStatus.ramTooltip}
+      cpuLabel={modelStatus.cpuLabel}
+      cpuTooltip={modelStatus.cpuTooltip}
+      hardwareLabel={modelStatus.hardware.label}
+      showClear={modelStatus.showClear}
+      onClear={() => modelStatus.openClearCache()}
+    />
+  {/if}
   <DarkModeToggle />
 </div>
 
