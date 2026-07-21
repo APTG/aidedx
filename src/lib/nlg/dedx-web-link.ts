@@ -59,9 +59,22 @@ const STP_UNIT_TO_DEDXWEB: Readonly<Record<string, string>> = {
   "MeV cm2/g": "mev-cm2-g",
 };
 
-function encodeEnergies(energies: EnergySlot[]): { anchor: DedxWebEnergyAnchor; list: string } {
+/**
+ * `null` when `energies` is empty (nothing to encode) or mixes anchor
+ * families that can't share one `uanchor=` — e.g. a `MeV` row alongside a
+ * `MeV/nucl` row. The matcher itself never produces a mixed list, but chip
+ * edits (`edit-intent.ts`'s `withEnergy`) can retarget a single row's unit
+ * independently, so this has to be checked at build time, not assumed.
+ * Only `keV`/`GeV` can ride as a per-row suffix against a `MeV` anchor;
+ * `MeV/nucl`/`MeV/u` rows have no such escape hatch if the anchor differs.
+ */
+function encodeEnergies(
+  energies: EnergySlot[],
+): { anchor: DedxWebEnergyAnchor; list: string } | null {
   const first = energies[0];
-  const anchor = first ? ENERGY_UNIT_TO_DEDXWEB[first.unit].anchor : "MeV";
+  if (!first) return null;
+  const anchor = ENERGY_UNIT_TO_DEDXWEB[first.unit].anchor;
+  if (energies.some((e) => ENERGY_UNIT_TO_DEDXWEB[e.unit].anchor !== anchor)) return null;
   const list = energies
     .map((e) => {
       const mapped = ENERGY_UNIT_TO_DEDXWEB[e.unit];
@@ -92,9 +105,10 @@ export function buildDedxWebCalculatorUrl(
   params.set("program", String(series.program.id));
 
   if (isForward) {
-    const { anchor, list } = encodeEnergies(intent.energies);
-    params.set("energies", list);
-    params.set("uanchor", anchor);
+    const encoded = encodeEnergies(intent.energies);
+    if (!encoded) return null;
+    params.set("energies", encoded.list);
+    params.set("uanchor", encoded.anchor);
   } else {
     const target = intent.target;
     if (!target) return null;

@@ -97,6 +97,24 @@ describe("buildDedxWebCalculatorUrl", () => {
     expect(params.get("energies")).toBe("100~200");
   });
 
+  it("returns null for a forward query with no energies, rather than emitting a blank energies=", () => {
+    const i = intent({ energies: [] });
+    expect(buildDedxWebCalculatorUrl(i, result())).toBeNull();
+  });
+
+  it("returns null when energies mix anchor families that can't share one uanchor=", () => {
+    // MeV/nucl has no per-row-suffix escape hatch against a MeV anchor (only
+    // keV/GeV do) — emitting this would silently misrepresent the second row.
+    const i = intent({
+      compareDim: "energy",
+      energies: [
+        { value: 100, unit: "MeV" },
+        { value: 50, unit: "MeV/nucl" },
+      ],
+    });
+    expect(buildDedxWebCalculatorUrl(i, result())).toBeNull();
+  });
+
   it("builds an inverse energyFromRange URL with a supported length unit", () => {
     const i = intent({
       quantity: "energyFromRange",
