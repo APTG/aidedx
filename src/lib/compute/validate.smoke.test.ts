@@ -11,7 +11,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { LibdedxServiceImpl } from "../wasm/libdedx.ts";
 import type { LibdedxModuleFactory, LibdedxService } from "../wasm/types.ts";
 import { computeIntent } from "./compute.ts";
-import { validateIntent } from "./validate.ts";
+import { buildReAskNotice, validateIntent } from "./validate.ts";
 import type { QueryIntent } from "../intent/query-intent.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -261,5 +261,28 @@ describe("validateIntent — energy within the tabulated grid (unit-suspect firs
       service,
     );
     expect(v).toEqual({ plausible: true, issues: [] });
+  });
+});
+
+describe("buildReAskNotice — issue #10 targeted re-ask (pure formatter, no WASM needed)", () => {
+  it("appends the suggestion when present", () => {
+    expect(
+      buildReAskNotice({
+        slot: "energy",
+        index: 0,
+        message: "240 keV is outside the valid range",
+        suggestion: "Did you mean 240 MeV?",
+      }),
+    ).toBe("240 keV is outside the valid range. Did you mean 240 MeV?");
+  });
+
+  it("falls back to a generic prompt when there is no suggestion", () => {
+    expect(
+      buildReAskNotice({
+        slot: "particle",
+        index: 0,
+        message: "Carbon-30 is not a plausible isotope of Carbon (Z=6)",
+      }),
+    ).toBe("Carbon-30 is not a plausible isotope of Carbon (Z=6). Please check this value.");
   });
 });

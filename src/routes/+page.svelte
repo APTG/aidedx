@@ -53,7 +53,7 @@
   $effect(() => {
     if (asrStatus.phase === "done") {
       query = asrStatus.transcript;
-      void answerStatus.submit(asrStatus.transcript);
+      void answerStatus.submit(asrStatus.transcript, asrStatus.substitutions);
     }
   });
 
@@ -178,6 +178,8 @@
     intent={answerStatus.intent}
     result={answerStatus.result}
     defaultsNotice={answerStatus.defaultsNotice}
+    reAskNotice={answerStatus.reAskNotice}
+    reAskTarget={answerStatus.reAskTarget}
     onEditIntent={(next) => answerStatus.recompute(next)}
   />
 

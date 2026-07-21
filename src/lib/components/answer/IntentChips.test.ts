@@ -244,4 +244,48 @@ describe("IntentChips", () => {
     });
     expect(getByRole("button", { name: /edit program: PSTAR/i })).toBeInTheDocument();
   });
+
+  describe("highlight (issue #10 targeted re-ask)", () => {
+    it("marks the matching chip's accessible name, aria-describedby, and ring class", () => {
+      const { getByRole } = render(IntentChips, {
+        props: {
+          intent: baseIntent(),
+          onEditIntent: () => {},
+          highlight: { slot: "energy", index: 0 },
+          highlightId: "answer-reask",
+        },
+      });
+
+      const chip = getByRole("button", { name: "Edit energy: 214 keV — needs confirmation" });
+      expect(chip).toHaveAttribute("aria-describedby", "answer-reask");
+      expect(chip.className).toContain("ring-warning");
+    });
+
+    it("leaves non-matching chips unhighlighted", () => {
+      const { getByRole } = render(IntentChips, {
+        props: {
+          intent: baseIntent(),
+          onEditIntent: () => {},
+          highlight: { slot: "energy", index: 0 },
+          highlightId: "answer-reask",
+        },
+      });
+
+      const particleChip = getByRole("button", { name: /edit particle: alpha particle/i });
+      expect(particleChip).not.toHaveAttribute("aria-describedby");
+      expect(particleChip.className).not.toContain("ring-warning");
+      const materialChip = getByRole("button", { name: /edit material: watre/i });
+      expect(materialChip).not.toHaveAttribute("aria-describedby");
+    });
+
+    it("highlights nothing when highlight is null", () => {
+      const { getByRole } = render(IntentChips, {
+        props: { intent: baseIntent(), onEditIntent: () => {}, highlight: null },
+      });
+
+      expect(getByRole("button", { name: /edit energy: 214 keV/i })).not.toHaveAttribute(
+        "aria-describedby",
+      );
+    });
+  });
 });

@@ -1,16 +1,25 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { QueryIntent } from "../intent/query-intent.ts";
 import type { ComputeResult } from "../compute/compute.ts";
+import type { PlausibilityIssue } from "../compute/validate.ts";
 
 const mocks = vi.hoisted(() => ({
   matchIntent: vi.fn(),
   computeIntent: vi.fn(),
   getService: vi.fn(),
+  validateIntent: vi.fn(),
 }));
 
 vi.mock("../intent/matcher.ts", () => ({ matchIntent: mocks.matchIntent }));
 vi.mock("../compute/compute.ts", () => ({ computeIntent: mocks.computeIntent }));
 vi.mock("../wasm/sveltekit.ts", () => ({ getService: mocks.getService }));
+// `validateIntent` is stubbed out (it otherwise calls real service methods
+// the `{}` mock service below doesn't have); `buildReAskNotice` stays real
+// since it's a pure formatter worth exercising for real.
+vi.mock("../compute/validate.ts", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../compute/validate.ts")>();
+  return { ...actual, validateIntent: mocks.validateIntent };
+});
 
 function intent(partial: Partial<QueryIntent>): QueryIntent {
   return {
@@ -49,12 +58,25 @@ async function loadStore() {
   return answerStatus;
 }
 
+function plausibilityIssue(partial: Partial<PlausibilityIssue> = {}): PlausibilityIssue {
+  return {
+    slot: "energy",
+    index: 0,
+    message: "240 keV is outside the valid range",
+    ...partial,
+  };
+}
+
 describe("answerStatus", () => {
   beforeEach(() => {
     vi.resetModules();
     mocks.matchIntent.mockReset();
     mocks.computeIntent.mockReset();
     mocks.getService.mockReset();
+    mocks.validateIntent.mockReset();
+    // Defaults to "nothing implausible" so existing tests, which don't care
+    // about the targeted re-ask, don't all need to stub this individually.
+    mocks.validateIntent.mockReturnValue({ plausible: true, issues: [] });
   });
 
   afterEach(() => {
@@ -283,6 +305,113 @@ describe("answerStatus", () => {
     expect(store.defaultsNotice).toBeNull();
   });
 
+  it("folds corrector substitutions into the intent's assumptions", async () => {
+    const i = intent({ confidence: 0.97 });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.getService.mockResolvedValue({});
+    mocks.computeIntent.mockReturnValue(computeResult());
+
+    const store = await loadStore();
+    await store.submit("range of 40 tamiya protons in water", [
+      { heard: "tamiya", readAs: "MeV", slot: "unit" },
+    ]);
+
+    expect(store.phase).toBe("answered");
+    expect(store.intent?.assumptions).toEqual(['heard "tamiya" → read as "MeV"']);
+    // The original intent object (and its own empty assumptions array) must
+    // not be mutated in place.
+    expect(i.assumptions).toEqual([]);
+  });
+
+  it("omits assumptions when no substitutions were passed", async () => {
+    const i = intent({ confidence: 0.97 });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.getService.mockResolvedValue({});
+    mocks.computeIntent.mockReturnValue(computeResult());
+
+    const store = await loadStore();
+    await store.submit("range of 40 MeV protons in water");
+
+    expect(store.intent?.assumptions).toEqual([]);
+  });
+
+  it("sets a re-ask notice and target when validateIntent() flags exactly one issue", async () => {
+    const i = intent({ confidence: 0.97 });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.getService.mockResolvedValue({});
+    mocks.computeIntent.mockReturnValue(computeResult());
+    mocks.validateIntent.mockReturnValue({
+      plausible: false,
+      issues: [
+        plausibilityIssue({
+          message: "240 keV is outside the valid range",
+          suggestion: "Did you mean 240 MeV?",
+        }),
+      ],
+    });
+
+    const store = await loadStore();
+    await store.submit("range of 40 MeV protons in water");
+
+    expect(store.phase).toBe("answered");
+    expect(store.reAskNotice).toBe("240 keV is outside the valid range. Did you mean 240 MeV?");
+    expect(store.reAskTarget).toEqual({ slot: "energy", index: 0 });
+  });
+
+  it("leaves the re-ask notice/target null when validateIntent() finds nothing implausible", async () => {
+    const i = intent({ confidence: 0.97 });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.getService.mockResolvedValue({});
+    mocks.computeIntent.mockReturnValue(computeResult());
+    mocks.validateIntent.mockReturnValue({ plausible: true, issues: [] });
+
+    const store = await loadStore();
+    await store.submit("range of 40 MeV protons in water");
+
+    expect(store.reAskNotice).toBeNull();
+    expect(store.reAskTarget).toBeNull();
+  });
+
+  it("leaves the re-ask notice/target null when validateIntent() flags more than one issue", async () => {
+    const i = intent({ confidence: 0.97 });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.getService.mockResolvedValue({});
+    mocks.computeIntent.mockReturnValue(computeResult());
+    mocks.validateIntent.mockReturnValue({
+      plausible: false,
+      issues: [
+        plausibilityIssue({ slot: "particle", index: 0, message: "bad particle" }),
+        plausibilityIssue({ slot: "energy", index: 0, message: "bad energy" }),
+      ],
+    });
+
+    const store = await loadStore();
+    await store.submit("range of 40 MeV protons in water");
+
+    expect(store.reAskNotice).toBeNull();
+    expect(store.reAskTarget).toBeNull();
+  });
+
+  it("clears a stale re-ask notice on reset()", async () => {
+    const i = intent({ confidence: 0.97 });
+    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.getService.mockResolvedValue({});
+    mocks.computeIntent.mockReturnValue(computeResult());
+    mocks.validateIntent.mockReturnValue({
+      plausible: false,
+      issues: [plausibilityIssue()],
+    });
+
+    const store = await loadStore();
+    await store.submit("range of 40 MeV protons in water");
+    expect(store.reAskNotice).not.toBeNull();
+
+    store.reset();
+
+    expect(store.reAskNotice).toBeNull();
+    expect(store.reAskTarget).toBeNull();
+  });
+
   describe("recompute", () => {
     it("computes and renders directly from an edited intent, without running the matcher", async () => {
       mocks.getService.mockResolvedValue({});
@@ -297,6 +426,27 @@ describe("answerStatus", () => {
       expect(store.phase).toBe("answered");
       expect(store.intent).toEqual(edited);
       expect(store.result).toEqual(computeResult());
+    });
+
+    it("re-runs validateIntent() and can clear a prior re-ask notice", async () => {
+      const i = intent({ confidence: 0.97 });
+      mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+      mocks.getService.mockResolvedValue({});
+      mocks.computeIntent.mockReturnValue(computeResult());
+      mocks.validateIntent.mockReturnValueOnce({
+        plausible: false,
+        issues: [plausibilityIssue()],
+      });
+
+      const store = await loadStore();
+      await store.submit("range of 40 MeV protons in water");
+      expect(store.reAskNotice).not.toBeNull();
+
+      mocks.validateIntent.mockReturnValueOnce({ plausible: true, issues: [] });
+      await store.recompute(intent({ energies: [{ value: 240, unit: "MeV" }] }));
+
+      expect(store.reAskNotice).toBeNull();
+      expect(store.reAskTarget).toBeNull();
     });
 
     it("clears a defaults notice once the user commits a correction", async () => {

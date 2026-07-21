@@ -21,9 +21,25 @@
   interface Props {
     intent: QueryIntent;
     onEditIntent: (next: QueryIntent) => void;
+    /** The chip a targeted re-ask (issue #10) is about, or null/absent when none. */
+    highlight?: { slot: "particle" | "material" | "energy"; index: number } | null;
+    /** Id of the re-ask banner `highlight` refers to, wired via `aria-describedby`. */
+    highlightId?: string;
   }
 
-  let { intent, onEditIntent }: Props = $props();
+  let { intent, onEditIntent, highlight = null, highlightId }: Props = $props();
+
+  /** Whether the given chip is the one `highlight` points at (issue #10 targeted re-ask). */
+  function isHighlighted(slot: "particle" | "material" | "energy", index: number): boolean {
+    return highlight !== null && highlight.slot === slot && highlight.index === index;
+  }
+
+  const CHIP_BASE =
+    "rounded-full border border-input bg-muted px-2.5 py-1 text-sm hover:bg-card focus-visible:ring-2 focus-visible:ring-ring";
+  /** Adds the (non-color-only, see `aria-label`/`aria-describedby` alongside this) highlight ring. */
+  function chipClass(highlighted: boolean): string {
+    return highlighted ? `${CHIP_BASE} ring-1 ring-warning/60` : CHIP_BASE;
+  }
 
   const QUANTITY_LABELS: Record<QueryIntent["quantity"], string> = {
     csdaRange: "range",
@@ -215,11 +231,14 @@
         <button
           type="button"
           bind:this={particleButtons[i]}
-          aria-label={`Edit particle: ${particleLabel(p.match)}`}
+          aria-label={`Edit particle: ${particleLabel(p.match)}${isHighlighted("particle", i) ? " — needs confirmation" : ""}`}
+          aria-describedby={isHighlighted("particle", i) ? highlightId : undefined}
           onclick={() => startEdit(`particle:${i}`)}
-          class="rounded-full border border-input bg-muted px-2.5 py-1 text-sm hover:bg-card focus-visible:ring-2 focus-visible:ring-ring"
+          class={chipClass(isHighlighted("particle", i))}
         >
-          {particleLabel(p.match)}
+          <span aria-hidden="true" class="text-warning"
+            >{isHighlighted("particle", i) ? "● " : ""}</span
+          >{particleLabel(p.match)}
         </button>
       {/if}
     {/each}
@@ -274,11 +293,14 @@
         <button
           type="button"
           bind:this={energyButtons[i]}
-          aria-label={`Edit energy: ${e.value} ${e.unit}`}
+          aria-label={`Edit energy: ${e.value} ${e.unit}${isHighlighted("energy", i) ? " — needs confirmation" : ""}`}
+          aria-describedby={isHighlighted("energy", i) ? highlightId : undefined}
           onclick={() => startEnergyEdit(i)}
-          class="rounded-full border border-input bg-muted px-2.5 py-1 text-sm hover:bg-card focus-visible:ring-2 focus-visible:ring-ring"
+          class={chipClass(isHighlighted("energy", i))}
         >
-          {`${e.value} ${e.unit}`}
+          <span aria-hidden="true" class="text-warning"
+            >{isHighlighted("energy", i) ? "● " : ""}</span
+          >{`${e.value} ${e.unit}`}
         </button>
       {/if}
     {/each}
@@ -307,11 +329,14 @@
         <button
           type="button"
           bind:this={materialButtons[i]}
-          aria-label={`Edit material: ${m.match}`}
+          aria-label={`Edit material: ${m.match}${isHighlighted("material", i) ? " — needs confirmation" : ""}`}
+          aria-describedby={isHighlighted("material", i) ? highlightId : undefined}
           onclick={() => startEdit(`material:${i}`)}
-          class="rounded-full border border-input bg-muted px-2.5 py-1 text-sm hover:bg-card focus-visible:ring-2 focus-visible:ring-ring"
+          class={chipClass(isHighlighted("material", i))}
         >
-          {m.match}
+          <span aria-hidden="true" class="text-warning"
+            >{isHighlighted("material", i) ? "● " : ""}</span
+          >{m.match}
         </button>
       {/if}
     {/each}

@@ -247,3 +247,10 @@ export function validateIntent(intent: QueryIntent, service: LibdedxService): Va
   const deduped = dedupeIssues(issues);
   return { plausible: deduped.length === 0, issues: deduped };
 }
+
+/** Composes the user-facing banner text for a single-issue targeted re-ask (issue #10). */
+export function buildReAskNotice(issue: PlausibilityIssue): string {
+  return issue.suggestion
+    ? `${issue.message}. ${issue.suggestion}`
+    : `${issue.message}. Please check this value.`;
+}

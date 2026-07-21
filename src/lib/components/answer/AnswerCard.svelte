@@ -16,11 +16,28 @@
     result: ComputeResult | null;
     /** Set when one or more slots were filled with defaults rather than recognized (issue #10 extension); only read when `phase === "answered"`. */
     defaultsNotice: string | null;
+    /** Set when `validateIntent()` flagged exactly one implausible slot (issue #10 targeted re-ask); only read when `phase === "answered"`. */
+    reAskNotice: string | null;
+    /** The chip `reAskNotice` is about, so it can be highlighted in `IntentChips`. */
+    reAskTarget: { slot: "particle" | "material" | "energy"; index: number } | null;
     /** Called with a manually-corrected intent when a chip edit is committed. */
     onEditIntent: (next: QueryIntent) => void;
   }
 
-  let { phase, lines, message, intent, result, defaultsNotice, onEditIntent }: Props = $props();
+  let {
+    phase,
+    lines,
+    message,
+    intent,
+    result,
+    defaultsNotice,
+    reAskNotice,
+    reAskTarget,
+    onEditIntent,
+  }: Props = $props();
+
+  /** Id of the re-ask banner, for `IntentChips`' `aria-describedby` cross-reference. */
+  const REASK_ID = "answer-reask";
 
   // Collapsed by default: program names (PSTAR/MSTAR/etc.) are a niche detail
   // most users don't need on every answer, so they're opt-in rather than
@@ -45,11 +62,15 @@
   // shouldn't collapse the panel the user is actively using. Both branches
   // live in one effect (rather than two) so a defaults-filled answer can't
   // momentarily flip chipsOpen false-then-true depending on effect order.
+  // `reAskNotice` opens the chips the same way `defaultsNotice` does —
+  // correcting (or confirming) the flagged slot is the primary action for
+  // both — but neither ever moves focus: grabbing focus out from under a
+  // user who's mid-interaction would be its own accessibility regression.
   $effect(() => {
     if (intent === null) {
       detailsOpen = false;
       chipsOpen = false;
-    } else if (defaultsNotice) {
+    } else if (defaultsNotice || reAskNotice) {
       chipsOpen = true;
     }
   });
@@ -102,6 +123,14 @@
         {defaultsNotice}
       </p>
     {/if}
+    {#if reAskNotice}
+      <p
+        id={REASK_ID}
+        class="rounded-md border border-warning/40 bg-warning/5 px-3 py-2 text-sm text-warning"
+      >
+        {reAskNotice}
+      </p>
+    {/if}
     {#each blocks as block, i (i)}
       {#if block.kind === "list"}
         <ul class="list-disc space-y-1 pl-5 text-sm">
@@ -142,7 +171,7 @@
       </div>
       {#if chipsOpen && intent}
         <div id="answer-chips">
-          <IntentChips {intent} {onEditIntent} />
+          <IntentChips {intent} {onEditIntent} highlight={reAskTarget} highlightId={REASK_ID} />
         </div>
       {/if}
       {#if detailsOpen && result}
