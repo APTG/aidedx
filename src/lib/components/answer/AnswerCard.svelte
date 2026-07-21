@@ -25,6 +25,12 @@
   // always shown.
   let detailsOpen = $state(false);
 
+  // Collapsed by default: the slot chips are a correction tool, not part of
+  // the answer itself — most users read the sentence and move on, so the
+  // chips (and the assumptions panel that lives inside them) stay hidden
+  // until the user deliberately asks to edit a value.
+  let chipsOpen = $state(false);
+
   const provenance = $derived(
     result
       ? `${[...new Set(result.series.map((s) => s.program.name))].join(", ")} · libdedx ${result.libdedxVersion}`
@@ -68,9 +74,6 @@
   </div>
 {:else if phase === "answered"}
   <div role="status" class="flex flex-col gap-2 rounded-lg border border-input bg-card px-4 py-3">
-    {#if intent}
-      <IntentChips {intent} {onEditIntent} />
-    {/if}
     {#each blocks as block, i (i)}
       {#if block.kind === "list"}
         <ul class="list-disc space-y-1 pl-5 text-sm">
@@ -84,17 +87,37 @@
         <p class="text-base">{block.text}</p>
       {/if}
     {/each}
-    {#if result}
-      <button
-        type="button"
-        aria-expanded={detailsOpen}
-        aria-controls="answer-provenance"
-        onclick={() => (detailsOpen = !detailsOpen)}
-        class="self-start text-xs text-muted-foreground underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        {detailsOpen ? "Hide details" : "Details"}
-      </button>
-      {#if detailsOpen}
+    {#if intent || result}
+      <div class="flex items-center gap-3">
+        {#if intent}
+          <button
+            type="button"
+            aria-expanded={chipsOpen}
+            aria-controls="answer-chips"
+            onclick={() => (chipsOpen = !chipsOpen)}
+            class="self-start text-xs text-muted-foreground underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {chipsOpen ? "Hide edit" : "Edit"}
+          </button>
+        {/if}
+        {#if result}
+          <button
+            type="button"
+            aria-expanded={detailsOpen}
+            aria-controls="answer-provenance"
+            onclick={() => (detailsOpen = !detailsOpen)}
+            class="self-start text-xs text-muted-foreground underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {detailsOpen ? "Hide details" : "Details"}
+          </button>
+        {/if}
+      </div>
+      {#if chipsOpen && intent}
+        <div id="answer-chips">
+          <IntentChips {intent} {onEditIntent} />
+        </div>
+      {/if}
+      {#if detailsOpen && result}
         <p id="answer-provenance" class="text-xs text-muted-foreground">{provenance}</p>
       {/if}
     {/if}

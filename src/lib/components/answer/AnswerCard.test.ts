@@ -160,8 +160,8 @@ describe("AnswerCard", () => {
     expect(getByRole("alert")).toHaveTextContent("Electron stopping powers are not available");
   });
 
-  it("renders slot chips and the assumptions panel when intent/result are provided", () => {
-    const { getByRole, getByText } = render(AnswerCard, {
+  it("hides slot chips until 'Edit' is opened, then shows them", async () => {
+    const { getByRole, getByText, queryByRole } = render(AnswerCard, {
       props: {
         phase: "answered",
         lines: ["The CSDA range of 40 MeV protons in PMMA is 1.529 g/cm² (PSTAR)."],
@@ -172,13 +172,20 @@ describe("AnswerCard", () => {
       },
     });
 
+    expect(queryByRole("button", { name: /edit particle/i })).not.toBeInTheDocument();
+    const editButton = getByRole("button", { name: "Edit" });
+    expect(editButton).toHaveAttribute("aria-expanded", "false");
+
+    await editButton.click();
+
+    expect(editButton).toHaveAttribute("aria-expanded", "true");
     expect(getByRole("button", { name: /edit particle: proton/i })).toBeInTheDocument();
     expect(getByRole("button", { name: /edit material: PMMA/i })).toBeInTheDocument();
     expect(getByRole("button", { name: /edit energy: 40 MeV/i })).toBeInTheDocument();
     expect(getByText("heard: per napelion → read as: per nucleon")).toBeInTheDocument();
   });
 
-  it("does not render chips when intent/result are null", () => {
+  it("does not render an Edit toggle when intent/result are null", () => {
     const { queryByRole } = render(AnswerCard, {
       props: {
         phase: "answered",
@@ -187,6 +194,7 @@ describe("AnswerCard", () => {
         ...BASE_PROPS,
       },
     });
+    expect(queryByRole("button", { name: "Edit" })).not.toBeInTheDocument();
     expect(queryByRole("button", { name: /edit particle/i })).not.toBeInTheDocument();
     expect(queryByRole("button", { name: /details/i })).not.toBeInTheDocument();
   });
@@ -226,6 +234,7 @@ describe("AnswerCard", () => {
       },
     });
 
+    await getByRole("button", { name: "Edit" }).click();
     const chip = getByRole("button", { name: /edit material: PMMA/i });
     await chip.click();
     const input = getByRole("textbox", { name: /material/i });
