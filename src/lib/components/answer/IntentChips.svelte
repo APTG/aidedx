@@ -73,6 +73,14 @@
     startEdit("target");
   }
 
+  // Every Enter/Escape handler below calls `event.preventDefault()`: without
+  // it, the browser's native "Enter/Space activates a focused <button>"
+  // behavior can fire on the chip button the moment `stopEdit()` focuses it
+  // (below) — because that focus move happens fast enough, via a `tick()`
+  // microtask, to still land inside the same physical keypress — reopening
+  // the very editor that keypress just closed. Confirmed in real-browser
+  // (Playwright) testing, not caught by jsdom's synthetic `fireEvent`.
+  //
   // Committing/canceling an edit swaps the input back out for its chip
   // button — a *new* button instance (Svelte destroys/recreates across the
   // {#if}/{:else} branch switch, so a button ref captured before editing
@@ -102,7 +110,13 @@
   ) {
     if (suppressBlurCommit) return;
     const trimmed = value.trim();
-    if (trimmed && trimmed !== intent.particles[index]?.match) {
+    // The input is prefilled with the *display* label ("alpha particle"),
+    // not the raw `match` ("helium-4") — compare against that same label so
+    // committing without changing anything is correctly a no-op, instead of
+    // always looking "changed" and triggering an unnecessary recompute.
+    const current = intent.particles[index];
+    const currentLabel = current ? particleLabel(current.match) : "";
+    if (trimmed && trimmed !== currentLabel) {
       onEditIntent(withParticleMatch(intent, index, trimmed));
     }
     void stopEdit(getButton);
@@ -187,9 +201,13 @@
           use:autofocus
           class="w-36 rounded-full border border-input bg-card px-2.5 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onkeydown={(e) => {
-            if (e.key === "Enter")
+            if (e.key === "Enter") {
+              e.preventDefault();
               commitParticle(i, e.currentTarget.value, () => particleButtons[i]);
-            else if (e.key === "Escape") void stopEdit(() => particleButtons[i]);
+            } else if (e.key === "Escape") {
+              e.preventDefault();
+              void stopEdit(() => particleButtons[i]);
+            }
           }}
           onblur={(e) => commitParticle(i, e.currentTarget.value, () => particleButtons[i])}
         />
@@ -208,7 +226,14 @@
 
     {#each intent.energies as e, i (i)}
       {#if editingKey === `energy:${i}`}
-        <span class="inline-flex items-center gap-1">
+        <span
+          class="inline-flex items-center gap-1"
+          onfocusout={(ev) => {
+            if (suppressBlurCommit) return;
+            if (ev.currentTarget.contains(ev.relatedTarget as Node | null)) return;
+            commitEnergy(i, draftNumber, draftUnit as EnergyUnit, () => energyButtons[i]);
+          }}
+        >
           <label class="sr-only" for={`energy-value-${i}`}>Energy value</label>
           <input
             id={`energy-value-${i}`}
@@ -217,9 +242,13 @@
             use:autofocus
             class="w-20 rounded-full border border-input bg-card px-2.5 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
             onkeydown={(ev) => {
-              if (ev.key === "Enter")
+              if (ev.key === "Enter") {
+                ev.preventDefault();
                 commitEnergy(i, draftNumber, draftUnit as EnergyUnit, () => energyButtons[i]);
-              else if (ev.key === "Escape") void stopEdit(() => energyButtons[i]);
+              } else if (ev.key === "Escape") {
+                ev.preventDefault();
+                void stopEdit(() => energyButtons[i]);
+              }
             }}
           />
           <label class="sr-only" for={`energy-unit-${i}`}>Energy unit</label>
@@ -230,7 +259,10 @@
             onchange={() =>
               commitEnergy(i, draftNumber, draftUnit as EnergyUnit, () => energyButtons[i])}
             onkeydown={(ev) => {
-              if (ev.key === "Escape") void stopEdit(() => energyButtons[i]);
+              if (ev.key === "Escape") {
+                ev.preventDefault();
+                void stopEdit(() => energyButtons[i]);
+              }
             }}
           >
             {#each ENERGY_UNITS as unit (unit)}
@@ -262,9 +294,13 @@
           use:autofocus
           class="w-32 rounded-full border border-input bg-card px-2.5 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onkeydown={(e) => {
-            if (e.key === "Enter")
+            if (e.key === "Enter") {
+              e.preventDefault();
               commitMaterial(i, e.currentTarget.value, () => materialButtons[i]);
-            else if (e.key === "Escape") void stopEdit(() => materialButtons[i]);
+            } else if (e.key === "Escape") {
+              e.preventDefault();
+              void stopEdit(() => materialButtons[i]);
+            }
           }}
           onblur={(e) => commitMaterial(i, e.currentTarget.value, () => materialButtons[i])}
         />
@@ -283,7 +319,14 @@
 
     {#if intent.target}
       {#if editingKey === "target"}
-        <span class="inline-flex items-center gap-1">
+        <span
+          class="inline-flex items-center gap-1"
+          onfocusout={(ev) => {
+            if (suppressBlurCommit) return;
+            if (ev.currentTarget.contains(ev.relatedTarget as Node | null)) return;
+            commitTarget(draftNumber, draftUnit, () => targetButton);
+          }}
+        >
           <label class="sr-only" for="target-value">Target value</label>
           <input
             id="target-value"
@@ -292,8 +335,13 @@
             use:autofocus
             class="w-20 rounded-full border border-input bg-card px-2.5 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
             onkeydown={(ev) => {
-              if (ev.key === "Enter") commitTarget(draftNumber, draftUnit, () => targetButton);
-              else if (ev.key === "Escape") void stopEdit(() => targetButton);
+              if (ev.key === "Enter") {
+                ev.preventDefault();
+                commitTarget(draftNumber, draftUnit, () => targetButton);
+              } else if (ev.key === "Escape") {
+                ev.preventDefault();
+                void stopEdit(() => targetButton);
+              }
             }}
           />
           <label class="sr-only" for="target-unit">Target unit</label>
@@ -303,10 +351,14 @@
             bind:value={draftUnit}
             class="w-16 rounded-full border border-input bg-card px-2.5 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
             onkeydown={(ev) => {
-              if (ev.key === "Enter") commitTarget(draftNumber, draftUnit, () => targetButton);
-              else if (ev.key === "Escape") void stopEdit(() => targetButton);
+              if (ev.key === "Enter") {
+                ev.preventDefault();
+                commitTarget(draftNumber, draftUnit, () => targetButton);
+              } else if (ev.key === "Escape") {
+                ev.preventDefault();
+                void stopEdit(() => targetButton);
+              }
             }}
-            onblur={() => commitTarget(draftNumber, draftUnit, () => targetButton)}
           />
         </span>
       {:else}
@@ -333,8 +385,13 @@
           use:autofocus
           class="w-24 rounded-full border border-input bg-card px-2.5 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onkeydown={(e) => {
-            if (e.key === "Enter") commitProgram(e.currentTarget.value, () => programButton);
-            else if (e.key === "Escape") void stopEdit(() => programButton);
+            if (e.key === "Enter") {
+              e.preventDefault();
+              commitProgram(e.currentTarget.value, () => programButton);
+            } else if (e.key === "Escape") {
+              e.preventDefault();
+              void stopEdit(() => programButton);
+            }
           }}
           onblur={(e) => commitProgram(e.currentTarget.value, () => programButton)}
         />

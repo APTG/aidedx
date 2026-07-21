@@ -36,8 +36,22 @@
   // whenever a fresh defaults notice arrives (the user can still collapse
   // them again — this only forces them open once per new notice).
   let chipsOpen = $state(false);
+
+  // `intent` (and `result`) go back to `null` at the start of every fresh
+  // `submit()` — but *not* during a `recompute()` triggered by editing a
+  // chip, which deliberately keeps them populated throughout. That
+  // distinction is exactly what's needed here: a brand-new answer should
+  // start with both disclosures collapsed again, but correcting a chip
+  // shouldn't collapse the panel the user is actively using. Both branches
+  // live in one effect (rather than two) so a defaults-filled answer can't
+  // momentarily flip chipsOpen false-then-true depending on effect order.
   $effect(() => {
-    if (defaultsNotice) chipsOpen = true;
+    if (intent === null) {
+      detailsOpen = false;
+      chipsOpen = false;
+    } else if (defaultsNotice) {
+      chipsOpen = true;
+    }
   });
 
   const provenance = $derived(

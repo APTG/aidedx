@@ -25,7 +25,11 @@ describe("withParticleMatch", () => {
   it("patches the particle at the given index and clears isotopeAssumed", () => {
     const intent = baseIntent();
     const next = withParticleMatch(intent, 0, "alpha particle");
-    expect(next.particles[0]).toEqual({ match: "alpha particle", isotopeAssumed: undefined });
+    expect(next.particles[0]).toEqual({ match: "alpha particle" });
+    // `isotopeAssumed` must be *omitted*, not present-with-value-undefined —
+    // validateQueryIntent() rejects the latter (`"isotopeAssumed" in p`
+    // requires a string once the key exists at all).
+    expect(Object.hasOwn(next.particles[0] ?? {}, "isotopeAssumed")).toBe(false);
   });
 
   it("does not mutate the original intent", () => {

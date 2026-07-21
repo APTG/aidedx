@@ -287,4 +287,86 @@ describe("AnswerCard", () => {
     expect(queryByText(/missing some details/)).not.toBeInTheDocument();
     expect(getByRole("button", { name: "Edit" })).toHaveAttribute("aria-expanded", "false");
   });
+
+  it("collapses Edit/Details again for a brand-new answer (intent goes null in between, as submit() does)", async () => {
+    const { getByRole, rerender } = render(AnswerCard, {
+      props: {
+        phase: "answered",
+        lines: ["The CSDA range of 40 MeV protons in PMMA is 1.529 g/cm² (PSTAR)."],
+        message: null,
+        intent: TEST_INTENT,
+        result: TEST_RESULT,
+        defaultsNotice: null,
+        onEditIntent: () => {},
+      },
+    });
+
+    await getByRole("button", { name: "Edit" }).click();
+    await getByRole("button", { name: "Details" }).click();
+    expect(getByRole("button", { name: "Hide edit" })).toHaveAttribute("aria-expanded", "true");
+    expect(getByRole("button", { name: "Hide details" })).toHaveAttribute("aria-expanded", "true");
+
+    // submit() nulls intent/result synchronously before a fresh match/compute.
+    await rerender({
+      phase: "computing",
+      lines: [],
+      message: null,
+      intent: null,
+      result: null,
+      defaultsNotice: null,
+      onEditIntent: () => {},
+    });
+    await rerender({
+      phase: "answered",
+      lines: ["The stopping power of 100 MeV protons in water is 0.73 keV/µm (PSTAR)."],
+      message: null,
+      intent: { ...TEST_INTENT, materials: [{ match: "water" }] },
+      result: TEST_RESULT,
+      defaultsNotice: null,
+      onEditIntent: () => {},
+    });
+
+    expect(getByRole("button", { name: "Edit" })).toHaveAttribute("aria-expanded", "false");
+    expect(getByRole("button", { name: "Details" })).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("keeps Edit open across a chip-edit recompute (intent stays non-null throughout, as recompute() does)", async () => {
+    const { getByRole, rerender } = render(AnswerCard, {
+      props: {
+        phase: "answered",
+        lines: ["The CSDA range of 40 MeV protons in PMMA is 1.529 g/cm² (PSTAR)."],
+        message: null,
+        intent: TEST_INTENT,
+        result: TEST_RESULT,
+        defaultsNotice: null,
+        onEditIntent: () => {},
+      },
+    });
+
+    await getByRole("button", { name: "Edit" }).click();
+    expect(getByRole("button", { name: "Hide edit" })).toHaveAttribute("aria-expanded", "true");
+
+    // recompute() leaves the previous intent/result populated during
+    // "computing" — it never nulls them the way submit() does.
+    await rerender({
+      phase: "computing",
+      lines: [],
+      message: null,
+      intent: TEST_INTENT,
+      result: TEST_RESULT,
+      defaultsNotice: null,
+      onEditIntent: () => {},
+    });
+    await rerender({
+      phase: "answered",
+      lines: ["The CSDA range of 40 MeV protons in water is 1.6 g/cm² (PSTAR)."],
+      message: null,
+      intent: { ...TEST_INTENT, materials: [{ match: "water" }] },
+      result: TEST_RESULT,
+      defaultsNotice: null,
+      onEditIntent: () => {},
+    });
+
+    expect(getByRole("button", { name: "Hide edit" })).toHaveAttribute("aria-expanded", "true");
+  });
 });

@@ -79,6 +79,20 @@ describe("IntentChips", () => {
     expect(next.particles[0]).toEqual({ match: "carbon ion" });
   });
 
+  it("committing an unchanged particle (label matches raw match's resolved display name) does not call onEditIntent", async () => {
+    const onEditIntent = vi.fn();
+    // "helium-4" resolves to the display label "alpha particle" — the input
+    // opens prefilled with that label, not the raw match text.
+    const intent = baseIntent({ particles: [{ match: "helium-4" }] });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit particle/i }));
+    const input = getByRole("textbox", { name: /particle/i });
+    await fireEvent.keyDown(input, { key: "Enter" });
+
+    expect(onEditIntent).not.toHaveBeenCalled();
+  });
+
   it("Escape cancels an edit without calling onEditIntent", async () => {
     const onEditIntent = vi.fn();
     const { getByRole, queryByRole } = render(IntentChips, {
@@ -119,6 +133,69 @@ describe("IntentChips", () => {
     expect(onEditIntent).toHaveBeenCalledTimes(1);
     const next = firstCallArg<QueryIntent>(onEditIntent);
     expect(next.energies[0]).toEqual({ value: 214, unit: "MeV" });
+  });
+
+  it("editing the energy value then focusing away from the whole editor commits", async () => {
+    const onEditIntent = vi.fn();
+    const intent = baseIntent();
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit energy: 214 keV/i }));
+    const valueInput = getByRole("spinbutton", { name: /energy value/i });
+    await fireEvent.input(valueInput, { target: { value: "240" } });
+    // Focus leaving the editor entirely (relatedTarget outside the group) —
+    // not just moving from the value input to its own unit select.
+    await fireEvent.focusOut(valueInput, { relatedTarget: document.body });
+
+    expect(onEditIntent).toHaveBeenCalledTimes(1);
+    const next = firstCallArg<QueryIntent>(onEditIntent);
+    expect(next.energies[0]).toEqual({ value: 240, unit: "keV" });
+  });
+
+  it("moving focus from the energy value input to its own unit select does not commit prematurely", async () => {
+    const onEditIntent = vi.fn();
+    const intent = baseIntent();
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit energy: 214 keV/i }));
+    const valueInput = getByRole("spinbutton", { name: /energy value/i });
+    const unitSelect = getByRole("combobox", { name: /energy unit/i });
+    await fireEvent.input(valueInput, { target: { value: "240" } });
+    await fireEvent.focusOut(valueInput, { relatedTarget: unitSelect });
+
+    expect(onEditIntent).not.toHaveBeenCalled();
+    // The editor should still be open — the value input is still present.
+    expect(getByRole("spinbutton", { name: /energy value/i })).toBeInTheDocument();
+  });
+
+  it("editing only the target value then focusing away from the whole editor commits", async () => {
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({ quantity: "energyFromRange", target: { value: 10, unit: "cm" } });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit target: 10 cm/i }));
+    const valueInput = getByRole("spinbutton", { name: /target value/i });
+    await fireEvent.input(valueInput, { target: { value: "20" } });
+    await fireEvent.focusOut(valueInput, { relatedTarget: document.body });
+
+    expect(onEditIntent).toHaveBeenCalledTimes(1);
+    const next = firstCallArg<QueryIntent>(onEditIntent);
+    expect(next.target).toEqual({ value: 20, unit: "cm" });
+  });
+
+  it("moving focus from the target value input to its own unit input does not commit prematurely", async () => {
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({ quantity: "energyFromRange", target: { value: 10, unit: "cm" } });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit target: 10 cm/i }));
+    const valueInput = getByRole("spinbutton", { name: /target value/i });
+    const unitInput = getByRole("textbox", { name: /target unit/i });
+    await fireEvent.input(valueInput, { target: { value: "20" } });
+    await fireEvent.focusOut(valueInput, { relatedTarget: unitInput });
+
+    expect(onEditIntent).not.toHaveBeenCalled();
+    expect(getByRole("spinbutton", { name: /target value/i })).toBeInTheDocument();
   });
 
   it("renders a target chip for an inverse query", () => {
