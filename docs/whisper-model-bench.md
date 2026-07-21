@@ -1,9 +1,12 @@
 # Multi-size Whisper benchmark
 
-_Session report, 2026-07-20. Covers two Athena runs: job 2805165 (§1–7, this session — 36/42
-combos, the current best picture) and job 2804461 (§8, prior session — 3/42 combos, superseded by
-§1–7 wherever they overlap but kept for provenance). See `scripts/submit-whisper-bench.sh` for the
-full plan (7 Whisper sizes × {q8, fp32} × 3 datasets = 42 combos)._
+_Session report, 2026-07-20, updated 2026-07-21. Covers three Athena runs against the same
+`eval/results/whisper-bench-2805165/` output directory: job 2805165 (§1–7, original session — 36/42
+combos) resumed by jobs 2806224 (lane 2, `large-v3-turbo`'s remaining `pl-qwen`/`q8` clips) and
+2806225 (lanes 0/1, `large-v2-ONNX`/`large-v3-ONNX` `fp32`), plus job 2804461 (§8, prior session —
+3/42 combos, superseded wherever it overlaps but kept for provenance). See §9 for the 2026-07-21
+update. See `scripts/submit-whisper-bench.sh` for the full plan (7 Whisper sizes × {q8, fp32} × 3
+datasets = 42 combos)._
 
 ## 1. TL;DR
 
@@ -30,6 +33,14 @@ this.
 `.onnx_data` failure job 2804461 hit, recurring even with the retry-with-backoff fix already
 landed. And `pl-qwen`'s near-zero scores across every model (§4) are expected, not new — Qwen3-TTS
 is already confirmed non-functional for Polish (`docs/tts-eval-1000-pl.md` §4).
+
+**Update, §9: as of 2026-07-21 the full 42/42 grid is complete**, plus 8 more combos against two new
+Chatterbox Polish datasets (`pl-chat-clone`, `pl-chat-native`, issue #106). The §6 download failure
+did not recur on retry — `large-v2-ONNX`/`large-v3-ONNX` `fp32` downloaded and ran cleanly this
+time, essentially tying their already-measured `q8` numbers (92.0% vs. 92.5% English clip accuracy
+for `large-v2-ONNX`, `fp32` vs. `q8`) — `q8` remains the better choice on cost with no accuracy
+penalty. Both new Chatterbox Polish datasets score far below `pl-piper` (18–25% vs. ~50%) — see
+§9.2.
 
 ## 2. What completed
 
@@ -223,6 +234,104 @@ it means.
 
 **Not committed — stays local**: no `fp32` transcripts for `large-v2-ONNX`/`large-v3-ONNX` (§6, never
 downloaded), no completed `pl-qwen__whisper-large-v3-turbo__q8` (§2, in progress).
+
+## 9. Update, 2026-07-21: full grid complete + two new Chatterbox Polish datasets
+
+Two follow-up resumes against the same `RESULTS_DIR=eval/results/whisper-bench-2805165/` (per §7's
+"next step" plan, run as jobs 2806224 and 2806225 rather than a re-run of 2805165 itself — see
+`kill-and-resume-2805165-lane2.md`): job 2806224 (`--array=2`) finished lane 2's remaining
+`pl-qwen`/`large-v3-turbo`/`q8` clips (235 → 1000/1000), and job 2806225 (`--array=0,1`) finally
+got `large-v2-ONNX`/`large-v3-ONNX` `fp32` downloaded and transcribed on all 3 original datasets.
+Separately, the Chatterbox Polish TTS pipeline (issue #106) produced two new 1000-sentence datasets,
+transcribed here against just `large-v2-ONNX`/`large-v3-ONNX` (both dtypes) rather than the full
+7-model sweep. **All 50 combos across both this update and §1–8 are complete, 1000/1000 clips each,
+zero transcription errors.**
+
+### 9.1 §6 resolved, without a real root cause
+
+`large-v2-ONNX`/`large-v3-ONNX` `fp32` downloaded and ran without incident on both datasets this
+time — no `.onnx_data` companion-file failure, no retry needed. Since nothing in
+`scripts/asr-transcribe-manifest.mjs`'s download path changed between this run and job 2805165's
+failed attempt, the most consistent read is that this was genuinely transient HF CDN contention
+after all (the original hypothesis job 2804461 proposed and §6 above walked back) — it just needed
+more than 3 retries-with-backoff on a bad day. Not a satisfying root cause, but not worth more
+investigation now that the data exists.
+
+### 9.2 Complete English + Polish(Piper/Qwen) grid — `fp32` rows for `large-v2/v3-ONNX`
+
+Filling in the previously-missing rows from §4's tables (existing `q8` rows unchanged, repeated here
+for context):
+
+**English (`tts-qwen-1000-v3`)**
+
+| Model                 | dtype | Median inference | Raw   | New                          |
+| --------------------- | ----- | ---------------- | ----- | ---------------------------- |
+| whisper-large-v2-ONNX | fp32  | 7.9s             | 85.8% | **92.0%** (new overall best) |
+| whisper-large-v2-ONNX | q8    | 6.3s             | 87.6% | **92.5%**                    |
+| whisper-large-v3-ONNX | fp32  | 7.9s             | 83.4% | 90.4%                        |
+| whisper-large-v3-ONNX | q8    | 6.6s             | 84.4% | 90.6%                        |
+
+**Polish, Piper voices (`tts-piper-1000-pl`)**
+
+| Model                 | dtype | Median inference | Raw   | New                          |
+| --------------------- | ----- | ---------------- | ----- | ---------------------------- |
+| whisper-large-v2-ONNX | fp32  | 9.5s             | 50.2% | **53.8%** (new overall best) |
+| whisper-large-v2-ONNX | q8    | 7.5s             | 43.9% | 49.1%                        |
+| whisper-large-v3-ONNX | fp32  | 10.2s            | 46.2% | 52.2%                        |
+| whisper-large-v3-ONNX | q8    | 7.8s             | 45.0% | 51.7%                        |
+
+**Polish, Qwen3-TTS voices (`tts-qwen-1000-pl`)** — still near-zero, §4.1's explanation still holds:
+
+| Model                  | dtype | Median inference      | Raw  | New  |
+| ---------------------- | ----- | --------------------- | ---- | ---- |
+| whisper-large-v2-ONNX  | fp32  | 9.8s                  | 3.1% | 3.2% |
+| whisper-large-v3-ONNX  | fp32  | 11.2s                 | 2.0% | 2.3% |
+| whisper-large-v3-turbo | q8    | 17.2s (now 1000/1000) | 0.1% | 0.1% |
+
+`large-v3-turbo`/`q8`'s completed `pl-qwen` run confirms §5's repetition-loop bug at full scale:
+**955/1000 clips** now exceed the 20-word "probably looping" proxy (vs. the 235-clip partial sample
+this doc previously didn't have a number for) — worse, proportionally, than the English 296/1000,
+consistent with the bug compounding on already-broken Qwen3-TTS Polish audio rather than being
+data-dependent.
+
+### 9.3 New: Chatterbox Polish datasets score well below Piper
+
+`pl-chat-clone` (voice-cloned) and `pl-chat-native` (Chatterbox's own Polish voice) are new
+1000-sentence batches from the Chatterbox pipeline (issue #106, `docs/tts-chatterbox-pl-clone.md`).
+Both were only run against `large-v2-ONNX`/`large-v3-ONNX` (this benchmark's two best models so far,
+not the full 7-size sweep):
+
+| Dataset        | Model                 | dtype | Median inference | Raw   | New              |
+| -------------- | --------------------- | ----- | ---------------- | ----- | ---------------- |
+| pl-chat-clone  | whisper-large-v2-ONNX | fp32  | 8.9s             | 23.1% | 23.6%            |
+| pl-chat-clone  | whisper-large-v2-ONNX | q8    | 7.9s             | 22.1% | 22.8%            |
+| pl-chat-clone  | whisper-large-v3-ONNX | fp32  | 10.8s            | 22.1% | 22.8%            |
+| pl-chat-clone  | whisper-large-v3-ONNX | q8    | 8.7s             | 24.4% | **25.0%** (best) |
+| pl-chat-native | whisper-large-v2-ONNX | fp32  | 9.2s             | 18.2% | 18.6%            |
+| pl-chat-native | whisper-large-v2-ONNX | q8    | 7.6s             | 18.0% | 18.7%            |
+| pl-chat-native | whisper-large-v3-ONNX | fp32  | 12.3s            | 20.5% | **20.6%** (best) |
+| pl-chat-native | whisper-large-v3-ONNX | q8    | 8.7s             | 19.9% | 20.2%            |
+
+Both Chatterbox datasets land well below `pl-piper`'s ~50–54% on the same two models (§9.2) — the
+gap is far bigger than the raw→new correction step can close (≤1.4pp movement, vs. ~4–6pp for
+`pl-piper`), pointing at the audio itself (pronunciation, pacing, or clarity of Chatterbox's Polish
+output) rather than a scoring/corrector mismatch. Neither is anywhere near a shippable ASR accuracy
+level for the voice pipeline. Not investigated further here — flagging for whoever picks up
+Chatterbox Polish quality next (issue #106).
+
+### 9.4 Updated status
+
+**50/50 combos across both sessions now have real, locally-scored data.** Confirmed conclusions:
+`large-v2-ONNX` (either dtype) is this benchmark's best English and Polish(Piper) model;
+`large-v3-turbo`/`q8`'s repetition-loop bug (§5) is real and gets worse, not better, on harder
+Polish audio; and Chatterbox's Polish TTS output (both native and cloned) is currently much harder
+for Whisper to transcribe than Piper's, an issue #106 finding, not a Whisper-side one.
+
+**Files (this update)**: `eval/results/whisper-bench-2805165/` — added
+`{en-v3,pl-qwen}__whisper-large-v{2,3}-ONNX__fp32*`, `pl-chat-{clone,native}__whisper-large-v{2,3}-ONNX__{fp32,q8}*`,
+and updated `pl-qwen__whisper-large-v3-turbo__q8*` (now 1000/1000) plus all `*__score-*` files that
+depend on it — raw transcripts, `--new`/`--ext`/`--base` corrector scoring JSON, and matching `.log`
+per combo, same convention as §8.
 
 ---
 

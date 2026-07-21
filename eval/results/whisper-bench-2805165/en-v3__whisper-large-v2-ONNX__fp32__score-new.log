@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-large-v2-ONNX [fp32] +prompt new-corrector ===
+clips: 1000   median inference: 7.9s   load: 19.0s
+clip-level all-slots-correct:  raw 858/1000 (85.8%)   corrected 920/1000 (92.0%)
+
+by quantity (corrected):
+  csdaRange        557/600 (92.8%)
+  energyFromRange  239/250 (95.6%)
+  stoppingPower    124/150 (82.7%)
+
+by scenario type (corrected):
+  single     729/800 (91.1%)
+  energy     95/100 (95.0%)
+  material   53/55 (96.4%)
+  particle   43/45 (95.6%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      649/698 (93.0%)
+  clinical-core  271/302 (89.7%)
+
+by voice profile (corrected), worst 10:
+  british-male-skeptical           19/25 (76.0%)
+  nigerian-female-hurried          11/14 (78.6%)
+  jamaican-female-relaxed          9/11 (81.8%)
+  japanese-accented-female-cheerful 20/24 (83.3%)
+  custom-aiden-curious             20/24 (83.3%)
+  australian-female-stressed       15/18 (83.3%)
+  spanish-accented-male-animated   21/25 (84.0%)
+  german-accented-female-brisk     21/25 (84.0%)
+  italian-accented-male-animated   23/27 (85.2%)
+  custom-ryan-happy                18/21 (85.7%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   98.7% ->  99.0%  (n=1250)
+  particle   98.9% ->  98.9%  (n=1045)
+  material   99.5% ->  99.5%  (n=1085)
+  number     97.1% ->  97.1%  (n=1152)
+  unit       91.1% ->  96.5%  (n=1152)
+  ALL        97.0% ->  98.2%  (n=5684)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         88.4% ->  95.2%  (n=482)
+  MeV/nucl    86.0% ->  95.3%  (n=322)
+  keV        100.0% -> 100.0%  (n=83)
+  GeV        100.0% -> 100.0%  (n=15)
+  cm         100.0% -> 100.0%  (n=184)
+  mm          97.0% ->  97.0%  (n=66)
+
+failing clips after correction (80 total, showing first 30):
+  rng-0032 missing[number,unit]: So, roughly how far would a Wannegady MeAV per nucleon lead 208 ion make it into cortical bone?
+  rng-0037 missing[number]: Determine the range of two GeV protons in polycarbonate.
+  rng-0044 missing[number,unit]: Range of ADMEV, deuteron, and Pyrex glass, please.
+  rng-0078 missing[number]: What is the CSDA range of a 1080 MeV per nucleon boron-11 ion in Kapton?
+  rng-0096 missing[number]: Determine the range of two MeV tritons in a 150-tissue equivalent plastic.
+  rng-0129 missing[particle,unit]: Quick one, how far does a 60 mIav per nucleon lid, UO8, ion go in polystyrene?
+  rng-0150 missing[number]: Determine the range of two MeV deuterons in Kapton.
+  rng-0152 missing[number,unit]: Range of a ADMAV triton in muscle tissue, please.
+  rng-0165 missing[unit]: Quick one. How far does a 350 M at EV proton go in Mylar?
+  rng-0174 missing[number]: Determine the range of four GeV protons in compact bone.
+  rng-0176 missing[number]: What's the range of a 1,50 MeV proton in boron carbide?
+  rng-0179 missing[number]: Find the CSDA range for two MeV tritons in PMMA.
+  rng-0195 missing[number,unit]: So, roughly, how far would a 100 eB per nucleon phosphorus 31 ion make it into brain?
+  rng-0197 missing[material]: Find the CSDA range for 15 MeV alpha particles in 850 tissue equivalent plastic.
+  rng-0206 missing[unit]: How far will an 8eMeV triton travel through brain?
+  rng-0210 missing[unit]: Find the CSDA range for 100 eMeP protons in concrete.
+  rng-0227 missing[number,unit]: A quick one, how far does a PDMeV per nucleon neon 20 ion go in Teflon?
+  rng-0271 missing[number,unit]: Before coming to rest, how far does a 6DMeV proton get through silicon?
+  rng-0277 missing[unit]: What's the range of a 2mF helium-3 ion in skin?
+  rng-0279 missing[quantity,particle,material,number,unit]: Ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha ha
+  rng-0287 missing[particle]: How far will a 5 MeV traiton travel through skin?
+  rng-0295 missing[number,unit]: Before coming to rest, how far does a HeAV helium-3 ion get through PMMA?
+  rng-0298 missing[unit]: How deep does a 10-NeV deuteron penetrate into polyethylene?
+  rng-0301 missing[number,unit]: So, roughly how far would an ADMeV proton make it into compact bone?
+  rng-0304 missing[unit]: So, roughly how far would an 8-EMeV helium-3 ion make it into cortical bone?
+  rng-0306 missing[unit]: So roughly how far would a 10-EAV proton make it into blood?
+  rng-0313 missing[unit]: Range of a 50 mRb per nucleon beryllium 9 ion in silicon, please.
+  rng-0323 missing[unit]: Quick one. How far does a 350 MIE bernucleon neon 20 ion go in polyethylene?
+  rng-0334 missing[unit]: Determine the range of 100 nini V per nucleon uranium 238 ions in polystyrene.
+  rng-0361 missing[number,unit]: So, roughly how far would ON20eV per nucleon magnesium-24 ion make it into lithium fluoride?
+
+wrote eval/results/whisper-bench-2805165/en-v3__whisper-large-v2-ONNX__fp32__score-new.json
