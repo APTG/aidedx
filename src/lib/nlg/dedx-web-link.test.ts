@@ -204,6 +204,32 @@ describe("buildDedxWebCalculatorUrl", () => {
       expect(params.get("program")).toBe("100");
     });
 
+    it("falls back to program=auto when intent.program was unrecognized and rows auto-resolved to different programs", () => {
+      // `intent.program` is free text — resolveProgramId() silently falls
+      // back to per-row auto-select when the name isn't recognized, so rows
+      // can diverge despite intent.program being set (a bogus name here
+      // stands in for that case). Forcing program=<primary's id> would
+      // misrepresent whichever rows resolved to a different program.
+      const bogusProgram = intent({ ...i, program: "not-a-real-program" });
+      const diverged = result({
+        ...r,
+        series: [
+          series({
+            material: { id: 276, name: "Water, Liquid" },
+            program: { id: 7, name: "ICRU49" },
+          }),
+          series({ material: { id: 223, name: "PMMA" }, program: { id: 4, name: "MSTAR" } }),
+          series({
+            material: { id: 119, name: "Bone, Cortical" },
+            program: { id: 4, name: "MSTAR" },
+          }),
+        ],
+      });
+      const url = buildDedxWebCalculatorUrl(bogusProgram, diverged);
+      const params = paramsOf(url);
+      expect(params.get("program")).toBe("auto");
+    });
+
     it("drops a material whose series errored, keeping the rest", () => {
       const withError = result({
         ...r,

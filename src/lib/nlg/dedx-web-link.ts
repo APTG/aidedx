@@ -151,7 +151,18 @@ export function buildDedxWebCalculatorUrl(
   // reproduce it. Otherwise (the common case) the program was auto-selected,
   // and Auto-select — now mirroring `autoProgramForParticle()` exactly,
   // energy included — independently resolves to the same program per row.
-  const explicitProgram = Boolean(intent.program);
+  //
+  // `intent.program` is free text, though: `resolveProgramId()` silently
+  // falls back to auto-select when the name isn't recognized (unlike this
+  // module, it has no way to report that back). If it did fall back, a
+  // material/particle comparison can have each row auto-resolve to a
+  // *different* program despite `intent.program` being set — so "explicit"
+  // is only trusted when every surviving row actually agrees on one program
+  // id; a would-be-explicit request that diverged across rows falls back to
+  // `program=auto` instead of forcing a single id that would misrepresent
+  // the other rows.
+  const explicitProgram =
+    Boolean(intent.program) && successful.every((s) => s.program.id === primary.program.id);
 
   if (intent.compareDim === "material") {
     params.set("mode", "advanced");
