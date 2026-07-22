@@ -90,7 +90,7 @@ function encodeEnergies(
   return { anchor, list };
 }
 
-/** Builds the dedx_web basic-calculator URL for this answer, or `null` when the shape can't be represented (see module doc). */
+/** Builds the dedx_web calculator URL for this answer, or `null` when the shape can't be represented (see module doc). */
 export function buildDedxWebCalculatorUrl(
   intent: QueryIntent,
   result: ComputeResult,

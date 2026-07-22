@@ -46,7 +46,7 @@ function paramsOf(url: string | null): URLSearchParams {
 }
 
 describe("buildDedxWebCalculatorUrl", () => {
-  it("builds a forward basic-mode URL for a single MeV energy", () => {
+  it("builds a forward URL for a single MeV energy", () => {
     const url = buildDedxWebCalculatorUrl(intent({}), result());
     expect(url).toBe(
       `${BASE}?urlv=3&mode=advanced&particle=1&material=276&program=2&energies=100&uanchor=MeV`,
