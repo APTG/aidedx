@@ -159,14 +159,6 @@ describe("buildDedxWebCalculatorUrl", () => {
     expect(buildDedxWebCalculatorUrl(i, result({ quantity: "energyFromRange" }))).toBeNull();
   });
 
-  it.each(["material", "particle", "program"] as const)(
-    "returns null for a compareDim: %s comparison, regardless of quantity",
-    (compareDim) => {
-      const i = intent({ compareDim });
-      expect(buildDedxWebCalculatorUrl(i, result({ compareDim }))).toBeNull();
-    },
-  );
-
   it("returns null when the first series errored", () => {
     const r = result({ series: [series({ error: "energy out of range" })] });
     expect(buildDedxWebCalculatorUrl(intent({}), r)).toBeNull();
@@ -175,6 +167,132 @@ describe("buildDedxWebCalculatorUrl", () => {
   it("returns null when there is no series at all", () => {
     const r = result({ series: [] });
     expect(buildDedxWebCalculatorUrl(intent({}), r)).toBeNull();
+  });
+
+  describe("compareDim: material (across=materials)", () => {
+    const i = intent({
+      compareDim: "material",
+      materials: [{ match: "water" }, { match: "PMMA" }, { match: "cortical bone" }],
+    });
+    const r = result({
+      compareDim: "material",
+      series: [
+        series({ label: "water", material: { id: 276, name: "Water, Liquid" } }),
+        series({ label: "PMMA", material: { id: 223, name: "PMMA" } }),
+        series({ label: "cortical bone", material: { id: 119, name: "Bone, Cortical" } }),
+      ],
+    });
+
+    it("emits mode=advanced&across=materials&program=auto when the program was auto-selected", () => {
+      const url = buildDedxWebCalculatorUrl(i, r);
+      const params = paramsOf(url);
+      expect(params.get("mode")).toBe("advanced");
+      expect(params.get("across")).toBe("materials");
+      expect(params.get("particle")).toBe("1");
+      expect(params.get("materials")).toBe("276~223~119");
+      expect(params.get("program")).toBe("auto");
+    });
+
+    it("emits an explicit program= id when the user named one", () => {
+      const explicit = intent({ ...i, program: "bethe" });
+      const withProgram = result({
+        ...r,
+        series: r.series.map((s) => series({ ...s, program: { id: 100, name: "Bethe" } })),
+      });
+      const url = buildDedxWebCalculatorUrl(explicit, withProgram);
+      const params = paramsOf(url);
+      expect(params.get("program")).toBe("100");
+    });
+
+    it("drops a material whose series errored, keeping the rest", () => {
+      const withError = result({
+        ...r,
+        series: [
+          series({ material: { id: 276, name: "Water, Liquid" } }),
+          series({ material: { id: 223, name: "PMMA" }, error: "energy out of range" }),
+          series({ material: { id: 119, name: "Bone, Cortical" } }),
+        ],
+      });
+      const url = buildDedxWebCalculatorUrl(i, withError);
+      const params = paramsOf(url);
+      expect(params.get("materials")).toBe("276~119");
+    });
+  });
+
+  describe("compareDim: particle (across=particles)", () => {
+    const i = intent({
+      compareDim: "particle",
+      particles: [{ match: "proton" }, { match: "carbon ion" }],
+    });
+    const r = result({
+      compareDim: "particle",
+      series: [
+        series({
+          label: "proton",
+          particle: { id: 1, name: "Hydrogen", massNumber: 1, isotope: "" },
+        }),
+        series({
+          label: "carbon",
+          particle: { id: 6, name: "Carbon", massNumber: 12, isotope: "¹²C" },
+        }),
+      ],
+    });
+
+    it("emits mode=advanced&across=particles&program=auto when the program was auto-selected", () => {
+      const url = buildDedxWebCalculatorUrl(i, r);
+      const params = paramsOf(url);
+      expect(params.get("mode")).toBe("advanced");
+      expect(params.get("across")).toBe("particles");
+      expect(params.get("material")).toBe("276");
+      expect(params.get("particles")).toBe("1~6");
+      expect(params.get("program")).toBe("auto");
+    });
+  });
+
+  describe("compareDim: program (across=programs)", () => {
+    const i = intent({ compareDim: "program" });
+    const r = result({
+      compareDim: "program",
+      series: [
+        series({ label: "PSTAR", program: { id: 2, name: "PSTAR" } }),
+        series({ label: "ICRU49", program: { id: 7, name: "ICRU49" } }),
+        series({ label: "Bethe", program: { id: 100, name: "Bethe" } }),
+      ],
+    });
+
+    it("always lists the actual resolved program ids — no auto concept here", () => {
+      const url = buildDedxWebCalculatorUrl(i, r);
+      const params = paramsOf(url);
+      expect(params.get("mode")).toBe("advanced");
+      expect(params.get("across")).toBe("programs");
+      expect(params.get("particle")).toBe("1");
+      expect(params.get("material")).toBe("276");
+      expect(params.get("programs")).toBe("2~7~100");
+      expect(params.get("program")).toBeNull();
+    });
+
+    it("drops a program whose series errored, keeping the rest", () => {
+      const withError = result({
+        ...r,
+        series: [
+          series({ program: { id: 2, name: "PSTAR" } }),
+          series({ program: { id: 7, name: "ICRU49" }, error: "unsupported combination" }),
+          series({ program: { id: 100, name: "Bethe" } }),
+        ],
+      });
+      const url = buildDedxWebCalculatorUrl(i, withError);
+      const params = paramsOf(url);
+      expect(params.get("programs")).toBe("2~100");
+    });
+  });
+
+  it("returns null for a compareDim: material comparison when every row errored", () => {
+    const i = intent({ compareDim: "material", materials: [{ match: "water" }] });
+    const r = result({
+      compareDim: "material",
+      series: [series({ error: "energy out of range" })],
+    });
+    expect(buildDedxWebCalculatorUrl(i, r)).toBeNull();
   });
 
   it("omits program= and uses Basic mode when the program was auto-selected (issue #116)", () => {

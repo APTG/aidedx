@@ -263,7 +263,7 @@ describe("AnswerCard", () => {
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("omits the dedx_web link for a multi-entity comparison answer", () => {
+  it("renders an advanced-mode dedx_web link for a multi-entity comparison answer", () => {
     const comparisonIntent: QueryIntent = {
       ...TEST_INTENT,
       compareDim: "material",
@@ -281,7 +281,7 @@ describe("AnswerCard", () => {
       compareDim: "material",
       series: [pmmaSeries, { ...pmmaSeries, label: "water", material: { id: 276, name: "Water" } }],
     };
-    const { queryByRole } = render(AnswerCard, {
+    const { getByRole } = render(AnswerCard, {
       props: {
         phase: "answered",
         lines: [
@@ -299,7 +299,13 @@ describe("AnswerCard", () => {
       },
     });
 
-    expect(queryByRole("link", { name: /open in calculator/i })).not.toBeInTheDocument();
+    const link = getByRole("link", {
+      name: "Open in calculator → (opens dedx_web in a new tab)",
+    });
+    expect(link).toHaveAttribute(
+      "href",
+      "https://aptg.github.io/web_dev/calculator?urlv=3&mode=advanced&across=materials&particle=1&materials=224%7E276&program=auto&energies=40&uanchor=MeV",
+    );
   });
 
   it("calls onEditIntent with a corrected intent when a chip edit is committed", async () => {
