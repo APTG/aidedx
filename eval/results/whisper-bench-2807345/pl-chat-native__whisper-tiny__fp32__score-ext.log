@@ -1,0 +1,72 @@
+
+=== onnx-community/whisper-tiny [fp32] +prompt ext-corrector ===
+clips: 1000   median inference: 0.9s   load: 0.9s
+clip-level all-slots-correct:  raw 6/1000 (0.6%)   corrected 6/1000 (0.6%)
+
+by quantity (corrected):
+  csdaRange        0/600 (0.0%)
+  energyFromRange  6/250 (2.4%)
+  stoppingPower    0/150 (0.0%)
+
+by scenario type (corrected):
+  single     5/800 (0.6%)
+  energy     0/100 (0.0%)
+  material   1/55 (1.8%)
+  particle   0/45 (0.0%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      6/608 (1.0%)
+  clinical-core  0/392 (0.0%)
+
+by voice profile (corrected), worst 10:
+  chatterbox-default               6/1000 (0.6%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   61.5% ->  61.5%  (n=1250)
+  particle   58.1% ->  58.1%  (n=1045)
+  material   35.1% ->  35.1%  (n=1085)
+  number     13.0% ->  13.0%  (n=1156)
+  unit        8.7% ->   8.7%  (n=1156)
+  ALL        35.3% ->  35.3%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV          1.7% ->   1.7%  (n=464)
+  MeV/nucl     1.2% ->   1.2%  (n=344)
+  keV         10.1% ->  10.1%  (n=79)
+  GeV         10.5% ->  10.5%  (n=19)
+  mm          57.1% ->  57.1%  (n=63)
+  cm          22.5% ->  22.5%  (n=187)
+
+failing clips after correction (994 total, showing first 30):
+  pl-rng-0001 missing[particle,material,number,unit]: obrić zasięg, protono, energii, santmef, aruminium
+  pl-rng-0002 missing[quantity,number,unit]: i etale kudoleci proton o energistamy wodzie
+  pl-rng-0003 missing[quantity,particle,material,unit]: Jak to leko do czują maknesu, energii 50 ms. kląd wutlenku krzemu?
+  pl-rng-0004 missing[quantity,particle,number,unit]: o widz mi, ja daleko sajgion, li to energicz The Shunt Mf na nukleon w wodzie
+  pl-rng-0005 missing[material,number,unit]: Oblić zasięg, protonu, energii dwa czystak piśętam mew, w aruminium
+  pl-rng-0006 missing[quantity,material,number,unit]: Powiedz mi, jak telekosajdj on kryptonu o analgi czeligysta mef na nukleon wtkancemieniowej
+  pl-rng-0007 missing[particle,number,unit]: Jakie jest zasięg, tąstki alfa, onelgi, sześć zisacie mew ołowiu?
+  pl-rng-0008 missing[material,number,unit]: jaki jest zasięg, jon węgla o energii 30 mawne nukleon, kościkorowej?
+  pl-rng-0009 missing[quantity,material,number,unit]: i lebeno si zasięk protonu o energii tragesti mef, w graficze
+  pl-rng-0010 missing[quantity,material,number,unit]: I aptelek oddoczo, jon tlenu, o energiczeren setmew na nukleom słote
+  pl-rng-0011 missing[material,number,unit]: Jak głęboko wniknie, jon węgla, o energii do własną pemnę nukleon, kości zbitaj?
+  pl-rng-0012 missing[quantity,material,number,unit]: oblicz dasięk, protonu, energicz, testa, mef, politylenie
+  pl-rng-0013 missing[quantity,particle,material,number,unit]: ile będą się zaszink protoną o energi dwacisztypisankmef w oje?
+  pl-rng-0014 missing[particle,number,unit]: Jak daleko dotrzej on na onu o nelgitwaciesiątej bistja mewnanukleon w wodzie?
+  pl-rng-0015 missing[material,number,unit]: Jak głęboko wniknie, jon neonu, o energisatkę wzłocie?
+  pl-rng-0016 missing[material,number,unit]: potaj zasięg, protonu o energii pincieszantem mef, kości jest bita
+  pl-rng-0017 missing[quantity,unit]: powiedz mi, jak daleko zajęcia proton, ojnergi, 70-mf, aluminium.
+  pl-rng-0018 missing[material,number,unit]: jakich zasięg ma proton ojenel giszieszczantmew polietyrenie?
+  pl-rng-0019 missing[quantity,number,unit]: pobic mi, ja wytaleko znajdzie jon litu o energii ościścę z tym wewnanukleon wodzie
+  pl-rng-0020 missing[quantity,particle,material,number,unit]: Oblicz dasięg do uteronu o energii 4x5 pogietrzu
+  pl-rng-0021 missing[number,unit]: jak daleko do 3 cząstka alfa, o energi 2, 5 w wodzie
+  pl-rng-0022 missing[quantity,material,number,unit]: odaj zaszczęk protonu o energii piecńcantym F-Kaptoniem. W Kaptonii!
+  pl-rng-0023 missing[quantity,particle,material,number,unit]: jak to leko dotrzeją księmo energić teśta kmef na nukleon w polietelenie
+  pl-rng-0024 missing[particle,material,number,unit]: ile by nosi zasięg, jon umaluczy, deo, energii, pęcie mew po getrzu
+  pl-rng-0025 missing[particle,material,number,unit]: ile wynosi zasięg, jon on o nukleon, skąd się nie oby?
+  pl-rng-0026 missing[quantity,particle,material,number,unit]: Podajza się, jon nukleon, o energii 5,5 mF, nukleon, drzblastyk uskanko podobnym, a cię cieszę te szanty
+  pl-rng-0027 missing[quantity,material,number,unit]: obić zasing, protonu o energii, samtmefkości zbitań
+  pl-rng-0028 missing[quantity,material,number,unit]: opricz zasching, deuteronu o energi pięteń też mew polietlenie
+  pl-rng-0029 missing[number]: jak głęboko wniknie jon węgla o energi, pincyśant keV, Kaptonie,
+  pl-rng-0030 missing[material,number,unit]: jak i zasięg mają żelaza o energii sztandmew na nukleon w MMA
+
+wrote eval/results/whisper-bench-2807345/pl-chat-native__whisper-tiny__fp32__score-ext.json

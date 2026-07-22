@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-tiny [q8] +prompt new-corrector ===
+clips: 1000   median inference: 1.4s   load: 0.7s
+clip-level all-slots-correct:  raw 0/1000 (0.0%)   corrected 0/1000 (0.0%)
+
+by quantity (corrected):
+  csdaRange        0/600 (0.0%)
+  energyFromRange  0/250 (0.0%)
+  stoppingPower    0/150 (0.0%)
+
+by scenario type (corrected):
+  single     0/800 (0.0%)
+  energy     0/100 (0.0%)
+  material   0/55 (0.0%)
+  particle   0/45 (0.0%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      0/608 (0.0%)
+  clinical-core  0/392 (0.0%)
+
+by voice profile (corrected), worst 10:
+  clone-08                         0/101 (0.0%)
+  clone-07                         0/101 (0.0%)
+  clone-06                         0/98 (0.0%)
+  clone-03                         0/100 (0.0%)
+  clone-02                         0/100 (0.0%)
+  clone-01                         0/99 (0.0%)
+  clone-10                         0/99 (0.0%)
+  clone-09                         0/99 (0.0%)
+  clone-04                         0/101 (0.0%)
+  clone-05                         0/102 (0.0%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   43.8% ->  45.6%  (n=1250)
+  particle   42.0% ->  42.2%  (n=1045)
+  material   25.5% ->  25.5%  (n=1085)
+  number     16.7% ->  16.7%  (n=1156)
+  unit        8.7% ->   8.7%  (n=1156)
+  ALL        27.4% ->  27.8%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV          0.9% ->   0.9%  (n=464)
+  MeV/nucl     1.7% ->   1.7%  (n=344)
+  keV          3.8% ->   3.8%  (n=79)
+  GeV         10.5% ->  10.5%  (n=19)
+  mm          41.3% ->  41.3%  (n=63)
+  cm          32.1% ->  32.1%  (n=187)
+
+failing clips after correction (1000 total, showing first 30):
+  pl-rng-0001 missing[number,unit]: o tym, obliki zasięg, protonu, a energizantem, w aluminium.
+  pl-rng-0002 missing[number,unit]: jak daleko do leti proton energizomem w wodzie
+  pl-rng-0003 missing[particle,material,unit]: jak daleko dotrzem, jak nazywa energii 50,5 na nukleon, w d�lenku krzemu
+  pl-rng-0004 missing[quantity,particle,material,number,unit]: powiedzmy jak tak samo, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno, jak wylekno,
+  pl-rng-0005 missing[quantity,number,unit]: obliwcda sięk, proton, o energii 2060, w aluminium.
+  pl-rng-0006 missing[quantity,particle,material,number,unit]: podwiedz mi, jak do lekozacji, on kryptoną, o energii, przed wziąć mięw na nukleon, w tkanka mięśniowej.
+  pl-rng-0007 missing[particle,material,number,unit]: jak jest zasięg, transki, alpha, energii, internet, web, obiol.
+  pl-rng-0008 missing[particle,material,number,unit]: jak jest zasięg, jon węglał, energii 37m na nukleon z kościo-korowej
+  pl-rng-0009 missing[quantity,number,unit]: i lewe nasi zashing, proton, o energi, cztercie, my w graficie
+  pl-rng-0010 missing[particle,material,number,unit]: jak daleko dotrzcie, jak ja miałem kleno o energi, w tym ef, na nukleon złotia
+  pl-rng-0011 missing[particle,material,number,unit]: jak głęboko wniknie jon zęglą, o energii, tam wewnandokle, on wkości jest bite.
+  pl-rng-0012 missing[material,number,unit]: Aby w zasięg, proton, energii 37m w polietelania
+  pl-rng-0013 missing[number,unit]: ile by nasi zasięg, proton, energii, 20% amew, wodzie.
+  pl-rng-0014 missing[quantity,particle,material,number,unit]: jak daj kadańsza, ja no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no,
+  pl-rng-0015 missing[particle,material,number,unit]: Jak głęboko wniknijone na ano, energii, ds.
+  pl-rng-0016 missing[material,number,unit]: podali zasięg, proton, energii, 15mm, kościość zbita
+  pl-rng-0017 missing[quantity,number,unit]: powiedz mi, jak daleko znajdzie proton, a energiczny 10, ma w aluminium.
+  pl-rng-0018 missing[material,number,unit]: Jakie zasięg ma proton energiusies, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni, jak mięśni,
+  pl-rng-0019 missing[quantity,particle,number,unit]: Pobbyc mi, jak daleko znajdzie je on literu, energii, oczywiście, nic się mają w nukleon w wodzie
+  pl-rng-0020 missing[quantity,particle,number,unit]: Obliby zda się gdyuterono energii 30 mF powietrzu
+  pl-rng-0021 missing[quantity,particle,material,number,unit]: jak doleka do 3,5,5,5,5,5
+  pl-rng-0022 missing[quantity,material,number,unit]: Woda jest zaśinkrę protonu, a energii bieńcy, czy mięwów, Kaptoni
+  pl-rng-0023 missing[particle,material,number,unit]: jak daleko dotrz, ja, jonka samo, a jednak i dzisiaj, z tym efnologna, no, klowne, poliatyrania
+  pl-rng-0024 missing[quantity,particle,material,number,unit]: ile wynosi za się, jon, hello, trzacz, a jednak będzie mięw po wiec,
+  pl-rng-0025 missing[quantity,material,number,unit]: i lewno się zaśanki, jon, neonu, energii, 20, 15, no kleon, wtkankcie mi się, bo
+  pl-rng-0026 missing[quantity,particle,material,number,unit]: poda jest, thank you, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no
+  pl-rng-0027 missing[quantity,material,number,unit]: oblikszająk, proton, i naelizujące one ef, kościół zbitej.
+  pl-rng-0028 missing[particle,material,number,unit]: oblić zasięg, dotarono, energii, piste, stymem, polietelania.
+  pl-rng-0029 missing[quantity,particle,unit]: jak go mięgla, o energii 50.000, Kaptonie
+  pl-rng-0030 missing[material,number,unit]: jak i zasięg mają żelaza, o energii, sześć, męwna nukleon, mę
+
+wrote eval/results/whisper-bench-2807345/pl-chat-clone__whisper-tiny__q8__score-new.json

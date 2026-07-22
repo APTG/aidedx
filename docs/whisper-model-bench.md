@@ -1,12 +1,15 @@
 # Multi-size Whisper benchmark
 
-_Session report, 2026-07-20, updated 2026-07-21. Covers three Athena runs against the same
-`eval/results/whisper-bench-2805165/` output directory: job 2805165 (§1–7, original session — 36/42
-combos) resumed by jobs 2806224 (lane 2, `large-v3-turbo`'s remaining `pl-qwen`/`q8` clips) and
-2806225 (lanes 0/1, `large-v2-ONNX`/`large-v3-ONNX` `fp32`), plus job 2804461 (§8, prior session —
-3/42 combos, superseded wherever it overlaps but kept for provenance). See §9 for the 2026-07-21
-update. See `scripts/submit-whisper-bench.sh` for the full plan (7 Whisper sizes × {q8, fp32} × 3
-datasets = 42 combos)._
+_Session report, 2026-07-20, updated 2026-07-21 and 2026-07-22. Covers four Athena runs: job
+2805165 (§1–7, original session — 36/42 combos) resumed by jobs 2806224 (lane 2, `large-v3-turbo`'s
+remaining `pl-qwen`/`q8` clips) and 2806225 (lanes 0/1, `large-v2-ONNX`/`large-v3-ONNX` `fp32`), all
+three against `eval/results/whisper-bench-2805165/`; plus job 2804461 (§8, prior session — 3/42
+combos, superseded wherever it overlaps but kept for provenance). See §9 for the 2026-07-21 update
+(full 42/42 grid + Chatterbox Polish datasets against 2 of 7 model sizes) and §10 for the
+2026-07-22 update (job 2807345, `eval/results/whisper-bench-2807345/` — the remaining 5 model sizes
+against both Chatterbox datasets). See `scripts/submit-whisper-bench.sh` for the full plan (7
+Whisper sizes × {q8, fp32} × 5 datasets = 70 combos, once `pl-chat-clone`/`pl-chat-native` were
+added to `DATASETS` alongside the original 3)._
 
 ## 1. TL;DR
 
@@ -332,6 +335,109 @@ for Whisper to transcribe than Piper's, an issue #106 finding, not a Whisper-sid
 and updated `pl-qwen__whisper-large-v3-turbo__q8*` (now 1000/1000) plus all `*__score-*` files that
 depend on it — raw transcripts, `--new`/`--ext`/`--base` corrector scoring JSON, and matching `.log`
 per combo, same convention as §8.
+
+## 10. Update, 2026-07-22: job 2807345 — remaining 5 model sizes vs. both Chatterbox datasets
+
+§9.3 only ran the two new Chatterbox Polish datasets (`pl-chat-clone`, `pl-chat-native`) against
+`large-v2-ONNX`/`large-v3-ONNX`, this benchmark's two best models — not the full 7-size sweep. Job
+2807345 (`sbatch --array=2,3,4`, lanes `large-v3-turbo`/`medium-ONNX`/`small-base-tiny`) fills in the
+remaining 5 sizes (`tiny`, `base`, `small`, `medium-ONNX`, `large-v3-turbo`) against both datasets.
+`DATASETS` in `submit-whisper-bench.sh` now lists all 5 datasets unconditionally (not just the
+Chatterbox ones), so this job also re-transcribed `en-v3`/`pl-piper`/`pl-qwen` for these same 5
+models — confirmed byte-identical `raw` transcript text against job 2805165's already-committed data
+for every record checked (only the per-clip `secs` timing differs, as expected re-running on a
+different day). That redundant slice **was not re-committed** — no accuracy signal in it that
+isn't already in §4/§9.2, and `eval/results/` doesn't need a second multi-megabyte copy of the same
+transcripts. Only the genuinely new `pl-chat-clone`/`pl-chat-native` combos landed in
+`eval/results/whisper-bench-2807345/`.
+
+**One combo is incomplete**: `pl-chat-native__whisper-large-v3-turbo__q8` stopped at 467/1000 clips
+with no `score-*` files — lane 4's last (dataset, model) pair in iteration order, consistent with
+the job still running (or having hit walltime) when this session's data was pulled, the same
+"partial, resumable" pattern §2 and §9's job 2805165 hit for `pl-qwen__whisper-large-v3-turbo__q8`.
+The 467 completed records are committed for provenance; a resubmit of lane 2 with
+`RESULTS_DIR=eval/results/whisper-bench-2807345` will resume from clip 468 via
+`asr-transcribe-manifest.mjs`'s existing per-clip resume. Scoring for this one combo is deferred
+until it completes.
+
+### 10.1 Full 7-model grid, both Chatterbox datasets (new-corrected clip accuracy)
+
+Combining this update's 5 sizes with §9.3's already-committed `large-v2-ONNX`/`large-v3-ONNX` rows:
+
+**`pl-chat-clone` (voice-cloned)**
+
+| Model                  | dtype | Median inference | Raw   | New                     |
+| ---------------------- | ----- | ---------------- | ----- | ----------------------- |
+| whisper-tiny           | q8    | 1.4s             | 0.0%  | 0.0%                    |
+| whisper-tiny           | fp32  | 1.0s             | 0.8%  | 1.1%                    |
+| whisper-base           | q8    | 1.7s             | 1.7%  | 2.1%                    |
+| whisper-base           | fp32  | 1.3s             | 4.3%  | 6.2%                    |
+| whisper-small          | q8    | 2.7s             | 12.8% | 13.2%                   |
+| whisper-small          | fp32  | 2.6s             | 13.8% | 13.9%                   |
+| whisper-medium-ONNX    | q8    | 4.3s             | 15.2% | 16.4%                   |
+| whisper-medium-ONNX    | fp32  | 4.6s             | 17.2% | 18.0%                   |
+| whisper-large-v2-ONNX  | q8    | 7.9s             | 22.1% | 22.8%                   |
+| whisper-large-v2-ONNX  | fp32  | 8.9s             | 23.1% | 23.6%                   |
+| whisper-large-v3-ONNX  | q8    | 8.7s             | 24.4% | **25.0%** (best)        |
+| whisper-large-v3-ONNX  | fp32  | 10.8s            | 22.1% | 22.8%                   |
+| whisper-large-v3-turbo | fp32  | 5.0s             | 11.9% | 12.6%                   |
+| whisper-large-v3-turbo | q8    | 14.9s            | 1.4%  | 1.8% ⚠️ repetition loop |
+
+**`pl-chat-native` (Chatterbox's own Polish voice)**
+
+| Model                  | dtype | Median inference | Raw   | New                                  |
+| ---------------------- | ----- | ---------------- | ----- | ------------------------------------ |
+| whisper-tiny           | q8    | 1.4s             | 0.1%  | 0.1%                                 |
+| whisper-tiny           | fp32  | 0.9s             | 0.6%  | 0.6%                                 |
+| whisper-base           | q8    | 1.7s             | 1.0%  | 1.1%                                 |
+| whisper-base           | fp32  | 1.3s             | 2.7%  | 3.7%                                 |
+| whisper-small          | q8    | 2.7s             | 9.1%  | 9.1%                                 |
+| whisper-small          | fp32  | 2.7s             | 9.4%  | 9.8%                                 |
+| whisper-medium-ONNX    | q8    | 4.5s             | 12.9% | 14.3%                                |
+| whisper-medium-ONNX    | fp32  | 4.8s             | 13.3% | 14.2%                                |
+| whisper-large-v2-ONNX  | q8    | 7.6s             | 18.0% | 18.7%                                |
+| whisper-large-v2-ONNX  | fp32  | 9.2s             | 18.2% | 18.6%                                |
+| whisper-large-v3-ONNX  | q8    | 8.7s             | 19.9% | 20.2%                                |
+| whisper-large-v3-ONNX  | fp32  | 12.3s            | 20.5% | **20.6%** (best)                     |
+| whisper-large-v3-turbo | fp32  | 5.1s             | 8.6%  | 9.0%                                 |
+| whisper-large-v3-turbo | q8    | —                | —     | not scored yet, 467/1000 clips (§10) |
+
+Both tables confirm §9.3's read at full resolution: `large-v2-ONNX`/`large-v3-ONNX` remain the best
+models on Chatterbox Polish audio same as everywhere else in this benchmark, but the gap to
+`medium-ONNX` is narrower here (≤9pp) than on `pl-piper` (§9.2, ~35–40pp) — Chatterbox's output is
+hard enough for every model that going bigger buys proportionally less. `tiny`/`base`/`small` are
+all close to unusable on this data (≤14% even at `small`), consistent with §9.3's "far below
+`pl-piper`" finding extending down the whole size range, not just the two best models.
+
+### 10.2 `large-v3-turbo`/`q8`'s repetition-loop bug (§5) is at its worst yet on Chatterbox audio
+
+Same >20-word-raw-output proxy as §5 and §9.2:
+
+| Dataset        | fp32 clips >20 words | q8 clips >20 words |
+| -------------- | -------------------- | ------------------ |
+| pl-chat-clone  | 15/1000              | **768/1000**       |
+| pl-chat-native | 23/1000              | 380/467 (partial)  |
+
+768/1000 on `pl-chat-clone` is the highest looping rate this benchmark has measured for this bug —
+above English's 296/1000 (§5) and Qwen3-TTS Polish's 955/1000 (§9.2), and `pl-chat-native`'s partial
+380/467 (81%) tracks the same direction. Consistent with §9.2's read: the bug compounds on
+already-hard input rather than being specific to one dataset's audio characteristics. Reinforces §5's
+recommendation not to adopt `large-v3-turbo`/`q8` anywhere until this is understood.
+
+### 10.3 Updated status
+
+**134 new files landed** in `eval/results/whisper-bench-2807345/`: 10 combos × 7 files (main +
+3 correctors × {json, log}) for `pl-chat-clone` (all complete, 1000/1000), and 9 combos for
+`pl-chat-native` (8 complete at 1000/1000, `large-v3-turbo`/`q8` at 467/1000 with scoring deferred).
+Combined with §9.3, both Chatterbox Polish datasets now have a complete 7-model sweep (bar the one
+in-progress combo). Confirmed conclusions unchanged from §9.4: `large-v2-ONNX`/`large-v3-ONNX` are
+the best models on every dataset this benchmark covers, and `large-v3-turbo`/`q8`'s repetition-loop
+bug gets worse, not better, as the input audio gets harder to transcribe.
+
+**Files (this update)**: `eval/results/whisper-bench-2807345/pl-chat-{clone,native}__whisper-{tiny,base,small,medium-ONNX,large-v3-turbo}__{fp32,q8}*`
+(`pl-chat-native__whisper-large-v3-turbo__q8` main transcript only, no `score-*` yet, §10). This
+job's redundant `en-v3`/`pl-piper`/`pl-qwen` re-transcriptions for these same 5 models were **not**
+committed (§10, byte-identical to already-committed data).
 
 ---
 
