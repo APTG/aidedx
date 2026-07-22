@@ -1,19 +1,47 @@
 /**
- * dedx_web basic-calculator deep link (issue #10 trust loop, final item):
- * given the `QueryIntent` + `ComputeResult` behind an answer, build a
- * `urlv=3` dedx_web calculator URL that opens pre-filled with the same
+ * dedx_web calculator deep link (issue #10 trust loop, final item): given
+ * the `QueryIntent` + `ComputeResult` behind an answer, build a `urlv=3`
+ * dedx_web calculator URL that opens pre-filled with the same
  * particle/material/program/energy the user is already looking at — "Open
  * in calculator →" in `AnswerCard.svelte`.
  *
- * Scoped to shapes dedx_web's *basic* calculator can represent on its own:
- * a single particle/material/program, either forward (one or more energy
- * rows — `compareDim: "energy"` is exactly that) or inverse (one target
- * value). Multi-entity comparisons (`compareDim: "material"` / `"particle"`
- * / `"program"`) need dedx_web's *advanced* mode (`across=`/`particles=`/
- * `materials=`/`programs=`) and are out of scope here — see issue #10.
- * Returning `null` for anything unrepresentable is deliberate: a missing
- * link is harmless, a link that opens dedx_web with different numbers than
- * the ones just shown would undermine the whole trust loop.
+ * Scoped to *shapes* dedx_web can represent on either calculator surface: a
+ * single particle/material/program (Basic or Advanced mode), or a
+ * multi-entity comparison across materials/particles/programs (Advanced
+ * mode's `across=`/`materials=`/`particles=`/`programs=` multi-select —
+ * `compareDim: "material"` / `"particle"` / `"program"`). Either forward
+ * (one or more energy rows — `compareDim: "energy"` is exactly that) or
+ * inverse (one target value) quantities are supported. Returning `null` for
+ * anything unrepresentable is deliberate: a missing link is harmless, a link
+ * that opens dedx_web with different numbers than the ones just shown would
+ * undermine the whole trust loop.
+ *
+ * Single-entity mode selection: Basic mode (`mode=basic`, the default) is
+ * used whenever the program was auto-selected — i.e. `intent.program` wasn't
+ * user-specified. This relies on `compute.ts`'s `autoProgramForParticle()`
+ * mirroring dedx_web's own Auto-select chain (`AUTO_SELECT_CHAIN`/
+ * energy-aware fallthrough, dedx_web#871/#872) exactly, so dedx_web's
+ * Basic-mode Auto-select — which always re-derives the program from
+ * particle+material+energy and ignores any `program=` in the URL
+ * (dedx_web#816) — independently lands on the same program aidedx already
+ * computed with. When the user named an explicit program (`intent.program`
+ * set), Basic mode *can't* represent that choice at all (no program
+ * selector, and Auto-select would silently override it), so the link falls
+ * back to `mode=advanced&program=<id>` instead — see issue #116.
+ *
+ * Multi-entity comparisons (`compareDim: "material"` / `"particle"` /
+ * `"program"`) always need Advanced mode — Basic mode has no multi-select at
+ * all. Comparing materials or particles reuses the same auto-vs-explicit
+ * logic: `program=auto` when `intent.program` wasn't user-specified (each
+ * compared row re-derives its own program via the same mirrored Auto-select
+ * chain, exactly like the Basic-mode case above), or `program=<id>` when it
+ * was. Comparing programs (`across=programs`) has no "auto" concept at all —
+ * the varying programs *are* the comparison, so `programs=<id1>~<id2>~...`
+ * always lists the actual resolved ids. Rows that failed to compute (a
+ * material/particle/program combination out of range or unsupported) are
+ * dropped from the comparison lists entirely rather than encoding an id
+ * dedx_web can't reproduce a value for; if every row failed, there's nothing
+ * left to link to and the whole URL is `null`.
  *
  * Param names/ids/units are taken from `APTG/dedx_web`'s
  * `docs/04-feature-specs/shareable-urls-formal.md` grammar and
@@ -84,25 +112,88 @@ function encodeEnergies(
   return { anchor, list };
 }
 
-/** Builds the dedx_web basic-calculator URL for this answer, or `null` when the shape can't be represented (see module doc). */
+/**
+ * Joins resolved entity ids for an advanced-mode `materials=`/`particles=`/
+ * `programs=` list, in the same order the comparison's series appear in.
+ * `~` is the v3-canonical list separator (issue #672) — same as
+ * `encodeEnergies()`'s energy lists.
+ */
+function joinEntityIds(ids: number[]): string {
+  return ids.map(String).join("~");
+}
+
+/** Builds the dedx_web calculator URL for this answer, or `null` when the shape can't be represented (see module doc). */
 export function buildDedxWebCalculatorUrl(
   intent: QueryIntent,
   result: ComputeResult,
 ): string | null {
   const isForward = intent.quantity === "stoppingPower" || intent.quantity === "csdaRange";
-  const representable =
-    intent.compareDim === "none" || (intent.compareDim === "energy" && isForward);
-  if (!representable) return null;
+  // "energy" (multiple energy rows against one entity) only makes sense for
+  // forward quantities; every other compareDim (including inverse queries)
+  // is representable via the entity-params handling below.
+  if (intent.compareDim === "energy" && !isForward) return null;
 
-  const series = result.series[0];
-  if (!series || series.error !== undefined) return null;
+  // Rows that errored (out of range / unsupported combination) are dropped —
+  // encoding an id dedx_web can't reproduce a value for would silently
+  // misrepresent the comparison. If nothing survives, there's no answer to
+  // link to.
+  const successful = result.series.filter((s) => s.error === undefined);
+  const primary = successful[0];
+  if (!primary) return null;
 
   const params = new URLSearchParams();
   params.set("urlv", "3");
-  params.set("mode", "basic");
-  params.set("particle", String(series.particle.id));
-  params.set("material", String(series.material.id));
-  params.set("program", String(series.program.id));
+
+  // An explicit program request (e.g. "using ICRU73") has no Basic-mode
+  // equivalent — Basic mode hides the program selector and always
+  // re-derives it via Auto-select (dedx_web#816), silently discarding this
+  // choice. Advanced mode + an explicit program= is the only way to
+  // reproduce it. Otherwise (the common case) the program was auto-selected,
+  // and Auto-select — now mirroring `autoProgramForParticle()` exactly,
+  // energy included — independently resolves to the same program per row.
+  //
+  // `intent.program` is free text, though: `resolveProgramId()` silently
+  // falls back to auto-select when the name isn't recognized (unlike this
+  // module, it has no way to report that back). If it did fall back, a
+  // material/particle comparison can have each row auto-resolve to a
+  // *different* program despite `intent.program` being set — so "explicit"
+  // is only trusted when every surviving row actually agrees on one program
+  // id; a would-be-explicit request that diverged across rows falls back to
+  // `program=auto` instead of forcing a single id that would misrepresent
+  // the other rows.
+  const explicitProgram =
+    Boolean(intent.program) && successful.every((s) => s.program.id === primary.program.id);
+
+  if (intent.compareDim === "material") {
+    params.set("mode", "advanced");
+    params.set("across", "materials");
+    params.set("particle", String(primary.particle.id));
+    params.set("materials", joinEntityIds(successful.map((s) => s.material.id)));
+    params.set("program", explicitProgram ? String(primary.program.id) : "auto");
+  } else if (intent.compareDim === "particle") {
+    params.set("mode", "advanced");
+    params.set("across", "particles");
+    params.set("material", String(primary.material.id));
+    params.set("particles", joinEntityIds(successful.map((s) => s.particle.id)));
+    params.set("program", explicitProgram ? String(primary.program.id) : "auto");
+  } else if (intent.compareDim === "program") {
+    // No "auto" concept here — the varying programs across rows *are* the
+    // comparison, so the actual resolved ids are always listed explicitly.
+    params.set("mode", "advanced");
+    params.set("across", "programs");
+    params.set("particle", String(primary.particle.id));
+    params.set("material", String(primary.material.id));
+    params.set("programs", joinEntityIds(successful.map((s) => s.program.id)));
+  } else {
+    params.set("particle", String(primary.particle.id));
+    params.set("material", String(primary.material.id));
+    if (explicitProgram) {
+      params.set("mode", "advanced");
+      params.set("program", String(primary.program.id));
+    } else {
+      params.set("mode", "basic");
+    }
+  }
 
   if (isForward) {
     const encoded = encodeEnergies(intent.energies);

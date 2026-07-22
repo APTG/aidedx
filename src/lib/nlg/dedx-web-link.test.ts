@@ -46,11 +46,9 @@ function paramsOf(url: string | null): URLSearchParams {
 }
 
 describe("buildDedxWebCalculatorUrl", () => {
-  it("builds a forward basic-mode URL for a single MeV energy", () => {
+  it("builds a Basic-mode forward URL for a single MeV energy, no explicit program", () => {
     const url = buildDedxWebCalculatorUrl(intent({}), result());
-    expect(url).toBe(
-      `${BASE}?urlv=3&mode=basic&particle=1&material=276&program=2&energies=100&uanchor=MeV`,
-    );
+    expect(url).toBe(`${BASE}?urlv=3&particle=1&material=276&mode=basic&energies=100&uanchor=MeV`);
   });
 
   it("emits a per-row :unit suffix for a keV energy, anchored on MeV", () => {
@@ -161,14 +159,6 @@ describe("buildDedxWebCalculatorUrl", () => {
     expect(buildDedxWebCalculatorUrl(i, result({ quantity: "energyFromRange" }))).toBeNull();
   });
 
-  it.each(["material", "particle", "program"] as const)(
-    "returns null for a compareDim: %s comparison, regardless of quantity",
-    (compareDim) => {
-      const i = intent({ compareDim });
-      expect(buildDedxWebCalculatorUrl(i, result({ compareDim }))).toBeNull();
-    },
-  );
-
   it("returns null when the first series errored", () => {
     const r = result({ series: [series({ error: "energy out of range" })] });
     expect(buildDedxWebCalculatorUrl(intent({}), r)).toBeNull();
@@ -179,11 +169,181 @@ describe("buildDedxWebCalculatorUrl", () => {
     expect(buildDedxWebCalculatorUrl(intent({}), r)).toBeNull();
   });
 
-  it("reads particle/material/program ids from the series, never emitting program=auto", () => {
+  describe("compareDim: material (across=materials)", () => {
+    const i = intent({
+      compareDim: "material",
+      materials: [{ match: "water" }, { match: "PMMA" }, { match: "cortical bone" }],
+    });
+    const r = result({
+      compareDim: "material",
+      series: [
+        series({ label: "water", material: { id: 276, name: "Water, Liquid" } }),
+        series({ label: "PMMA", material: { id: 223, name: "PMMA" } }),
+        series({ label: "cortical bone", material: { id: 119, name: "Bone, Cortical" } }),
+      ],
+    });
+
+    it("emits mode=advanced&across=materials&program=auto when the program was auto-selected", () => {
+      const url = buildDedxWebCalculatorUrl(i, r);
+      const params = paramsOf(url);
+      expect(params.get("mode")).toBe("advanced");
+      expect(params.get("across")).toBe("materials");
+      expect(params.get("particle")).toBe("1");
+      expect(params.get("materials")).toBe("276~223~119");
+      expect(params.get("program")).toBe("auto");
+    });
+
+    it("emits an explicit program= id when the user named one", () => {
+      const explicit = intent({ ...i, program: "bethe" });
+      const withProgram = result({
+        ...r,
+        series: r.series.map((s) => series({ ...s, program: { id: 100, name: "Bethe" } })),
+      });
+      const url = buildDedxWebCalculatorUrl(explicit, withProgram);
+      const params = paramsOf(url);
+      expect(params.get("program")).toBe("100");
+    });
+
+    it("falls back to program=auto when intent.program was unrecognized and rows auto-resolved to different programs", () => {
+      // `intent.program` is free text — resolveProgramId() silently falls
+      // back to per-row auto-select when the name isn't recognized, so rows
+      // can diverge despite intent.program being set (a bogus name here
+      // stands in for that case). Forcing program=<primary's id> would
+      // misrepresent whichever rows resolved to a different program.
+      const bogusProgram = intent({ ...i, program: "not-a-real-program" });
+      const diverged = result({
+        ...r,
+        series: [
+          series({
+            material: { id: 276, name: "Water, Liquid" },
+            program: { id: 7, name: "ICRU49" },
+          }),
+          series({ material: { id: 223, name: "PMMA" }, program: { id: 4, name: "MSTAR" } }),
+          series({
+            material: { id: 119, name: "Bone, Cortical" },
+            program: { id: 4, name: "MSTAR" },
+          }),
+        ],
+      });
+      const url = buildDedxWebCalculatorUrl(bogusProgram, diverged);
+      const params = paramsOf(url);
+      expect(params.get("program")).toBe("auto");
+    });
+
+    it("drops a material whose series errored, keeping the rest", () => {
+      const withError = result({
+        ...r,
+        series: [
+          series({ material: { id: 276, name: "Water, Liquid" } }),
+          series({ material: { id: 223, name: "PMMA" }, error: "energy out of range" }),
+          series({ material: { id: 119, name: "Bone, Cortical" } }),
+        ],
+      });
+      const url = buildDedxWebCalculatorUrl(i, withError);
+      const params = paramsOf(url);
+      expect(params.get("materials")).toBe("276~119");
+    });
+  });
+
+  describe("compareDim: particle (across=particles)", () => {
+    const i = intent({
+      compareDim: "particle",
+      particles: [{ match: "proton" }, { match: "carbon ion" }],
+    });
+    const r = result({
+      compareDim: "particle",
+      series: [
+        series({
+          label: "proton",
+          particle: { id: 1, name: "Hydrogen", massNumber: 1, isotope: "" },
+        }),
+        series({
+          label: "carbon",
+          particle: { id: 6, name: "Carbon", massNumber: 12, isotope: "¹²C" },
+        }),
+      ],
+    });
+
+    it("emits mode=advanced&across=particles&program=auto when the program was auto-selected", () => {
+      const url = buildDedxWebCalculatorUrl(i, r);
+      const params = paramsOf(url);
+      expect(params.get("mode")).toBe("advanced");
+      expect(params.get("across")).toBe("particles");
+      expect(params.get("material")).toBe("276");
+      expect(params.get("particles")).toBe("1~6");
+      expect(params.get("program")).toBe("auto");
+    });
+  });
+
+  describe("compareDim: program (across=programs)", () => {
+    const i = intent({ compareDim: "program" });
+    const r = result({
+      compareDim: "program",
+      series: [
+        series({ label: "PSTAR", program: { id: 2, name: "PSTAR" } }),
+        series({ label: "ICRU49", program: { id: 7, name: "ICRU49" } }),
+        series({ label: "Bethe", program: { id: 100, name: "Bethe" } }),
+      ],
+    });
+
+    it("always lists the actual resolved program ids — no auto concept here", () => {
+      const url = buildDedxWebCalculatorUrl(i, r);
+      const params = paramsOf(url);
+      expect(params.get("mode")).toBe("advanced");
+      expect(params.get("across")).toBe("programs");
+      expect(params.get("particle")).toBe("1");
+      expect(params.get("material")).toBe("276");
+      expect(params.get("programs")).toBe("2~7~100");
+      expect(params.get("program")).toBeNull();
+    });
+
+    it("drops a program whose series errored, keeping the rest", () => {
+      const withError = result({
+        ...r,
+        series: [
+          series({ program: { id: 2, name: "PSTAR" } }),
+          series({ program: { id: 7, name: "ICRU49" }, error: "unsupported combination" }),
+          series({ program: { id: 100, name: "Bethe" } }),
+        ],
+      });
+      const url = buildDedxWebCalculatorUrl(i, withError);
+      const params = paramsOf(url);
+      expect(params.get("programs")).toBe("2~100");
+    });
+  });
+
+  it("returns null for a compareDim: material comparison when every row errored", () => {
+    const i = intent({ compareDim: "material", materials: [{ match: "water" }] });
+    const r = result({
+      compareDim: "material",
+      series: [series({ error: "energy out of range" })],
+    });
+    expect(buildDedxWebCalculatorUrl(i, r)).toBeNull();
+  });
+
+  it("omits program= and uses Basic mode when the program was auto-selected (issue #116)", () => {
+    // Auto-selected — no intent.program — so aidedx trusts dedx_web's own
+    // Auto-select (now mirroring autoProgramForParticle() exactly, dedx_web
+    // #871/#872) to independently land on the same program. No program= is
+    // emitted at all: Basic mode ignores it anyway (dedx_web#816), and
+    // emitting a stale/misleading one would be worse than omitting it.
     const i = intent({});
+    const r = result({ series: [series({ program: { id: 4, name: "MSTAR" } })] });
+    const url = buildDedxWebCalculatorUrl(i, r);
+    const params = paramsOf(url);
+    expect(params.get("mode")).toBe("basic");
+    expect(params.get("program")).toBeNull();
+  });
+
+  it("emits mode=advanced&program=<id> when the user named an explicit program", () => {
+    // Basic mode has no program selector at all — an explicit program choice
+    // (e.g. "using Bethe") has no Basic-mode equivalent, so this always needs
+    // Advanced mode to stick, regardless of what Auto-select would pick.
+    const i = intent({ program: "bethe" });
     const r = result({ series: [series({ program: { id: 100, name: "Bethe" } })] });
     const url = buildDedxWebCalculatorUrl(i, r);
     const params = paramsOf(url);
+    expect(params.get("mode")).toBe("advanced");
     expect(params.get("program")).toBe("100");
   });
 });

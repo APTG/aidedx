@@ -82,7 +82,7 @@
       : null,
   );
 
-  /** dedx_web basic-calculator deep link (issue #10); null for shapes it can't represent — see dedx-web-link.ts. */
+  /** dedx_web calculator deep link (issue #10); null for shapes it can't represent — see dedx-web-link.ts. */
   const calculatorUrl = $derived(
     intent && result ? buildDedxWebCalculatorUrl(intent, result) : null,
   );

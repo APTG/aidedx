@@ -97,6 +97,7 @@ const PROGRAM_NAME_TO_ID: Record<string, number> = {
   ESTAR: PROGRAMS.ESTAR,
   MSTAR: PROGRAMS.MSTAR,
   ICRU73: PROGRAMS.ICRU73,
+  ICRU73OLD: PROGRAMS.ICRU73_OLD,
   ICRU49: PROGRAMS.ICRU49,
   ICRU: PROGRAMS.ICRU49,
   DEFAULT: PROGRAMS.DEFAULT,
@@ -116,6 +117,7 @@ const PROGRAM_ID_TO_NAME: Record<number, string> = {
   [PROGRAMS.ESTAR]: "ESTAR",
   [PROGRAMS.MSTAR]: "MSTAR",
   [PROGRAMS.ICRU73]: "ICRU73",
+  [PROGRAMS.ICRU73_OLD]: "ICRU73 (old)",
   [PROGRAMS.ICRU49]: "ICRU49",
   [PROGRAMS.DEFAULT]: "Bethe",
   [PROGRAMS.BETHE_EXT00]: "Bethe-ext",
@@ -158,42 +160,103 @@ export function programSupportsCombination(
   );
 }
 
+const PROTON_ID = 1;
+const HELIUM_ID = 2;
+const CARBON_ID = 6;
+
 /**
- * Auto-select a stopping-power program for a particle, mirroring dedx_web's
- * "Auto" behavior closely enough for the deterministic path:
- *   proton → PSTAR, alpha → ASTAR, heavier ions → MSTAR.
- * Falls back to the general Bethe (`DEFAULT`) program when the specialized
- * program has no data for the target particle or material — e.g. proton +
- * Boron, where a stale libdedx materials-availability table used to falsely
- * claim PSTAR covered Boron/Ni/Zr/In/Gd/Ta (fixed upstream by libdedx#144 /
- * dedx_web#845); or calcium and heavier ions, which MSTAR doesn't tabulate at
- * all regardless of material or energy (docs/tts-eval-1000.md §2.2). DEFAULT
- * is otherwise avoided as an auto pick because its adaptive CSDA integrator
- * can recurse unboundedly at very low energies; that risk is only taken here
- * for combinations the specialized program can't compute anyway.
+ * Auto-select chain per particle, deliberately mirroring dedx_web's own
+ * Auto-select resolution byte-for-byte (`entity-availability.svelte.ts`'s
+ * `AUTO_SELECT_CHAIN`/`DEFAULT_AUTO_SELECT_CHAIN`). This is what lets a
+ * dedx_web calculator link stay in Basic mode — which always auto-selects,
+ * never honoring an explicit `program=` (dedx_web#816) — and still land on
+ * the exact program aidedx already computed with, instead of the two
+ * projects' auto-select heuristics silently disagreeing (issue #116).
+ */
+const AUTO_SELECT_CHAIN: Record<number, number[]> = {
+  [PROTON_ID]: [PROGRAMS.ICRU49, PROGRAMS.PSTAR],
+  [HELIUM_ID]: [PROGRAMS.ICRU49, PROGRAMS.ASTAR],
+  [CARBON_ID]: [PROGRAMS.ICRU73, PROGRAMS.ICRU73_OLD, PROGRAMS.MSTAR],
+};
+const DEFAULT_AUTO_SELECT_CHAIN = [PROGRAMS.ICRU73, PROGRAMS.ICRU73_OLD, PROGRAMS.MSTAR];
+
+/**
+ * Auto-select a stopping-power program for a particle, walking
+ * `AUTO_SELECT_CHAIN` exactly the way dedx_web's own Auto-select does,
+ * including its energy-aware fallthrough (dedx_web#871/#872): a heavy ion
+ * below one chain candidate's energy floor (e.g. Boron below ICRU 73's
+ * 0.025 MeV/nucleon floor) falls through to the next candidate that covers
+ * it (typically MSTAR) instead of getting stuck "out of range" on a program
+ * that can't actually serve the requested energy.
+ *
+ * `energyMevPerNucl` is optional — omit it (or pass a value outside every
+ * candidate's range) to get the energy-blind "first chain member with any
+ * tabulated data" behavior, matching dedx_web's own fallback when no energy
+ * hint is available yet.
+ *
+ * Falls back to the general Bethe (`DEFAULT`) program only when *no* chain
+ * candidate has any tabulated data at all for the particle+material pair —
+ * e.g. proton + Boron, where a stale libdedx materials-availability table
+ * used to falsely claim PSTAR covered Boron/Ni/Zr/In/Gd/Ta (fixed upstream
+ * by libdedx#144 / dedx_web#845); or calcium and heavier ions, which neither
+ * ICRU 73 nor MSTAR tabulate at all regardless of material or energy
+ * (docs/tts-eval-1000.md §2.2). This is a deliberate deviation from
+ * dedx_web's own "first available program in the whole matrix" fallback:
+ * DEFAULT's adaptive CSDA integrator can recurse unboundedly at very low
+ * energies, so it's only risked here for combinations nothing else can
+ * compute anyway.
  */
 export function autoProgramForParticle(
   particleId: number,
   materialId: number,
   service: LibdedxService,
+  energyMevPerNucl?: number,
 ): number {
-  const specialized =
-    particleId === 1 ? PROGRAMS.PSTAR : particleId === 2 ? PROGRAMS.ASTAR : PROGRAMS.MSTAR;
-  return programSupportsCombination(service, specialized, particleId, materialId)
-    ? specialized
-    : PROGRAMS.DEFAULT;
+  const chain = AUTO_SELECT_CHAIN[particleId] ?? DEFAULT_AUTO_SELECT_CHAIN;
+  const available = chain.filter((pid) =>
+    programSupportsCombination(service, pid, particleId, materialId),
+  );
+  if (energyMevPerNucl !== undefined && Number.isFinite(energyMevPerNucl)) {
+    const inRange = available.find((pid) => {
+      const min = service.getMinEnergy(pid, particleId);
+      const max = service.getMaxEnergy(pid, particleId);
+      return energyMevPerNucl >= min && energyMevPerNucl <= max;
+    });
+    if (inRange !== undefined) return inRange;
+  }
+  return available[0] ?? PROGRAMS.DEFAULT;
 }
 
 /** Candidate programs to fan out over for a `compareDim: "program"` query. */
 function compareProgramsForParticle(particleId: number): number[] {
-  if (particleId === 1) return [PROGRAMS.PSTAR, PROGRAMS.ICRU49, PROGRAMS.DEFAULT];
-  if (particleId === 2) return [PROGRAMS.ASTAR, PROGRAMS.ICRU49, PROGRAMS.DEFAULT];
+  if (particleId === PROTON_ID) return [PROGRAMS.PSTAR, PROGRAMS.ICRU49, PROGRAMS.DEFAULT];
+  if (particleId === HELIUM_ID) return [PROGRAMS.ASTAR, PROGRAMS.ICRU49, PROGRAMS.DEFAULT];
   return [PROGRAMS.MSTAR, PROGRAMS.ICRU73, PROGRAMS.DEFAULT];
+}
+
+/**
+ * Energy hint (MeV/nucleon) fed to `autoProgramForParticle()`'s energy-aware
+ * chain walk — the intent's first energy row, mirroring dedx_web's own
+ * "resolve against row 0 only" simplification (dedx_web#871). `undefined`
+ * for inverse queries (`intent.energies` is empty; the target is a
+ * range/stopping-power value, not an energy) or when the intent genuinely
+ * has no energy yet — `autoProgramForParticle()` falls back to its
+ * energy-blind chain walk in that case.
+ */
+function firstEnergyHintMeVPerNucl(
+  intent: QueryIntent,
+  particle: { id: number; massNumber: number },
+  service: LibdedxService,
+): number | undefined {
+  const first = intent.energies[0];
+  if (!first) return undefined;
+  const atomicMass = atomicMassForConversion(particle, service);
+  return energyToMeVPerNucl(first, particle.massNumber, atomicMass);
 }
 
 export function resolveProgramId(
   intent: QueryIntent,
-  particleId: number,
+  particle: { id: number; massNumber: number },
   materialId: number,
   service: LibdedxService,
 ): number {
@@ -201,7 +264,8 @@ export function resolveProgramId(
     const id = PROGRAM_NAME_TO_ID[normalizeProgramName(intent.program)];
     if (id !== undefined) return id;
   }
-  return autoProgramForParticle(particleId, materialId, service);
+  const energyHint = firstEnergyHintMeVPerNucl(intent, particle, service);
+  return autoProgramForParticle(particle.id, materialId, service, energyHint);
 }
 
 /** First element of a known-non-empty array, without a non-null assertion. */
@@ -502,15 +566,15 @@ export function computeIntent(intent: QueryIntent, service: LibdedxService): Com
     for (const m of intent.materials) {
       const material = resolveMaterialOrThrow(m.match);
       // Resolved per material: the same particle can need different programs
-      // across materials (e.g. proton in water → PSTAR, proton in Boron → Bethe).
-      const programId = resolveProgramId(intent, particle.id, material.id, service);
+      // across materials (e.g. proton in water → ICRU49, proton in Boron → Bethe).
+      const programId = resolveProgramId(intent, particle, material.id, service);
       series.push(build(particle, material, programId, material.name));
     }
   } else if (intent.compareDim === "particle") {
     const material = resolveMaterialOrThrow(reqFirst(intent.materials, "material").match);
     for (const p of intent.particles) {
       const particle = resolveParticleOrThrow(p.match);
-      const programId = resolveProgramId(intent, particle.id, material.id, service);
+      const programId = resolveProgramId(intent, particle, material.id, service);
       series.push(build(particle, material, programId, particle.isotope || particle.name));
     }
   } else if (intent.compareDim === "program") {
@@ -524,7 +588,7 @@ export function computeIntent(intent: QueryIntent, service: LibdedxService): Com
     // points via the energies list.
     const particle = resolveParticleOrThrow(reqFirst(intent.particles, "particle").match);
     const material = resolveMaterialOrThrow(reqFirst(intent.materials, "material").match);
-    const programId = resolveProgramId(intent, particle.id, material.id, service);
+    const programId = resolveProgramId(intent, particle, material.id, service);
     series.push(build(particle, material, programId, material.name));
   }
 
