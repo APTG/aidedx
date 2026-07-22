@@ -1,0 +1,72 @@
+
+=== onnx-community/whisper-base [q8] +prompt base-corrector ===
+clips: 1000   median inference: 1.7s   load: 0.9s
+clip-level all-slots-correct:  raw 10/1000 (1.0%)   corrected 10/1000 (1.0%)
+
+by quantity (corrected):
+  csdaRange        1/600 (0.2%)
+  energyFromRange  9/250 (3.6%)
+  stoppingPower    0/150 (0.0%)
+
+by scenario type (corrected):
+  single     10/800 (1.3%)
+  energy     0/100 (0.0%)
+  material   0/55 (0.0%)
+  particle   0/45 (0.0%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      9/608 (1.5%)
+  clinical-core  1/392 (0.3%)
+
+by voice profile (corrected), worst 10:
+  chatterbox-default               10/1000 (1.0%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   59.2% ->  59.2%  (n=1250)
+  particle   62.6% ->  62.6%  (n=1045)
+  material   42.7% ->  42.7%  (n=1085)
+  number     24.7% ->  24.7%  (n=1156)
+  unit        7.6% ->   7.6%  (n=1156)
+  ALL        39.2% ->  39.2%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV          0.6% ->   0.6%  (n=464)
+  MeV/nucl     1.2% ->   1.2%  (n=344)
+  keV          1.3% ->   1.3%  (n=79)
+  GeV          0.0% ->   0.0%  (n=19)
+  mm          58.7% ->  58.7%  (n=63)
+  cm          23.0% ->  23.0%  (n=187)
+
+failing clips after correction (990 total, showing first 30):
+  pl-rng-0001 missing[quantity,particle,number,unit]: obróż, za się protoną i energii, sant, mew, aluminium.
+  pl-rng-0002 missing[number,unit]: jak daleko do leci proton, o energii stamy w wodzie?
+  pl-rng-0003 missing[quantity,material,unit]: jak te leko dotrzeją, magnezu, energii, 50, m. kląc, do dół lęku krzemu?
+  pl-rng-0004 missing[quantity,number,unit]: Obyc mi, ja tyle kozajdzi, i on litu energii 40, mał na nukleon w wodzie.
+  pl-rng-0005 missing[quantity,number,unit]: oblicz z aszynk, protonu, nL, 255, w aluminium
+  pl-rng-0006 missing[material,number,unit]: powiedzmy, jak te leko zajdzieją kryptonu, o energii 3,10,000, na nukleon, wczorące mięśniowej.
+  pl-rng-0007 missing[quantity,particle,unit]: jak jest zaszniki, alpha, energii 60, ołowiu,
+  pl-rng-0008 missing[number,unit]: jaki jest zasięg jon węgla, o energii 30 maw na nukleą, kości korowej?
+  pl-rng-0009 missing[quantity,particle,material,number,unit]: ile by nosi za się protoną o energii 30 mew w grafitrze?
+  pl-rng-0010 missing[quantity,material,number,unit]: Jep, to jako dotrze, jon tlenu, o energii, czarę, set, mewnan, okrę, słucha,
+  pl-rng-0011 missing[number,unit]: Jak głęboko wniknie, jon węgla, energii, dwastą pęne nukleon, kości zbitej?
+  pl-rng-0012 missing[quantity,material,number,unit]: Oblicz das ink proton, o energię częstym f, politylenie.
+  pl-rng-0013 missing[material,unit]: ile by nosi zasięg protonu, o energii 250 mw w odzie?
+  pl-rng-0014 missing[particle,number,unit]: jak daleko dotrzeją na onu, o energii 2020, B Commission, FNN w wodzie,
+  pl-rng-0015 missing[particle,number,unit]: Jak głęboko wniknie, jonny, o energisadkę w złocie,
+  pl-rng-0016 missing[unit]: Podaj zasięg, protonu, o energii 50. Mew, kości zbitej
+  pl-rng-0017 missing[unit]: powiedzmy, jak daleko zajdzie proton, energii 70mf, aluminium,
+  pl-rng-0018 missing[quantity,material,number,unit]: jak zaświęg ma proton o energii szęściach, pomyśle,
+  pl-rng-0019 missing[particle,number,unit]: powiedz mi, kiedy daleko zajdziejon lito o energii, ościa się straszne, mewnęgnął w wodzie.
+  pl-rng-0020 missing[quantity,particle,material,unit]: Oblicz dasiegnę do teronu, o energii 40 metr po getrzu.
+  pl-rng-0021 missing[particle,unit]: jak daleko dotrzecząskę, RFA, Energy, 25 w wodzie,
+  pl-rng-0022 missing[quantity,number,unit]: poda jest zaświęk protonu o energii pietnicyntym w Kaptonie, w Kaptonii.
+  pl-rng-0023 missing[quantity,material,number,unit]: Jak to leko doczają, krzemu, o energii, czy to jest tak, mew na nukleon, w podjętylenie?
+  pl-rng-0024 missing[quantity,particle,material,unit]: ile by nosi za się, jonu, koluczydy, o energii, 5, me, w pogieczu,
+  pl-rng-0025 missing[quantity,particle,material,number,unit]: ile wynosi za się jonunę, o energii, dwa cię spadzimy na nukleon, z kancę mięśniowej
+  pl-rng-0026 missing[quantity,particle,material,number,unit]: podaść, jonu, senonu, energii, piętym, świętym, metrną, klącz, plastiku, skanko podobnym, a cięcieczety.
+  pl-rng-0027 missing[quantity,material,number,unit]: obiekszasyń protonu o energii i santmewkości zbitej.
+  pl-rng-0028 missing[quantity,material,number,unit]: oprócz zaścięg, deuteronu, o energi piętrzem też we w polietęlenie.
+  pl-rng-0029 missing[unit]: Jak głęboko wniknie, jon węgla o energii 50, w kaptonie, w kaptonie
+  pl-rng-0030 missing[quantity,material,number,unit]: jak za się, mają żelaza o energii 600, mw na nukleon, mma?
+
+wrote eval/results/whisper-bench-2807345/pl-chat-native__whisper-base__q8__score-base.json

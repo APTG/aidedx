@@ -1,0 +1,76 @@
+
+=== onnx-community/whisper-tiny [q8] +prompt base-corrector ===
+clips: 1000   median inference: 1.4s   load: 0.7s
+clip-level all-slots-correct:  raw 1/1000 (0.1%)   corrected 1/1000 (0.1%)
+
+by quantity (corrected):
+  csdaRange        0/600 (0.0%)
+  energyFromRange  1/250 (0.4%)
+  stoppingPower    0/150 (0.0%)
+
+by scenario type (corrected):
+  single     1/800 (0.1%)
+  energy     0/100 (0.0%)
+  material   0/55 (0.0%)
+  particle   0/45 (0.0%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      1/608 (0.2%)
+  clinical-core  0/392 (0.0%)
+
+by voice profile (corrected), worst 10:
+  pl_PL-darkman-medium             0/201 (0.0%)
+  pl_PL-bass-high                  0/197 (0.0%)
+  pl_PL-mls_6892-low               0/201 (0.0%)
+  pl_PL-mc_speech-medium           0/200 (0.0%)
+  pl_PL-gosia-medium               1/201 (0.5%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   35.6% ->  35.6%  (n=1250)
+  particle   32.2% ->  32.2%  (n=1045)
+  material   29.0% ->  29.0%  (n=1085)
+  number     45.2% ->  45.2%  (n=1156)
+  unit        2.4% ->   2.4%  (n=1156)
+  ALL        29.0% ->  29.0%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV          0.6% ->   0.6%  (n=464)
+  MeV/nucl     0.0% ->   0.0%  (n=344)
+  keV          1.3% ->   1.3%  (n=79)
+  GeV          0.0% ->   0.0%  (n=19)
+  mm          27.0% ->  27.0%  (n=63)
+  cm           3.7% ->   3.7%  (n=187)
+
+failing clips after correction (999 total, showing first 30):
+  pl-rng-0001 missing[quantity,particle,number,unit]: obejrz za sięk, protoną o energii Stomfau w aluminium.
+  pl-rng-0002 missing[quantity,particle,material,number,unit]: jak do lekkodoleci, potem, ojenergistom, co mi się fało w wodze
+  pl-rng-0003 missing[particle,material,unit]: jak daleko doczęją nagryna zły na 50 na faunanukle, w dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie dwie d
+  pl-rng-0004 missing[material,unit]: powiedz mi, jak daleko zajdzieją litu energii 30 mafawna nukleon w wodze.
+  pl-rng-0005 missing[material,number,unit]: obieć zasięg, proton, o NRW, 255,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+  pl-rng-0006 missing[particle,material,number,unit]: powiedz mi, jak darek o zajdzieją kryptom, energii 4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+  pl-rng-0007 missing[quantity,particle,material,number,unit]: jak jest ca. 1,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+  pl-rng-0008 missing[quantity,particle,material,number,unit]: jak jest zasiękionowe glała nerbie, trzystamy faunanupleń w kościkorowej
+  pl-rng-0009 missing[quantity,material,number,unit]: i ja w tenuisz, a się proton, urojneelgi, czy stądź, co jest inna fału, byla fić?
+  pl-rng-0010 missing[particle,number,unit]: jak daleko doczyjąc flenu o energii 4,5 na nukleon w złocie?
+  pl-rng-0011 missing[quantity,particle,material,number,unit]: jak go mokownik nie on węglała, energii, dwie, siem, phon, nukleon, wkości, zbitej.
+  pl-rng-0012 missing[quantity,material,number,unit]: oblicz za sięk, proton, reli, czysta, na węgla, poliwę,
+  pl-rng-0013 missing[quantity,number,unit]: i dawienocizasing protonów, organel, w idzie stąpindycządny fałów wodzie.
+  pl-rng-0014 missing[quantity,particle,unit]: jak doczują nam o energii 250mph, na nukleon w wodzie?
+  pl-rng-0015 missing[quantity,particle,number,unit]: jak głębok, owniknie, on na honor, o energistowe fałów złocie.
+  pl-rng-0016 missing[material,unit]: podali zasięg, proton, energii, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
+  pl-rng-0017 missing[quantity,particle,number,unit]: podwiedzniki, jak darekdo zainterroton, w energii i siedrzesiąt, no i aluminium.
+  pl-rng-0018 missing[quantity,material,unit]: jak i zazśmink ma proton, po energii 60mwa upojętylenie.
+  pl-rng-0019 missing[quantity,particle,material,unit]: powiedz mi, jak daleko zadziej ono, o energii 80, na fało na nukleon w wodze.
+  pl-rng-0020 missing[particle,number,unit]: obylić zasięg do auteronu, energiczterdziecznym, effałów powietrzu.
+  pl-rng-0021 missing[unit]: jak daleko doczek, cząstka alfa, o energii 25 mafał w wodzie.
+  pl-rng-0022 missing[quantity,particle,material,number,unit]: poddańca, zapłatnie, poddańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwinańca, potwina
+  pl-rng-0023 missing[quantity,particle,material,unit]: jak do tego, doczyjem, przemu, ołenery, 30 na samym uplauń w polię delenie
+  pl-rng-0024 missing[quantity,particle,material,unit]: i lewina, za sięki on wygrędu 3, ojne, d5, metrów pojeczu.
+  pl-rng-0025 missing[particle,material,number,unit]: ile wynosi zasięgują nono-ennergi 100, 20, fauna nukleon w tkanka mięśniowej.
+  pl-rng-0026 missing[particle,material,unit]: poda jest zasięg, jonok senonu, o NRD 150, ma fał na nukleonu, plastik, kanko podobnym, a 100.50.
+  pl-rng-0027 missing[quantity,material,number,unit]: obić za sięk, proton, ubudy, nelistony, fałów kości i zbity.
+  pl-rng-0028 missing[particle,material,unit]: oblić zasięg, do uteronu, relianty, 15 mafa upojtylenie.
+  pl-rng-0029 missing[quantity,material,unit]: jak ułem boko, wnić, jon węgla, ale generalki, 50,000, wkačtonie
+  pl-rng-0030 missing[material,number,unit]: jak jest, zasięgna, jon żelaza, ojnerii, 30 mężalna,
+
+wrote eval/results/whisper-bench-2805165/pl-piper__whisper-tiny__q8__score-base.json

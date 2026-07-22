@@ -1,0 +1,225 @@
+#!/bin/bash
+#SBATCH --job-name=aidedx-whisper-bench
+#SBATCH --partition=plgrid-gpu-a100
+#SBATCH --account=plgccbmc15-gpu-a100
+#SBATCH --qos=normal
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64G
+#SBATCH --gres=gpu:a100:1
+#SBATCH --time=24:00:00
+#SBATCH --array=0-4
+#SBATCH --output=%x-%A_%a.out
+#SBATCH --error=%x-%A_%a.err
+#
+# Benchmarks every officially-released Whisper size (tiny/base/small/medium/large-v2/large-v3/
+# large-v3-turbo), at both q8 and fp32, against the three existing 1000-sentence TTS batches
+# (English tts-qwen-1000-v3, Polish tts-piper-1000-pl, Polish tts-qwen-1000-pl) — 14 models x 3
+# datasets = 42 transcription runs, each scored 3 ways (raw/base/ext/new correctors), reusing
+# scripts/asr-score-slots-generic.mjs exactly as docs/tts-eval-1000-v3.md and
+# docs/tts-eval-1000-pl.md already do. This deliberately does NOT use scripts/e2e-audio-intents.ts
+# ("the standard voice-path metric", issue #27) — that scorer is hardcoded to the small
+# hand-labeled eval/intents.jsonl set (see eval/README.md's "Two measurement tracks" section) and
+# doesn't apply to the slot-truth-labeled 1000-sentence batches this benchmark uses.
+#
+# --- Why an array job, and how the 5 lanes are split ---
+# 14 (model, dtype) pairs, capped at 5 concurrent SLURM jobs (`--array=0-4`, one lane per task —
+# 5 array elements IS the concurrency cap, no `%N` throttle needed). Lanes are grouped by rough
+# compute cost, not evenly by count, since tiny/base/small are each individually cheap (whisper-
+# small q8 already measured at ~3s/clip median, docs/tts-eval-1000-pl.md §2) while
+# medium/large-v2/large-v3 are unmeasured here and could be far slower — bundling the three cheap
+# tiers into one lane keeps that lane fast regardless, while each heavy tier gets its own
+# dedicated lane so a slow model can't stall the cheap ones behind it in the same job:
+#   lane 0: whisper-large-v3-ONNX      (fp32, q8)               — 2 combos, heaviest single tier
+#   lane 1: whisper-large-v2-ONNX      (fp32, q8)               — 2 combos
+#   lane 2: whisper-large-v3-turbo     (fp32, q8)                — 2 combos
+#   lane 3: whisper-medium-ONNX        (fp32, q8)                — 2 combos
+#   lane 4: whisper-small/base/tiny    (fp32, q8 each)           — 6 combos, all cheap
+#
+# --- GPU note ---
+# scripts/asr-transcribe-manifest.mjs never sets a `device` option, so @huggingface/transformers
+# runs Whisper inference on CPU (onnxruntime-node's default backend) regardless of the
+# `--gres=gpu:a100:1` allocation below — confirmed by reading the script, not assumed. The GPU
+# request is kept only because every existing script in this repo uses the
+# plgrid-gpu-a100/plgccbmc15-gpu-a100 partition/account and this is the only one known to be
+# accessible under this grant; if a CPU-only partition exists on your allocation, prefer that
+# for this job instead, since the GPU sits idle throughout.
+#
+# --- No manual prerequisite ---
+# Each lane prefetches its own (model, dtype) pairs itself, as part of the per-model loop below,
+# via `prefetch-whisper-models.mjs --pairs` — no separate `node` invocation needed before
+# submitting, unlike docs/local-model-cache.md's usual "run on a fast connection first"
+# convention for the shipped app's models. Every model's already cached read is a fast no-op
+# on resubmit, same as everything else in this script.
+#
+# --- Failure isolation (issue #27 follow-up job 2804461) ---
+# A first run hit two distinct failures: (1) large-v2-ONNX's fp32 encoder/decoder need an
+# external-data ".onnx_data" companion file (anything over ~2GB gets split by ONNX) that failed
+# to download — confirmed via `ls .hf-cache/.../onnx/`: the small ".onnx" header landed but its
+# ".onnx_data" companion never did, not a partial/corrupt file, just absent; (2) prefetching one
+# model in a lane's `--pairs` list exits 1 on ANY failure in the batch, which under this script's
+# `set -euo pipefail` killed the ENTIRE lane before it transcribed a single clip — losing every
+# other (working) model in that lane along with the one that failed to download. Each
+# model/dataset combo below is now wrapped so a failure (prefetch, transcribe, or score) is
+# logged and skipped via `continue`, not fatal to the rest of the lane — a flaky multi-GB
+# download for one model shouldn't cost you the other 5.
+#
+# --- Time budget ---
+# 24h per lane, generous rather than measured (issue #27 follow-up: no prior run of
+# medium/large-v2/large-v3 on this CPU config to size against). Every step below is resumable
+# (asr-transcribe-manifest.mjs skips ids already in its outFile) — if a lane times out partway
+# through, resubmit just that array index (`sbatch --array=<n> scripts/submit-whisper-bench.sh`)
+# and it continues from wherever it stopped, same discipline as submit-v3.sh/submit-pl.sh.
+#
+# Usage:
+#   sbatch scripts/submit-whisper-bench.sh              # all 5 lanes
+#   sbatch --array=3 scripts/submit-whisper-bench.sh    # resubmit just lane 3 (e.g. after a timeout)
+
+set -euo pipefail
+
+if ! type module &>/dev/null; then
+  source /net/software/v1/software/Lmod/8.5.8/lmod/lmod/init/bash
+fi
+
+cd /net/tscratch/people/plgkongruencj/aidedx
+source scripts/athena-env.sh
+
+# Shared across every array task (unlike `date +%F`, which could differ between tasks if the
+# array spans midnight) so all 5 lanes write into the same results directory. Overridable via
+# env var so a targeted resubmit (e.g. just the lanes that failed to download last time) can
+# point at a *previous* job's directory instead of starting a fresh empty one — otherwise every
+# `sbatch` invocation gets a new $SLURM_ARRAY_JOB_ID and thus a new empty dir, silently defeating
+# asr-transcribe-manifest.mjs's own per-clip resume (it only skips ids already in *its own*
+# outFile, so pointing at a fresh dir makes it redo every already-completed combo from scratch —
+# the "just resubmit" claim in this file's header comment only actually holds with this set):
+#   RESULTS_DIR=eval/results/whisper-bench-2805165 sbatch --array=0,1 scripts/submit-whisper-bench.sh
+RESULTS_DIR="${RESULTS_DIR:-eval/results/whisper-bench-${SLURM_ARRAY_JOB_ID}}"
+mkdir -p "$RESULTS_DIR"
+
+# --- Datasets: audio dir : manifest : lang : short label ---
+# issue #106: the two Chatterbox Polish batches (pl-chat-clone, pl-chat-native) only exist once
+# scripts/submit-chatterbox-pl.sh has completed on Athena — resubmitting this benchmark before
+# that job finishes won't crash (each combo below is already individually failure-isolated,
+# `continue`s past a missing manifest.json like any other per-combo failure), but will just log
+# those 2x14=28 combos as skipped for nothing. Confirm both
+# eval/audio/tts-chatterbox-{clone,native}-1000-pl/manifest.json exist first.
+DATASETS=(
+  "eval/audio/tts-qwen-1000-v3:eval/audio/tts-qwen-1000-v3/manifest.json:en:en-v3"
+  "eval/audio/tts-piper-1000-pl:eval/audio/tts-piper-1000-pl/manifest.json:pl:pl-piper"
+  "eval/audio/tts-qwen-1000-pl:eval/audio/tts-qwen-1000-pl/manifest.json:pl:pl-qwen"
+  "eval/audio/tts-chatterbox-clone-1000-pl:eval/audio/tts-chatterbox-clone-1000-pl/manifest.json:pl:pl-chat-clone"
+  "eval/audio/tts-chatterbox-native-1000-pl:eval/audio/tts-chatterbox-native-1000-pl/manifest.json:pl:pl-chat-native"
+)
+
+# --- Lanes: one per SLURM_ARRAY_TASK_ID, each a list of "modelId:dtype" pairs ---
+case "$SLURM_ARRAY_TASK_ID" in
+  0)
+    LANE_NAME="large-v3"
+    MODELS=(
+      "onnx-community/whisper-large-v3-ONNX:fp32"
+      "onnx-community/whisper-large-v3-ONNX:q8"
+    )
+    ;;
+  1)
+    LANE_NAME="large-v2"
+    MODELS=(
+      "onnx-community/whisper-large-v2-ONNX:fp32"
+      "onnx-community/whisper-large-v2-ONNX:q8"
+    )
+    ;;
+  2)
+    LANE_NAME="large-v3-turbo"
+    MODELS=(
+      "onnx-community/whisper-large-v3-turbo:fp32"
+      "onnx-community/whisper-large-v3-turbo:q8"
+    )
+    ;;
+  3)
+    LANE_NAME="medium"
+    MODELS=(
+      "onnx-community/whisper-medium-ONNX:fp32"
+      "onnx-community/whisper-medium-ONNX:q8"
+    )
+    ;;
+  4)
+    LANE_NAME="small-base-tiny"
+    MODELS=(
+      "onnx-community/whisper-small:fp32"
+      "onnx-community/whisper-small:q8"
+      "onnx-community/whisper-base:fp32"
+      "onnx-community/whisper-base:q8"
+      "onnx-community/whisper-tiny:fp32"
+      "onnx-community/whisper-tiny:q8"
+    )
+    ;;
+  *)
+    echo "ERROR: unexpected SLURM_ARRAY_TASK_ID=$SLURM_ARRAY_TASK_ID (expected 0-4)" >&2
+    exit 1
+    ;;
+esac
+
+echo "=== Lane $SLURM_ARRAY_TASK_ID ($LANE_NAME): ${#MODELS[@]} model/dtype pairs x ${#DATASETS[@]} datasets ==="
+
+FAILED_STEPS=()
+
+for model_entry in "${MODELS[@]}"; do
+  IFS=':' read -r model_id dtype <<<"$model_entry"
+  # Filesystem-safe short name for output filenames: strip the "onnx-community/" prefix only
+  # (every model id here is already slash-free after that, no further sanitizing needed).
+  model_short="${model_id#onnx-community/}"
+
+  # Prefetch is per-model, not once for the whole lane's MODELS list — so one model's download
+  # failure (transient or not) can't take the other models in this lane down with it. Wrapped in
+  # `if` rather than relying on `set -e`: a failure here just skips this one model's combos
+  # (`continue` to the outer loop) instead of killing the rest of the lane (issue #27 follow-up:
+  # job 2804461's large-v2/large-v3 fp32 downloads both failed transiently, and because prefetch
+  # used to run once for the whole lane under `set -e`, that took every other model in the same
+  # lane down too — including ones that would have downloaded and transcribed fine).
+  echo "[prefetch] $model_id [$dtype]"
+  if ! node scripts/prefetch-whisper-models.mjs --pairs "$model_entry"; then
+    echo "SKIPPING $model_id [$dtype] — prefetch failed, see output above" >&2
+    FAILED_STEPS+=("prefetch:$model_entry")
+    continue
+  fi
+
+  for dataset_entry in "${DATASETS[@]}"; do
+    IFS=':' read -r audio_dir manifest lang dataset_label <<<"$dataset_entry"
+    combo_label="${dataset_label}__${model_short}__${dtype}"
+    transcript_out="$RESULTS_DIR/${combo_label}.json"
+
+    echo "--- $combo_label ---"
+    echo "[transcribe] $model_id [$dtype] lang=$lang over $audio_dir"
+    if ! node scripts/asr-transcribe-manifest.mjs "$audio_dir" "$manifest" "$model_id" "$dtype" \
+      "$transcript_out" --lang "$lang"; then
+      echo "SKIPPING $combo_label scoring — transcription failed, see output above" >&2
+      FAILED_STEPS+=("transcribe:$combo_label")
+      continue
+    fi
+
+    echo "[score] $combo_label"
+    for mode in base ext new; do
+      flag=""
+      [ "$mode" = "ext" ] && flag="--ext"
+      [ "$mode" = "new" ] && flag="--new"
+      # --experimental-strip-types: asr-score-slots-generic.mjs imports
+      # ../src/lib/asr/correct/core.ts directly, same as submit-v3.sh/submit-pl.sh already do for
+      # their own .ts imports. Athena's `module load nodejs/22.17.1` (scripts/athena-env.sh) needs
+      # this flag explicitly — Node 22 throws ERR_UNKNOWN_FILE_EXTENSION on a bare .ts import
+      # before any output is produced, which is why job 2805165's scoring step wrote a 0-byte
+      # .log and no .json for all 36 completed transcripts across every lane, not just some.
+      if ! node --experimental-strip-types scripts/asr-score-slots-generic.mjs "$manifest" "$transcript_out" $flag \
+        --json "$RESULTS_DIR/${combo_label}__score-${mode}.json" \
+        | tee "$RESULTS_DIR/${combo_label}__score-${mode}.log"; then
+        echo "SKIPPING $combo_label score-${mode} — scorer failed, see output above" >&2
+        FAILED_STEPS+=("score-${mode}:${combo_label}")
+      fi
+    done
+  done
+done
+
+echo "=== Lane $SLURM_ARRAY_TASK_ID ($LANE_NAME) done — results in $RESULTS_DIR ==="
+if [ "${#FAILED_STEPS[@]}" -gt 0 ]; then
+  echo "=== ${#FAILED_STEPS[@]} step(s) failed and were skipped (rest of the lane still ran): ==="
+  printf '  %s\n' "${FAILED_STEPS[@]}"
+fi

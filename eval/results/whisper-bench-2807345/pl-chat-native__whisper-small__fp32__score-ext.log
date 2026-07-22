@@ -1,0 +1,72 @@
+
+=== onnx-community/whisper-small [fp32] +prompt ext-corrector ===
+clips: 1000   median inference: 2.7s   load: 2.5s
+clip-level all-slots-correct:  raw 94/1000 (9.4%)   corrected 95/1000 (9.5%)
+
+by quantity (corrected):
+  csdaRange        58/600 (9.7%)
+  energyFromRange  29/250 (11.6%)
+  stoppingPower    8/150 (5.3%)
+
+by scenario type (corrected):
+  single     85/800 (10.6%)
+  energy     2/100 (2.0%)
+  material   6/55 (10.9%)
+  particle   2/45 (4.4%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      65/608 (10.7%)
+  clinical-core  30/392 (7.7%)
+
+by voice profile (corrected), worst 10:
+  chatterbox-default               95/1000 (9.5%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   87.7% ->  87.7%  (n=1250)
+  particle   87.8% ->  87.8%  (n=1045)
+  material   67.4% ->  67.4%  (n=1085)
+  number     27.2% ->  27.2%  (n=1156)
+  unit       54.5% ->  54.6%  (n=1156)
+  ALL        64.8% ->  64.8%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         51.5% ->  51.7%  (n=464)
+  MeV/nucl    70.1% ->  70.1%  (n=344)
+  keV         53.2% ->  53.2%  (n=79)
+  GeV         36.8% ->  36.8%  (n=19)
+  mm          65.1% ->  65.1%  (n=63)
+  cm          32.1% ->  32.1%  (n=187)
+
+failing clips after correction (905 total, showing first 30):
+  pl-rng-0001 missing[number]: Obrójcz zasięg protonu o energii ss. MeV aluminium
+  pl-rng-0002 missing[number,unit]: Jedy daleko doleci proton o energii stamy w wodzie
+  pl-rng-0003 missing[unit]: Jak daleko dotrze jon magnezu o energii 50 mes na nukleon w dwutlenku krzemu?
+  pl-rng-0004 missing[number]: powiedz mi, jak daleko zajdzie jon litu energiczne 10 MeV na nukleon w wodzie?
+  pl-rng-0005 missing[material,number]: Oblicz zasięg, protonu, ONL, 205 MeV, Varuminium
+  pl-rng-0006 missing[number,unit]: Powiedz mi, jak daleko zajdzie jon kryptonu o energii 3DstaMeV na nukleon w tkance mięśniowej
+  pl-rng-0008 missing[number,unit]: Jaki jest zasięg jonu węgla o energii 37 MAF na nukleon kości korowej?
+  pl-rng-0009 missing[number]: Ile by nosi zasięg protonu o energii czacieści MeV w graficie?
+  pl-rng-0010 missing[quantity]: Ja pteleko dotrze, jon tlenu, o energii 400 mev na nukleon, złocie?
+  pl-rng-0011 missing[material,number,unit]: jak głęboko wniknie, jon węgla, energii, dwustą, pewne nukleon, kość zbitej
+  pl-rng-0012 missing[quantity,material,number,unit]: Oblicz dasięg, protonu, energii, czy testem F, politylenie.
+  pl-rng-0013 missing[number]: Ile by nosi zasięg protonu o energii 2050 MeV w wodzie?
+  pl-rng-0014 missing[number,unit]: Jak daleko dotrze jon neonu o energii 20 bistrem F na nukleon w wodzie?
+  pl-rng-0015 missing[number,unit]: Jak głęboko wniknie jon neonu o energii sapkę w złocie,
+  pl-rng-0018 missing[material,number,unit]: Jaki zasięg ma proton o energii 6 PMF po lityranie? Pfff, dysz...
+  pl-rng-0019 missing[number]: powiedz mi, jak daleko zajdzie jon litu o energii, ościeść ażcie mev na nukleon w wodzie.
+  pl-rng-0020 missing[quantity,material]: Oblicz da sięg deuteronu o energii 40 mev w pogietrzu.
+  pl-rng-0021 missing[particle,number]: Jak daleko dotrzeczą z kalfa o energii, 2,5 mev w wodzie?
+  pl-rng-0022 missing[number,unit]: podaj zasięg protonu o energii piecinciantym F w kaptonie. W kaptonii.
+  pl-rng-0023 missing[number]: Jak daleko dotrze jon krzemu o energiczność tak MeV na nukleon w polietylenie?
+  pl-rng-0024 missing[material,number,unit]: Ile by nosi zasięg jonu, helu-3, o energii pięcieme w pogie trzu?
+  pl-rng-0025 missing[material,number,unit]: Ile wynosi zasięgnionu neonu energii, dwa cię z patrzem efnenu, kląstka nce mięśniowej?
+  pl-rng-0026 missing[material,number]: Podaj zasięg jonu ksenonu o energii VIII-V mev na nukleon w plastiku z kankopodobnym A530
+  pl-rng-0027 missing[quantity,number,unit]: Obień zaseięg protonu o energii i samtyme w kości zbitej.
+  pl-rng-0028 missing[number,unit]: Oprócz zasięg, deuteronu, o energii piętrzyn też mew, polietylenie
+  pl-rng-0030 missing[number,unit]: Jaki zasięg mają żelaza o energii sześcian TMEV na nukleon w PMMA?
+  pl-rng-0031 missing[material,number,unit]: Jak daleko doleci proton? O energii tak chwacitownieżmy w wołowiu?
+  pl-rng-0032 missing[number]: Jak głęboko wniknie proton o energii 2,9 MeV w powietrzu?
+  pl-rng-0033 missing[number,unit]: Jak głęboko wniknie jon magnezu o energii pacjan to z tego przetrwatmef na nukleon w tkance mięśniowej?
+  pl-rng-0034 missing[number]: Podaje zasięg protonu o energii 500 zatrzym pają mev w powietrzu
+
+wrote eval/results/whisper-bench-2807345/pl-chat-native__whisper-small__fp32__score-ext.json

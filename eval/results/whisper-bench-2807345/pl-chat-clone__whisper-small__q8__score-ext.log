@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-small [q8] +prompt ext-corrector ===
+clips: 1000   median inference: 2.7s   load: 1.6s
+clip-level all-slots-correct:  raw 128/1000 (12.8%)   corrected 128/1000 (12.8%)
+
+by quantity (corrected):
+  csdaRange        66/600 (11.0%)
+  energyFromRange  47/250 (18.8%)
+  stoppingPower    15/150 (10.0%)
+
+by scenario type (corrected):
+  single     110/800 (13.8%)
+  energy     3/100 (3.0%)
+  material   10/55 (18.2%)
+  particle   5/45 (11.1%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      87/608 (14.3%)
+  clinical-core  41/392 (10.5%)
+
+by voice profile (corrected), worst 10:
+  clone-01                         7/99 (7.1%)
+  clone-04                         9/101 (8.9%)
+  clone-10                         11/99 (11.1%)
+  clone-08                         12/101 (11.9%)
+  clone-06                         12/98 (12.2%)
+  clone-05                         13/102 (12.7%)
+  clone-07                         13/101 (12.9%)
+  clone-03                         13/100 (13.0%)
+  clone-02                         18/100 (18.0%)
+  clone-09                         20/99 (20.2%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   93.8% ->  93.8%  (n=1250)
+  particle   91.1% ->  91.1%  (n=1045)
+  material   68.4% ->  68.4%  (n=1085)
+  number     29.5% ->  29.5%  (n=1156)
+  unit       62.4% ->  62.6%  (n=1156)
+  ALL        69.0% ->  69.1%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         63.8% ->  64.0%  (n=464)
+  MeV/nucl    74.1% ->  74.7%  (n=344)
+  keV         57.0% ->  57.0%  (n=79)
+  GeV         36.8% ->  36.8%  (n=19)
+  mm          66.7% ->  66.7%  (n=63)
+  cm          40.6% ->  40.6%  (n=187)
+
+failing clips after correction (872 total, showing first 30):
+  pl-rng-0001 missing[number,unit]: Oblik zasięg protonu o energii contem e w aluminium
+  pl-rng-0002 missing[number]: Jak daleko doleci proton o energii, cząmev w wodzie?
+  pl-rng-0003 missing[number]: Jak daleko dotrze jon magnezu energii pś. mev na nukleon w dwutlenku krzemu?
+  pl-rng-0005 missing[number,unit]: Oblicz zasięg protonu o energii 2000 nm w aluminium
+  pl-rng-0006 missing[particle,material,number,unit]: Powiedz mi, jak daleko zajdzie jon kryptoną o energii czedosiedzmev na nukleon w tkanka mięśniowej?
+  pl-rng-0007 missing[material,number,unit]: Jaki jest zasięg cząstki alfa o energii trzydzień TMEV w ołowie?
+  pl-rng-0008 missing[number]: Jaki jest zasięg jonu węgla o energii 37 MeV na nukleon z kości korowej?
+  pl-rng-0009 missing[material,number]: Ile wynosi zasięg protonu o energii 4 MeV graficia?
+  pl-rng-0010 missing[particle]: Jak daleko dotrze ją klenu o energii 400 MeV na nukleon złocie?
+  pl-rng-0011 missing[particle,number,unit]: Jak głęboko, wniknie jon zęgla o energii dwa cztame w na nukleon w kości zbitej
+  pl-rng-0012 missing[material,number]: Oblitz zasięg protonu o energii 30 MeV w poliwietylenie
+  pl-rng-0013 missing[number]: i leby nosić zasięg protonu energii 20 MeV w wodzie.
+  pl-rng-0015 missing[number,unit]: Jak głęboko wniknie jon neonu, o energii, trsiankę, w złocie?
+  pl-rng-0018 missing[unit]: Jaki zasięg ma proton o energii 60% polietylenie?
+  pl-rng-0019 missing[number]: Powiedz mi, jak daleko zajdzie jon litu o energii o deszcie mev na nukleon w wodzie?
+  pl-rng-0020 missing[material,number]: oblicz zasięg deuteronu o energii 30 MeV w pogieczu.
+  pl-rng-0021 missing[number,unit]: Jak daleko dotrze cząstka alfa o energii 2,5 śmiew w wodzie?
+  pl-rng-0022 missing[number]: podaj zasięg protonu o energii 5.000 MeV w Kaptonie.
+  pl-rng-0023 missing[number]: Jak daleko dotrze jon krzemu o energii, czy gdzieś jest mev na nukleon w polietylenie?
+  pl-rng-0024 missing[number]: ile wynosi zasięg jonu, helu-3, energii, pięcie mev w powietrzu
+  pl-rng-0025 missing[number,unit]: ile wynosi zasięg jonu neonu o energii 2C-VN na nukleon w tkance mięśniowej?
+  pl-rng-0026 missing[material,number,unit]: podaj zasięg jonu ksenonu o energii, 500 cm na nukleon, w plastikut kankopodobnym, a 5,5
+  pl-rng-0027 missing[material,number]: Oblikt zasięg protonu, energi, jon mev, kość zbitej
+  pl-rng-0028 missing[material,number,unit]: Oblit zasięg deuteronu, energii, piszcy, stym ef polietylenia
+  pl-rng-0029 missing[quantity,unit]: Jak głęboka wniknie jon węgla o energii 50 w kaptonie.
+  pl-rng-0030 missing[number]: Jaki zasięg mają żelaza o energii sześcian, meV na nukleon, PMMA
+  pl-rng-0031 missing[material,number,unit]: Jak daleko doleci proton o energii 20 MW?
+  pl-rng-0032 missing[number]: Jak głęboko wniknie proton o energii 20 MeV w powietrzu?
+  pl-rng-0033 missing[number,unit]: Jak głęboko wniknie jon magnezu o energii 500 czt. na nukleon w tkance mięśniowej?
+  pl-rng-0034 missing[number]: podaj zasięg protonu o energii 550 MeV w powietrzu.
+
+wrote eval/results/whisper-bench-2807345/pl-chat-clone__whisper-small__q8__score-ext.json

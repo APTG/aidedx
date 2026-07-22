@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-tiny [q8] +prompt new-corrector ===
+clips: 1000   median inference: 1.5s   load: 0.7s
+clip-level all-slots-correct:  raw 0/1000 (0.0%)   corrected 0/1000 (0.0%)
+
+by quantity (corrected):
+  csdaRange        0/600 (0.0%)
+  energyFromRange  0/250 (0.0%)
+  stoppingPower    0/150 (0.0%)
+
+by scenario type (corrected):
+  single     0/800 (0.0%)
+  energy     0/100 (0.0%)
+  material   0/55 (0.0%)
+  particle   0/45 (0.0%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      0/608 (0.0%)
+  clinical-core  0/392 (0.0%)
+
+by voice profile (corrected), worst 10:
+  pl-female-tired                  0/39 (0.0%)
+  pl-female-stressed               0/42 (0.0%)
+  pl-male-hurried                  0/46 (0.0%)
+  pl-female-elegant                0/45 (0.0%)
+  pl-male-serious                  0/43 (0.0%)
+  pl-male-excited                  0/42 (0.0%)
+  pl-elderly-female-sleepy         0/44 (0.0%)
+  custom-ryan                      0/43 (0.0%)
+  pl-female-relaxed                0/45 (0.0%)
+  custom-eric                      0/48 (0.0%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity    9.9% ->  10.8%  (n=1250)
+  particle   28.7% ->  28.7%  (n=1045)
+  material    8.1% ->   8.1%  (n=1085)
+  number     19.8% ->  19.8%  (n=1156)
+  unit       13.8% ->  15.3%  (n=1156)
+  ALL        15.8% ->  16.3%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV          5.6% ->   8.0%  (n=464)
+  MeV/nucl     3.2% ->   4.1%  (n=344)
+  keV         10.1% ->  12.7%  (n=79)
+  GeV         10.5% ->  15.8%  (n=19)
+  mm          36.5% ->  36.5%  (n=63)
+  cm          48.1% ->  48.1%  (n=187)
+
+failing clips after correction (1000 total, showing first 30):
+  pl-rng-0001 missing[quantity,particle,material,number,unit]: o tym, że nie ma węgla,
+  pl-rng-0002 missing[quantity,material,number,unit]: jak to leko do leci, protonu, energy, standard WWE Watchy!
+  pl-rng-0003 missing[quantity,particle,material,unit]: jak ta leko.ca, ja mam na gifem 50,500, no klien, ale dudlę, kuch samo
+  pl-rng-0004 missing[quantity,particle,material,number,unit]: połudzie, jak daleko za dziedzon, li2, o energi, trzezyg, MAV na nukleon, władzy
+  pl-rng-0005 missing[quantity,particle,material,number]: obliszcizjek, potu, o energi 315 mew.
+  pl-rng-0006 missing[quantity,particle,material,number,unit]: połudz mi, do końca zadzią kryptonów, o niegiel, wierąc wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu, wieniu,
+  pl-rng-0007 missing[quantity,particle,material,number,unit]: Czakij, co jest z jaksza, zielfą, energii, zesastę, co jest w ogóle
+  pl-rng-0008 missing[quantity,particle,material]: co jest za zaakronu w ogóle o energety 300.mev na nukleon.b.k.
+  pl-rng-0009 missing[quantity,number,unit]: i wynosi za siek, protonu o energii, quarantine, gamie, wwf, graficie?
+  pl-rng-0010 missing[quantity,material,number,unit]: jak ta leko, Drzezi Jon Tlenu o energii 50MAV na nukleon WC.
+  pl-rng-0011 missing[quantity,particle,material,number,unit]: jak lebo kontyknie, John Weglar, o energi, dZwajone, na mikleon, nukostę, spytasz
+  pl-rng-0012 missing[quantity,material,number,unit]: o blicz, asiatk, protonu, o energi, 330mFibe, polietelenię.
+  pl-rng-0013 missing[quantity,material,unit]: i winoj zesieg, protonu, o NG250,
+  pl-rng-0014 missing[quantity,material,number,unit]: i tak tak, tak jak to jest, jon neonu, o enerji, 150, maje, no nukleon, dobra,
+  pl-rng-0015 missing[quantity,particle,material,unit]: jak lebo ko, nikt niejonują, że węglały 100 kwiatwal i sosie
+  pl-rng-0016 missing[quantity,material,number,unit]: Podczas sieg, protonu o energii, symphety, i ma fabu, kost, zbeta.
+  pl-rng-0017 missing[quantity,number,unit]: połudz mi, jak to lekozacji protonu energii 77 m e-web aluminium
+  pl-rng-0018 missing[quantity,particle,material,number,unit]: Jaki Zazieg Ma, Protono, Energi 70 FME, Velvupali, Delini?
+  pl-rng-0019 missing[quantity,particle,material,number,unit]: pobic, jak to jest to, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jak to jest, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jakaś, jak
+  pl-rng-0020 missing[quantity,particle,material,number,unit]: w tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to jest na tym, że to
+  pl-rng-0021 missing[particle,material,number,unit]: jak daleko do trudca, w ten archiw, w tym, co to
+  pl-rng-0022 missing[quantity,material,unit]: zazięg, protonu, energii, 150 meth, well, Kaptoni.
+  pl-rng-0023 missing[quantity,particle,material,number,unit]: o, jak dobra, koj.org, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no
+  pl-rng-0024 missing[quantity,particle,material,number,unit]: i levinu, zazięg, jon o halu-3, o enerjię, a find mvw.w.w
+  pl-rng-0025 missing[quantity,particle,material,number,unit]: i ovinosiedzą, że się jak, jon neono o energy, jen tantymi, powinna nukleon, by ukansmienić nieoje?
+  pl-rng-0026 missing[quantity,particle,material,number,unit]: i co się dzieje?
+  pl-rng-0027 missing[quantity,material,unit]: obleń psasiak protonu, o energie 100 mafłakosti spotacz.
+  pl-rng-0028 missing[quantity,particle,material,number,unit]: oblicy sazyktorjonu o energy 16MAV Poliateleni.
+  pl-rng-0029 missing[quantity,material]: i jak lebo komuiknie, jon węgla, on hergii 50 keV, Kaptoni
+  pl-rng-0030 missing[quantity,particle,material,number,unit]: Jacki Zalziak, Mają Gelaza, o energiusy centrumów, nukleon, w WPMMA
+
+wrote eval/results/whisper-bench-2805165/pl-qwen__whisper-tiny__q8__score-new.json

@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-large-v3-ONNX [q8] +prompt ext-corrector ===
+clips: 1000   median inference: 8.7s   load: 5.4s
+clip-level all-slots-correct:  raw 18/1000 (1.8%)   corrected 18/1000 (1.8%)
+
+by quantity (corrected):
+  csdaRange        7/600 (1.2%)
+  energyFromRange  9/250 (3.6%)
+  stoppingPower    2/150 (1.3%)
+
+by scenario type (corrected):
+  single     16/800 (2.0%)
+  energy     0/100 (0.0%)
+  material   1/55 (1.8%)
+  particle   1/45 (2.2%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      10/608 (1.6%)
+  clinical-core  8/392 (2.0%)
+
+by voice profile (corrected), worst 10:
+  pl-elderly-female-sleepy         0/44 (0.0%)
+  pl-male-casual                   0/47 (0.0%)
+  pl-male-confident                0/42 (0.0%)
+  pl-female-formal                 0/41 (0.0%)
+  pl-elderly-male-formal           0/41 (0.0%)
+  pl-female-calm                   0/44 (0.0%)
+  pl-male-skeptical                0/41 (0.0%)
+  custom-aiden                     0/51 (0.0%)
+  pl-female-cheerful               0/45 (0.0%)
+  custom-eric                      1/48 (2.1%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   53.3% ->  53.3%  (n=1250)
+  particle   66.0% ->  66.0%  (n=1045)
+  material   17.6% ->  17.6%  (n=1085)
+  number     36.9% ->  36.9%  (n=1156)
+  unit       60.7% ->  61.0%  (n=1156)
+  ALL        47.0% ->  47.0%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         46.3% ->  46.8%  (n=464)
+  MeV/nucl    74.1% ->  74.4%  (n=344)
+  keV         75.9% ->  75.9%  (n=79)
+  GeV         47.4% ->  47.4%  (n=19)
+  mm          66.7% ->  66.7%  (n=63)
+  cm          64.7% ->  64.7%  (n=187)
+
+failing clips after correction (982 total, showing first 30):
+  pl-rng-0001 missing[quantity]: A blitz das jeg protonu o energie 100 MeV aluminium.
+  pl-rng-0002 missing[quantity,material,number,unit]: Jak dalej kodoleci protonu energii? Sanem ewi w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w
+  pl-rng-0003 missing[particle]: Jak daleko dotrze jon magnesu o energii 50 MeV na nukleon we dwutlenku krzemu?
+  pl-rng-0004 missing[quantity,particle,material]: Powiedz mi, jak dalej uzyskać związek o energię 30 MeV na nukleon?
+  pl-rng-0006 missing[quantity,particle,material,number]: Powiedz mi, jak dalej zaznaczyć kryptonę o energii, wierząc w MeV na nukleon, wytrwałaś mięsio?
+  pl-rng-0007 missing[quantity,particle,material,number,unit]: Czaki czas, caz jak czas, kielfo, energii, zasęsty, feme, wolowiu
+  pl-rng-0008 missing[quantity,material,number]: Czachy, że stas jak żonu węgla o energetyki trisomtel MeV na nukleon to blakos korowe?
+  pl-rng-0009 missing[material,number,unit]: Ile wynosi zasięg protonu o energii koron tkami FWev graficje?
+  pl-rng-0010 missing[material,number,unit]: Jak daleko dotrze jon tlenu o energii 500mAV na nukleon W-3?
+  pl-rng-0011 missing[quantity,material,number,unit]: Jak lebo kołnikni jon węgla o energii dzwojonew na mikleon nukostydzbitesz?
+  pl-rng-0012 missing[material,unit]: Oblicz zasięg protonu o energii 300 MFi bp.
+  pl-rng-0013 missing[quantity,material]: Ile winozie zazięg protonu o energii 250 mEV w wodzi?
+  pl-rng-0014 missing[material,number]: Jak daleko tułdza jon neonu o energiajt 150 MeV na nukleon wWZ?
+  pl-rng-0015 missing[quantity,material,unit]: Czak lepoko, nikt nie żon neonu, o energi, 100, kaft, bali, sosi
+  pl-rng-0016 missing[material,number,unit]: Podać zasięg protonu o energii, symfetii i mefej Bu, kość zbitaż
+  pl-rng-0017 missing[quantity,unit]: Poets.me, jak dalej koszacji protonu energii 70CM i wew aluminium?
+  pl-rng-0018 missing[particle,material,number,unit]: Jaki zasięg ma protonoenergii z FCFME węgla upolitelejny?
+  pl-rng-0019 missing[quantity,particle,material,number,unit]: Powiedz mi, jak daleko zatrzymujesz litera energii, a chcę, żeby na nukleon w ogóle nie wiedziałaś?
+  pl-rng-0020 missing[quantity,particle,material,unit]: A być zasek, to i te roń o energii 40 mF-y opowiecie.
+  pl-rng-0021 missing[material,number,unit]: Jak daleko dotrze cząstka alfa o energii? Piętaj, Fingwa, Thumb, Wotsy
+  pl-rng-0022 missing[quantity,particle,material]: Powder Zaziac Protonuo Energi 150 MeV, WeL, Kaptoni
+  pl-rng-0023 missing[particle,material,number,unit]: Dziadk daleko dodzio jon tlenu o energi, tracisz emi, feena, nukleon, w poli, teleni
+  pl-rng-0024 missing[material,number]: Ile wino ci zasięg, żonu, helu-3, o energie, a find, mev, wewu, powiecu
+  pl-rng-0025 missing[material,number]: Ile wynosi zasięg jonu, neonu, o energii, jenthanci, MeV na nukleon, bukans, mięśniowie?
+  pl-rng-0026 missing[particle,material]: Podarz zasięg, jon nuk, si, nonu, energi, 150 MeV na nukleon, wapnasty ku tkanku, podobnim a150?
+  pl-rng-0027 missing[material,unit]: Oblec zasięg protonu o energi 100 małp, wakosti, spoteż
+  pl-rng-0028 missing[quantity,particle,material,number,unit]: Oblicz Sazi Ektojteronu o NRG-16MAV Polietileni
+  pl-rng-0029 missing[quantity,material]: Jak lepoko mu ich nie żon węgla o energii 50 KeV, Kaptoni.
+  pl-rng-0030 missing[quantity]: Dzięki za zjawisko, że zazięg ma jon żelaza, o energii 60 MeV na nukleon, welju, PMMA?
+  pl-rng-0031 missing[quantity,material,number]: Jak dalej, to doliczy proton, o energii entulnajnów MeV, w ołówu.
+
+wrote eval/results/whisper-bench-2805165/pl-qwen__whisper-large-v3-ONNX__q8__score-ext.json

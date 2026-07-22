@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-base [fp32] +prompt base-corrector ===
+clips: 1000   median inference: 1.6s   load: 1.3s
+clip-level all-slots-correct:  raw 1/1000 (0.1%)   corrected 1/1000 (0.1%)
+
+by quantity (corrected):
+  csdaRange        0/600 (0.0%)
+  energyFromRange  0/250 (0.0%)
+  stoppingPower    1/150 (0.7%)
+
+by scenario type (corrected):
+  single     1/800 (0.1%)
+  energy     0/100 (0.0%)
+  material   0/55 (0.0%)
+  particle   0/45 (0.0%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      1/608 (0.2%)
+  clinical-core  0/392 (0.0%)
+
+by voice profile (corrected), worst 10:
+  pl-female-stressed               0/42 (0.0%)
+  pl-male-hurried                  0/46 (0.0%)
+  pl-female-elegant                0/45 (0.0%)
+  pl-male-serious                  0/43 (0.0%)
+  pl-male-excited                  0/42 (0.0%)
+  pl-elderly-female-sleepy         0/44 (0.0%)
+  custom-ryan                      0/43 (0.0%)
+  pl-female-relaxed                0/45 (0.0%)
+  custom-eric                      0/48 (0.0%)
+  pl-male-casual                   0/47 (0.0%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   21.8% ->  21.8%  (n=1250)
+  particle   54.1% ->  54.1%  (n=1045)
+  material   13.4% ->  13.4%  (n=1085)
+  number     28.4% ->  28.4%  (n=1156)
+  unit       35.1% ->  35.2%  (n=1156)
+  ALL        30.2% ->  30.2%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         25.0% ->  25.0%  (n=464)
+  MeV/nucl    27.9% ->  27.9%  (n=344)
+  keV         35.4% ->  35.4%  (n=79)
+  GeV         47.4% ->  52.6%  (n=19)
+  mm          52.4% ->  52.4%  (n=63)
+  cm          66.3% ->  66.3%  (n=187)
+
+failing clips after correction (999 total, showing first 30):
+  pl-rng-0001 missing[quantity,unit]: Oblits, taz jak protonu, o energii, 100 mewo, aluminium
+  pl-rng-0002 missing[quantity,particle,material,number]: jak to leko do leci proto, no energii, sanem MeV, w, w, z,
+  pl-rng-0003 missing[quantity,particle,material,unit]: jak to leko dotce jon magnesu o energii 50 mefina nukleon, oje, do tlenku krzemu?
+  pl-rng-0004 missing[quantity,material,number,unit]: Powiedz mi, jak taleko zacji, jon litu o energii, trezik, MAV na nukleon, w odsi
+  pl-rng-0005 missing[quantity,particle,number]: Oblisz Szazieg, protonuwo, energii, 270 MeV, we Węw, o aluminium
+  pl-rng-0006 missing[quantity,material,number]: Powiedz mi, Jack Dileko, Zadzion, Kryptonu, Oenegi, Fiorandard MeV na nukleon, we tooko, konsumentio.
+  pl-rng-0007 missing[quantity,particle,material,number,unit]: Jackie justezieck to skijalfo, energii jest assista, PMMA w all ofu
+  pl-rng-0008 missing[quantity,material,number,unit]: Czaki, czesazie, jon węgla, o energety, tryton, top, mefa na nukleon, dA blakos korowe?
+  pl-rng-0009 missing[quantity,material,number,unit]: i lewe nocizazie protonu o energii korentach MEF wef grafit,
+  pl-rng-0010 missing[quantity,material,number,unit]: jak to leko dotrze jon tlenu, o energii 500M AV na nukleon w slossi.
+  pl-rng-0011 missing[quantity,material,number,unit]: jak lebo konikni John węgla o energii dzuajonew na mikleon, nukostycz bityś.
+  pl-rng-0012 missing[quantity,material,unit]: oblicz Sasieg Protonu o energii 300 MFB, polietelennie.
+  pl-rng-0013 missing[quantity,material,number,unit]: ilo wino z Jezieg, protonu ONG 2550 MEW, w wodzi
+  pl-rng-0014 missing[quantity,material]: Jak to leko, tu odsłysza, jon neonu, o energii i 250 MeV na nukleon 12 ułodcji?
+  pl-rng-0015 missing[quantity,material,unit]: Czakleboko, nicknij jon neonu, o energii, 100 kraft balisosi
+  pl-rng-0016 missing[material,number,unit]: podać zasięg, protonu, o energii, symfti, IMFFBU, kost zbitaż
+  pl-rng-0017 missing[quantity,material,unit]: Powiedz mi, jak to lekozacji protonu energii 70 cm i wewnaluminium.
+  pl-rng-0018 missing[quantity,particle,material,number,unit]: Jaki zazieg ma protono energii, CFTFME, velu, poli, deli, any?
+  pl-rng-0019 missing[quantity,material,number,unit]: Powiedz mi, jak daleko zatrzy, jon litu, o energii, aksych, MF na nukleon, w oboju, watsi?
+  pl-rng-0020 missing[quantity,particle,material,number,unit]: abyt, sasek, dojtaroniu, energii, fertilisów, poliw i dzu.
+  pl-rng-0021 missing[particle,material,number,unit]: jak daleko do trytzaska alfa, energii, pinta i fingwa sum, watsi
+  pl-rng-0022 missing[quantity,material,unit]: potrzaziek protonu o na rii 150 mef, well, Kaptony
+  pl-rng-0023 missing[quantity,particle,material,number,unit]: Dio aktaleko, dodzu, jon klęmu, o energii, trasy, szemi, fina, nukleon, w polietelini
+  pl-rng-0024 missing[quantity,material,number]: i lewinocizazieg, jonu, helu-3, o energii A, find MEV, we wupo, i itzu.
+  pl-rng-0025 missing[quantity,material,number]: El-Win-Nosyć, za sercjonu neonu, o energi, Jęthanti MeV na nukleon, by kans mięśniowa?
+  pl-rng-0026 missing[quantity,particle,material,unit]: po raszcazieg, jon uksinonu, energii, 150 mewn na nukleon, waplastiku, tkanka po depniem, a 150?
+  pl-rng-0027 missing[quantity,particle,material,unit]: oblejtsaziek, protono, oenergi, 100, maf, wojkosti, spotesz
+  pl-rng-0028 missing[quantity,particle,material,number,unit]: oblicy Saziek, dojteroniu, o energii 16MAV, polietyleni.
+  pl-rng-0029 missing[quantity,material,unit]: Jakle boko mój kni, jon węgla, onergi 50 kef, Kaptoni.
+  pl-rng-0030 missing[quantity,number,unit]: Jacki Tazieg, ma jon żelaza, o energii Syscentypmef na nukleon, węgla-12, PMMA?
+
+wrote eval/results/whisper-bench-2805165/pl-qwen__whisper-base__fp32__score-base.json

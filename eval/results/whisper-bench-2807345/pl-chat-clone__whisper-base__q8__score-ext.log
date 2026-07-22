@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-base [q8] +prompt ext-corrector ===
+clips: 1000   median inference: 1.7s   load: 0.9s
+clip-level all-slots-correct:  raw 17/1000 (1.7%)   corrected 17/1000 (1.7%)
+
+by quantity (corrected):
+  csdaRange        0/600 (0.0%)
+  energyFromRange  17/250 (6.8%)
+  stoppingPower    0/150 (0.0%)
+
+by scenario type (corrected):
+  single     14/800 (1.8%)
+  energy     0/100 (0.0%)
+  material   1/55 (1.8%)
+  particle   2/45 (4.4%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      11/608 (1.8%)
+  clinical-core  6/392 (1.5%)
+
+by voice profile (corrected), worst 10:
+  clone-07                         0/101 (0.0%)
+  clone-04                         0/101 (0.0%)
+  clone-05                         1/102 (1.0%)
+  clone-01                         1/99 (1.0%)
+  clone-09                         1/99 (1.0%)
+  clone-06                         1/98 (1.0%)
+  clone-08                         3/101 (3.0%)
+  clone-02                         3/100 (3.0%)
+  clone-10                         3/99 (3.0%)
+  clone-03                         4/100 (4.0%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   79.8% ->  79.8%  (n=1250)
+  particle   70.0% ->  70.0%  (n=1045)
+  material   45.9% ->  45.9%  (n=1085)
+  number     27.7% ->  27.7%  (n=1156)
+  unit        9.1% ->   9.1%  (n=1156)
+  ALL        46.6% ->  46.6%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV          1.9% ->   1.9%  (n=464)
+  MeV/nucl     0.9% ->   0.9%  (n=344)
+  keV          1.3% ->   1.3%  (n=79)
+  GeV         10.5% ->  10.5%  (n=19)
+  mm          47.6% ->  47.6%  (n=63)
+  cm          32.1% ->  32.1%  (n=187)
+
+failing clips after correction (983 total, showing first 30):
+  pl-rng-0001 missing[quantity,particle,number,unit]: obliwisatszynk, protono, o energii centrum e-f, aluminium.
+  pl-rng-0002 missing[number,unit]: jak daleko doleci proton o energii, co mw w wodzie.
+  pl-rng-0003 missing[particle,unit]: jak daleko dotrzeją, magnesu energii 50, męw na nukleon, dwutlenku krzemu
+  pl-rng-0004 missing[unit]: Powiedz mi, jak daleko zajdzieją litu, energii 30, mw na nukleon w wodzie.
+  pl-rng-0005 missing[quantity,material,number,unit]: Obliw za sięg proton, o energii 2000, na wywalu minimum
+  pl-rng-0006 missing[particle,material,number,unit]: powiedz mi jak daleko zajdzie jon krypton, ale nelgi cześć z mew, na nukleon, w tkantze mięśniowej
+  pl-rng-0007 missing[material,number,unit]: jaki jest zasięg, cząstki, alfa, o energii, szydzi, tmę, w ogół?
+  pl-rng-0008 missing[particle,number,unit]: jaki jest zasięg jonu węglał energii 30 mes na nukleą z kości korowej?
+  pl-rng-0009 missing[quantity,number,unit]: ile wynosi za się protonu, o energii czterdziemy w graficie
+  pl-rng-0010 missing[particle,material,number,unit]: jak daleko dotrzeją klenu, o energii 40, na nukleon, złotzie,
+  pl-rng-0011 missing[particle,number,unit]: Jak głęboko, wniknie jon zęgl, o energii, dwadzisz tam, w nannu, kleon, w kości zbitej
+  pl-rng-0012 missing[material,number,unit]: Obliw zasięg protonu, o energii 30 mew w polietelania
+  pl-rng-0013 missing[number,unit]: ile by nasi zasięg protonu energii 20MF w wodzie,
+  pl-rng-0014 missing[particle,number,unit]: Jak daleko dotrzejony, a energii 20, 50, na nukleonu w wodzie?
+  pl-rng-0015 missing[particle,number,unit]: Jak głęboko wnikę, jon na anu, energii, tszanka, w złocie?
+  pl-rng-0016 missing[unit]: Podaj zasięg protonu, o energii 50, MF kości zbitej
+  pl-rng-0017 missing[material,unit]: Powiedz mi, jak daleko zajdzie proton, o energii 70, me w waluminium
+  pl-rng-0018 missing[quantity,number,unit]: jak zaśnij, ma proton, o energię się tmę w polietylenie
+  pl-rng-0019 missing[number,unit]: Powiedz mi, jak daleko zajdzieją litu o energii odziesięciem ewnonu, klaon w wodzie.
+  pl-rng-0020 missing[quantity,particle,number,unit]: obliw za się, gdy uterono energii 30 mew w powietrzu.
+  pl-rng-0021 missing[particle,unit]: Jak daleko dotrzecząstka, alfa, o energii 25, w wodzie,
+  pl-rng-0022 missing[number,unit]: podaj zasięg protonu, o energii 50 m w Kaptonie.
+  pl-rng-0023 missing[particle,material,number,unit]: Jak daleko dotrze, jon w samą energii 10, jest, i mew na nukleon, w polietę,
+  pl-rng-0024 missing[particle,number,unit]: ile wynosi zasięgiono, chalu, trzesz, o energi, bjęcie, mew, powietrzu
+  pl-rng-0025 missing[material,number,unit]: ile wynosi zasięg, jonu, neonu, energii, dwadzień, w tym, w nukleon, w tkankę miśniowej,
+  pl-rng-0026 missing[particle,material,number,unit]: podaść zasięg, jonu, ksynonu, energii, 500 metr, nukleon, plastiku, kankopodownym, a 550
+  pl-rng-0027 missing[material,number,unit]: Obryg zasięg protonu, energii, co mw, kości zbitaj.
+  pl-rng-0028 missing[material,number,unit]: Oblicz zasięg, deuteronu, energii, piszczość, i mew, polietylenia.
+  pl-rng-0029 missing[particle,unit]: Jak głęboko w mięknie, on zajęgla o energii 50, w Kaptonie
+  pl-rng-0030 missing[particle,material,number,unit]: jak i zasięg mają drzela za o energii 6, mewnonokleon, ma
+
+wrote eval/results/whisper-bench-2807345/pl-chat-clone__whisper-base__q8__score-ext.json

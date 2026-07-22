@@ -1,0 +1,72 @@
+
+=== onnx-community/whisper-tiny [q8] +prompt ext-corrector ===
+clips: 1000   median inference: 1.4s   load: 0.7s
+clip-level all-slots-correct:  raw 1/1000 (0.1%)   corrected 1/1000 (0.1%)
+
+by quantity (corrected):
+  csdaRange        0/600 (0.0%)
+  energyFromRange  1/250 (0.4%)
+  stoppingPower    0/150 (0.0%)
+
+by scenario type (corrected):
+  single     1/800 (0.1%)
+  energy     0/100 (0.0%)
+  material   0/55 (0.0%)
+  particle   0/45 (0.0%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      1/608 (0.2%)
+  clinical-core  0/392 (0.0%)
+
+by voice profile (corrected), worst 10:
+  chatterbox-default               1/1000 (0.1%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   38.7% ->  38.7%  (n=1250)
+  particle   40.1% ->  40.2%  (n=1045)
+  material   24.7% ->  24.7%  (n=1085)
+  number     13.4% ->  13.4%  (n=1156)
+  unit        6.5% ->   6.5%  (n=1156)
+  ALL        24.6% ->  24.6%  (n=5692)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV          0.6% ->   0.6%  (n=464)
+  MeV/nucl     0.6% ->   0.6%  (n=344)
+  keV          3.8% ->   3.8%  (n=79)
+  GeV          5.3% ->   5.3%  (n=19)
+  mm          38.1% ->  38.1%  (n=63)
+  cm          22.5% ->  22.5%  (n=187)
+
+failing clips after correction (999 total, showing first 30):
+  pl-rng-0001 missing[quantity,number,unit]: obriju dzisakiem, proton, i energii, z samt metr, aluminium.
+  pl-rng-0002 missing[quantity,number,unit]: i jak do lekkodoleci proton, o energii stamy w wodzie.
+  pl-rng-0003 missing[quantity,particle,material,unit]: jak to lekodotrzy, jon magnęzo, energii 50 mięstna, nukleon, w tutlanku, kszemu?
+  pl-rng-0004 missing[quantity,particle,number,unit]: o widz mi, jak tak ocajcie, on leedoo, a energiczny, tam jest na nukleon w wodzie.
+  pl-rng-0005 missing[quantity,particle,material,number,unit]: o blisk.pl.nr.id25.m.
+  pl-rng-0006 missing[quantity,particle,material,number,unit]: powiedz mi, jak telekosyjują kryptoną, oelgiczeryczestam F-9, w konsemiesiowej.
+  pl-rng-0007 missing[quantity,particle,material,number,unit]: jak jest zacznij kt. Alfa, onelgi, czy czy ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci się ci ci się ci ci się ci ci się ci ci się ci ci ci ci się ci ci ci ci ci ci ci ci ci ci ci ci ci ci ci ci ci ci ci ci ci
+  pl-rng-0008 missing[material,number,unit]: jaki jest zasięg, jon węgla, o energi 37,9,5,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9
+  pl-rng-0009 missing[material,number,unit]: i lebeno się zasięg, proton, energii, trajści, med, wg,
+  pl-rng-0010 missing[quantity,particle,material,number,unit]: jak delkodotsojontlenu o energi trzerwinsy.me.nukleon, złoto
+  pl-rng-0011 missing[quantity,material,number,unit]: i górm boków, nie, jon węgla, onergi do własną, permanentu, klowne, kościo zbitej?
+  pl-rng-0012 missing[quantity,material,number,unit]: oblić ds. protonu, onergić testemem w politylenie.
+  pl-rng-0013 missing[quantity,particle,material,number,unit]: ile by no się zaprotonuje do 20-typisientów.
+  pl-rng-0014 missing[particle,number,unit]: jak daleko dotrzej on, no, o nelgitwacij się tej bestem efnologii w wodzie.
+  pl-rng-0015 missing[material,number,unit]: jak głęboko wniknie, jon neonu, o energii, subscribe,
+  pl-rng-0016 missing[quantity,particle,material,number,unit]: potencjać, dotronu, o energy-560MF, kości jest bitaj.
+  pl-rng-0017 missing[quantity,particle,material,number,unit]: podwiedzimy je, do dalleko, za dużo, co jest tutaj,
+  pl-rng-0018 missing[particle,material,number,unit]: jakichś zasięg, mam problem energiczny, stąd my w polityrenie?
+  pl-rng-0019 missing[quantity,particle,material,number,unit]: podbiedz mi, ja w daleko znajdzień, jonny, o energi, ościć, jeszcze wewnątrz, no, plan, podzie.
+  pl-rng-0020 missing[quantity,particle,material,number,unit]: oblidżda się, gdy uteronu, energicz 37m w pogietrzu.
+  pl-rng-0021 missing[particle,material,number,unit]: jak daleko do 3,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+  pl-rng-0022 missing[quantity,material,number,unit]: odaj zacznęk, protonu, or energy-pięciantymet, Kaptoniem.
+  pl-rng-0023 missing[quantity,particle,material,number,unit]: jak to leko, dotrzewiam, o energię, czy tak, mF na nukleon, w polietelanie.
+  pl-rng-0024 missing[quantity,particle,material,number,unit]: ile będą się zasiankioną, kluczy, o energi, pięcie mew po getrzu.
+  pl-rng-0025 missing[quantity,particle,material,number,unit]: i lewę, no się, zaścinki, jon on, o, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no,
+  pl-rng-0026 missing[quantity,particle,material,number,unit]: podisaising, jon nukleon, o energii 155, no no, no, kląpsz plastików, kanka podobnym, a 5%
+  pl-rng-0027 missing[quantity,material,number,unit]: obygś zasięk, proton, o energię, samtmfkości zbita
+  pl-rng-0028 missing[quantity,particle,material,number,unit]: oblicz zaszczyn, do utronu o energii piętenterszmę w polietelanie.
+  pl-rng-0029 missing[material,number]: jak głęboko wniknie, jon węgla, o energi, pingsi, and keV, Kapton, ja.
+  pl-rng-0030 missing[material,number,unit]: jak i zasięg mają żelaza energii, sztandmew na nukleon w męg,
+
+wrote eval/results/whisper-bench-2807345/pl-chat-native__whisper-tiny__q8__score-ext.json

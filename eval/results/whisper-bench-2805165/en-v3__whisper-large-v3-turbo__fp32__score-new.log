@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-large-v3-turbo [fp32] +prompt new-corrector ===
+clips: 1000   median inference: 4.7s   load: 4.9s
+clip-level all-slots-correct:  raw 783/1000 (78.3%)   corrected 846/1000 (84.6%)
+
+by quantity (corrected):
+  csdaRange        519/600 (86.5%)
+  energyFromRange  226/250 (90.4%)
+  stoppingPower    101/150 (67.3%)
+
+by scenario type (corrected):
+  single     660/800 (82.5%)
+  energy     92/100 (92.0%)
+  material   52/55 (94.5%)
+  particle   42/45 (93.3%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      599/698 (85.8%)
+  clinical-core  247/302 (81.8%)
+
+by voice profile (corrected), worst 10:
+  nigerian-female-hurried          8/14 (57.1%)
+  jamaican-female-relaxed          7/11 (63.6%)
+  british-male-skeptical           17/25 (68.0%)
+  custom-aiden-curious             17/24 (70.8%)
+  custom-ryan-happy                15/21 (71.4%)
+  irish-male-sleepy                15/21 (71.4%)
+  german-accented-female-brisk     18/25 (72.0%)
+  italian-accented-male-animated   20/27 (74.1%)
+  custom-eric-hurried              15/20 (75.0%)
+  spanish-accented-male-animated   19/25 (76.0%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   97.8% ->  98.1%  (n=1250)
+  particle   97.4% ->  97.6%  (n=1045)
+  material   99.5% ->  99.5%  (n=1085)
+  number     96.5% ->  96.5%  (n=1152)
+  unit       87.1% ->  93.3%  (n=1152)
+  ALL        95.6% ->  97.0%  (n=5684)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         86.5% ->  91.3%  (n=482)
+  MeV/nucl    77.0% ->  91.6%  (n=322)
+  keV         96.4% ->  97.6%  (n=83)
+  GeV         73.3% ->  80.0%  (n=15)
+  cm         100.0% -> 100.0%  (n=184)
+  mm          95.5% ->  95.5%  (n=66)
+
+failing clips after correction (154 total, showing first 30):
+  rng-0025 missing[unit]: What is the CSDA range of a 70mFe proton and polystyrene?
+  rng-0032 missing[particle,number,unit]: So, roughly how far would a 1-8-MeAV-pernucleon-led 208 ion make it into cortical bone?
+  rng-0041 missing[unit]: What's the range of a 20m EV Triton in air?
+  rng-0044 missing[particle]: Range of 80 MeV, doteron, and Pyrex glass, please?
+  rng-0057 missing[unit]: What's the range of a 250MIV proton in A150 tissue equivalent plastic?
+  rng-0064 missing[unit]: How deep does a 100-yev-alpha particle penetrate into graphite?
+  rng-0073 missing[unit]: Range of a 1GV proton in graphite, please.
+  rng-0076 missing[particle]: What's the range of a 400 MeV per nucleon phosphorous 31 ion in silicon dioxide?
+  rng-0077 missing[unit]: How far will a 120MAV proton travel through soft tissue?
+  rng-0078 missing[number]: What is the CSDA range of a 1080 MeV per nucleon boron-11 ion in Kapton?
+  rng-0093 missing[unit]: What's the range of a 250MIV per nucleon, gold-197 ion in polyethylene?
+  rng-0096 missing[number]: Determine the range of two MeV tritons in a 150-tissue equivalent plastic
+  rng-0113 missing[unit]: What's the range of a 100-MV alpha particle in polystyrene?
+  rng-0118 missing[number]: How deep does a 1-hatei MeV per nucleon phosphorus-31 ion penetrate into a 150-tissue equivalent plastic?
+  rng-0129 missing[particle,unit]: Quick one, how far does a 60 MiAV per nucleon lid, U08, ion go in polystyrene?
+  rng-0138 missing[unit]: How far will a 10-MAV proton travel through PMMA?
+  rng-0150 missing[number]: determine the range of two MeV deuterons in Kapton.
+  rng-0152 missing[number,unit]: Range of a ADMAV triton in muscle tissue, please.
+  rng-0155 missing[unit]: Find the CSDA range for 250-cav argon-40 ions and cesium iodide
+  rng-0160 missing[unit]: Rage of a 200mm V proton in graphite
+  rng-0167 missing[unit]: Click one, how far does a 60MAE deuteron go in cesium iodide?
+  rng-0174 missing[number]: determined the range of four GeV protons in compact bone.
+  rng-0179 missing[number]: Find the CSDA range for two MeV Tritons in PMMA
+  rng-0187 missing[unit]: What's the range of a 15-Miv deuteron in Mylar?
+  rng-0195 missing[number,unit]: So roughly how far would a 100 eB per nucleon phosphorus 31 ion make it into brain?
+  rng-0197 missing[material]: Find the CSDA range for 15 MeV alpha particles and 850 tissue equivalent plastic
+  rng-0208 missing[unit]: How deep does a 50MFE proton penetrate into gold?
+  rng-0210 missing[unit]: Find the CSDA range for 100 EMP protons in concrete
+  rng-0216 missing[unit]: Quick one, how far does a 30MAV proton go in Teflon?
+  rng-0221 missing[particle]: Find the CSDA range for 50 MeV tritones in skin
+
+wrote eval/results/whisper-bench-2805165/en-v3__whisper-large-v3-turbo__fp32__score-new.json

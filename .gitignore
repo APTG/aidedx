@@ -40,6 +40,10 @@ yarn.lock
 # Python venv for Piper TTS (Polish synthesis, issue #79/#87 — scripts/tts-piper-1000.py)
 /.venv-piper/
 
+# Python venv for Chatterbox Multilingual TTS (Polish voice cloning, issue #106 —
+# scripts/tts-chatterbox-1000-pl.py)
+/.venv-chatterbox/
+
 # Python bytecode cache, generated whenever a scripts/*.py file is run directly
 __pycache__/
 
