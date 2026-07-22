@@ -49,7 +49,7 @@ describe("buildDedxWebCalculatorUrl", () => {
   it("builds a forward basic-mode URL for a single MeV energy", () => {
     const url = buildDedxWebCalculatorUrl(intent({}), result());
     expect(url).toBe(
-      `${BASE}?urlv=3&mode=basic&particle=1&material=276&program=2&energies=100&uanchor=MeV`,
+      `${BASE}?urlv=3&mode=advanced&particle=1&material=276&program=2&energies=100&uanchor=MeV`,
     );
   });
 
@@ -185,5 +185,19 @@ describe("buildDedxWebCalculatorUrl", () => {
     const url = buildDedxWebCalculatorUrl(i, r);
     const params = paramsOf(url);
     expect(params.get("program")).toBe("100");
+  });
+
+  it("emits mode=advanced so dedx_web honors program= (issue #116, dedx_web #816)", () => {
+    // Basic mode has no program selector and resets program= to Auto-select
+    // on load — for an MSTAR-based answer that lands on auto-selected
+    // ICRU 73 instead, which can even wrongly exclude the value as
+    // "out of range". mode=advanced is the only mode that keeps this link
+    // honest about which program produced the answer.
+    const i = intent({});
+    const r = result({ series: [series({ program: { id: 4, name: "MSTAR" } })] });
+    const url = buildDedxWebCalculatorUrl(i, r);
+    const params = paramsOf(url);
+    expect(params.get("mode")).toBe("advanced");
+    expect(params.get("program")).toBe("4");
   });
 });

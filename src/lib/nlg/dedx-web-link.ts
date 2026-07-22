@@ -1,19 +1,25 @@
 /**
- * dedx_web basic-calculator deep link (issue #10 trust loop, final item):
- * given the `QueryIntent` + `ComputeResult` behind an answer, build a
- * `urlv=3` dedx_web calculator URL that opens pre-filled with the same
+ * dedx_web calculator deep link (issue #10 trust loop, final item): given
+ * the `QueryIntent` + `ComputeResult` behind an answer, build a `urlv=3`
+ * dedx_web calculator URL that opens pre-filled with the same
  * particle/material/program/energy the user is already looking at — "Open
  * in calculator →" in `AnswerCard.svelte`.
  *
- * Scoped to shapes dedx_web's *basic* calculator can represent on its own:
+ * Scoped to *shapes* dedx_web's basic calculator can represent on its own:
  * a single particle/material/program, either forward (one or more energy
  * rows — `compareDim: "energy"` is exactly that) or inverse (one target
  * value). Multi-entity comparisons (`compareDim: "material"` / `"particle"`
- * / `"program"`) need dedx_web's *advanced* mode (`across=`/`particles=`/
- * `materials=`/`programs=`) and are out of scope here — see issue #10.
- * Returning `null` for anything unrepresentable is deliberate: a missing
- * link is harmless, a link that opens dedx_web with different numbers than
- * the ones just shown would undermine the whole trust loop.
+ * / `"program"`) need dedx_web's advanced-mode multi-select (`across=`/
+ * `particles=`/`materials=`/`programs=`) and are out of scope here — see
+ * issue #10. Returning `null` for anything unrepresentable is deliberate: a
+ * missing link is harmless, a link that opens dedx_web with different
+ * numbers than the ones just shown would undermine the whole trust loop.
+ *
+ * The emitted URL always carries `mode=advanced`, even for these
+ * basic-shaped queries: dedx_web's Basic mode has no program selector and
+ * silently resets `program=` to Auto-select on load (dedx_web #816), which
+ * can select a different program than the one the answer was actually
+ * computed with — see issue #116.
  *
  * Param names/ids/units are taken from `APTG/dedx_web`'s
  * `docs/04-feature-specs/shareable-urls-formal.md` grammar and
@@ -99,7 +105,12 @@ export function buildDedxWebCalculatorUrl(
 
   const params = new URLSearchParams();
   params.set("urlv", "3");
-  params.set("mode", "basic");
+  // mode=advanced, not "basic": dedx_web's Basic mode has no program selector
+  // and silently resets program= to Auto-select on load (dedx_web #816) even
+  // when the id is otherwise correct — a MSTAR-based answer would open the
+  // calculator on auto-selected ICRU 73 instead (issue #116). Advanced mode
+  // is the only mode that honors an explicit program=.
+  params.set("mode", "advanced");
   params.set("particle", String(series.particle.id));
   params.set("material", String(series.material.id));
   params.set("program", String(series.program.id));
