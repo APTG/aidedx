@@ -257,7 +257,7 @@ describe("AnswerCard", () => {
     });
     expect(link).toHaveAttribute(
       "href",
-      "https://aptg.github.io/web_dev/calculator?urlv=3&mode=advanced&particle=1&material=224&program=2&energies=40&uanchor=MeV",
+      "https://aptg.github.io/web_dev/calculator?urlv=3&particle=1&material=224&mode=basic&energies=40&uanchor=MeV",
     );
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");

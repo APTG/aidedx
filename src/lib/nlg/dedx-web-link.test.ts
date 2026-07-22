@@ -46,11 +46,9 @@ function paramsOf(url: string | null): URLSearchParams {
 }
 
 describe("buildDedxWebCalculatorUrl", () => {
-  it("builds a forward URL for a single MeV energy", () => {
+  it("builds a Basic-mode forward URL for a single MeV energy, no explicit program", () => {
     const url = buildDedxWebCalculatorUrl(intent({}), result());
-    expect(url).toBe(
-      `${BASE}?urlv=3&mode=advanced&particle=1&material=276&program=2&energies=100&uanchor=MeV`,
-    );
+    expect(url).toBe(`${BASE}?urlv=3&particle=1&material=276&mode=basic&energies=100&uanchor=MeV`);
   });
 
   it("emits a per-row :unit suffix for a keV energy, anchored on MeV", () => {
@@ -179,25 +177,29 @@ describe("buildDedxWebCalculatorUrl", () => {
     expect(buildDedxWebCalculatorUrl(intent({}), r)).toBeNull();
   });
 
-  it("reads particle/material/program ids from the series, never emitting program=auto", () => {
-    const i = intent({});
-    const r = result({ series: [series({ program: { id: 100, name: "Bethe" } })] });
-    const url = buildDedxWebCalculatorUrl(i, r);
-    const params = paramsOf(url);
-    expect(params.get("program")).toBe("100");
-  });
-
-  it("emits mode=advanced so dedx_web honors program= (issue #116, dedx_web #816)", () => {
-    // Basic mode has no program selector and resets program= to Auto-select
-    // on load — for an MSTAR-based answer that lands on auto-selected
-    // ICRU 73 instead, which can even wrongly exclude the value as
-    // "out of range". mode=advanced is the only mode that keeps this link
-    // honest about which program produced the answer.
+  it("omits program= and uses Basic mode when the program was auto-selected (issue #116)", () => {
+    // Auto-selected — no intent.program — so aidedx trusts dedx_web's own
+    // Auto-select (now mirroring autoProgramForParticle() exactly, dedx_web
+    // #871/#872) to independently land on the same program. No program= is
+    // emitted at all: Basic mode ignores it anyway (dedx_web#816), and
+    // emitting a stale/misleading one would be worse than omitting it.
     const i = intent({});
     const r = result({ series: [series({ program: { id: 4, name: "MSTAR" } })] });
     const url = buildDedxWebCalculatorUrl(i, r);
     const params = paramsOf(url);
+    expect(params.get("mode")).toBe("basic");
+    expect(params.get("program")).toBeNull();
+  });
+
+  it("emits mode=advanced&program=<id> when the user named an explicit program", () => {
+    // Basic mode has no program selector at all — an explicit program choice
+    // (e.g. "using Bethe") has no Basic-mode equivalent, so this always needs
+    // Advanced mode to stick, regardless of what Auto-select would pick.
+    const i = intent({ program: "bethe" });
+    const r = result({ series: [series({ program: { id: 100, name: "Bethe" } })] });
+    const url = buildDedxWebCalculatorUrl(i, r);
+    const params = paramsOf(url);
     expect(params.get("mode")).toBe("advanced");
-    expect(params.get("program")).toBe("4");
+    expect(params.get("program")).toBe("100");
   });
 });

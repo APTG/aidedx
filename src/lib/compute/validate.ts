@@ -202,7 +202,7 @@ export function validateIntent(intent: QueryIntent, service: LibdedxService): Va
     const material = resolveMaterial(pair.materialMatch);
     if (!particle || particle.id === ELECTRON_ID || !material) continue;
 
-    const programId = resolveProgramId(intent, particle.id, material.id, service);
+    const programId = resolveProgramId(intent, particle, material.id, service);
     if (!programSupportsCombination(service, programId, particle.id, material.id)) {
       // Attribute to whichever side is actually missing from the program's own tables — e.g.
       // proton + Boron under PSTAR is a *material* gap (PSTAR supports protons everywhere else),

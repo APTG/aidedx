@@ -15,11 +15,18 @@
  * missing link is harmless, a link that opens dedx_web with different
  * numbers than the ones just shown would undermine the whole trust loop.
  *
- * The emitted URL always carries `mode=advanced`, even for these
- * basic-shaped queries: dedx_web's Basic mode has no program selector and
- * silently resets `program=` to Auto-select on load (dedx_web #816), which
- * can select a different program than the one the answer was actually
- * computed with — see issue #116.
+ * Basic mode (`mode=basic`, the default) is used whenever the program was
+ * auto-selected — i.e. `intent.program` wasn't user-specified. This relies
+ * on `compute.ts`'s `autoProgramForParticle()` mirroring dedx_web's own
+ * Auto-select chain (`AUTO_SELECT_CHAIN`/energy-aware fallthrough,
+ * dedx_web#871/#872) exactly, so dedx_web's Basic-mode Auto-select — which
+ * always re-derives the program from particle+material+energy and ignores
+ * any `program=` in the URL (dedx_web#816) — independently lands on the
+ * same program aidedx already computed with. When the user named an
+ * explicit program (`intent.program` set), Basic mode *can't* represent
+ * that choice at all (no program selector, and Auto-select would silently
+ * override it), so the link falls back to `mode=advanced&program=<id>`
+ * instead — see issue #116.
  *
  * Param names/ids/units are taken from `APTG/dedx_web`'s
  * `docs/04-feature-specs/shareable-urls-formal.md` grammar and
@@ -105,15 +112,23 @@ export function buildDedxWebCalculatorUrl(
 
   const params = new URLSearchParams();
   params.set("urlv", "3");
-  // mode=advanced, not "basic": dedx_web's Basic mode has no program selector
-  // and silently resets program= to Auto-select on load (dedx_web #816) even
-  // when the id is otherwise correct — a MSTAR-based answer would open the
-  // calculator on auto-selected ICRU 73 instead (issue #116). Advanced mode
-  // is the only mode that honors an explicit program=.
-  params.set("mode", "advanced");
   params.set("particle", String(series.particle.id));
   params.set("material", String(series.material.id));
-  params.set("program", String(series.program.id));
+
+  // An explicit program request (e.g. "using ICRU73") has no Basic-mode
+  // equivalent — Basic mode hides the program selector and always
+  // re-derives it via Auto-select (dedx_web#816), silently discarding this
+  // choice. Advanced mode + an explicit program= is the only way to
+  // reproduce it. Otherwise (the common case) the program was auto-selected,
+  // and Basic mode's own Auto-select — now mirroring `autoProgramForParticle()`
+  // exactly, energy included — independently resolves to the same program,
+  // so mode=basic (dedx_web's default, no program= needed) is safe.
+  if (intent.program) {
+    params.set("mode", "advanced");
+    params.set("program", String(series.program.id));
+  } else {
+    params.set("mode", "basic");
+  }
 
   if (isForward) {
     const encoded = encodeEnergies(intent.energies);

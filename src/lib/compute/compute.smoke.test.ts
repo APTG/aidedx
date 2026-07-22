@@ -83,9 +83,11 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(s.error).toBeUndefined();
     expect(s.particle.id).toBe(1); // hydrogen / proton
     expect(s.material.id).toBe(223); // PMMA
-    expect(s.program.name).toBe("PSTAR");
+    // ICRU49 comes first in the auto-select chain (mirroring dedx_web's own
+    // Auto-select, issue #116) and covers this energy, so it wins over PSTAR.
+    expect(s.program.name).toBe("ICRU49");
     expect(p.energyMeVPerNucl).toBeCloseTo(40, 5);
-    // NIST PSTAR PMMA @ 40 MeV ≈ 1.52 g/cm²; libdedx gives ~1.529.
+    // NIST PSTAR PMMA @ 40 MeV ≈ 1.52 g/cm²; libdedx's ICRU49 table gives ~1.529 too.
     expect(p.csdaRange).toBeCloseTo(1.529, 2);
     expect(p.stoppingPower).toBeCloseTo(14.48, 1);
     expect(result.libdedxVersion).toBeTypeOf("string");
@@ -288,13 +290,29 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(p.csdaRange).toBeGreaterThan(0);
   });
 
-  it("still uses MSTAR for argon, the heaviest ion MSTAR actually tabulates", () => {
+  it("uses ICRU73 for argon at a typical energy, mirroring dedx_web's Auto-select chain (issue #116)", () => {
     const result = computeIntent(
       intent({
         quantity: "stoppingPower",
         particles: [{ match: "argon ions" }],
         materials: [{ match: "water" }],
         energies: [{ value: 100, unit: "MeV/nucl" }],
+      }),
+      service,
+    );
+    const s = req(result.series[0]);
+    expect(s.error).toBeUndefined();
+    expect(s.program.name).toBe("ICRU73");
+  });
+
+  it("falls through to MSTAR for argon below ICRU73's energy floor (dedx_web#871/#872)", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "stoppingPower",
+        particles: [{ match: "argon ions" }],
+        materials: [{ match: "water" }],
+        // ICRU 73's floor for argon is 0.025 MeV/nucl; MSTAR's is 0.001.
+        energies: [{ value: 0.005, unit: "MeV/nucl" }],
       }),
       service,
     );
