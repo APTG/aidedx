@@ -28,6 +28,11 @@ yarn.lock
 # Recorded voice clips for the ASR eval set — local only, never committed
 /eval/audio/
 
+# Public-lecture/podcast corpus fetched by scripts/submit-fetch-lecture-corpus.sh (issue #118
+# §6 cross-check) — third-party media, regenerable from that script + docs/unit-pronunciation-asr.md
+# §6.1's manifest, never committed.
+/eval/lecture-corpus/
+
 # Python venv for s3cmd (Cyfronet mirror tooling)
 /.venv/
 

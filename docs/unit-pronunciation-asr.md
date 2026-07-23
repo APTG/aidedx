@@ -122,10 +122,134 @@ variance; adding Qwen-PL and Chatterbox-clone lanes.
 
 The probe measures _TTS engines_. To measure the _human_ distribution the observation is really
 about, run Whisper + forced alignment (WhisperX / Montreal-Forced-Aligner) on public physics
-lectures (MIT OCW 22.01/8.02, CERN summer-student lectures) and histogram the aligned `MeV`-token
-duration: "megaelectronvolt" (~5 syllables, ~0.7 s) vs "em-ee-vee" (~3 short letters, ~0.4 s)
-separate cleanly. Wikipedia per-letter recordings (e.g. the `V` clip) are useful for building a
-synthetic letter-spelled reference, not for the lecture measurement.
+lectures and histogram the aligned `MeV`-token duration: "megaelectronvolt" (~5 syllables, ~0.7 s)
+vs "em-ee-vee" (~3 short letters, ~0.4 s) separate cleanly. Wikipedia per-letter recordings (e.g.
+the `V` clip) are useful for building a synthetic letter-spelled reference, not for the lecture
+measurement.
+
+### 6.1 Resources found (verified 2026-07-23, not downloaded — URLs + counts only)
+
+**Primary: MIT 8.701 "Introduction to Nuclear and Particle Physics" (Fall 2020, Markus Klute),
+mirrored on Internet Archive, CC BY-NC-SA.** Every clip has a matching *professionally captioned*
+(not auto-generated) `.srt` — this is better than a bare lecture recording because the reference
+transcript is known, so alignment is true forced alignment (known text → audio), not ASR-then-align.
+The caption text still collapses to the abbreviation (`MeV`/`GeV`) regardless of how it was spoken
+— same blindness as our own Whisper transcripts (§1) — so the classification still has to come from
+aligned-segment duration, not the caption text itself.
+
+- Item: `https://archive.org/details/MIT8.701F20`
+- Machine-readable file manifest (JSON, one `curl`, gives every filename/size/duration for all 474
+  files without touching any media): `curl -s https://archive.org/metadata/MIT8.701F20`
+- Download pattern per chapter: `https://archive.org/download/MIT8.701F20/<name>.mp4` and the same
+  path with `.srt` for the caption.
+- Grepped all 67 chapter `.srt` files (text only, ~KB each) for `keV`/`MeV`/`GeV`; **21 of 67
+  chapters** mention at least one, 76 mentions total, ranked by density:
+
+  | chapter (`MIT8_701F20_<name>_300k`) | mentions | duration | size |
+  | --- | --- | --- | --- |
+  | `00-07_Units` | 10 | 5:47 | 14.7 MB |
+  | `00-08_RelKinematics` | 7 | 15:20 | 34.9 MB |
+  | `08-04_experiments` | 6 | 11:11 | 26.5 MB |
+  | `07-04_status` | 6 | 8:13 | 19.9 MB |
+  | `10-04_accelerators` | 5 | 23:57 | 55.2 MB |
+  | `07-03_productiondecay` | 5 | 5:36 | 14.1 MB |
+  | `05-01_hadrons` | 5 | 9:27 | 22.4 MB |
+  | `10-01_mechanism` | 4 | 17:13 | 39.9 MB |
+  | `09-02_binding` | 4 | 9:31 | 22.7 MB |
+  | `07-02_fermions` | 4 | 3:42 | 9.7 MB |
+  | `05-04_dis` | 3 | 9:52 | 23.5 MB |
+  | `01-03_RangeForces` | 3 | 5:29 | 13.6 MB |
+  | `09-08_fusion` | 2 | 9:26 | 22.7 MB |
+  | `09-07_fission` | 2 | 5:27 | 13.7 MB |
+  | `06-03_piondecay` | 2 | 7:50 | 19.0 MB |
+  | `05-05_alphas` | 2 | 6:53 | 16.8 MB |
+  | `00-06_Particles` | 2 | 14:00 | 32.3 MB |
+  | `08-06_scale` | 1 | 7:21 | 17.9 MB |
+  | `08-03_mixing` | 1 | 5:38 | 14.1 MB |
+  | `03-05_Divergency` | 1 | 6:32 | 16.1 MB |
+  | `02-02_flavor` | 1 | 6:49 | 16.8 MB |
+
+  Total for all 21: ~467 MB. `00-07_Units` is the anchor clip — the lecture is literally "the unit
+  on units"; the professor reads `GeV` out loud repeatedly ("kilogram, meters, and GeV… 0.197 GeV
+  femtometers"). `09-02_binding` / `09-07_fission` / `09-08_fusion` are nuclear-physics chapters
+  (same energy regime as this project's dE/dx domain) with natural `MeV`-per-nucleon phrasing
+  ("contributes with about 16 MeV per nucleon").
+- Verified downloadable with a plain `curl -I` (HTTP 302 → direct `archive.org` CDN mp4, no auth,
+  `Accept-Ranges: bytes` so `wget -c`/resume works) — good fit for an Athena `wget` job.
+- License note: CC BY-NC-SA — fine for internal research/ASR evaluation, not for redistribution.
+
+**Secondary (podcast, spontaneous/conversational, no ground-truth transcript — would need Whisper's
+own transcript + forced-align, same self-referential limitation as the TTS probe): "Daniel and
+Jorge Explain the Universe"**, hosted by Daniel Whiteson, an actual ATLAS/LHC particle physicist —
+so `GeV`/`MeV` come up in genuine unscripted collider talk, not just as a topic.
+
+- RSS feed (direct, no auth):
+  `https://www.omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/f5d5fac6-77be-47e6-9aee-ae32006cd8c3/b26cbbeb-86eb-4b97-9b34-ae32006cd8d6/podcast.rss`
+- Each `<enclosure url="...">` is a `podtrac.com` redirect to a direct `traffic.omny.fm/.../audio.mp3`
+  — verified with `curl -I` (`curl -L` follows the 302 fine).
+- 4 episodes hand-picked from the feed by title (grepped for "LHC"/"Higgs"/"quark"/"neutrino"/
+  "antimatter" — near-certain `GeV`/`MeV` content, e.g. the Higgs mass, ~125 GeV, is a stock number
+  in that episode): **"How do we measure the Higgs boson mass?"**, **"Are there charm quarks in the
+  proton?"**, **"How massive is a neutrino?"**, **"Can antimatter help us find dark matter?"** — see
+  `scripts/submit-fetch-lecture-corpus.sh` for the exact per-episode URLs.
+
+**Tertiary / fallback (general physics podcast, lower and unpredictable density of energy-unit
+mentions — interviews cover all of physics, not just particle physics): Physics World Weekly.**
+
+- RSS: `https://physicsworld.com/feed/podcast-weekly` → `<enclosure>` redirects (via `blubrry.com`,
+  verified `curl -I`) to direct mp3s. Not wired into the fetch script — useful only as a volume
+  top-up if the sources above turn out insufficient.
+
+**Considered and set aside:**
+
+- _CERN Summer Student Lecture Programme_ — exactly on-topic content (LEP/LHC/neutrino physics is
+  saturated with `MeV`/`GeV`), but `repository.cern` record pages (e.g.
+  `https://repository.cern/records/av36y-gf879`) only link out to old CERN agenda/webcast pages, not
+  direct file URLs, and `videos.cern.ch` (CDS Videos) looks like a streaming player with no confirmed
+  direct-download URL pattern from a quick pass. Worth a second look if the MIT set proves
+  insufficient, but it is not a clean `wget`-able collection the way the archive.org mirror is.
+- _Perimeter Institute (PIRSA)_ — public lectures with per-talk MP3 audio, but needs per-talk-page
+  scraping to find file URLs; no archive.org-style bulk JSON manifest found. Deprioritized versus
+  the one-`curl` MIT manifest.
+
+### 6.2 Polish-language resources (verified 2026-07-23)
+
+No Polish equivalent of the MIT captioned-lecture set turned up: CERN's Polish outreach, IFJ PAN's
+own open seminars, NCBJ's popular lectures, and Wszechnica.org.pl ("ogólnodostępna baza wykładów")
+all exist but publish through YouTube/embedded streaming players, not a bulk-downloadable direct-file
+host — none has an archive.org-style mirror. So the Polish side of this corpus is podcast-only, same
+tier as the English secondary source (no ground-truth transcript, self-referential alignment).
+
+**Radio Naukowe** — Poland's most popular science-interview podcast (host: Karolina Głowacka),
+self-hosted via Spreaker.
+
+- RSS feed: `https://www.spreaker.com/show/4638772/episodes/feed` — `<enclosure>` is a
+  `dts.podtrac.com` redirect to a direct `api.spreaker.com/download/episode/...mp3` (verified
+  `curl -I`). The site's own per-episode "Pobierz" (Download) link
+  (`radionaukowe.pl/podcast/<slug>/pobierz/`) also resolves directly (verified `200 OK` +
+  `Content-Disposition: attachment`) as a second, independent path to the same file if the RSS
+  redirect chain ever breaks.
+- 4 episodes hand-picked by title/topic for expected `keV`/`MeV`/`GeV` density: **#289 "Ciemna
+  materia i neutrina"** and **#104 "Ciemna materia"** (dark-matter candidate masses are routinely
+  quoted keV–GeV, same physicist guest in both, ~13 years apart — also a rare within-source
+  same-speaker comparison), **#183 "Energia fuzji"** (fusion — D-T fusion releases a textbook
+  17.6 MeV), **#87 "Promieniowanie Czerenkowa"** (Cherenkov radiation / the CTA observatory, whose
+  native unit is GeV–TeV gamma-ray energy). Episodes run long (~1–2 h full interviews, 110–170 MB
+  each) — exact URLs in `scripts/submit-fetch-lecture-corpus.sh`.
+
+### 6.3 Fetched by `scripts/submit-fetch-lecture-corpus.sh` (not yet run)
+
+That script `wget`s the full set above — 21 MIT chapters (mp4+srt) + 4 Daniel-and-Jorge + 4 Radio
+Naukowe episodes, ~1.2 GB total — onto `eval/lecture-corpus/{en,pl}/<source>/` (gitignored) and
+writes a `MANIFEST.tsv` alongside them. Submit on Athena with `sbatch
+scripts/submit-fetch-lecture-corpus.sh` after `git pull`; safe to resubmit (per-file resume/skip).
+
+**Next step after that (not yet built):** run WhisperX (or Montreal Forced Aligner) forced alignment
+— against the MIT `.srt` as reference text where available, against Whisper's own transcript for the
+two podcasts — then apply the §5 `r = (dur_abbrev − dur_letters) / (dur_expand − dur_letters)`-style
+duration classification to each aligned `keV`/`MeV`/`GeV` instance. That gives an actual measured
+human expanded-vs-letters ratio, in both languages, to compare against §5's TTS-engine ratios —
+closing the gap this section previously only sketched conceptually.
 
 ## 7. Recommendations
 
