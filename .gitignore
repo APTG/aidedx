@@ -26,8 +26,9 @@ yarn.lock
 /.hf-cache/
 
 # Android ASR runtime bench model cache + battery snapshots (issue #120,
-# scripts/android-asr-fetch-models.sh / scripts/android-asr-battery-bench.sh) — same
-# regenerable-artifact rationale as .hf-cache/, never committed
+# scripts/android-asr-fetch-models.sh / scripts/android-asr-battery-bench.sh), plus the
+# locally-built whisper.cpp source/binaries used for the desktop pre-check (src/whisper.cpp/) —
+# same regenerable-artifact rationale as .hf-cache/, never committed
 /.android-asr-cache/
 
 # Recorded voice clips for the ASR eval set — local only, never committed
@@ -48,6 +49,10 @@ yarn.lock
 # Python venv for Chatterbox Multilingual TTS (Polish voice cloning, issue #106 —
 # scripts/tts-chatterbox-1000-pl.py)
 /.venv-chatterbox/
+
+# Python venv for the issue #120 Android ASR desktop pre-check (sherpa-onnx + vosk —
+# scripts/sherpa-onnx-transcribe.py, scripts/vosk-transcribe.py)
+/.venv-asr-bench/
 
 # Python bytecode cache, generated whenever a scripts/*.py file is run directly
 __pycache__/

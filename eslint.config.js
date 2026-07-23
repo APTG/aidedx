@@ -21,6 +21,10 @@ export default tseslint.config(
       ".npm-global/**",
       ".hf-cache-py/**",
       ".hf-cache/**",
+      // Issue #120 Android ASR desktop pre-check: locally-built whisper.cpp source (a full
+      // vendored clone) + downloaded model caches, and the sherpa-onnx/vosk Python venv.
+      ".android-asr-cache/**",
+      ".venv-asr-bench/**",
     ],
   },
   js.configs.recommended,
