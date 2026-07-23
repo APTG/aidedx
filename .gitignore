@@ -25,6 +25,11 @@ yarn.lock
 # Local model weight cache (downloaded by prefetch scripts, not committed)
 /.hf-cache/
 
+# Android ASR runtime bench model cache + battery snapshots (issue #120,
+# scripts/android-asr-fetch-models.sh / scripts/android-asr-battery-bench.sh) — same
+# regenerable-artifact rationale as .hf-cache/, never committed
+/.android-asr-cache/
+
 # Recorded voice clips for the ASR eval set — local only, never committed
 /eval/audio/
 
