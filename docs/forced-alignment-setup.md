@@ -1,9 +1,10 @@
 # Setting up `.venv-align` on Athena
 
-One-time setup for `scripts/submit-forced-align.sh` (issue #118 §6 human-speech cross-check).
-Same status as `.venv-qwen`/`.venv-chatterbox`: CUDA-specific, not auto-provisioned by the submit
-script — that script just checks the directory exists and errors out with a pointer to this doc if
-not, same pattern as `scripts/submit-unit-probe.sh` for its two CUDA venvs.
+**Background reading, not a required step** — `scripts/submit-forced-align.sh` creates
+`.venv-align` itself on first run (unlike `.venv-qwen`/`.venv-chatterbox`, which stay deliberately
+manual; that script's own header comment explains why this one doesn't need to). Read this doc if
+the auto-install fails, or you want to poke at the venv interactively — §1-3 are then exactly what
+the submit script runs automatically, and §4-5 are how to verify/debug it by hand.
 
 ## Why this venv, and what it avoids
 
