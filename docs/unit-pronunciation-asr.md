@@ -237,19 +237,48 @@ self-hosted via Spreaker.
   native unit is GeV–TeV gamma-ray energy). Episodes run long (~1–2 h full interviews, 110–170 MB
   each) — exact URLs in `scripts/submit-fetch-lecture-corpus.sh`.
 
-### 6.3 Fetched by `scripts/submit-fetch-lecture-corpus.sh` (not yet run)
+### 6.3 Fetched by `scripts/submit-fetch-lecture-corpus.sh` (run 2026-07-23)
 
 That script `wget`s the full set above — 21 MIT chapters (mp4+srt) + 4 Daniel-and-Jorge + 4 Radio
-Naukowe episodes, ~1.2 GB total — onto `eval/lecture-corpus/{en,pl}/<source>/` (gitignored) and
-writes a `MANIFEST.tsv` alongside them. Submit on Athena with `sbatch
-scripts/submit-fetch-lecture-corpus.sh` after `git pull`; safe to resubmit (per-file resume/skip).
+Naukowe episodes — onto `eval/lecture-corpus/{en,pl}/<source>/` (gitignored) and writes a
+`MANIFEST.tsv` alongside them. Ran clean on Athena: 50/50 files, 0 failures, ~1.1 GB total.
 
-**Next step after that (not yet built):** run WhisperX (or Montreal Forced Aligner) forced alignment
-— against the MIT `.srt` as reference text where available, against Whisper's own transcript for the
-two podcasts — then apply the §5 `r = (dur_abbrev − dur_letters) / (dur_expand − dur_letters)`-style
-duration classification to each aligned `keV`/`MeV`/`GeV` instance. That gives an actual measured
-human expanded-vs-letters ratio, in both languages, to compare against §5's TTS-engine ratios —
-closing the gap this section previously only sketched conceptually.
+### 6.4 Forced alignment (`scripts/forced-align-corpus.py`, `scripts/submit-forced-align.sh`)
+
+Built, not yet run. Per-language `transformers` CTC models
+(`jonatasgrosman/wav2vec2-large-xlsr-53-{english,polish}`) +
+`torchaudio.functional.forced_align`/`merge_tokens` — deliberately **not** `whisperx` (drags in
+`ctranslate2`, a known cuDNN-version-mismatch source on HPC even when only `align()` is used) and
+**not** torchaudio's bundled multilingual `MMS_FA` (expects Romanized input for best results;
+irrelevant complexity here since the per-language models already have native alphabets, including
+Polish diacritics). Full rationale in `docs/forced-alignment-setup.md` (one-time `.venv-align`
+setup this needs — CUDA-specific, not auto-provisioned by the submit script, same pattern as
+`.venv-qwen`/`.venv-chatterbox`).
+
+Method, per segment (an MIT `.srt` cue with **known** text, or a Whisper-transcribed chunk for the
+two podcasts, which have none): normalize the text (lowercase, spell out digits with `num2words`
+— CTC vocabularies are letters-only, so a bare `150` breaks alignment for that whole segment),
+tokenize word-by-word against the CTC processor's vocab (word boundaries known by construction,
+not inferred), forced-align against the (padded) audio slice, regroup token spans into word spans.
+Any `eV`/`keV`/`MeV`/`GeV`/`TeV` word gets its aligned `[start, end]` recorded, plus that
+segment's median word duration as a local speaking-rate baseline — real speech has no fixed rate
+the way TTS does, so `dur / local_median_word_dur` is the comparable quantity across
+speakers/segments, not raw seconds.
+
+```sh
+sbatch scripts/submit-forced-align.sh
+# after it finishes (or to sanity-check a handful of files before committing a full ~6h run):
+#   python3 scripts/forced-align-corpus.py eval/results/forced-align-manual --limit 2
+# then, after rsync-ing eval/results/forced-align-<job>/ back:
+python3 scripts/forced-align-analyze.py eval/results/forced-align-<job>
+```
+
+`forced-align-analyze.py` runs locally (no GPU/torch) and reports the rate-normalized-duration
+distribution per `(lang, source, unit)`, plus the most extreme instances with sentence context —
+there's no TTS-style minimal pair here to compute a clean `r` ratio from (§5's), so this is a
+human-eyeballed read of the distribution (low ratio ~ quick/letter-spelled-like, high ratio ~
+slow/expanded-like), not an auto-classifier, with the option to go listen to specific
+`eval/lecture-corpus/<lang>/<source>/<file>.*` timestamps directly for the ones that matter.
 
 ## 7. Recommendations
 

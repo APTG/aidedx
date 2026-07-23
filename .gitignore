@@ -49,6 +49,10 @@ yarn.lock
 # scripts/tts-chatterbox-1000-pl.py)
 /.venv-chatterbox/
 
+# Python venv for the forced-alignment human-speech cross-check (issue #118 §6 —
+# scripts/forced-align-corpus.py, docs/forced-alignment-setup.md)
+/.venv-align/
+
 # Python bytecode cache, generated whenever a scripts/*.py file is run directly
 __pycache__/
 
