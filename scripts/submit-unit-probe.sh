@@ -47,7 +47,10 @@
 # Resume:  same command — synthesis skips existing <id>.wav, transcription skips existing ids.
 set -euo pipefail
 
-cd "$(dirname "$0")/.."
+# Run from the repo root. Under sbatch, SLURM starts the job in the submission directory
+# (SLURM_SUBMIT_DIR) — submit this from the repo root, same as every other submit-*.sh here.
+# NOT `dirname "$0"`: under sbatch $0 is the spooled copy in /var/spool/slurmd/, not this file.
+cd "${SLURM_SUBMIT_DIR:-$(pwd)}"
 source scripts/athena-env.sh
 
 # One results dir per job, committed after sync (audio dirs themselves are gitignored, so each
