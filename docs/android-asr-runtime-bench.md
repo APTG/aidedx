@@ -552,6 +552,84 @@ Local desktop-precheck session (§3):
   the existing `.venv-*` entries); extended the `/.android-asr-cache/` comment to note it also holds
   the locally-built whisper.cpp source/binaries.
 
+## 8. Device-build handoff, 2026-07-24 — blocked by managed endpoint security, moving machines
+
+_Same continuation as §3, one day later, same physical machine, now attempting the actual
+on-device build. Recorded here so the next session (a different, unmanaged machine) doesn't have
+to rediscover any of this._
+
+**What this machine got done before hitting the blocker**: Android Studio installed
+(`~/Applications/android-studio/`, extracted from the official tarball) with the SDK at
+`~/Android/Sdk` (Standard install: `platform-tools`, a current platform, `build-tools`) plus the
+NDK ("side by side") added via the SDK Manager. On the Pixel 7A: Developer Options enabled, USB
+debugging turned on, "Stay awake while charging" turned on. **This phone-side state persists across
+computers** — reconnecting to a different machine will just prompt for that new machine's RSA key,
+not require redoing Developer Options.
+
+**The blocker**: `adb devices` failed with `protocol fault (couldn't read status): Connection reset
+by peer` on every attempt, including after `adb kill-server`/`start-server` and trying an unrelated
+port (`-P 5999`) with no server bound there at all — the same reset happened regardless. Verified
+concretely, not assumed:
+
+- The `adb` binary itself is fine (`adb version` succeeds; a foreground `adb server` process starts
+  and `ss -tlnp` confirms it actually binds `127.0.0.1:5037`).
+- No conflicting process was already bound to 5037 or 5999 (`ss`, `lsof -i`, `fuser` all came up
+  empty before starting adb).
+- A connection to an **unbound** port produced the identical "reset by peer" as the real adb port —
+  that's the signature of a network-filter driver intercepting loopback TCP, not an adb-specific
+  problem.
+- Process inspection found **ESET Endpoint Antivirus** running under `ERAAgent` (ESET Remote
+  Administrator Agent — `/opt/eset/eea/*`, `/opt/eset/RemoteAdministrator/Agent/ERAAgent`), meaning
+  this machine reports to a centrally managed ESET PROTECT policy (this is an AGH-managed laptop).
+  ESET's network-attack-protection/IDS module is the standard explanation for exactly this failure
+  mode (binary, non-HTTP(S) protocol on a loopback port gets reset). **Not independently confirmed
+  via ESET's own logs** — `/var/log/eset/` and `/var/opt/eset/` require root, and this account has
+  no passwordless `sudo` — so this is strong circumstantial evidence, not a certainty.
+- The ESET GUI's "Pause protection" (or equivalent Network Protection toggle) was the next
+  troubleshooting step, but policy-managed installs commonly lock that control for non-admin users,
+  and escalating to IT for an exclusion would stall this session — **decision: move to a different,
+  unmanaged machine instead of waiting on an IT ticket.**
+
+### TODO for the next machine
+
+1. Install Android Studio (Standard install type) + add the NDK ("side by side") via
+   Settings/Preferences → Languages & Frameworks → Android SDK → SDK Tools.
+2. Connect the Pixel 7A via USB — Developer Options/USB debugging are already enabled on the phone
+   itself, so this should just need accepting the new machine's RSA key prompt on the phone (tap
+   Allow, check "always allow").
+3. Confirm `<sdk>/platform-tools/adb devices` lists the phone as `device`.
+4. Then work through §5's runbook in priority order (established from §3's desktop numbers):
+   - **sherpa-onnx first** (best desktop result, least native-build risk — prebuilt AAR, no NDK
+     needed for this candidate specifically). Sparse-clone just what's needed:
+     ```
+     git clone --depth 1 --filter=blob:none --sparse https://github.com/k2-fsa/sherpa-onnx <dest>
+     cd <dest> && git sparse-checkout set android kotlin-api sherpa-onnx/kotlin-api
+     ```
+     Fork `android/SherpaOnnxVadAsr` as the starting skeleton — confirmed this session it's already
+     wired to `OfflineRecognizer` (the non-streaming API Whisper needs; the flagship `SherpaOnnx`
+     demo app is streaming-only and won't work for this). Strip its VAD/live-mic UI, bundle the
+     whisper-small int8 model (re-fetch via `scripts/android-asr-fetch-models.sh sherpa-onnx`, or
+     reuse `.android-asr-cache/sherpa-onnx/` if this repo's checkout carries over) plus the 89 eval
+     clips as assets, loop + time + emit the §4 JSON contract, `adb pull`, score with
+     `pnpm eval:e2e` / `pnpm asr:score` (both unmodified).
+   - **whisper.cpp second**: `git clone --depth 1 https://github.com/ggml-org/whisper.cpp`, open
+     `examples/whisper.android` (this one does need the NDK). Resolve §5.2's remaining TODO first —
+     whether the Kotlin/JNI wrapper exposes `initial_prompt` — before wiring up the same
+     loop-and-emit-JSON approach.
+   - **Vosk — quick plain-dictation confirmation only**, from `alphacep/vosk-android-demo`. Skip
+     re-testing the grammar-constrained variant on-device: §3.4 already confirmed that failure is
+     about the model's fixed lexicon (missing "mev" etc.), not something a different CPU
+     architecture changes.
+   - Wrap each candidate's full 89-clip batch with `scripts/android-asr-battery-bench.sh` (before/
+     after snapshots).
+   - Fill in §6's results table with the real numbers, and write the final recommendation. If the
+     result is actionable, file the separate Android-app-decision tracking issue this issue's own
+     description calls for.
+5. None of the Android tooling (Studio, SDK, NDK) or the cloned example-app repos persist in git —
+   same regenerable-artifact convention as `.hf-cache/`/`.android-asr-cache/` — so the new machine
+   starts that part from scratch. §3's desktop CPU numbers are already committed and don't need to
+   be re-run.
+
 ## Sources consulted this session
 
 - [ggml-org/whisper.cpp](https://github.com/ggml-org/whisper.cpp) — license, model memory table.
