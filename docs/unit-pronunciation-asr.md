@@ -3,8 +3,9 @@
 _Investigation doc for issue #118. Started from an observation about how physics units are read
 aloud; the durable conclusion and the follow-up GPU study live here per this repo's convention
 (a spike/investigation's findings belong in a committed `docs/*.md`, not just an issue thread —
-see `docs/phonetic-corrector.md`, `docs/whisper-model-bench.md`). Status: findings from committed
-data are final; the controlled TTS study (§5) is built and ready to run on Athena, not yet run._
+see `docs/phonetic-corrector.md`, `docs/whisper-model-bench.md`). Status: both GPU studies (§5 the
+controlled TTS probe, §6.4 forced alignment on real speech) have now run on Athena and results are
+analyzed below; see §5.1 and §6.4 "Results" for the numbers._
 
 ## 0. The original observation
 
@@ -117,6 +118,44 @@ Run: `sbatch scripts/submit-unit-probe.sh`, then
 Refinements deferred: forced-aligned per-token duration (faster-whisper `word_timestamps`) for a
 sharper measurement than whole-clip duration; a fixed single voice per engine to cut prosody
 variance; adding Qwen-PL and Chatterbox-clone lanes.
+
+### 5.1 Results (run 2026-07-23/24, jobs 2818050 + 2818365)
+
+`python3 scripts/unit-probe-analyze.py eval/results/unit-probe-2818365` — 3 engines × 6 units × 3
+carrier sentences (`n=3` per cell, so read exact ratios as directional, not precise):
+
+| engine         | GeV           | MeV           | keV           | cm            | mm        | um        |
+| -------------- | ------------- | ------------- | ------------- | ------------- | --------- | --------- |
+| qwen-en        | letter (−0.26) | ? (denom<0.05) | letter (−0.62) | ? (denom<0.05) | EXPANDS (0.68) | EXPANDS (0.70) |
+| piper-pl       | EXPANDS (2.77) | EXPANDS (2.20) | letter (−0.22) | EXPANDS (0.96) | EXPANDS (1.73) | letter (−1.52) |
+| chatterbox-pl  | mixed (0.56)  | letter (0.29) | letter (0.38) | letter (−0.42) | letter (−0.01) | letter (−0.05) |
+
+Reading this against the recommendations queued in §7 (original numbering, now resolved):
+
+- **Qwen-EN confirms the split the observation predicted, more precisely than §2's transcript
+  count could:** length units (`mm`, `um`) cleanly `EXPANDS` (ratio 0.68–0.70) — matches "8
+  centimeter range" already seen in transcripts. Energy units (`keV`, `GeV`) come out **negative**,
+  i.e. *shorter* than even the `letters` ("k e v") sibling — not a mid-point, a third regime: Qwen
+  renders `keV`/`GeV` as a compact one-syllable acronym ("kehv"/"jhev"), neither spelling out each
+  letter nor expanding to "kilo-electron-volt". `cm` and `MeV` are inconclusive here (`expand` and
+  `letters` durations too close to separate, `denom<0.05`) — the abbreviated transcript for `MeV`
+  ("The beam energy is 150 MeV") is the same Whisper-normalization blindness as §1, expected.
+- **Piper-PL and Chatterbox-PL do not reproduce the clean espeak IPA prediction from §3.** The raw
+  `espeak --ipa` dump predicted Piper letter-spells *everything* including `cm`/`mm`. The measured
+  probe instead shows Piper `EXPANDS` for `GeV`/`MeV`/`cm`/`mm` (ratios up to 2.77, i.e. the abbrev
+  clip is *longer* than the fully-expanded sibling) and only `keV`/`um` letter-spelling. Chatterbox
+  is closer to the "letter-spells nearly everything" prediction, including `cm` (−0.42) — contrary
+  to the original human-speech premise that length units are reliably expanded, at least for this
+  Polish TTS voice.
+- **Caveat before trusting the Piper/Chatterbox numbers over the espeak prediction:** `n=3` carriers
+  per cell, and for several units `letters` duration was *longer* than `expand` (e.g. Piper GeV:
+  expand=2.72s, letters=3.09s) — the assumption the `r` formula depends on (expand ≥ letters) breaks
+  down for these two engines, so ratios past ~1 or below 0 are more a symptom of noisy, low-`n`
+  clip-duration variance (voice prosody, PL TTS mangling English letter names/words — see the
+  garbled `abbrev_transcript` lines, e.g. Piper's `um` abbrev heard as a 200-token run of "11") than
+  a clean signal. Treat the Qwen-EN numbers as the reliable read from this run; Piper/Chatterbox
+  would need more carriers (and per-token forced alignment, per the deferred refinement above) to
+  say anything with confidence beyond "not the same as Qwen."
 
 ## 6. Cross-checking against real human speech
 
@@ -280,6 +319,51 @@ human-eyeballed read of the distribution (low ratio ~ quick/letter-spelled-like,
 slow/expanded-like), not an auto-classifier, with the option to go listen to specific
 `eval/lecture-corpus/<lang>/<source>/<file>.*` timestamps directly for the ones that matter.
 
+#### Results (run 2026-07-24, job 2818296)
+
+`python3 scripts/forced-align-analyze.py eval/results/forced-align-2818296` — 95 aligned
+`eV`/`keV`/`MeV`/`GeV`/`TeV` instances across 9 `(lang, source, unit)` groups. Almost all volume is
+the MIT captioned lectures (ground-truth text, real forced alignment):
+
+| source                    | unit | n   | rate_norm_dur (median / mean) |
+| ------------------------- | ---- | --- | ------------------------------ |
+| mit-8.701                 | GeV  | 52  | 1.62 / 1.77                    |
+| mit-8.701                 | MeV  | 25  | 1.10 / 1.22                    |
+| mit-8.701                 | keV  | 4   | 1.72 / 1.80                    |
+| mit-8.701                 | eV   | 1   | 0.83                            |
+| mit-8.701                 | TeV  | 1   | 0.65                            |
+| daniel-and-jorge          | GeV  | 2   | 3.11 / 3.11                    |
+| daniel-and-jorge          | MeV  | 4   | 1.54 / 1.67                    |
+| daniel-and-jorge          | eV   | 5   | 1.00 / 1.14                    |
+| radio-naukowe             | TeV  | 1   | 1.08                            |
+
+- **The professor's `GeV`/`MeV` durations sit close to the sentence's own median word length, with
+  a long right tail, not a clean bimodal split.** Median rate ~1.1–1.6, i.e. "typical" word length
+  or a bit above — most instances are neither obviously letter-spelled-fast (rate ≪1) nor
+  obviously fully-expanded-slow (rate ≫2). Extremes exist both ways within `mit-8.701/GeV` alone:
+  0.80 ("Mass is going to 1 GeV **and** mass is going to 10 GeV" — said quickly, back-to-back) up to
+  5.72 ("in the order of 100 GeV" — said slowly, standalone emphasis). This reads as **prosodic
+  emphasis/position in the sentence dominating over a fixed "this is how I say GeV" rendering** —
+  weaker support for a clean expanded-vs-letter-spelled dichotomy in real lecture speech than the
+  original observation assumed, at least from duration alone (a transcription of what was actually
+  said, not just its duration, would be needed to confirm — out of scope here since these are
+  Whisper/caption text already collapsed per §1's blindness).
+- **Data-quality finding: the podcast lane's printed "context" can be from the wrong part of the
+  audio.** Spot-checking `daniel-and-jorge/neutrino-mass`'s `eV`/`MeV` instances at
+  `t≈2125–2212s` against the source JSON (`eval/results/forced-align-2818296/full/daniel-and-jorge-neutrino-mass.json`)
+  shows the printed context is an unrelated podcast-ad break ("Suite 305", "Portlandia", "Everyone
+  Watches Women's Sports" — no physics content at all), while the *real* `MeV` mentions in that
+  same episode ("It's half of an MeV, half of a mega electron volt...", "a few MeV, a few million
+  electron volts...") sit in different, correctly-captioned parts of the transcript. Root cause not
+  chased down (likely a segment-boundary/offset issue specific to how `forced-align-corpus.py`
+  windows context for Whisper-transcribed — as opposed to `.srt`-captioned — sources, since spot
+  checks of `mit-8.701` context strings above are all correct, short, and on-topic). **Practical
+  effect is small** (`daniel-and-jorge` is only 11 of 95 instances, `radio-naukowe` 1 of 95) but it
+  means the `daniel-and-jorge`/`radio-naukowe` rows in the table above should be treated as
+  low-confidence until someone listens to the actual audio at the given timestamps — the
+  `mit-8.701` rows (87 of 95 instances, real `.srt` ground truth) are the trustworthy majority of
+  this run.
+
 ## 7. Recommendations
 
 1. **Fix the data-validity gap, not the model.** For a corpus that spans the _human_ pronunciation
@@ -289,7 +373,19 @@ volt` and `cm` / `centimeters` variants) rather than trusting any one engine's G
    ~L209, range units ~L635).
 2. **Add letter-spelled unit forms to the phonetic corrector** — closes the confirmed `M-E-V` gap
    (§1, §4), low-risk, matches `docs/phonetic-corrector.md`'s design.
-3. **Run the §5 probe** to replace the "Chatterbox looks like Piper" guess with a measured ratio,
-   and to confirm Qwen-EN expands length but not (necessarily) energy.
+3. ~~Run the §5 probe~~ **Done (§5.1, 2026-07-23/24).** Qwen-EN's split held up (length expands,
+   energy compresses even past the letter-spelled baseline); the "Chatterbox looks like Piper"
+   guess did not survive contact with the measured ratios — both diverged from the espeak-IPA
+   prediction and from each other, with too much duration noise at `n=3` carriers to say more than
+   that. If this probe is worth re-running, prioritize more carriers per unit over more engines.
 4. **espeak hazards** to note for any Piper-based audio: `µm`→"um" (becomes a hesitation) and
-   everything letter-spelled — before treating Piper output as "natural".
+   the offline `espeak --ipa` dump predicting letter-spelling — but §5.1's *measured* probe found
+   Piper actually expanding several units in the synthesized audio, so treat the static IPA dump as
+   a hint, not ground truth, and measure before asserting Piper's behavior.
+5. ~~Run forced alignment on real lecture/podcast speech~~ **Done (§6.4, 2026-07-24).** The MIT
+   lecture data (87 trustworthy instances) shows `GeV`/`MeV` durations clustering near the
+   sentence's own typical word length with a long tail driven by sentence position/emphasis, not a
+   clean two-cluster split — weaker support for the original binary premise than hoped, though
+   duration alone can't fully settle it (would need the actual words spoken, which the caption text
+   already collapses per §1). Fix the podcast-lane context-window bug (§6.4) before trusting or
+   expanding the `daniel-and-jorge`/`radio-naukowe` rows.
