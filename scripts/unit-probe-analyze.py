@@ -37,7 +37,8 @@ def parse_id(sid):
 
 def load_manifest(path):
     """id -> dur_s, from an engine's copied manifest.json."""
-    data = json.load(open(path, encoding="utf-8"))
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
     clips = data.get("clips", data)
     if isinstance(clips, dict):
         clips = list(clips.values())
@@ -48,7 +49,8 @@ def load_transcript(path):
     """id -> raw transcript text, from an asr-transcribe-manifest.mjs output."""
     if not os.path.exists(path):
         return {}
-    data = json.load(open(path, encoding="utf-8"))
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
     recs = data.get("records", data)
     return {r["id"]: r.get("raw", "") for r in recs if "id" in r}
 
@@ -142,7 +144,8 @@ def main():
     )
 
     if args.json_out:
-        json.dump(report, open(args.json_out, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+        with open(args.json_out, "w", encoding="utf-8") as f:
+            json.dump(report, f, indent=1, ensure_ascii=False)
         print(f"\nwrote {args.json_out}", file=sys.stderr)
 
 

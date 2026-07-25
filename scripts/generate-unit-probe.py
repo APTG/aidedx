@@ -34,7 +34,6 @@ Usage:
 
 import argparse
 import json
-import re
 import sys
 
 # Expansions per language. Each unit maps to the spoken variants we want to force. `letters`
@@ -81,10 +80,6 @@ CARRIERS = {
 }
 
 ENERGY_UNITS = ("keV", "MeV", "GeV")
-
-
-def slug(s: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
 
 
 def build(lang: str):

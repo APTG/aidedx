@@ -285,15 +285,16 @@ Naukowe episodes — onto `eval/lecture-corpus/{en,pl}/<source>/` (gitignored) a
 
 ### 6.4 Forced alignment (`scripts/forced-align-corpus.py`, `scripts/submit-forced-align.sh`)
 
-Built, not yet run. Per-language `transformers` CTC models
-(`jonatasgrosman/wav2vec2-large-xlsr-53-{english,polish}`) +
+Run on Athena 2026-07-24 (job 2818296 — see "Results" below). Per-language `transformers` CTC
+models (`jonatasgrosman/wav2vec2-large-xlsr-53-{english,polish}`) +
 `torchaudio.functional.forced_align`/`merge_tokens` — deliberately **not** `whisperx` (drags in
 `ctranslate2`, a known cuDNN-version-mismatch source on HPC even when only `align()` is used) and
 **not** torchaudio's bundled multilingual `MMS_FA` (expects Romanized input for best results;
 irrelevant complexity here since the per-language models already have native alphabets, including
-Polish diacritics). Full rationale in `docs/forced-alignment-setup.md` (one-time `.venv-align`
-setup this needs — CUDA-specific, not auto-provisioned by the submit script, same pattern as
-`.venv-qwen`/`.venv-chatterbox`).
+Polish diacritics). Full rationale in `docs/forced-alignment-setup.md`; the one-time `.venv-align`
+setup this needs is auto-provisioned by `submit-forced-align.sh` on first run (unlike
+`.venv-qwen`/`.venv-chatterbox`, which are deliberately manual — see that script's header comment
+for why).
 
 Method, per segment (an MIT `.srt` cue with **known** text, or a Whisper-transcribed chunk for the
 two podcasts, which have none): normalize the text (lowercase, spell out digits with `num2words`

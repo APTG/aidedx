@@ -38,7 +38,7 @@
 # after a timeout is the expected recovery path, not a bug to fix first.
 #
 # Submit:  sbatch scripts/submit-forced-align.sh   (that's it — venv + deps install on first run)
-set -uo pipefail
+set -euo pipefail
 
 cd "${SLURM_SUBMIT_DIR:-$(pwd)}"
 source scripts/athena-env.sh
@@ -74,8 +74,11 @@ RESULTS_DIR="eval/results/forced-align-${JOB}"
 mkdir -p "$RESULTS_DIR"
 
 echo "=== forced alignment: results -> $RESULTS_DIR ==="
-python3 scripts/forced-align-corpus.py "$RESULTS_DIR"
-STATUS=$?
+if python3 scripts/forced-align-corpus.py "$RESULTS_DIR"; then
+  STATUS=0
+else
+  STATUS=$?
+fi
 
 deactivate
 
