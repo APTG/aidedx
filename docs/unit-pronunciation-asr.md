@@ -124,31 +124,31 @@ variance; adding Qwen-PL and Chatterbox-clone lanes.
 `python3 scripts/unit-probe-analyze.py eval/results/unit-probe-2818365` — 3 engines × 6 units × 3
 carrier sentences (`n=3` per cell, so read exact ratios as directional, not precise):
 
-| engine         | GeV           | MeV           | keV           | cm            | mm        | um        |
-| -------------- | ------------- | ------------- | ------------- | ------------- | --------- | --------- |
-| qwen-en        | letter (−0.26) | ? (denom<0.05) | letter (−0.62) | ? (denom<0.05) | EXPANDS (0.68) | EXPANDS (0.70) |
-| piper-pl       | EXPANDS (2.77) | EXPANDS (2.20) | letter (−0.22) | EXPANDS (0.96) | EXPANDS (1.73) | letter (−1.52) |
-| chatterbox-pl  | mixed (0.56)  | letter (0.29) | letter (0.38) | letter (−0.42) | letter (−0.01) | letter (−0.05) |
+| engine        | GeV            | MeV            | keV            | cm             | mm             | um             |
+| ------------- | -------------- | -------------- | -------------- | -------------- | -------------- | -------------- |
+| qwen-en       | letter (−0.26) | ? (denom<0.05) | letter (−0.62) | ? (denom<0.05) | EXPANDS (0.68) | EXPANDS (0.70) |
+| piper-pl      | EXPANDS (2.77) | EXPANDS (2.20) | letter (−0.22) | EXPANDS (0.96) | EXPANDS (1.73) | letter (−1.52) |
+| chatterbox-pl | mixed (0.56)   | letter (0.29)  | letter (0.38)  | letter (−0.42) | letter (−0.01) | letter (−0.05) |
 
 Reading this against the recommendations queued in §7 (original numbering, now resolved):
 
 - **Qwen-EN confirms the split the observation predicted, more precisely than §2's transcript
   count could:** length units (`mm`, `um`) cleanly `EXPANDS` (ratio 0.68–0.70) — matches "8
   centimeter range" already seen in transcripts. Energy units (`keV`, `GeV`) come out **negative**,
-  i.e. *shorter* than even the `letters` ("k e v") sibling — not a mid-point, a third regime: Qwen
+  i.e. _shorter_ than even the `letters` ("k e v") sibling — not a mid-point, a third regime: Qwen
   renders `keV`/`GeV` as a compact one-syllable acronym ("kehv"/"jhev"), neither spelling out each
   letter nor expanding to "kilo-electron-volt". `cm` and `MeV` are inconclusive here (`expand` and
   `letters` durations too close to separate, `denom<0.05`) — the abbreviated transcript for `MeV`
   ("The beam energy is 150 MeV") is the same Whisper-normalization blindness as §1, expected.
 - **Piper-PL and Chatterbox-PL do not reproduce the clean espeak IPA prediction from §3.** The raw
-  `espeak --ipa` dump predicted Piper letter-spells *everything* including `cm`/`mm`. The measured
+  `espeak --ipa` dump predicted Piper letter-spells _everything_ including `cm`/`mm`. The measured
   probe instead shows Piper `EXPANDS` for `GeV`/`MeV`/`cm`/`mm` (ratios up to 2.77, i.e. the abbrev
-  clip is *longer* than the fully-expanded sibling) and only `keV`/`um` letter-spelling. Chatterbox
+  clip is _longer_ than the fully-expanded sibling) and only `keV`/`um` letter-spelling. Chatterbox
   is closer to the "letter-spells nearly everything" prediction, including `cm` (−0.42) — contrary
   to the original human-speech premise that length units are reliably expanded, at least for this
   Polish TTS voice.
 - **Caveat before trusting the Piper/Chatterbox numbers over the espeak prediction:** `n=3` carriers
-  per cell, and for several units `letters` duration was *longer* than `expand` (e.g. Piper GeV:
+  per cell, and for several units `letters` duration was _longer_ than `expand` (e.g. Piper GeV:
   expand=2.72s, letters=3.09s) — the assumption the `r` formula depends on (expand ≥ letters) breaks
   down for these two engines, so ratios past ~1 or below 0 are more a symptom of noisy, low-`n`
   clip-duration variance (voice prosody, PL TTS mangling English letter names/words — see the
@@ -169,7 +169,7 @@ measurement.
 ### 6.1 Resources found (verified 2026-07-23, not downloaded — URLs + counts only)
 
 **Primary: MIT 8.701 "Introduction to Nuclear and Particle Physics" (Fall 2020, Markus Klute),
-mirrored on Internet Archive, CC BY-NC-SA.** Every clip has a matching *professionally captioned*
+mirrored on Internet Archive, CC BY-NC-SA.** Every clip has a matching _professionally captioned_
 (not auto-generated) `.srt` — this is better than a bare lecture recording because the reference
 transcript is known, so alignment is true forced alignment (known text → audio), not ASR-then-align.
 The caption text still collapses to the abbreviation (`MeV`/`GeV`) regardless of how it was spoken
@@ -184,35 +184,36 @@ aligned-segment duration, not the caption text itself.
 - Grepped all 67 chapter `.srt` files (text only, ~KB each) for `keV`/`MeV`/`GeV`; **21 of 67
   chapters** mention at least one, 76 mentions total, ranked by density:
 
-  | chapter (`MIT8_701F20_<name>_300k`) | mentions | duration | size |
-  | --- | --- | --- | --- |
-  | `00-07_Units` | 10 | 5:47 | 14.7 MB |
-  | `00-08_RelKinematics` | 7 | 15:20 | 34.9 MB |
-  | `08-04_experiments` | 6 | 11:11 | 26.5 MB |
-  | `07-04_status` | 6 | 8:13 | 19.9 MB |
-  | `10-04_accelerators` | 5 | 23:57 | 55.2 MB |
-  | `07-03_productiondecay` | 5 | 5:36 | 14.1 MB |
-  | `05-01_hadrons` | 5 | 9:27 | 22.4 MB |
-  | `10-01_mechanism` | 4 | 17:13 | 39.9 MB |
-  | `09-02_binding` | 4 | 9:31 | 22.7 MB |
-  | `07-02_fermions` | 4 | 3:42 | 9.7 MB |
-  | `05-04_dis` | 3 | 9:52 | 23.5 MB |
-  | `01-03_RangeForces` | 3 | 5:29 | 13.6 MB |
-  | `09-08_fusion` | 2 | 9:26 | 22.7 MB |
-  | `09-07_fission` | 2 | 5:27 | 13.7 MB |
-  | `06-03_piondecay` | 2 | 7:50 | 19.0 MB |
-  | `05-05_alphas` | 2 | 6:53 | 16.8 MB |
-  | `00-06_Particles` | 2 | 14:00 | 32.3 MB |
-  | `08-06_scale` | 1 | 7:21 | 17.9 MB |
-  | `08-03_mixing` | 1 | 5:38 | 14.1 MB |
-  | `03-05_Divergency` | 1 | 6:32 | 16.1 MB |
-  | `02-02_flavor` | 1 | 6:49 | 16.8 MB |
+  | chapter (`MIT8_701F20_<name>_300k`) | mentions | duration | size    |
+  | ----------------------------------- | -------- | -------- | ------- |
+  | `00-07_Units`                       | 10       | 5:47     | 14.7 MB |
+  | `00-08_RelKinematics`               | 7        | 15:20    | 34.9 MB |
+  | `08-04_experiments`                 | 6        | 11:11    | 26.5 MB |
+  | `07-04_status`                      | 6        | 8:13     | 19.9 MB |
+  | `10-04_accelerators`                | 5        | 23:57    | 55.2 MB |
+  | `07-03_productiondecay`             | 5        | 5:36     | 14.1 MB |
+  | `05-01_hadrons`                     | 5        | 9:27     | 22.4 MB |
+  | `10-01_mechanism`                   | 4        | 17:13    | 39.9 MB |
+  | `09-02_binding`                     | 4        | 9:31     | 22.7 MB |
+  | `07-02_fermions`                    | 4        | 3:42     | 9.7 MB  |
+  | `05-04_dis`                         | 3        | 9:52     | 23.5 MB |
+  | `01-03_RangeForces`                 | 3        | 5:29     | 13.6 MB |
+  | `09-08_fusion`                      | 2        | 9:26     | 22.7 MB |
+  | `09-07_fission`                     | 2        | 5:27     | 13.7 MB |
+  | `06-03_piondecay`                   | 2        | 7:50     | 19.0 MB |
+  | `05-05_alphas`                      | 2        | 6:53     | 16.8 MB |
+  | `00-06_Particles`                   | 2        | 14:00    | 32.3 MB |
+  | `08-06_scale`                       | 1        | 7:21     | 17.9 MB |
+  | `08-03_mixing`                      | 1        | 5:38     | 14.1 MB |
+  | `03-05_Divergency`                  | 1        | 6:32     | 16.1 MB |
+  | `02-02_flavor`                      | 1        | 6:49     | 16.8 MB |
 
   Total for all 21: ~467 MB. `00-07_Units` is the anchor clip — the lecture is literally "the unit
   on units"; the professor reads `GeV` out loud repeatedly ("kilogram, meters, and GeV… 0.197 GeV
   femtometers"). `09-02_binding` / `09-07_fission` / `09-08_fusion` are nuclear-physics chapters
   (same energy regime as this project's dE/dx domain) with natural `MeV`-per-nucleon phrasing
   ("contributes with about 16 MeV per nucleon").
+
 - Verified downloadable with a plain `curl -I` (HTTP 302 → direct `archive.org` CDN mp4, no auth,
   `Accept-Ranges: bytes` so `wget -c`/resume works) — good fit for an Athena `wget` job.
 - License note: CC BY-NC-SA — fine for internal research/ASR evaluation, not for redistribution.
@@ -325,17 +326,17 @@ slow/expanded-like), not an auto-classifier, with the option to go listen to spe
 `eV`/`keV`/`MeV`/`GeV`/`TeV` instances across 9 `(lang, source, unit)` groups. Almost all volume is
 the MIT captioned lectures (ground-truth text, real forced alignment):
 
-| source                    | unit | n   | rate_norm_dur (median / mean) |
-| ------------------------- | ---- | --- | ------------------------------ |
-| mit-8.701                 | GeV  | 52  | 1.62 / 1.77                    |
-| mit-8.701                 | MeV  | 25  | 1.10 / 1.22                    |
-| mit-8.701                 | keV  | 4   | 1.72 / 1.80                    |
-| mit-8.701                 | eV   | 1   | 0.83                            |
-| mit-8.701                 | TeV  | 1   | 0.65                            |
-| daniel-and-jorge          | GeV  | 2   | 3.11 / 3.11                    |
-| daniel-and-jorge          | MeV  | 4   | 1.54 / 1.67                    |
-| daniel-and-jorge          | eV   | 5   | 1.00 / 1.14                    |
-| radio-naukowe             | TeV  | 1   | 1.08                            |
+| source           | unit | n   | rate_norm_dur (median / mean) |
+| ---------------- | ---- | --- | ----------------------------- |
+| mit-8.701        | GeV  | 52  | 1.62 / 1.77                   |
+| mit-8.701        | MeV  | 25  | 1.10 / 1.22                   |
+| mit-8.701        | keV  | 4   | 1.72 / 1.80                   |
+| mit-8.701        | eV   | 1   | 0.83                          |
+| mit-8.701        | TeV  | 1   | 0.65                          |
+| daniel-and-jorge | GeV  | 2   | 3.11 / 3.11                   |
+| daniel-and-jorge | MeV  | 4   | 1.54 / 1.67                   |
+| daniel-and-jorge | eV   | 5   | 1.00 / 1.14                   |
+| radio-naukowe    | TeV  | 1   | 1.08                          |
 
 - **The professor's `GeV`/`MeV` durations sit close to the sentence's own median word length, with
   a long right tail, not a clean bimodal split.** Median rate ~1.1–1.6, i.e. "typical" word length
@@ -352,7 +353,7 @@ the MIT captioned lectures (ground-truth text, real forced alignment):
   audio.** Spot-checking `daniel-and-jorge/neutrino-mass`'s `eV`/`MeV` instances at
   `t≈2125–2212s` against the source JSON (`eval/results/forced-align-2818296/full/daniel-and-jorge-neutrino-mass.json`)
   shows the printed context is an unrelated podcast-ad break ("Suite 305", "Portlandia", "Everyone
-  Watches Women's Sports" — no physics content at all), while the *real* `MeV` mentions in that
+  Watches Women's Sports" — no physics content at all), while the _real_ `MeV` mentions in that
   same episode ("It's half of an MeV, half of a mega electron volt...", "a few MeV, a few million
   electron volts...") sit in different, correctly-captioned parts of the transcript. Root cause not
   chased down (likely a segment-boundary/offset issue specific to how `forced-align-corpus.py`
@@ -379,7 +380,7 @@ volt` and `cm` / `centimeters` variants) rather than trusting any one engine's G
    prediction and from each other, with too much duration noise at `n=3` carriers to say more than
    that. If this probe is worth re-running, prioritize more carriers per unit over more engines.
 4. **espeak hazards** to note for any Piper-based audio: `µm`→"um" (becomes a hesitation) and
-   the offline `espeak --ipa` dump predicting letter-spelling — but §5.1's *measured* probe found
+   the offline `espeak --ipa` dump predicting letter-spelling — but §5.1's _measured_ probe found
    Piper actually expanding several units in the synthesized audio, so treat the static IPA dump as
    a hint, not ground truth, and measure before asserting Piper's behavior.
 5. ~~Run forced alignment on real lecture/podcast speech~~ **Done (§6.4, 2026-07-24).** The MIT
@@ -389,3 +390,75 @@ volt` and `cm` / `centimeters` variants) rather than trusting any one engine's G
    duration alone can't fully settle it (would need the actual words spoken, which the caption text
    already collapses per §1). Fix the podcast-lane context-window bug (§6.4) before trusting or
    expanding the `daniel-and-jorge`/`radio-naukowe` rows.
+6. ~~Check whether a bigger Whisper actually recognizes the unit correctly on real lecture
+   speech, not just synthesized probes~~ **Done (§8, 2026-07-24).** `whisper-large-v3-ONNX__q8` is
+   the only pair that gets all 11/11 real-speech unit mentions right, but at ~3x the shipped
+   model's latency. The shipped `whisper-small q8` misses one real instance regardless of the
+   corrector — not a spelling error the corrector can catch, since the unit token doesn't appear in
+   the raw transcript at all. Not recommending a model swap on this evidence alone (§8).
+
+## 8. Full Whisper model-matrix check on real lecture clips
+
+§6.4's forced-alignment read said real speech doesn't show a clean expanded-vs-letter-spelled
+split; it didn't say whether Whisper actually _recognizes_ the unit correctly when transcribing
+that same real speech, as opposed to the TTS-synthesized clips §5 measured. `eval/audio/lecture-clips-118/`
+holds 10 short clips cut directly from the MIT 8.701 lecture audio (not synthesized), covering the
+`GeV` mentions in `00-07_Units`, the `MeV` mentions in `09-02_binding`, and the dual `keV`+`MeV`
+sentence in `10-01_mechanism` — 11 unit-recognition opportunities total (the dual-unit clip counts
+twice). `scripts/submit-lecture-clip-bench.sh` transcribes each clip with every officially-released
+Whisper size at both `fp32` and `q8` (14 model/dtype pairs, 140 transcriptions, one job, no GPU
+speedup expected — see the script's header). `scripts/lecture-clip-bench-analyze.mjs` then scores
+each pair two ways: **raw** (does the untouched transcript contain the expected unit?) and
+**corrected** (does it still contain it after `src/lib/asr/correct/core.ts`'s `correctTranscript()`
+— the same pass the shipped app runs before the NLU matcher ever sees the text).
+
+### Results (run 2026-07-24, job 2822892)
+
+`node scripts/lecture-clip-bench-analyze.mjs eval/results/lecture-clip-bench-2822892`:
+
+| model/dtype                    | raw   | corrected | avg s/clip | missed after correction                            |
+| ------------------------------ | ----- | --------- | ---------- | -------------------------------------------------- |
+| whisper-large-v3-ONNX q8       | 11/11 | 11/11     | 7.49       | (none)                                             |
+| whisper-large-v3-turbo fp32    | 10/11 | 10/11     | 4.76       | 1 (`09-02-binding` MeV)                            |
+| whisper-large-v2-ONNX fp32     | 9/11  | 9/11      | 10.29      | 2 (`09-02-binding` MeV ×2)                         |
+| whisper-medium-ONNX fp32       | 9/11  | 9/11      | 4.74       | 2 (`10-01-mechanism` keV+MeV)                      |
+| **whisper-small q8 (shipped)** | 9/11  | 9/11      | **2.52**   | 2 (`10-01-mechanism` keV+MeV)                      |
+| whisper-large-v3-ONNX fp32     | 8/11  | 8/11      | 8.17       | 3 (`09-02-binding` MeV; `10-01-mechanism` keV+MeV) |
+| whisper-medium-ONNX q8         | 8/11  | 8/11      | 4.38       | 3 (same pattern)                                   |
+| whisper-small fp32             | 8/11  | 8/11      | 2.70       | 3 (same pattern)                                   |
+| whisper-base fp32              | 7/11  | 7/11      | 1.89       | 4 (`00-07-units` GeV ×2; `09-02-binding` MeV ×2)   |
+| whisper-large-v2-ONNX q8       | 7/11  | 7/11      | 6.06       | 4 (`09-02-binding` MeV ×2; `10-01-mechanism` ×2)   |
+| whisper-large-v3-turbo q8      | 6/11  | 7/11      | 15.58      | 4                                                  |
+| whisper-tiny fp32              | 4/11  | 5/11      | 1.07       | 6 (misses most `00-07-units` GeV instances)        |
+| whisper-base q8                | 2/11  | 5/11      | 1.86       | 6                                                  |
+| whisper-tiny q8                | 1/11  | 2/11      | 2.22       | 9                                                  |
+
+(full per-clip detail: `node scripts/lecture-clip-bench-analyze.mjs eval/results/lecture-clip-bench-2822892`)
+
+- **Only `whisper-large-v3-ONNX q8` gets every instance right, at ~3x the shipped model's
+  latency.** 7.49 s/clip vs. the shipped `whisper-small q8`'s 2.52 s/clip — a real cost against
+  `docs/voice-pipeline-feasibility.md`'s sub-3-second target, for closing a gap that's 1 clip out
+  of 10 on this sample.
+- **The shipped `whisper-small q8` misses exactly one real instance, and it's the same one
+  medium/large-v2/large-v3(fp32) also miss: `10-01-mechanism`'s dual-unit sentence** ("...in the
+  range of some 100 **keV**... to about 10 **MeV**..."), heard as "...and so on." — the model
+  drops the unit tokens entirely rather than mis-transcribing them. This is not a spelling error
+  the corrector can fix (§4's `LEXICON` approach only rewrites a mis-heard token that's present);
+  there is nothing in the raw transcript to correct.
+- **The corrector barely moves the needle on real speech.** It only recovers additional hits for
+  the weakest tiny/base pairs (e.g. `whisper-base q8` 2/11 raw → 5/11 corrected), where the raw
+  transcript still contains a garbled-but-recognizable unit string. For every pair at or above
+  `small`, corrected == raw — consistent with the §5.1/§6.4 finding that the model either hears a
+  unit token or doesn't; there's no widespread "heard the right token, spelled it wrong" failure
+  mode in real lecture speech for these models, unlike the synthesized-audio letter-spelling
+  case (§1, `M-E-V`).
+- **`fp32` vs `q8` doesn't move accuracy consistently** for small/medium/large-v2 — each dtype pair
+  lands within 1 unit of its sibling, and the large accuracy jumps in the table are model-size
+  driven (tiny/base failing on `GeV` almost entirely), not quantization-driven. `large-v3-turbo` is
+  the outlier: `q8` is both slower (15.58 s vs. 4.76 s) and less accurate (6/11 vs. 10/11 raw) than
+  its own `fp32`, worth a second look before trusting turbo-q8 numbers elsewhere in this repo.
+- **Not recommending a model swap on this evidence alone.** One clip out of ten, on an 11-instance
+  sample, isn't enough to justify 3x latency on every voice query — especially since the miss is a
+  complete drop, not a wrong-spelling the corrector could plausibly be extended to catch. Worth
+  revisiting if the real-speech sample grows (more MIT chapters, or the podcast sources once
+  §6.4's context-window bug is fixed) and the same failure mode keeps showing up.
