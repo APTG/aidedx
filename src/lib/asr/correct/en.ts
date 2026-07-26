@@ -57,6 +57,31 @@ export const EN_RULES: readonly CorrectionRule[] = [
   { label: "bare-mev-mishearing", pattern: /(\d+(?:\.\d+)?)\s*m[e]?v\b/gi, replacement: "$1 MeV" },
   { label: "kev-mishearing", pattern: /(\d+(?:\.\d+)?)\s*k\s*[e]?v\b/gi, replacement: "$1 keV" },
   { label: "atmev", pattern: /\batmev\b/gi, replacement: "80 MeV" },
+  // Letter-spelled energy units (issue #118 §1/§4: Whisper normalizes a *spoken-expanded*
+  // "megaelectronvolt" back to "MeV" on its own, but a *letter-spelled* "em-ee-vee" sometimes
+  // escapes as literal letters instead — confirmed in real transcripts as hyphenated "M-E-V"
+  // (docs/unit-pronunciation-asr.md §1, `rng-0573`), which the fixed edit-distance cap in
+  // applyPhoneticPass's LEXICON lookup can't reach (2 hyphen-insertions exceeds the length-5
+  // token's max-1 threshold) — a regex rule here, not a LEXICON entry, is the fix. Also covers
+  // the fully-named "kay e vee" style spelling the letter-probe generator
+  // (scripts/generate-unit-probe.py) uses, in case a weaker model transcribes the letter NAMES
+  // instead of the bare letters. `[\s.,-]*` between letters (not just `-`) matches spaces,
+  // hyphens, and Whisper's occasional stray punctuation between spelled-out letters alike.
+  {
+    label: "mev-letter-spelled",
+    pattern: /(\d+(?:\.\d+)?)\s*(?:em|m)[\s.,-]*(?:ee|e)[\s.,-]*(?:vee|v)\b/gi,
+    replacement: "$1 MeV",
+  },
+  {
+    label: "kev-letter-spelled",
+    pattern: /(\d+(?:\.\d+)?)\s*(?:kay|k)[\s.,-]*(?:ee|e)[\s.,-]*(?:vee|v)\b/gi,
+    replacement: "$1 keV",
+  },
+  {
+    label: "gev-letter-spelled",
+    pattern: /(\d+(?:\.\d+)?)\s*(?:gee|jee|g)[\s.,-]*(?:ee|e)[\s.,-]*(?:vee|v)\b/gi,
+    replacement: "$1 GeV",
+  },
   {
     label: "per-nucleon-phonetic",
     pattern: /\bper\s+(?:napelion|nutlion|nuklion|nukleon|nuclei|nucleons?|nucle\w*|napoleon)\b/gi,
