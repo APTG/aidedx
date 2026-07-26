@@ -87,8 +87,8 @@ Early-stage prototype under active development:
   language understanding and a Polish voice pipeline exist behind the scenes, but you can't yet switch
   the app itself into Polish; smarter correction for phrasings the built-in rules miss.
 - 🐢 **Slow / open:** on a computer without a dedicated graphics card, answers can take a few seconds
-  instead of feeling instant — faster hosting options are still being worked out
-  ([#64](https://github.com/APTG/aidedx/issues/64)).
+  instead of feeling instant — faster models for those machines are still being evaluated
+  ([#122](https://github.com/APTG/aidedx/issues/122)).
 - 🔭 **Planned:** spoken answers, wider phrasing coverage, and apps beyond the browser — an Android
   app is being scoped first ([#120](https://github.com/APTG/aidedx/issues/120)), with an installable
   app for other phones/computers (no app-store download needed) or a full desktop app to follow,
