@@ -79,17 +79,20 @@ After that, it works offline too, handy in an experiment hall or anywhere with n
 
 Early-stage prototype under active development:
 
-- ✅ **Works:** typed or spoken question → understood → computed → answered, with assumptions noted
-  in editable chips you can hand-correct; the one-time model download asks first and shows a progress
-  panel; answers deep-link into [dedx_web](https://github.com/APTG/dedx_web) for full plots.
+- ✅ **Works:** typed or spoken question → understood → computed → answered, with any assumptions
+  aidedx made shown clearly so you can correct them by hand; the one-time model download asks first
+  and shows a progress panel; answers link out to [dedx_web](https://github.com/APTG/dedx_web) for
+  full plots.
 - 🚧 **In progress:** Polish-language support ([#63](https://github.com/APTG/aidedx/issues/63)) — the
-  deterministic understanding and a Polish TTS pipeline exist, but voice dictation and a UI language
-  switch aren't wired in yet; smarter correction for phrasings the built-in rules miss.
-- 🐢 **Slow / open:** fast-inference hosting is still being worked out for GPU-less machines
+  language understanding and a Polish voice pipeline exist behind the scenes, but you can't yet switch
+  the app itself into Polish; smarter correction for phrasings the built-in rules miss.
+- 🐢 **Slow / open:** on a computer without a dedicated graphics card, answers can take a few seconds
+  instead of feeling instant — faster hosting options are still being worked out
   ([#64](https://github.com/APTG/aidedx/issues/64)).
-- 🔭 **Planned:** spoken answers, wider phrasing coverage, and native apps beyond the browser — an
-  Android app is being scoped first ([#120](https://github.com/APTG/aidedx/issues/120)), with a PWA
-  or desktop app to follow, reusing the same on-device pipeline.
+- 🔭 **Planned:** spoken answers, wider phrasing coverage, and apps beyond the browser — an Android
+  app is being scoped first ([#120](https://github.com/APTG/aidedx/issues/120)), with an installable
+  app for other phones/computers (no app-store download needed) or a full desktop app to follow,
+  reusing the same on-device technology.
 
 ## Documentation & resources
 
