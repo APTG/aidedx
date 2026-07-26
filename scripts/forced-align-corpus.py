@@ -70,7 +70,8 @@ from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor, pipeline
 SAMPLE_RATE = 16000
 UNIT_TOKENS = {"ev", "kev", "mev", "gev", "tev"}
 SEG_PAD_S = 0.2  # audio padding around each segment's known/ASR timestamps
-PODCAST_WINDOW_S = 28.0  # see process_podcasts() docstring for why this replaces chunk_length_s
+PODCAST_WINDOW_S = 28.0  # see process_podcasts() docstring for why the ASR pipeline below is
+# never given more than this much audio in one call
 
 CTC_MODELS = {
     "en": "jonatasgrosman/wav2vec2-large-xlsr-53-english",
@@ -370,13 +371,18 @@ def main():
 
         if args.only != "mit":
             print(f"loading ASR pipeline ({args.whisper_model})...", file=sys.stderr)
+            # No chunk_length_s/stride_length_s here: process_podcasts() always calls this
+            # pipeline with <= PODCAST_WINDOW_S (28s) of audio per call, well under a single
+            # native Whisper window, so there is never a second overlapping chunk for the
+            # pipeline's long-form stitching to reconcile. Leaving those args unset (rather than
+            # set-but-inert) means a future change to PODCAST_WINDOW_S can't silently re-enable
+            # the cross-chunk timestamp drift this file's docstring and process_podcasts()
+            # explain (the bug docs/unit-pronunciation-asr.md §6.4 found).
             asr = pipeline(
                 "automatic-speech-recognition",
                 model=args.whisper_model,
                 device=0 if device == "cuda" else -1,
                 torch_dtype=torch.float16 if device == "cuda" else torch.float32,
-                chunk_length_s=30,
-                stride_length_s=5,
             )
             print("--- podcasts (ASR + alignment) ---", file=sys.stderr)
             process_podcasts(corpus_dir, models, asr, out_dir, unit_sink, args.limit or 10**9)
