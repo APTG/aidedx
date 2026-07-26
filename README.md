@@ -1,7 +1,8 @@
 # aidedx
 
-**Ask about the range, kinetic energy, or stopping power of protons and heavy ions — just speak or
-type the question in plain language and get a real answer, computed entirely on your own machine.**
+**aidedx is a free AI lab assistant for proton and heavy-ion physics. Ask about range, kinetic
+energy, or stopping power — just speak or type your question in plain language and get a real
+answer, computed entirely on your own machine, no internet needed once it's set up.**
 
 Questions like _"how far does a 5 MeV alpha particle go in air?"_ or _"what's the stopping power of
 200 MeV/nucl carbon ions in water?"_ normally mean digging through a form or a data table. aidedx
@@ -72,8 +73,10 @@ Most AI tools send your words to a company's servers. aidedx does the opposite �
   </picture>
 </p>
 
-The only trade-off is that one-time download — fetching the AI's "brain" the first time you use it.
-After that, it works offline too, handy in an experiment hall or anywhere with no signal.
+The only requirement is that one-time download — fetching the AI's "brain" the first time you use
+it, while you have a normal connection. After that, your laptop or phone needs no internet at all:
+it keeps working inside a heavily shielded irradiation room, on a flight to a conference, or
+anywhere else with no signal.
 
 ## Project status
 
