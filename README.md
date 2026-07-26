@@ -80,8 +80,8 @@ After that, it works offline too, handy in an experiment hall or anywhere with n
 Early-stage prototype under active development:
 
 - ✅ **Works:** typed or spoken question → understood → computed → answered, with any assumptions
-  aidedx made shown clearly so you can correct them by hand; the one-time model download asks first
-  and shows a progress panel; answers link out to [dedx_web](https://github.com/APTG/dedx_web) for
+  clearly shown so you can correct them by hand; the one-time model download asks first and shows a
+  progress panel; answers link out to [dedx_web](https://github.com/APTG/dedx_web) for
   full plots.
 - 🚧 **In progress:** Polish-language support ([#63](https://github.com/APTG/aidedx/issues/63)) — the
   language understanding and a Polish voice pipeline exist behind the scenes, but you can't yet switch
