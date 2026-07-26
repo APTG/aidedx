@@ -356,25 +356,55 @@ the MIT captioned lectures (ground-truth text, real forced alignment):
   shows the printed context is an unrelated podcast-ad break ("Suite 305", "Portlandia", "Everyone
   Watches Women's Sports" — no physics content at all), while the _real_ `MeV` mentions in that
   same episode ("It's half of an MeV, half of a mega electron volt...", "a few MeV, a few million
-  electron volts...") sit in different, correctly-captioned parts of the transcript. Root cause not
-  chased down (likely a segment-boundary/offset issue specific to how `forced-align-corpus.py`
-  windows context for Whisper-transcribed — as opposed to `.srt`-captioned — sources, since spot
-  checks of `mit-8.701` context strings above are all correct, short, and on-topic). **Practical
+  electron volts...") sit in different, correctly-captioned parts of the transcript. **Practical
   effect is small** (`daniel-and-jorge` is only 11 of 95 instances, `radio-naukowe` 1 of 95) but it
   means the `daniel-and-jorge`/`radio-naukowe` rows in the table above should be treated as
   low-confidence until someone listens to the actual audio at the given timestamps — the
   `mit-8.701` rows (87 of 95 instances, real `.srt` ground truth) are the trustworthy majority of
   this run.
 
+  **Root cause found and fixed:** `process_podcasts()` handed each whole podcast file to the HF
+  ASR pipeline in one call with `chunk_length_s=30, stride_length_s=5` — the "long-form" path that
+  splits audio into overlapping chunks and reconciles consecutive chunks' timestamps by matching
+  their overlapping token sequences to derive a running offset. A chunk that doesn't overlap
+  cleanly with its neighbor (an ad break, unlike the surrounding physics content, is exactly that)
+  can desync this offset, after which every later chunk's reported timestamp is shifted from where
+  the audio actually is — matching the ad-break-timestamp-pointing-at-real-content pattern above.
+  Fixed by transcribing each podcast in fixed, non-overlapping ~28s windows ourselves instead:
+  each window is a single native Whisper pass, so `return_timestamps=True` uses Whisper's own
+  in-window timestamp tokens directly (no cross-window stitching, so nothing to desync), and the
+  window's own start offset — known exactly by construction — is added back. **Not yet re-run**;
+  `sbatch scripts/submit-forced-align.sh --only podcasts` re-transcribes just the two podcast
+  sources into a fresh results dir (MIT alignment is untouched by this bug and doesn't need
+  redoing); re-run `scripts/forced-align-analyze.py` against that dir afterward and update the
+  table/rows above once confirmed.
+
 ## 7. Recommendations
 
-1. **Fix the data-validity gap, not the model.** For a corpus that spans the _human_ pronunciation
-   distribution, control the TTS **input text** (emit `MeV` / `megaelectronvolt` / `mega electron
-volt` and `cm` / `centimeters` variants) rather than trusting any one engine's G2P — none of
-   the three covers the range. Source: `scripts/generate-1000-sentences.mjs` (`energyPhrase()`
-   ~L209, range units ~L635).
-2. **Add letter-spelled unit forms to the phonetic corrector** — closes the confirmed `M-E-V` gap
-   (§1, §4), low-risk, matches `docs/phonetic-corrector.md`'s design.
+1. ~~Fix the data-validity gap, not the model~~ **Done (2026-07-26).** `scripts/generate-1000-sentences.mjs`
+   now renders each keV/MeV/GeV/cm/mm mention as one of several spoken-out variants (abbrev /
+   expanded / spaced-out for energy; abbrev / expanded for length — `renderUnitsForSpeech()`)
+   instead of always the bare abbreviation. Applied to the TTS-facing text only, **after**
+   `checkCandidate()` has already validated the sentence against the real matcher/WASM using the
+   abbreviated form — rendering the variance _before_ validation was tried first and silently
+   broke multi-energy candidates (the matcher only recognizes "MeV"/"keV"/"GeV" literally, so an
+   expanded rendering in a list like "at 700 kiloelectronvolt, 150 MeV, and 200 megaelectronvolt"
+   left 2 of 3 stated energies unrecognized while still passing the "at least one energy found"
+   incompleteness check). Validating against the abbreviated form matches what actually reaches
+   the matcher in the real pipeline anyway, since Whisper normalizes any spoken rendering back to
+   the abbreviation before the matcher ever sees a transcript (§1). **Not yet synthesized/benched
+   on Athena** — `sbatch scripts/submit-v4.sh` regenerates the corpus, synthesizes it, transcribes
+   it with whisper-small q8, and scores it against v3's baseline
+   (`eval/results/tts-1000-v3-*/score-new.json`).
+2. ~~Add letter-spelled unit forms to the phonetic corrector~~ **Done (2026-07-26).** Added
+   `mev-letter-spelled`/`kev-letter-spelled`/`gev-letter-spelled` regex rules to `EN_RULES` in
+   `src/lib/asr/correct/en.ts` — not `LEXICON` as originally proposed: `LEXICON`'s fuzzy pass is
+   single-token, edit-distance-capped (max 1 for a token this short), and can't reach "M-E-V" from
+   "MeV" (2 hyphen-insertions) or a 3-word "em e v" at all (`applyPhoneticPass` only inspects one
+   token right after a number). A regex rule matching `(?:em|m)[\s.,-]*(?:ee|e)[\s.,-]*(?:vee|v)`
+   (and the keV/GeV equivalents) after a number closes the confirmed `M-E-V` gap (`rng-0573`, §1)
+   and also covers the fully-spelled letter-name form the unit-probe generator uses. Tested in
+   `src/lib/asr/correct/correct.test.ts`.
 3. ~~Run the §5 probe~~ **Done (§5.1, 2026-07-23/24).** Qwen-EN's split held up (length expands,
    energy compresses even past the letter-spelled baseline); the "Chatterbox looks like Piper"
    guess did not survive contact with the measured ratios — both diverged from the espeak-IPA
@@ -389,8 +419,10 @@ volt` and `cm` / `centimeters` variants) rather than trusting any one engine's G
    sentence's own typical word length with a long tail driven by sentence position/emphasis, not a
    clean two-cluster split — weaker support for the original binary premise than hoped, though
    duration alone can't fully settle it (would need the actual words spoken, which the caption text
-   already collapses per §1). Fix the podcast-lane context-window bug (§6.4) before trusting or
-   expanding the `daniel-and-jorge`/`radio-naukowe` rows.
+   already collapses per §1). ~~Fix the podcast-lane context-window bug~~ **Fixed (§6.4,
+   2026-07-26), not yet re-run** — `sbatch scripts/submit-forced-align.sh --only podcasts`
+   re-transcribes just the `daniel-and-jorge`/`radio-naukowe` rows into a fresh results dir; update
+   the table above once that's synced back and re-analyzed.
 6. ~~Check whether a bigger Whisper actually recognizes the unit correctly on real lecture
    speech, not just synthesized probes~~ **Done (§8, 2026-07-24).** `whisper-large-v3-ONNX__q8` is
    the only pair that gets all 11/11 real-speech unit mentions right, but at ~3x the shipped
