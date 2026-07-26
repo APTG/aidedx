@@ -79,13 +79,17 @@ After that, it works offline too, handy in an experiment hall or anywhere with n
 
 Early-stage prototype under active development:
 
-- ✅ **Works:** typed or spoken question → understood → computed → answered, with assumptions noted;
-  the one-time model download asks first and shows a progress panel.
-- 🚧 **In progress:** smarter correction for phrasings the built-in rules miss.
-- 🐢 **Slow / open:** fast-inference hosting is still being worked out for GPU-less machines.
-- 🔭 **Planned:** Polish-language support ([#63](https://github.com/APTG/aidedx/issues/63)), spoken
-  answers, editable assumption chips ([#10](https://github.com/APTG/aidedx/issues/10)), deep links
-  into dedx_web for full plots, wider phrasing coverage.
+- ✅ **Works:** typed or spoken question → understood → computed → answered, with assumptions noted
+  in editable chips you can hand-correct; the one-time model download asks first and shows a progress
+  panel; answers deep-link into [dedx_web](https://github.com/APTG/dedx_web) for full plots.
+- 🚧 **In progress:** Polish-language support ([#63](https://github.com/APTG/aidedx/issues/63)) — the
+  deterministic understanding and a Polish TTS pipeline exist, but voice dictation and a UI language
+  switch aren't wired in yet; smarter correction for phrasings the built-in rules miss.
+- 🐢 **Slow / open:** fast-inference hosting is still being worked out for GPU-less machines
+  ([#64](https://github.com/APTG/aidedx/issues/64)).
+- 🔭 **Planned:** spoken answers, wider phrasing coverage, and native apps beyond the browser — an
+  Android app is being scoped first ([#120](https://github.com/APTG/aidedx/issues/120)), with a PWA
+  or desktop app to follow, reusing the same on-device pipeline.
 
 ## Documentation & resources
 
