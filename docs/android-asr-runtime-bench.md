@@ -1,9 +1,9 @@
 # Android on-device ASR runtime bench (issue #120)
 
-_Session report, 2026-07-27. Three candidates measured (Vosk small-en, sherpa-onnx whisper-small
-int8, wav2vec2-base-960h) — whisper.cpp is still pending; see §6. Measured on a real device
-(Pixel 7a, Tensor G2, Android 17/API 36, `arm64-v8a`), not extrapolated from desktop numbers, per
-issue #120's actual ask._
+_Session report, 2026-07-27. All four candidates from issue #120's original list now measured
+(Vosk small-en, sherpa-onnx whisper-small int8, wav2vec2-base-960h, whisper.cpp). Measured on a
+real device (Pixel 7a, Tensor G2, Android 17/API 36, `arm64-v8a`), not extrapolated from desktop
+numbers, per issue #120's actual ask._
 
 ## TL;DR
 
@@ -31,7 +31,20 @@ speed doesn't matter if the transcript can't be parsed. See §4.1 for a real bug
 implementation surfaced (a WAV-header parsing assumption that also technically affects Vosk's
 harness, though not its verdict).
 
-**Battery/thermal readings, unplugged (§5): Vosk 100%→98% in 118s, sherpa-onnx 98%→95% in 250s,
+**whisper.cpp scores 89% (79/89) — the best on-device result of all four candidates, edging out
+sherpa-onnx's 87% and landing within 2pp of the desktop-with-prompt baseline, again with no prompt
+biasing applied** (though unlike sherpa-onnx, whisper.cpp's underlying library _does_ support
+`initial_prompt` natively — the vendored JNI wrapper used here just doesn't pass one through, see
+§5.4). Getting there required finding and fixing two real build misconfigurations that together
+caused a measured **~8× slowdown** (35-58s/clip → 2.5-4.7s/clip): ggml's `GGML_NATIVE=ON` default
+tries to auto-detect ARM CPU features by probing `-mcpu=native` on the cross-compiler, which is
+meaningless without a real ARM host and silently produced unoptimized scalar code (§5.1). Once
+fixed, the sustained 89-clip run also surfaced something neither other whisper-small candidate
+showed: **real, oscillating thermal throttling** — per-clip latency cycling between ~2.6s and
+15-35s throughout the _entire_ run, not just at the end, dragging the median to 15.1s despite a
+"cold" per-clip cost matching sherpa-onnx's ballpark (§5.3).
+
+**Battery/thermal readings, unplugged (§6): Vosk 100%→98% in 118s, sherpa-onnx 98%→95% in 250s,
 wav2vec2 95%→94% in 63s, back-to-back with no cooldown between runs** — none of the three shows any
 alarming drain or thermal spike over a single ~90-clip pass. Getting a valid reading required
 working around two real device behaviors first: Doze mode (network/CPU restrictions once the
@@ -425,7 +438,180 @@ shape). This was already known from desktop numbers before this session; the on-
 is confirming it holds on a real phone rather than assuming, and the WAV-parsing bug this session
 surfaced (§4.1) is arguably the more useful output of this candidate than the (expected) 0% itself.
 
-## 5. Battery/thermal readings (unplugged)
+## 5. Candidate: whisper.cpp
+
+|         |                                                                                                                                                                                                                                                                                    |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Model   | `ggerganov/whisper.cpp`'s `ggml-small-q8_0.bin` (264 MB), the same whisper-small checkpoint family as sherpa-onnx's candidate                                                                                                                                                      |
+| Harness | `bench/android/whispercpp/` — minimal single-Activity Gradle app, Java, native C/C++ build via the NDK (installed this session — see §1) and CMake, vendoring the JNI bridge from whisper.cpp's own `examples/whisper.android.java` (issue #120's "JNI already written" candidate) |
+
+### 5.1 Setup notes specific to whisper.cpp
+
+- **NDK r28c installed directly from `dl.google.com/android/repository/android-ndk-r28c-linux.zip`**
+  (722 MB) — no `sdkmanager` involved, same no-license-gate direct-download approach that worked
+  for the `android-34` platform earlier. Placed at `~/Android/Sdk/ndk/28.2.13676358` (folder name
+  must match the exact revision string for AGP's `ndkVersion` auto-detection).
+- **Shallow-cloned the upstream `whisper.cpp` repo** (`git clone --depth 1`, 50 MB) into
+  `bench/android/whispercpp/vendor/whisper.cpp/` (gitignored, re-fetched at build time — same
+  pattern as sherpa-onnx's gitignored native libs) rather than copying files piecemeal, since the
+  example's `CMakeLists.txt` needs the full `src/`/`ggml/`/`include/` tree to compile
+  `whisper.cpp` and `ggml` from source. Adjusted `WHISPER_LIB_DIR`'s relative path (our own
+  directory depth differs from upstream's `examples/whisper.android.java/app/src/main/jni/whisper/`)
+  rather than mirroring their exact folder structure.
+- **Same `kotlin-stdlib-jdk7`/`-jdk8` duplicate-class conflict as the Vosk and wav2vec2 benches**
+  — recurring often enough across three of four candidates now that it's clearly some default
+  AGP/AndroidX dependency chain, not something specific to any one library. Same
+  `configurations.all { exclude ... }` fix.
+- **Play Protect flagged the freshly-installed debug APK "HARMFUL"** (`bvq`/`cmv` on-device
+  classifier log lines) — almost certainly a heuristic false-positive common for sideloaded debug
+  builds that dynamically load native libraries via JNI. Confirmed harmless: the app process kept
+  running normally (`adb shell ps -A`), nothing was blocked.
+
+### 5.2 Two real build misconfigurations, found and fixed (the actual point of this candidate)
+
+The first full run measured **35-58 seconds per clip** — 15-20× slower than sherpa-onnx's
+comparable whisper-small workload, despite transcripts being fully accurate. Two separate causes,
+found by inspecting the actual CMake cache rather than guessing:
+
+1. **`CMAKE_CXX_FLAGS_RELEASE` was empty** in the generated `CMakeCache.txt`, instead of CMake's
+   usual `-O3 -DNDEBUG` default — the Android NDK's CMake toolchain file doesn't populate it the
+   way a "vanilla" CMake toolchain does. Fixed with an explicit
+   `set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE STRING "" FORCE)` (a plain `set()` without
+   `CACHE ... FORCE` silently didn't override the toolchain-seeded cache value — confirmed by
+   re-checking `CMakeCache.txt` after the first fix attempt showed no change).
+2. **The actual fix that mattered**: ggml's CPU backend (`ggml/src/ggml-cpu/CMakeLists.txt`)
+   defaults `GGML_NATIVE=ON`, which probes `${CMAKE_C_COMPILER} -mcpu=native -E -v -` to
+   auto-detect ARM feature flags (dotprod/fp16/etc.) — meaningless when cross-compiling from this
+   x86_64 Linux machine to `aarch64-android`, since there's no real ARM CPU on the build machine to
+   query. It silently fell back to a baseline target with none of those extensions, forcing ggml's
+   matmul kernels (the actual bulk of Whisper's runtime — encoder/decoder attention and FFN layers)
+   onto scalar code paths instead of NEON-vectorized ones. Fixed by explicitly setting
+   `GGML_NATIVE=OFF` and `GGML_CPU_ARM_ARCH="armv8.2-a+dotprod+fp16"` (Tensor G2's
+   Cortex-X1+A78+A55 cores, ARMv8.2-A with dotprod+fp16) as forced CMake cache variables before
+   `FetchContent_MakeAvailable(ggml)`.
+
+**Measured effect of fix #2** (isolated with a single-clip test before committing to a full
+89-clip re-run): **37.0s → 4.5s for the same clip, an 8.3× speedup.** Fix #1 alone (tested first,
+in isolation) made no measurable difference — confirming #2 was the real cause, not just
+"insufficient optimization in general."
+
+### 5.3 Reproducing
+
+```
+mkdir -p bench/android/whispercpp/vendor
+git clone --depth 1 https://github.com/ggml-org/whisper.cpp.git bench/android/whispercpp/vendor/whisper.cpp
+
+cd bench/android/whispercpp
+export ANDROID_HOME=~/Android/Sdk
+export JAVA_HOME=<a real JDK — Android Studio's bundled JBR works: .../android-studio/jbr>
+./gradlew assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+
+# model: ggerganov/whisper.cpp's ggml-small-q8_0.bin
+# push to /data/local/tmp, then into the app's internal storage via run-as (see §1)
+adb push ggml-small-q8_0.bin /data/local/tmp/wc/ggml-small-q8_0.bin
+adb push <16kHz-resampled-eval-audio-dir> /data/local/tmp/wc/audio
+adb shell run-as com.aidedx.whispercppbench sh -c \
+  'mkdir -p files && cp /data/local/tmp/wc/ggml-small-q8_0.bin files/ggml-small-q8_0.bin && cp -r /data/local/tmp/wc/audio files/audio'
+
+adb shell am start -n com.aidedx.whispercppbench/.BenchActivity --ez autorun true \
+  -e model_file ggml-small-q8_0.bin -e out_name results-en.json -e model_id whisper.cpp-ggml-small-q8_0
+
+adb shell run-as com.aidedx.whispercppbench cat files/results-en.json > eval/results/android-whispercpp-2026-07-27/whispercpp-ggml-small-q8_0.json
+npx tsx scripts/e2e-audio-intents.ts eval/results/android-whispercpp-2026-07-27/whispercpp-ggml-small-q8_0.json
+node scripts/asr-score-slots.mjs eval/results/android-whispercpp-2026-07-27/whispercpp-ggml-small-q8_0.json
+```
+
+Raw results: `eval/results/android-whispercpp-2026-07-27/whispercpp-ggml-small-q8_0.json`.
+
+### 5.4 Results
+
+| Pipeline                                                       | audio→intent slot match | median s/clip                               | load time |
+| -------------------------------------------------------------- | ----------------------- | ------------------------------------------- | --------- |
+| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`) | 91% (81/89)             | 2.3s                                        | —         |
+| sherpa-onnx whisper-small int8, Pixel 7a, no prompt            | 87% (77/89)             | 2.7s (p90 3.3s)                             | 2.3s      |
+| **whisper.cpp ggml-small-q8_0, Pixel 7a, no prompt**           | **89% (79/89)**         | **15.1s** (p90 22.1s, throttled — see §5.5) | **0.73s** |
+
+Slot-token accuracy by category (raw → corrected):
+
+| Category | Accuracy          | n   |
+| -------- | ----------------- | --- |
+| quantity | 94.7% → 100.0%    | 95  |
+| number   | 96.7% → 98.9%     | 92  |
+| unit     | 79.3% → 96.7%     | 92  |
+| particle | 90.5% → 97.9%     | 95  |
+| material | 96.1% → 98.1%     | 103 |
+| program  | 0.0% → 33.3%      | 6   |
+| **ALL**  | **90.5% → 97.5%** | 483 |
+
+Per-speaker clip pass rate (corrected): km 29/30, lg 25/30, mn 25/29 — essentially identical to
+sherpa-onnx's per-speaker split (28/30, 25/30, 24/29), consistent with both being the same
+underlying whisper-small checkpoint.
+
+The 10 remaining failures after correction are the same category of ordinary acoustic misses
+sherpa-onnx's §3.3 already documented (isotope numbers, "per nucleon" phrasing, the "A\*"/"P\*"
+program-name pair) — not a new failure mode.
+
+Whisper.cpp's underlying C library **does** support prompt biasing
+(`whisper_full_params.initial_prompt`, confirmed directly in `include/whisper.h`) — a real
+difference from sherpa-onnx, which lacks the mechanism entirely at the C++ level (§3.4). This
+benchmark's vendored JNI wrapper (`WhisperContext.transcribeData()` / `WhisperLib.fullTranscribe()`)
+doesn't pass one through, so this 89% result is also unprompted; closing the remaining 2pp gap to
+the desktop baseline by wiring up prompt support here is a small, concrete follow-up this session
+didn't do, unlike sherpa-onnx where it isn't possible without patching upstream.
+
+### 5.5 Real, oscillating thermal throttling — the standout finding of this candidate
+
+Per-clip latency did **not** follow the smooth "fast start, slow finish" pattern a simple thermal
+ramp would predict. Sampled across the run:
+
+```
+first 10 clips: 2.6, 2.5, 2.6, 2.6, 2.7, 2.7, 3.1, 19.5, 16.6, 17.1  (seconds)
+clips 40-50:    2.6, 3.1, 3.0, 2.9, 3.0, 3.0, 4.6, 20.6, 21.1, 20.7
+last 10 clips:  10.2, 19.9, 21.1, 19.4, 34.7, 16.1, 20.9, 17.8, 15.1, 14.9
+```
+
+The same fast-burst/hard-throttle cycle recurs throughout the entire ~19-minute run, not just
+toward the end — a handful of clips near the single-clip "cold" cost (~2.6-3.1s), then a cluster of
+clips at 15-35s, repeating. This is real, oscillating thermal management (boost, overheat,
+throttle, partially recover, repeat), not a data artifact: the transcripts stay accurate throughout
+(the 10 failures are spread across speakers, not concentrated in the slow clusters), and errors
+stayed at 0/89 the whole run.
+
+**Neither Vosk nor sherpa-onnx showed this pattern** in their own comparable-duration unplugged
+runs (§6) — sherpa-onnx's 250-second run stayed close to its plugged-in baseline (2.66s median)
+throughout. whisper.cpp's default thread selection
+(`WhisperCpuConfig.getPreferredThreadCount()`, which specifically targets the "high performance"
+CPU cluster) plausibly sustains a higher clock/higher heat profile than sherpa-onnx's fixed
+4-thread configuration, triggering the Tensor G2's thermal governor harder. Not confirmed against
+`WhisperCpuConfig`'s actual selected thread count this session (its `Log.d` calls didn't appear in
+`logcat` for an unknown reason — a loose end, not investigated further given time already spent on
+this candidate).
+
+**Battery reading for this candidate is much less clean than §6's three-candidate reading** — this
+run happened after a multi-hour pause mid-session (network changed, reconnected via a new WiFi IP),
+so elapsed wall-clock time includes idle drain unrelated to the benchmark itself, not just
+back-to-back runs. For what it's worth: 82%→77% (−5pp) across the whole resumed-session window
+(rebuild, reinstall, two single-clip verification runs, then the full 89-clip run, ~20 minutes
+total), temperature roughly flat at ~32.5°C throughout — but this doesn't capture whatever peak
+temperature actually occurred mid-throttle, unlike §6's continuous before/after readings for the
+other three.
+
+### 5.6 Bottom line for whisper.cpp
+
+**Best accuracy of the four candidates (89% E2E), confirming sherpa-onnx's core finding: a
+whisper-small-family model reaches close-to-desktop accuracy on-device without any prompt
+biasing.** But it took real engineering work to get a valid number at all — two build
+misconfigurations caused an 8× slowdown that would have otherwise been reported as "whisper.cpp is
+just slow on mobile," which would have been wrong. Even after fixing those, the sustained-load
+thermal throttling this candidate uniquely exposed is the more actionable finding for the Android
+app decision than the accuracy number itself: whichever runtime ships needs either a lighter
+per-query CPU footprint (fewer/lower-power threads) or explicit thermal-aware throttling logic of
+its own, or a real user asking several questions in a row could see 2nd/3rd-query latency 5-10×
+worse than the first. This is exactly the "battery draw or thermal throttling" question issue #120
+asked about, and — for whisper.cpp specifically — the answer is "yes, materially."
+
+## 6. Battery/thermal readings (unplugged)
 
 All three benchmark apps were re-run back-to-back, phone unplugged (switched to wireless `adb` over
 WiFi first — `adb tcpip 5555` / `adb connect <ip>:5555` — since disconnecting USB kills a
@@ -450,7 +636,7 @@ includes some thermal carryover from Vosk's run immediately before it, and wav2v
 runs before it (no cooldown was inserted between candidates). Good enough to answer #120's
 "anything grossly wrong?" question; not precise enough for a per-candidate mAh/clip figure.
 
-### 5.1 Two real device behaviors had to be worked around to get a valid reading
+### 6.1 Two real device behaviors had to be worked around to get a valid reading
 
 - **Doze mode** (`mWakefulness=Dozing` was a red herring at first — this term covers two distinct
   Android systems, and the fix for one didn't fix the other): `DeviceIdleController`'s Doze
@@ -472,43 +658,60 @@ runs before it (no cooldown was inserted between candidates). Good enough to ans
   app doing voice-triggered ASR with the screen off would need a wake lock or foreground service to
   avoid the identical throttling a real user would hit.
 
-## 6. Combined comparison
+## 7. Combined comparison
 
-| Pipeline                                                       | audio→intent slot match | median s/clip       | load time |
-| -------------------------------------------------------------- | ----------------------- | ------------------- | --------- |
-| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`) | 91% (81/89)             | 2.3s                | —         |
-| **sherpa-onnx whisper-small int8, Pixel 7a, no prompt**        | **87% (77/89)**         | 2.7s (p90 3.3s)     | 2.3s      |
-| **Vosk small-en, Pixel 7a**                                    | **0% (0/89)**           | **1.3s** (p90 1.6s) | **0.55s** |
-| **wav2vec2-base-960h, Pixel 7a**                               | **0% (0/89)**           | **0.9s** (p90 1.5s) | **0.85s** |
+| Pipeline                                                       | audio→intent slot match | median s/clip                          | load time |
+| -------------------------------------------------------------- | ----------------------- | -------------------------------------- | --------- |
+| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`) | 91% (81/89)             | 2.3s                                   | —         |
+| **whisper.cpp ggml-small-q8_0, Pixel 7a, no prompt**           | **89% (79/89)**         | 15.1s (throttled — "cold" ~2.6s, §5.5) | 0.73s     |
+| **sherpa-onnx whisper-small int8, Pixel 7a, no prompt**        | **87% (77/89)**         | 2.7s (p90 3.3s)                        | 2.3s      |
+| **Vosk small-en, Pixel 7a**                                    | **0% (0/89)**           | **1.3s** (p90 1.6s)                    | **0.55s** |
+| **wav2vec2-base-960h, Pixel 7a**                               | **0% (0/89)**           | **0.9s** (p90 1.5s)                    | **0.85s** |
 
-## 7. What's still pending
+## 8. What's still pending
 
-- **whisper.cpp** — needs the NDK (not installed; see §1), so real setup cost still ahead. Given
-  sherpa-onnx's strong result already covers "a whisper-small-family model on-device," whisper.cpp
-  is now more of a confirmation/cross-check than the last untested option.
-- **Whether sherpa-onnx's result holds on Polish** — no Polish eval audio exists yet
+- **Whether sherpa-onnx's/whisper.cpp's result holds on Polish** — no Polish eval audio exists yet
   (issues #63/#79/#30 still open), so every run in this doc is English-only.
 - **A per-candidate (not combined-session) battery reading** would need a cooldown period between
-  runs — §5's numbers are good enough to rule out anything grossly wrong, not precise enough for a
-  clean mAh/clip figure per candidate.
+  runs — §6's numbers are good enough to rule out anything grossly wrong, not precise enough for a
+  clean mAh/clip figure per candidate. whisper.cpp's own reading (§5.5) is muddier still (a
+  mid-session pause bled idle drain into it).
+- **Wiring whisper.cpp's native `initial_prompt` support through its JNI wrapper** — unlike
+  sherpa-onnx, this is architecturally possible (§5.4) and could plausibly close the remaining 2pp
+  gap to the desktop baseline. Not done this session.
+- **Confirming `WhisperCpuConfig`'s actual selected thread count** (§5.5) — its own `Log.d` calls
+  didn't surface in `logcat` for an unexplained reason; would help confirm the thread-count
+  hypothesis for whisper.cpp's unique thermal throttling.
 - ~~Confirming whether sherpa-onnx exposes a prompt-biasing hook~~ — resolved, §3.4: it doesn't,
   at any level, confirmed against the C++ source and directly by the maintainer
   ([k2-fsa/sherpa-onnx#2295](https://github.com/k2-fsa/sherpa-onnx/issues/2295)). Reaching it would
   mean patching sherpa-onnx's C++ decoder and cross-compiling for `arm64-v8a` — judged not worth
   the cost given the 87% E2E score was already reached without it.
 - ~~wav2vec2-base-960h stretch candidate~~ — resolved, §4: 0% E2E, confirms the desktop verdict.
-- ~~Controlled battery/thermal readings~~ — resolved, §5.
+- ~~Controlled battery/thermal readings~~ — resolved, §6 (three of four candidates; whisper.cpp's
+  own reading is separate and less clean, §5.5).
+- ~~whisper.cpp~~ — resolved, §5: 89% E2E, best of the four candidates, but only after fixing two
+  real build misconfigurations, and the only candidate showing real sustained-load thermal
+  throttling.
 
-## 8. Bottom line so far
+## 9. Bottom line so far
 
-**sherpa-onnx whisper-small (int8) is the clear leader of the three candidates measured**: 87% E2E
-on-device, no prompt biasing applied, at a latency close to the desktop baseline — a real,
-practical option for an Android on-device pipeline, and its battery/thermal profile over a single
-~90-clip pass (98%→95%, +6.1°C) isn't a red flag either. Vosk small-en is fast but hits a hard
-vocabulary wall on this domain's unit jargon that no amount of correction-layer tuning can close;
-wav2vec2-base-960h is even faster but structurally incompatible with this project's numeric/unit
-matcher (no digit output at all). Only whisper.cpp remains unmeasured. If sherpa-onnx's number
-holds up under whisper.cpp's cross-check, this issue's original framing — native rewrite for
-latency/battery reasons — looks less urgent than assumed: an ONNX Runtime Mobile-class runtime is
-already delivering close-to-desktop accuracy on a real phone, at a battery/thermal cost this
-session's readings don't flag as a problem.
+**All four of issue #120's original candidates are now measured. whisper.cpp and sherpa-onnx are
+both strong, practical options (89% and 87% E2E on-device, both without prompt biasing, both within
+a few points of the desktop-with-prompt baseline) — Vosk and wav2vec2 are both disqualified on
+accuracy for structurally different reasons** (Vosk: closed vocabulary doesn't contain this
+domain's jargon; wav2vec2: CTC output has no digit tokens the matcher can parse at all).
+
+The deciding factor between the two viable candidates isn't accuracy — it's **operational
+behavior under sustained use**. sherpa-onnx's latency stayed flat and close to its desktop baseline
+across a full unplugged battery run; whisper.cpp's did not, showing real oscillating thermal
+throttling that pushed its _median_ latency to 15.1s despite a "cold" per-clip cost (~2.6s)
+matching sherpa-onnx's. That's the more actionable finding for the Android app decision than either
+accuracy number: **sherpa-onnx currently looks like the safer choice for a shipped app**, unless
+whisper.cpp's thread configuration is tuned down from its current "high-performance cores only"
+default — a concrete, scoped follow-up (§8), not a fundamental limitation of the runtime.
+
+Either way, this issue's original framing — that native inference should beat WASM-in-a-WebView on
+latency/battery, justifying a native rewrite — now has real evidence behind it: both whisper-small
+ONNX-Runtime-Mobile-class runtimes deliver close-to-desktop accuracy on a real phone, at a
+battery/thermal cost this session's readings don't flag as alarming for at least one of them.

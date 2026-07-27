@@ -21,6 +21,11 @@ export default tseslint.config(
       ".npm-global/**",
       ".hf-cache-py/**",
       ".hf-cache/**",
+      // Android benchmark harnesses (issue #120) — separate Gradle/Java/Kotlin/C++ projects, not
+      // part of this SvelteKit project's lint scope. Includes gitignored vendored checkouts
+      // (e.g. bench/android/whispercpp/vendor/whisper.cpp) that eslint's flat config would
+      // otherwise pick up directly off disk, same .gitignore-blindness as the venvs above.
+      "bench/**",
     ],
   },
   js.configs.recommended,
