@@ -263,14 +263,37 @@ failure mode specific to the sherpa-onnx runtime or the phone.
 
 #120 asked whether a candidate could replicate desktop whisper-small's domain-prompt biasing
 (`docs/voice-pipeline-feasibility.md` §2.4, the single biggest lever found there — raw 88.0%→95.6%
-slot-token accuracy). **Checked directly against the `OfflineWhisperModelConfig` source
-(`sherpa-onnx/kotlin-api/OfflineRecognizer.kt`): no.** Its fields are `encoder`, `decoder`,
-`language`, `task`, `tailPaddings`, `enableTokenTimestamps`, `enableSegmentTimestamps` — no
-prompt/`initial_prompt`-equivalent field exists. This run's 87% E2E score was reached with **zero**
-prompt biasing, which makes the result more notable, not less: whatever accuracy prompt-biasing
-would add on top is still on the table, unexercised. Whether prompt-biasing is reachable at all
-here would require a lower-level API (the C API bindings, `OfflineRecognizerConfig.modelConfig`
-doesn't expose it) — not investigated this session.
+slot-token accuracy). **Definitive answer: no, and not just at the Kotlin binding level — it isn't
+supported anywhere in sherpa-onnx's implementation, confirmed at the C++ source and directly by
+the maintainer.**
+
+- The C++ `OfflineWhisperModelConfig` struct (`sherpa-onnx/csrc/offline-whisper-model-config.h`)
+  has no prompt/`initial_prompt` field at all — this isn't an unexposed Kotlin binding gap, the
+  field doesn't exist in the underlying implementation.
+- The only Whisper decoder implemented (`sherpa-onnx/csrc/offline-whisper-greedy-search-decoder.cc`
+  — there is no beam-search variant) hardcodes its initial decoder token sequence to
+  `[sot, language, task, no_timestamps]`. There's no code path that prepends a
+  `<|startofprev|>` + prompt-token prefix the way the desktop `scripts/asr-transcribe.mjs` harness
+  does (`decoder_input_ids = [SOT_PREV, ...promptTokenIds, SOT, LANG, TRANSCRIBE, NO_TS]`).
+- Someone asked the maintainer this exact question upstream:
+  [k2-fsa/sherpa-onnx#2295 "whisper prompts?"](https://github.com/k2-fsa/sherpa-onnx/issues/2295).
+  csukuangfj's reply, pointing at the same decoder file and line found independently above:
+
+  > "Yes, it is doable. We need to change [offline-whisper-greedy-search-decoder.cc#L32]... Code
+  > needs to be modified so that users can pass the prompt with some API."
+
+  and, when asked if it's roadmapped:
+
+  > "I suggest that you change the code by yourself. Currently, there is no plan to add it."
+
+So reaching prompt-biasing on sherpa-onnx would mean forking the C++ source, patching that decoder,
+and cross-compiling the native library for `arm64-v8a` (NDK + sherpa-onnx's own CMake/onnxruntime
+build) — not a config flag, and a materially bigger undertaking than anything else in this spike so
+far. **Not attempted this session** (would need the NDK, still not installed, plus setting up a
+full C++ cross-compile toolchain) — judged not worth the cost given this run's 87% E2E score was
+already reached with **zero** prompt biasing, which makes the result more notable, not less:
+whatever accuracy prompt-biasing would add is upside still on the table, not a gap this number is
+hiding.
 
 ### 3.5 Bottom line for sherpa-onnx
 
@@ -302,9 +325,11 @@ one-time cost either way, not per-clip.
   USB power) — neither run so far counts (§0 TL;DR).
 - **Whether sherpa-onnx's result holds on Polish** — no Polish eval audio exists yet
   (issues #63/#79/#30 still open), so this run is English-only, same limitation as Vosk's.
-- Confirming whether sherpa-onnx's lower-level C API exposes a prompt-biasing hook the Kotlin
-  `OfflineWhisperModelConfig` doesn't (§3.4) — if it does, sherpa-onnx's 87% likely has more room
-  to close the gap to (or beat) the desktop 91% baseline.
+- ~~Confirming whether sherpa-onnx exposes a prompt-biasing hook~~ — resolved, §3.4: it doesn't,
+  at any level, confirmed against the C++ source and directly by the maintainer
+  ([k2-fsa/sherpa-onnx#2295](https://github.com/k2-fsa/sherpa-onnx/issues/2295)). Reaching it would
+  mean patching sherpa-onnx's C++ decoder and cross-compiling for `arm64-v8a` — judged not worth
+  the cost given the 87% E2E score was already reached without it.
 
 ## 6. Bottom line so far
 
