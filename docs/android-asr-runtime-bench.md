@@ -42,20 +42,20 @@ unplugged, which wasn't done for this first pass.
 
 ## 1. Setup
 
-| | |
-|---|---|
-| Device | Pixel 7a (`lynx`), Tensor G2 (GS201), Android 17 (API 36), `arm64-v8a` |
-| Model | `vosk-model-small-en-us-0.15` (68 MB unzipped), official Alphacephei download, no reconversion |
-| Harness | `bench/android/vosk/` (new, this session) — minimal single-Activity Gradle app, no mic, no NDK build (Vosk/JNA ship prebuilt `arm64-v8a` `.so`s) |
-| Eval clips | The same fixed 30-sentence × 3-speaker set `scripts/asr-transcribe.mjs` uses (89 of 90 exist), resampled 44.1kHz→16kHz mono for Vosk with `ffmpeg` |
-| Scoring | Unmodified `scripts/e2e-audio-intents.ts` and `scripts/asr-score-slots.mjs` — the on-device run writes the exact same JSON contract `scripts/asr-transcribe.mjs` does (`modelId`/`dtype`/`loadS`/`records[]`), so no new scoring code was needed |
+|            |                                                                                                                                                                                                                                                  |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Device     | Pixel 7a (`lynx`), Tensor G2 (GS201), Android 17 (API 36), `arm64-v8a`                                                                                                                                                                           |
+| Model      | `vosk-model-small-en-us-0.15` (68 MB unzipped), official Alphacephei download, no reconversion                                                                                                                                                   |
+| Harness    | `bench/android/vosk/` (new, this session) — minimal single-Activity Gradle app, no mic, no NDK build (Vosk/JNA ship prebuilt `arm64-v8a` `.so`s)                                                                                                 |
+| Eval clips | The same fixed 30-sentence × 3-speaker set `scripts/asr-transcribe.mjs` uses (89 of 90 exist), resampled 44.1kHz→16kHz mono for Vosk with `ffmpeg`                                                                                               |
+| Scoring    | Unmodified `scripts/e2e-audio-intents.ts` and `scripts/asr-score-slots.mjs` — the on-device run writes the exact same JSON contract `scripts/asr-transcribe.mjs` does (`modelId`/`dtype`/`loadS`/`records[]`), so no new scoring code was needed |
 
 ### Why this took real setup work, not just a download
 
 Two environment gaps had to be worked around, worth recording so the next candidate (sherpa-onnx)
 doesn't hit them blind:
 
-- **No NDK installed**, only Android Studio's NDK *plugin* (UI integration, not the toolchain). Not
+- **No NDK installed**, only Android Studio's NDK _plugin_ (UI integration, not the toolchain). Not
   needed for Vosk/JNA (prebuilt AARs), but will matter for whisper.cpp, which builds its JNI bridge
   from source.
 - **The installed SDK platform (`android-36.1`, a fractional/QPR API level) isn't a format this
@@ -105,36 +105,36 @@ Raw results: `eval/results/android-vosk-2026-07-27/vosk-small-en.json`.
 
 ### 3.1 Headline, vs. the existing baseline
 
-| Pipeline | audio→intent slot match | median s/clip | load time |
-|---|---|---|---|
-| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`) | 91% (81/89) | 2.3s | — |
-| **Vosk small-en, Pixel 7a, real device** | **0% (0/89)** | **1.3s** (p90 1.6s) | **0.55s** |
+| Pipeline                                                       | audio→intent slot match | median s/clip       | load time |
+| -------------------------------------------------------------- | ----------------------- | ------------------- | --------- |
+| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`) | 91% (81/89)             | 2.3s                | —         |
+| **Vosk small-en, Pixel 7a, real device**                       | **0% (0/89)**           | **1.3s** (p90 1.6s) | **0.55s** |
 
 ### 3.2 Slot-token accuracy by category (raw → corrected)
 
-| Category | Accuracy | n |
-|---|---|---|
-| quantity | 77.9% → 80.0% | 95 |
-| number | 4.3% → 6.5% | 92 |
-| **unit** | **5.4% → 6.5%** | 92 |
-| particle | 54.7% → 56.8% | 95 |
-| material | 73.8% → 74.8% | 103 |
-| program | 0.0% → 16.7% | 6 |
-| **ALL** | **43.7% → 45.5%** | 483 |
+| Category | Accuracy          | n   |
+| -------- | ----------------- | --- |
+| quantity | 77.9% → 80.0%     | 95  |
+| number   | 4.3% → 6.5%       | 92  |
+| **unit** | **5.4% → 6.5%**   | 92  |
+| particle | 54.7% → 56.8%     | 95  |
+| material | 73.8% → 74.8%     | 103 |
+| program  | 0.0% → 16.7%      | 6   |
+| **ALL**  | **43.7% → 45.5%** | 483 |
 
 Per-speaker clip pass rate (corrected): km 0/30, lg 0/30, mn 0/29 — uniform across speakers, so
 this isn't one bad recording, it's systematic.
 
 ### 3.3 Sample transcripts (raw, uncorrected)
 
-| Expected | Vosk raw output |
-|---|---|
-| "...60 MeV protons..." | "...sixty **mtv** protons..." |
-| "...100 MeV..." | "...one hundred **m easy**..." |
-| "...150 keV..." | "...one hundred and fifty **if he**..." |
-| "...carbon ions..." | "...carbon **aisles**..." |
-| "...in PMMA" | "...in **pm away**" / "...**pm and a**" |
-| "...290 MeV/u" | "...two hundred ninety **mtv per you**" |
+| Expected               | Vosk raw output                         |
+| ---------------------- | --------------------------------------- |
+| "...60 MeV protons..." | "...sixty **mtv** protons..."           |
+| "...100 MeV..."        | "...one hundred **m easy**..."          |
+| "...150 keV..."        | "...one hundred and fifty **if he**..." |
+| "...carbon ions..."    | "...carbon **aisles**..."               |
+| "...in PMMA"           | "...in **pm away**" / "...**pm and a**" |
+| "...290 MeV/u"         | "...two hundred ninety **mtv per you**" |
 
 ## 4. Open questions from #122, answered for Vosk specifically
 
@@ -166,7 +166,7 @@ Vosk small-en is fast and lightweight but not viable for this project's domain a
 is a hard vocabulary-coverage wall, not a tunable accuracy gap prompt-biasing or a correction layer
 can close (there's no `initial_prompt`-equivalent hook, and the correction layer's regex/phonetic
 passes only move the aggregate token accuracy from 43.7%→45.5%, nowhere near closing an 89pp gap).
-Whether a *large* Vosk model (not tested here, bigger than the ≤0.5GB budget this candidate was
+Whether a _large_ Vosk model (not tested here, bigger than the ≤0.5GB budget this candidate was
 chosen for) has broader vocabulary coverage is an open question this session didn't test. For the
 Android runtime decision this issue is ultimately about, sherpa-onnx and whisper.cpp — both
 whisper-small-family models this project already tuned prompt-biasing against — remain the more

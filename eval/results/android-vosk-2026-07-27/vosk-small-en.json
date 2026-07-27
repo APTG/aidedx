@@ -4,94 +4,628 @@
   "withPrompt": false,
   "loadS": 0.549220988,
   "records": [
-    {"speaker": "km", "id": "alias-001", "raw": "what is the ranks of sixty mtv protons and lucite lucid", "secs": 1.052431235, "error": null},
-    {"speaker": "km", "id": "cmp-en-001", "raw": "comfort the range of protons and water at one hundred and two hundred and easy", "secs": 1.06226001, "error": null},
-    {"speaker": "km", "id": "cmp-mat-001", "raw": "compared to stopping power of one hundred m easy protons in water and bone", "secs": 1.03845573, "error": null},
-    {"speaker": "km", "id": "cmp-mat-004", "raw": "range of one hundred and fifty if he protons in water bone and as he pulls tissue", "secs": 1.273037151, "error": null},
-    {"speaker": "km", "id": "cmp-mat-007", "raw": "for one hundred m is a prenup the on carbon aisles to the range and weather and pm away", "secs": 1.404916505, "error": null},
-    {"speaker": "km", "id": "cmp-par-003", "raw": "how do carbon and neil ios comfort in range and water at one hundred and eighty per not liam", "secs": 1.479251588, "error": null},
-    {"speaker": "km", "id": "cmp-par-005", "raw": "which penetrate deeper in water at sixty mtv a proton or a neutral", "secs": 1.344962891, "error": null},
-    {"speaker": "km", "id": "cmp-prog-001", "raw": "compared the range of one hundred fifty mpg protons and water using a and peace top", "secs": 1.412784954, "error": null},
-    {"speaker": "km", "id": "conv-003", "raw": "i'm so like how far does a one hundred am eighty proton go in water roughly", "secs": 1.327926555, "error": null},
-    {"speaker": "km", "id": "conv-008", "raw": "okay so i need the range of two hundred and further him mtv protons in was her for a plan", "secs": 1.445757488, "error": null},
-    {"speaker": "km", "id": "ind-001", "raw": "how far will as sixty and even proton trouble in water", "secs": 1.025468547, "error": null},
-    {"speaker": "km", "id": "ind-003", "raw": "it's what right does a for the mtv proton says energy as it moves through meal", "secs": 1.361382243, "error": null},
-    {"speaker": "km", "id": "ind-008", "raw": "what penetration depth do eighty mg per nutley on oxygen aisles reaching in weather", "secs": 1.523164837, "error": null},
-    {"speaker": "km", "id": "inv-rng-001", "raw": "what energy gives a tan centimeter range and water for protons", "secs": 1.091969239, "error": null},
-    {"speaker": "km", "id": "iso-002", "raw": "stopping power of carbon fourteen ions in water at one hundred and eighty per not liam", "secs": 1.345256673, "error": null},
-    {"speaker": "km", "id": "iso-004", "raw": "stopping power of a helium three i i'm in water at forty mg per luckily i'm", "secs": 1.235638591, "error": null},
-    {"speaker": "km", "id": "pernuc-001", "raw": "range of carbon ions in water at two hundred ninety mtv per you", "secs": 1.232099448, "error": null},
-    {"speaker": "km", "id": "pernuc-003", "raw": "what is the range of a carbon i'll weave three point six gb total energy and water", "secs": 1.167298015, "error": null},
-    {"speaker": "km", "id": "rng-002", "raw": "what is this see as the a range of a one hundred and fifty and if you problem in water", "secs": 1.206845256, "error": null},
-    {"speaker": "km", "id": "rng-005", "raw": "range of ninety mtv per napoleon carbon isles in water", "secs": 1.28546635, "error": null},
-    {"speaker": "km", "id": "rng-008", "raw": "how deep does a one hundred am in proton penetrate and water", "secs": 1.026473796, "error": null},
-    {"speaker": "km", "id": "sp-003", "raw": "what's the the east less the x of two hundred and fifty mtv protons in pm and a", "secs": 1.348788941, "error": null},
-    {"speaker": "km", "id": "sp-005", "raw": "stop in power for eighty mg per luckily on carbon ios you other", "secs": 1.255032593, "error": null},
-    {"speaker": "km", "id": "sp-007", "raw": "what is the must stopping power power of two hundred am either presence in cortical bone", "secs": 1.044326742, "error": null},
-    {"speaker": "km", "id": "sp-008", "raw": "the is less the eggs of three and even deuterons in silicone", "secs": 0.911918864, "error": null},
-    {"speaker": "km", "id": "stress-001", "raw": "i'm curious how find the water that two hundred forty key a key carbon i will go", "secs": 1.278682699, "error": null},
-    {"speaker": "km", "id": "stress-002", "raw": "compare stopping power of known ions in water and therefore one hundred thousand m e v turn material", "secs": 1.639565389, "error": null},
-    {"speaker": "km", "id": "unit-001", "raw": "stopping power of five hundred keep even proteins in water", "secs": 1.117516683, "error": null},
-    {"speaker": "km", "id": "unit-003", "raw": "what is the stopping power of one d v proteins in water", "secs": 1.078613363, "error": null},
-    {"speaker": "km", "id": "unit-006", "raw": "what's the range of nine hundred key even to trans in water", "secs": 1.0417983, "error": null},
-    {"speaker": "lg", "id": "alias-001", "raw": "what does the range of sixty me the from suicide", "secs": 1.361820557, "error": null},
-    {"speaker": "lg", "id": "cmp-en-001", "raw": "compared the range of proper the see what they're up to one hundred and two hundred a movie", "secs": 1.443913575, "error": null},
-    {"speaker": "lg", "id": "cmp-mat-001", "raw": "compared to stopping power of one hundred immediate problems in the world turn and the bone", "secs": 1.198378093, "error": null},
-    {"speaker": "lg", "id": "cmp-mat-004", "raw": "range of one hundred fifty and maybe problems in the world third bone and adipose tissue", "secs": 1.432036663, "error": null},
-    {"speaker": "lg", "id": "cmp-mat-007", "raw": "for one hundred mb per look lower carbon aisles compared the range in the water and pm me", "secs": 1.660315838, "error": null},
-    {"speaker": "lg", "id": "cmp-par-003", "raw": "hold on carbon and neon iron skillet or in the would range in the water at one hundred mg per look around", "secs": 1.787041912, "error": null},
-    {"speaker": "lg", "id": "cmp-par-005", "raw": "which penetrate deeper in the water and sixty and maybe a proton or a deal to your own", "secs": 1.366132813, "error": null},
-    {"speaker": "lg", "id": "cmp-prog-001", "raw": "comes heard the range of one hundred sixty anything protons in water using in case there and thirty", "secs": 1.91217212, "error": null},
-    {"speaker": "lg", "id": "conv-003", "raw": "so like coal fired those hundred and maybe proton going there are what their rationally", "secs": 1.586964437, "error": null},
-    {"speaker": "lg", "id": "conv-008", "raw": "okay so i need the range of two hundred thirty immediate proton in the water for a flung", "secs": 1.194921997, "error": null},
-    {"speaker": "lg", "id": "ind-001", "raw": "how far will sixty immediate problem trouble even water", "secs": 1.163858399, "error": null},
-    {"speaker": "lg", "id": "ind-003", "raw": "that's what raise those thirty and mean protons shut and or to as it moves through aluminium", "secs": 1.605808309, "error": null},
-    {"speaker": "lg", "id": "ind-008", "raw": "what penetration that door eighty and maybe parent them oxygen i am three checking the weather", "secs": 1.616202028, "error": null},
-    {"speaker": "lg", "id": "inv-rng-001", "raw": "what energy give them a centimeter write a letter for propose", "secs": 1.743998658, "error": null},
-    {"speaker": "lg", "id": "iso-002", "raw": "stopping power of kind of been thirty i have seen the what they're up one hundred and keep per look around", "secs": 1.858664511, "error": null},
-    {"speaker": "lg", "id": "iso-004", "raw": "stopping power of on three i i'm in water forty a meaty part look now", "secs": 1.743598511, "error": null},
-    {"speaker": "lg", "id": "pernuc-001", "raw": "range of car but ions see the water at two hundred ninety and maybe are you", "secs": 1.487569988, "error": null},
-    {"speaker": "lg", "id": "pernuc-003", "raw": "what does the range of carbon i i'm with three point six gb total energy and water", "secs": 1.538867799, "error": null},
-    {"speaker": "lg", "id": "rng-002", "raw": "what does the see as the a range of one hundred fifty and media proton the in the water", "secs": 1.390238281, "error": null},
-    {"speaker": "lg", "id": "rng-005", "raw": "range of key me the parent oklahoma kind of been ions in a water", "secs": 1.352348715, "error": null},
-    {"speaker": "lg", "id": "rng-008", "raw": "how deep does one hundred mg proton penetrating water", "secs": 1.300013958, "error": null},
-    {"speaker": "lg", "id": "sp-003", "raw": "what's the the the acts of two hundred fifty me the proton seeing a pm i may", "secs": 1.509099814, "error": null},
-    {"speaker": "lg", "id": "sp-005", "raw": "stopping power from eighty mg per know clown car carbon ions in water", "secs": 1.440470052, "error": null},
-    {"speaker": "lg", "id": "sp-007", "raw": "what does the must stopping power of two hundred and maybe problems in the car to go bone", "secs": 1.127776572, "error": null},
-    {"speaker": "lg", "id": "sp-008", "raw": "the eat the eggs of three a movie deal terrorists in come", "secs": 1.089153646, "error": null},
-    {"speaker": "lg", "id": "stress-001", "raw": "i am curious offering was working pp carbon i will go", "secs": 2.624264405, "error": null},
-    {"speaker": "lg", "id": "stress-002", "raw": "converse stopping power of neon i unseen the water and air for a one hundred mechanic or to clone", "secs": 2.385557415, "error": null},
-    {"speaker": "lg", "id": "unit-001", "raw": "stopping power of five hundred k e v programs in the water", "secs": 1.292321127, "error": null},
-    {"speaker": "lg", "id": "unit-003", "raw": "what does the stopping power of when the g the problems in the water", "secs": 1.186952678, "error": null},
-    {"speaker": "lg", "id": "unit-006", "raw": "what does the range of nine hundred k kg be with arrows in the water", "secs": 1.338732504, "error": null},
-    {"speaker": "mn", "id": "alias-001", "raw": "what is the range of six the a movie presence in the lucite", "secs": 1.000613364, "error": null},
-    {"speaker": "mn", "id": "cmp-en-001", "raw": "compared the range of brothers in water at one hundred and two hundred a movie", "secs": 1.217460979, "error": null},
-    {"speaker": "mn", "id": "cmp-mat-001", "raw": "compare to stopping power of one hundred and movie problems in water and bone", "secs": 1.245943522, "error": null},
-    {"speaker": "mn", "id": "cmp-mat-004", "raw": "range of one hundred fifty mtv proteins in what water bone and adipose tissue", "secs": 1.265438762, "error": null},
-    {"speaker": "mn", "id": "cmp-par-003", "raw": "how do carbon and neon isles comparing rage water at one hundred any the bernoulli on", "secs": 1.319282716, "error": null},
-    {"speaker": "mn", "id": "cmp-par-005", "raw": "which both raise the bar in water at sixty a movie a problem or a though term", "secs": 1.478573772, "error": null},
-    {"speaker": "mn", "id": "cmp-prog-001", "raw": "compare the range of one hundred fifty and me the problems in what using astor and beast or", "secs": 1.211743409, "error": null},
-    {"speaker": "mn", "id": "conv-003", "raw": "i'm so like how far does the one heard a movie proton go in water roughly", "secs": 1.250453614, "error": null},
-    {"speaker": "mn", "id": "conv-008", "raw": "okay so i knew the ranks of two hundred thirty and the the brothels in water for at them", "secs": 1.298606528, "error": null},
-    {"speaker": "mn", "id": "ind-001", "raw": "how far with a sixty a movie proton travel you wonder", "secs": 1.064709676, "error": null},
-    {"speaker": "mn", "id": "ind-003", "raw": "at what rate those effort the mtv proton set energy as it moves through aluminium", "secs": 1.38756364, "error": null},
-    {"speaker": "mn", "id": "ind-008", "raw": "what penetration depp do eight the a movie pair nuclear oxygen ions reach in water", "secs": 1.498607871, "error": null},
-    {"speaker": "mn", "id": "inv-rng-001", "raw": "what energy and gives out tensiometer range in water for problems", "secs": 1.173074911, "error": null},
-    {"speaker": "mn", "id": "iso-002", "raw": "stopping for of carbon thirteen islands in water at one hundred any the bernoulli on", "secs": 1.209529054, "error": null},
-    {"speaker": "mn", "id": "iso-004", "raw": "stopping power of helium free ion in water at fort the any deeper new girl", "secs": 1.140076702, "error": null},
-    {"speaker": "mn", "id": "pernuc-001", "raw": "range of carbon ions in water at two hundred ninety and levy per you", "secs": 1.200977133, "error": null},
-    {"speaker": "mn", "id": "pernuc-003", "raw": "what is the range of a carbon i own with three point six gb total energy what", "secs": 1.337121664, "error": null},
-    {"speaker": "mn", "id": "rng-002", "raw": "what is the see as the a range over one hundred fifty mtv problem water", "secs": 1.383377971, "error": null},
-    {"speaker": "mn", "id": "rng-005", "raw": "range of nine p m e vapor nuclear on carbon ions in water", "secs": 1.075839072, "error": null},
-    {"speaker": "mn", "id": "rng-008", "raw": "how deep does the one hundred and be reprogrammed penetrating water", "secs": 1.128222413, "error": null},
-    {"speaker": "mn", "id": "sp-003", "raw": "what's that the over the x of two hundred fifty and easy protons in p m m a", "secs": 1.154423218, "error": null},
-    {"speaker": "mn", "id": "sp-005", "raw": "stopping power for eight the an easy pair nuclear carbon islands in water", "secs": 1.125818035, "error": null},
-    {"speaker": "mn", "id": "sp-007", "raw": "what this the must stopping power of two hundred and even brothers in court yeah court t called bone", "secs": 1.516612997, "error": null},
-    {"speaker": "mn", "id": "sp-008", "raw": "the over the x of free and easy doubt their runs in silicon", "secs": 1.112475871, "error": null},
-    {"speaker": "mn", "id": "stress-001", "raw": "i'm curious how far in water two hundred forty katie vick carbon i'll will go", "secs": 1.119761638, "error": null},
-    {"speaker": "mn", "id": "stress-002", "raw": "compare stopping power of neon ions in water and air force one hundred and eighty per nuclei", "secs": 1.391161296, "error": null},
-    {"speaker": "mn", "id": "unit-001", "raw": "stopping power of five hundred's kv protos in water", "secs": 1.113495525, "error": null},
-    {"speaker": "mn", "id": "unit-003", "raw": "what does the stopping power and wealth have one got it from of old problems in water", "secs": 1.40324406, "error": null},
-    {"speaker": "mn", "id": "unit-006", "raw": "what is the range of my hundred k t v though terrence englander", "secs": 0.922227865, "error": null}
+    {
+      "speaker": "km",
+      "id": "alias-001",
+      "raw": "what is the ranks of sixty mtv protons and lucite lucid",
+      "secs": 1.052431235,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-en-001",
+      "raw": "comfort the range of protons and water at one hundred and two hundred and easy",
+      "secs": 1.06226001,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-001",
+      "raw": "compared to stopping power of one hundred m easy protons in water and bone",
+      "secs": 1.03845573,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-004",
+      "raw": "range of one hundred and fifty if he protons in water bone and as he pulls tissue",
+      "secs": 1.273037151,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-007",
+      "raw": "for one hundred m is a prenup the on carbon aisles to the range and weather and pm away",
+      "secs": 1.404916505,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-par-003",
+      "raw": "how do carbon and neil ios comfort in range and water at one hundred and eighty per not liam",
+      "secs": 1.479251588,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-par-005",
+      "raw": "which penetrate deeper in water at sixty mtv a proton or a neutral",
+      "secs": 1.344962891,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-prog-001",
+      "raw": "compared the range of one hundred fifty mpg protons and water using a and peace top",
+      "secs": 1.412784954,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "conv-003",
+      "raw": "i'm so like how far does a one hundred am eighty proton go in water roughly",
+      "secs": 1.327926555,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "conv-008",
+      "raw": "okay so i need the range of two hundred and further him mtv protons in was her for a plan",
+      "secs": 1.445757488,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-001",
+      "raw": "how far will as sixty and even proton trouble in water",
+      "secs": 1.025468547,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-003",
+      "raw": "it's what right does a for the mtv proton says energy as it moves through meal",
+      "secs": 1.361382243,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-008",
+      "raw": "what penetration depth do eighty mg per nutley on oxygen aisles reaching in weather",
+      "secs": 1.523164837,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "inv-rng-001",
+      "raw": "what energy gives a tan centimeter range and water for protons",
+      "secs": 1.091969239,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "iso-002",
+      "raw": "stopping power of carbon fourteen ions in water at one hundred and eighty per not liam",
+      "secs": 1.345256673,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "iso-004",
+      "raw": "stopping power of a helium three i i'm in water at forty mg per luckily i'm",
+      "secs": 1.235638591,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "pernuc-001",
+      "raw": "range of carbon ions in water at two hundred ninety mtv per you",
+      "secs": 1.232099448,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "pernuc-003",
+      "raw": "what is the range of a carbon i'll weave three point six gb total energy and water",
+      "secs": 1.167298015,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-002",
+      "raw": "what is this see as the a range of a one hundred and fifty and if you problem in water",
+      "secs": 1.206845256,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-005",
+      "raw": "range of ninety mtv per napoleon carbon isles in water",
+      "secs": 1.28546635,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-008",
+      "raw": "how deep does a one hundred am in proton penetrate and water",
+      "secs": 1.026473796,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-003",
+      "raw": "what's the the east less the x of two hundred and fifty mtv protons in pm and a",
+      "secs": 1.348788941,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-005",
+      "raw": "stop in power for eighty mg per luckily on carbon ios you other",
+      "secs": 1.255032593,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-007",
+      "raw": "what is the must stopping power power of two hundred am either presence in cortical bone",
+      "secs": 1.044326742,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-008",
+      "raw": "the is less the eggs of three and even deuterons in silicone",
+      "secs": 0.911918864,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "stress-001",
+      "raw": "i'm curious how find the water that two hundred forty key a key carbon i will go",
+      "secs": 1.278682699,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "stress-002",
+      "raw": "compare stopping power of known ions in water and therefore one hundred thousand m e v turn material",
+      "secs": 1.639565389,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-001",
+      "raw": "stopping power of five hundred keep even proteins in water",
+      "secs": 1.117516683,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-003",
+      "raw": "what is the stopping power of one d v proteins in water",
+      "secs": 1.078613363,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-006",
+      "raw": "what's the range of nine hundred key even to trans in water",
+      "secs": 1.0417983,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "alias-001",
+      "raw": "what does the range of sixty me the from suicide",
+      "secs": 1.361820557,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-en-001",
+      "raw": "compared the range of proper the see what they're up to one hundred and two hundred a movie",
+      "secs": 1.443913575,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-001",
+      "raw": "compared to stopping power of one hundred immediate problems in the world turn and the bone",
+      "secs": 1.198378093,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-004",
+      "raw": "range of one hundred fifty and maybe problems in the world third bone and adipose tissue",
+      "secs": 1.432036663,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-007",
+      "raw": "for one hundred mb per look lower carbon aisles compared the range in the water and pm me",
+      "secs": 1.660315838,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-par-003",
+      "raw": "hold on carbon and neon iron skillet or in the would range in the water at one hundred mg per look around",
+      "secs": 1.787041912,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-par-005",
+      "raw": "which penetrate deeper in the water and sixty and maybe a proton or a deal to your own",
+      "secs": 1.366132813,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-prog-001",
+      "raw": "comes heard the range of one hundred sixty anything protons in water using in case there and thirty",
+      "secs": 1.91217212,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "conv-003",
+      "raw": "so like coal fired those hundred and maybe proton going there are what their rationally",
+      "secs": 1.586964437,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "conv-008",
+      "raw": "okay so i need the range of two hundred thirty immediate proton in the water for a flung",
+      "secs": 1.194921997,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-001",
+      "raw": "how far will sixty immediate problem trouble even water",
+      "secs": 1.163858399,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-003",
+      "raw": "that's what raise those thirty and mean protons shut and or to as it moves through aluminium",
+      "secs": 1.605808309,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-008",
+      "raw": "what penetration that door eighty and maybe parent them oxygen i am three checking the weather",
+      "secs": 1.616202028,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "inv-rng-001",
+      "raw": "what energy give them a centimeter write a letter for propose",
+      "secs": 1.743998658,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "iso-002",
+      "raw": "stopping power of kind of been thirty i have seen the what they're up one hundred and keep per look around",
+      "secs": 1.858664511,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "iso-004",
+      "raw": "stopping power of on three i i'm in water forty a meaty part look now",
+      "secs": 1.743598511,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "pernuc-001",
+      "raw": "range of car but ions see the water at two hundred ninety and maybe are you",
+      "secs": 1.487569988,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "pernuc-003",
+      "raw": "what does the range of carbon i i'm with three point six gb total energy and water",
+      "secs": 1.538867799,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-002",
+      "raw": "what does the see as the a range of one hundred fifty and media proton the in the water",
+      "secs": 1.390238281,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-005",
+      "raw": "range of key me the parent oklahoma kind of been ions in a water",
+      "secs": 1.352348715,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-008",
+      "raw": "how deep does one hundred mg proton penetrating water",
+      "secs": 1.300013958,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-003",
+      "raw": "what's the the the acts of two hundred fifty me the proton seeing a pm i may",
+      "secs": 1.509099814,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-005",
+      "raw": "stopping power from eighty mg per know clown car carbon ions in water",
+      "secs": 1.440470052,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-007",
+      "raw": "what does the must stopping power of two hundred and maybe problems in the car to go bone",
+      "secs": 1.127776572,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-008",
+      "raw": "the eat the eggs of three a movie deal terrorists in come",
+      "secs": 1.089153646,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "stress-001",
+      "raw": "i am curious offering was working pp carbon i will go",
+      "secs": 2.624264405,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "stress-002",
+      "raw": "converse stopping power of neon i unseen the water and air for a one hundred mechanic or to clone",
+      "secs": 2.385557415,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-001",
+      "raw": "stopping power of five hundred k e v programs in the water",
+      "secs": 1.292321127,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-003",
+      "raw": "what does the stopping power of when the g the problems in the water",
+      "secs": 1.186952678,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-006",
+      "raw": "what does the range of nine hundred k kg be with arrows in the water",
+      "secs": 1.338732504,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "alias-001",
+      "raw": "what is the range of six the a movie presence in the lucite",
+      "secs": 1.000613364,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-en-001",
+      "raw": "compared the range of brothers in water at one hundred and two hundred a movie",
+      "secs": 1.217460979,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-mat-001",
+      "raw": "compare to stopping power of one hundred and movie problems in water and bone",
+      "secs": 1.245943522,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-mat-004",
+      "raw": "range of one hundred fifty mtv proteins in what water bone and adipose tissue",
+      "secs": 1.265438762,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-par-003",
+      "raw": "how do carbon and neon isles comparing rage water at one hundred any the bernoulli on",
+      "secs": 1.319282716,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-par-005",
+      "raw": "which both raise the bar in water at sixty a movie a problem or a though term",
+      "secs": 1.478573772,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-prog-001",
+      "raw": "compare the range of one hundred fifty and me the problems in what using astor and beast or",
+      "secs": 1.211743409,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "conv-003",
+      "raw": "i'm so like how far does the one heard a movie proton go in water roughly",
+      "secs": 1.250453614,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "conv-008",
+      "raw": "okay so i knew the ranks of two hundred thirty and the the brothels in water for at them",
+      "secs": 1.298606528,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-001",
+      "raw": "how far with a sixty a movie proton travel you wonder",
+      "secs": 1.064709676,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-003",
+      "raw": "at what rate those effort the mtv proton set energy as it moves through aluminium",
+      "secs": 1.38756364,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-008",
+      "raw": "what penetration depp do eight the a movie pair nuclear oxygen ions reach in water",
+      "secs": 1.498607871,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "inv-rng-001",
+      "raw": "what energy and gives out tensiometer range in water for problems",
+      "secs": 1.173074911,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "iso-002",
+      "raw": "stopping for of carbon thirteen islands in water at one hundred any the bernoulli on",
+      "secs": 1.209529054,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "iso-004",
+      "raw": "stopping power of helium free ion in water at fort the any deeper new girl",
+      "secs": 1.140076702,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "pernuc-001",
+      "raw": "range of carbon ions in water at two hundred ninety and levy per you",
+      "secs": 1.200977133,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "pernuc-003",
+      "raw": "what is the range of a carbon i own with three point six gb total energy what",
+      "secs": 1.337121664,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-002",
+      "raw": "what is the see as the a range over one hundred fifty mtv problem water",
+      "secs": 1.383377971,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-005",
+      "raw": "range of nine p m e vapor nuclear on carbon ions in water",
+      "secs": 1.075839072,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-008",
+      "raw": "how deep does the one hundred and be reprogrammed penetrating water",
+      "secs": 1.128222413,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-003",
+      "raw": "what's that the over the x of two hundred fifty and easy protons in p m m a",
+      "secs": 1.154423218,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-005",
+      "raw": "stopping power for eight the an easy pair nuclear carbon islands in water",
+      "secs": 1.125818035,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-007",
+      "raw": "what this the must stopping power of two hundred and even brothers in court yeah court t called bone",
+      "secs": 1.516612997,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-008",
+      "raw": "the over the x of free and easy doubt their runs in silicon",
+      "secs": 1.112475871,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "stress-001",
+      "raw": "i'm curious how far in water two hundred forty katie vick carbon i'll will go",
+      "secs": 1.119761638,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "stress-002",
+      "raw": "compare stopping power of neon ions in water and air force one hundred and eighty per nuclei",
+      "secs": 1.391161296,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-001",
+      "raw": "stopping power of five hundred's kv protos in water",
+      "secs": 1.113495525,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-003",
+      "raw": "what does the stopping power and wealth have one got it from of old problems in water",
+      "secs": 1.40324406,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-006",
+      "raw": "what is the range of my hundred k t v though terrence englander",
+      "secs": 0.922227865,
+      "error": null
+    }
   ]
 }
