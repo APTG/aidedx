@@ -31,10 +31,14 @@ speed doesn't matter if the transcript can't be parsed. See §4.1 for a real bug
 implementation surfaced (a WAV-header parsing assumption that also technically affects Vosk's
 harness, though not its verdict).
 
-**Battery/thermal readings are inconclusive for all three candidates** — the phone was on USB power
-throughout every run (charging faster than any benchmark could drain it), so no run here can
-answer the battery-drain open question from #120. A real reading needs the device unplugged, not
-done in this session.
+**Battery/thermal readings, unplugged (§5): Vosk 100%→98% in 118s, sherpa-onnx 98%→95% in 250s,
+wav2vec2 95%→94% in 63s, back-to-back with no cooldown between runs** — none of the three shows any
+alarming drain or thermal spike over a single ~90-clip pass. Getting a valid reading required
+working around two real device behaviors first: Doze mode (network/CPU restrictions once the
+device is idle+unplugged+screen-off) and, separately, the screen itself going to sleep — both
+throttled a first attempt by roughly 9× before being caught and fixed (§5.1). That in itself is a
+real finding: a production Android app processing voice queries with the screen off would need a
+wake lock or foreground service to avoid the same throttling.
 
 ## 1. Setup (shared across all candidates)
 
@@ -421,7 +425,54 @@ shape). This was already known from desktop numbers before this session; the on-
 is confirming it holds on a real phone rather than assuming, and the WAV-parsing bug this session
 surfaced (§4.1) is arguably the more useful output of this candidate than the (expected) 0% itself.
 
-## 5. Combined comparison
+## 5. Battery/thermal readings (unplugged)
+
+All three benchmark apps were re-run back-to-back, phone unplugged (switched to wireless `adb` over
+WiFi first — `adb tcpip 5555` / `adb connect <ip>:5555` — since disconnecting USB kills a
+USB-tethered `adb` session too), no cooldown between runs, screen on throughout.
+
+| Candidate                      | Wall time | Battery         | SoC temp             |
+| ------------------------------ | --------- | --------------- | -------------------- |
+| Vosk small-en                  | 118s      | 100%→98% (−2pp) | 23.0°C→24.5°C (+1.5) |
+| sherpa-onnx whisper-small int8 | 250s      | 98%→95% (−3pp)  | 24.5°C→30.6°C (+6.1) |
+| wav2vec2-base-960h             | 63s       | 95%→94% (−1pp)  | 30.6°C→32.5°C (+1.9) |
+
+Per-clip timing for all three matched the earlier plugged-in baselines exactly (Vosk 1.25s median,
+sherpa-onnx 2.66s, wav2vec2 0.69s — the last one actually a bit faster than its earlier 0.9s,
+plausibly because the screen-on/interactive CPU governor keeps clocks higher than whatever state
+the earlier plugged-in-but-idle-screen run was in), confirming these are valid readings, not
+throttled ones. No candidate shows an alarming drain or thermal spike over a single ~90-clip pass;
+sherpa-onnx's larger temp rise (+6.1°C) tracks its heavier CPU workload (encoder+autoregressive
+decoder vs. the other two's lighter/single-pass architectures), not a red flag on its own.
+
+**Numbers are combined-session, not perfectly isolated per candidate** — sherpa-onnx's reading
+includes some thermal carryover from Vosk's run immediately before it, and wav2vec2's from both
+runs before it (no cooldown was inserted between candidates). Good enough to answer #120's
+"anything grossly wrong?" question; not precise enough for a per-candidate mAh/clip figure.
+
+### 5.1 Two real device behaviors had to be worked around to get a valid reading
+
+- **Doze mode** (`mWakefulness=Dozing` was a red herring at first — this term covers two distinct
+  Android systems, and the fix for one didn't fix the other): `DeviceIdleController`'s Doze
+  restricts background CPU/network scheduling once the device is idle, unplugged, and the screen
+  has been off — confirmed via `adb shell dumpsys deviceidle`, disabled for testing with
+  `adb shell dumpsys deviceidle disable` (a standard, non-root ADB command for exactly this
+  situation). The first attempt at this benchmark took **9 minutes** for what should have been a
+  ~90-second run (89 clips) before this was caught.
+- **The screen going to sleep, separately** — even with Doze disabled, `mWakefulness` kept dropping
+  back to `Dozing` (the _screen's_ own ambient/low-power display transition, unrelated to
+  `DeviceIdleController`) within seconds of being woken, far faster than the 30-minute
+  `screen_off_timeout` this session had set. `adb shell svc power stayon true` didn't help either —
+  that setting only keeps the screen on while charging, a no-op when genuinely unplugged. Given the
+  speed of the repeated re-sleep, the actual cause was physical: something covering the phone's
+  proximity/light sensor (it had been lying face-down on a desk) — repositioning it face-up fixed
+  it immediately, confirmed by `mWakefulness=Awake` holding steady for 20+ seconds. **Both issues
+  caused a real, ~9× CPU slowdown, not just a benign screen-state change** — worth remembering for
+  any future on-device benchmark, and worth noting as a real product-design constraint: an Android
+  app doing voice-triggered ASR with the screen off would need a wake lock or foreground service to
+  avoid the identical throttling a real user would hit.
+
+## 6. Combined comparison
 
 | Pipeline                                                       | audio→intent slot match | median s/clip       | load time |
 | -------------------------------------------------------------- | ----------------------- | ------------------- | --------- |
@@ -430,31 +481,34 @@ surfaced (§4.1) is arguably the more useful output of this candidate than the (
 | **Vosk small-en, Pixel 7a**                                    | **0% (0/89)**           | **1.3s** (p90 1.6s) | **0.55s** |
 | **wav2vec2-base-960h, Pixel 7a**                               | **0% (0/89)**           | **0.9s** (p90 1.5s) | **0.85s** |
 
-## 6. What's still pending (this issue's remaining candidates)
+## 7. What's still pending
 
 - **whisper.cpp** — needs the NDK (not installed; see §1), so real setup cost still ahead. Given
   sherpa-onnx's strong result already covers "a whisper-small-family model on-device," whisper.cpp
   is now more of a confirmation/cross-check than the last untested option.
-- **Controlled battery/thermal readings** for all three candidates measured so far (unplugged, not
-  on USB power) — no run so far counts (§0 TL;DR).
 - **Whether sherpa-onnx's result holds on Polish** — no Polish eval audio exists yet
   (issues #63/#79/#30 still open), so every run in this doc is English-only.
+- **A per-candidate (not combined-session) battery reading** would need a cooldown period between
+  runs — §5's numbers are good enough to rule out anything grossly wrong, not precise enough for a
+  clean mAh/clip figure per candidate.
 - ~~Confirming whether sherpa-onnx exposes a prompt-biasing hook~~ — resolved, §3.4: it doesn't,
   at any level, confirmed against the C++ source and directly by the maintainer
   ([k2-fsa/sherpa-onnx#2295](https://github.com/k2-fsa/sherpa-onnx/issues/2295)). Reaching it would
   mean patching sherpa-onnx's C++ decoder and cross-compiling for `arm64-v8a` — judged not worth
   the cost given the 87% E2E score was already reached without it.
 - ~~wav2vec2-base-960h stretch candidate~~ — resolved, §4: 0% E2E, confirms the desktop verdict.
+- ~~Controlled battery/thermal readings~~ — resolved, §5.
 
-## 7. Bottom line so far
+## 8. Bottom line so far
 
 **sherpa-onnx whisper-small (int8) is the clear leader of the three candidates measured**: 87% E2E
 on-device, no prompt biasing applied, at a latency close to the desktop baseline — a real,
-practical option for an Android on-device pipeline. Vosk small-en is fast but hits a hard
+practical option for an Android on-device pipeline, and its battery/thermal profile over a single
+~90-clip pass (98%→95%, +6.1°C) isn't a red flag either. Vosk small-en is fast but hits a hard
 vocabulary wall on this domain's unit jargon that no amount of correction-layer tuning can close;
 wav2vec2-base-960h is even faster but structurally incompatible with this project's numeric/unit
-matcher (no digit output at all). Only whisper.cpp remains unmeasured, and no candidate has had a
-controlled (unplugged) battery reading. If sherpa-onnx's number holds up under whisper.cpp's
-cross-check, this issue's original framing — native rewrite for latency/battery reasons — looks
-less urgent than assumed: an ONNX Runtime Mobile-class runtime is already delivering
-close-to-desktop accuracy on a real phone.
+matcher (no digit output at all). Only whisper.cpp remains unmeasured. If sherpa-onnx's number
+holds up under whisper.cpp's cross-check, this issue's original framing — native rewrite for
+latency/battery reasons — looks less urgent than assumed: an ONNX Runtime Mobile-class runtime is
+already delivering close-to-desktop accuracy on a real phone, at a battery/thermal cost this
+session's readings don't flag as a problem.
