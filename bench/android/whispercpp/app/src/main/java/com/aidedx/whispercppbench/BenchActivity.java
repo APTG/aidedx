@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.whispercpp.java.whisper.WhisperContext;
+import com.whispercpp.java.whisper.WhisperCpuConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,6 +48,10 @@ public class BenchActivity extends Activity {
         Button runButton = findViewById(R.id.run_button);
         runButton.setOnClickListener(v -> new Thread(this::runBenchmark).start());
         appendLog("system info: " + WhisperContext.getSystemInfo());
+        // Diagnostic for issue #120's thread-tuning experiment - WhisperCpuConfig's own Log.d
+        // calls weren't showing up in logcat for an unexplained reason, so surface it directly
+        // through the same TextView-based logging this bench already uses reliably.
+        appendLog("auto-detected preferred thread count: " + WhisperCpuConfig.getPreferredThreadCount());
         appendLog("Ready. Tap \"Run benchmark\".");
         if (getIntent().getBooleanExtra("autorun", false)) {
             new Thread(this::runBenchmark).start();
@@ -65,6 +70,8 @@ public class BenchActivity extends Activity {
         if (outName == null) outName = "results.json";
         String modelId = getIntent().getStringExtra("model_id");
         if (modelId == null) modelId = "whisper.cpp-" + modelFile;
+        int numThreads = getIntent().getIntExtra("num_threads", WhisperCpuConfig.getPreferredThreadCount());
+        appendLog("using " + numThreads + " threads");
 
         File base = getFilesDir();
         File modelPath = new File(base, modelFile);
@@ -104,7 +111,7 @@ public class BenchActivity extends Activity {
                 String error = null;
                 try {
                     float[] samples = readWavAsFloats(wav);
-                    raw = ctx.transcribeData(samples).trim();
+                    raw = ctx.transcribeData(samples, numThreads).trim();
                 } catch (Exception e) {
                     error = String.valueOf(e.getMessage());
                 }
@@ -123,6 +130,7 @@ public class BenchActivity extends Activity {
                 + "  \"modelId\": " + jsonStr(modelId) + ",\n"
                 + "  \"dtype\": \"device\",\n"
                 + "  \"withPrompt\": false,\n"
+                + "  \"numThreads\": " + numThreads + ",\n"
                 + "  \"loadS\": " + loadS + ",\n"
                 + "  \"records\": [\n"
                 + String.join(",\n", records)

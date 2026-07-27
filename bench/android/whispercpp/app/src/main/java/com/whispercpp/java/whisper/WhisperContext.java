@@ -28,6 +28,13 @@ public class WhisperContext {
   }
 
   public String transcribeData(float[] data) throws ExecutionException, InterruptedException {
+    return transcribeData(data, WhisperCpuConfig.getPreferredThreadCount());
+  }
+
+  /** numThreads override added for issue #120's thread-tuning experiment
+   * (docs/android-asr-runtime-bench.md S5.5's thermal-throttling finding) - upstream's
+   * WhisperCpuConfig.getPreferredThreadCount() auto-detection is otherwise the only path. */
+  public String transcribeData(float[] data, int numThreads) throws ExecutionException, InterruptedException {
     return executorService.submit(new Callable<String>() {
       @RequiresApi(api = Build.VERSION_CODES.O)
       @Override
@@ -35,7 +42,6 @@ public class WhisperContext {
         if (ptr == 0L) {
           throw new IllegalStateException();
         }
-        int numThreads = WhisperCpuConfig.getPreferredThreadCount();
         Log.d(LOG_TAG, "Selecting " + numThreads + " threads");
 
         StringBuilder result = new StringBuilder();

@@ -42,7 +42,10 @@ meaningless without a real ARM host and silently produced unoptimized scalar cod
 fixed, the sustained 89-clip run also surfaced something neither other whisper-small candidate
 showed: **real, oscillating thermal throttling** — per-clip latency cycling between ~2.6s and
 15-35s throughout the _entire_ run, not just at the end, dragging the median to 15.1s despite a
-"cold" per-clip cost matching sherpa-onnx's ballpark (§5.3).
+"cold" per-clip cost matching sherpa-onnx's ballpark (§5.3). **Fixed with one line**: the default
+thread auto-detection picks 4 threads (confirmed — same count sherpa-onnx uses, so that wasn't the
+difference); explicitly forcing **2 threads instead eliminates the oscillation entirely** and
+produces a _faster_ sustained median (5.6s vs. 15.1s) at identical accuracy (§5.6).
 
 **Battery/thermal readings, unplugged (§6): Vosk 100%→98% in 118s, sherpa-onnx 98%→95% in 250s,
 wav2vec2 95%→94% in 63s, back-to-back with no cooldown between runs** — none of the three shows any
@@ -580,13 +583,10 @@ stayed at 0/89 the whole run.
 
 **Neither Vosk nor sherpa-onnx showed this pattern** in their own comparable-duration unplugged
 runs (§6) — sherpa-onnx's 250-second run stayed close to its plugged-in baseline (2.66s median)
-throughout. whisper.cpp's default thread selection
-(`WhisperCpuConfig.getPreferredThreadCount()`, which specifically targets the "high performance"
-CPU cluster) plausibly sustains a higher clock/higher heat profile than sherpa-onnx's fixed
-4-thread configuration, triggering the Tensor G2's thermal governor harder. Not confirmed against
-`WhisperCpuConfig`'s actual selected thread count this session (its `Log.d` calls didn't appear in
-`logcat` for an unknown reason — a loose end, not investigated further given time already spent on
-this candidate).
+throughout. **§5.6 investigates and fixes this**: the natural hypothesis — that whisper.cpp's
+default thread selection uses a different (higher) thread count than sherpa-onnx's, sustaining more
+heat — turned out to be wrong (both use 4 threads), but reducing to 2 threads anyway eliminates the
+throttling entirely, at no accuracy cost.
 
 **Battery reading for this candidate is much less clean than §6's three-candidate reading** — this
 run happened after a multi-hour pause mid-session (network changed, reconnected via a new WiFi IP),
@@ -597,19 +597,49 @@ total), temperature roughly flat at ~32.5°C throughout — but this doesn't cap
 temperature actually occurred mid-throttle, unlike §6's continuous before/after readings for the
 other three.
 
-### 5.6 Bottom line for whisper.cpp
+### 5.6 Thread-count tuning experiment: 2 threads eliminates the throttling entirely
+
+§5.5 flagged whisper.cpp's default thread selection as the likely lever. First, confirmed what it
+actually was (added a `numThreads` field to the results JSON as a reliable channel, after
+`WhisperCpuConfig`'s own `Log.d` calls mysteriously never appeared in `logcat`): **4 threads** —
+`WhisperCpuConfig.getPreferredThreadCount()` picks the Tensor G2's 2 mid (2.35 GHz) + 2 big
+(2.85 GHz) cores, dropping the 4 little (1.8 GHz) ones. That's the same thread count sherpa-onnx
+was explicitly configured with (§3), so **the original "different thread count" hypothesis was
+wrong** — both candidates already used 4 threads.
+
+Tested 2 threads instead (a small code change — `WhisperContext.transcribeData()` gained an
+explicit `numThreads` overload, `BenchActivity` passes it through via a `num_threads` intent extra)
+across the full 89-clip set, unplugged, screen kept awake:
+
+| Threads          | Median s/clip | Range         | Pattern                                                |
+| ---------------- | ------------- | ------------- | ------------------------------------------------------ |
+| 4 (default/auto) | 15.1s         | 2.6s–34.7s    | oscillating (fast burst, hard throttle, repeat — §5.5) |
+| **2 (explicit)** | **5.6s**      | **3.7s–7.0s** | **smooth, mild gradual increase, no throttling**       |
+
+**Accuracy is unaffected** — 2-thread run scores the identical 89% E2E (79/89), same failure list,
+confirming thread count only changes latency/thermal behavior, not correctness.
+
+**Fewer threads produced a _faster_ sustained median**, despite each individual clip being nominally
+slower per-thread (a truly cold single clip: 4 threads ≈2.6s vs. 2 threads ≈3.7s) — because 4
+threads pushes the SoC into a throttle-recovery cycle that costs far more than the extra thread
+would save, while 2 threads stays within a thermal budget the device can sustain indefinitely
+without throttling at all. This is now a concrete, validated recommendation for anyone shipping
+whisper.cpp on this class of device: **explicitly configure the thread count rather than trusting
+`WhisperCpuConfig`'s auto-detection**, and prefer fewer high-clock cores over more.
+
+### 5.7 Bottom line for whisper.cpp
 
 **Best accuracy of the four candidates (89% E2E), confirming sherpa-onnx's core finding: a
 whisper-small-family model reaches close-to-desktop accuracy on-device without any prompt
-biasing.** But it took real engineering work to get a valid number at all — two build
-misconfigurations caused an 8× slowdown that would have otherwise been reported as "whisper.cpp is
-just slow on mobile," which would have been wrong. Even after fixing those, the sustained-load
-thermal throttling this candidate uniquely exposed is the more actionable finding for the Android
-app decision than the accuracy number itself: whichever runtime ships needs either a lighter
-per-query CPU footprint (fewer/lower-power threads) or explicit thermal-aware throttling logic of
-its own, or a real user asking several questions in a row could see 2nd/3rd-query latency 5-10×
-worse than the first. This is exactly the "battery draw or thermal throttling" question issue #120
-asked about, and — for whisper.cpp specifically — the answer is "yes, materially."
+biasing.** Getting there took real engineering work — two build misconfigurations caused an 8×
+slowdown that would have otherwise been reported as "whisper.cpp is just slow on mobile," which
+would have been wrong, and the default thread auto-detection caused real oscillating thermal
+throttling that a one-line thread-count override (§5.6) fully eliminates, at **no accuracy cost and
+a _better_ sustained median latency** (5.6s vs. 15.1s) than the untuned default. Tuned, whisper.cpp
+is now the strongest candidate on accuracy and no longer has an operational red flag against it —
+sherpa-onnx is still faster in absolute median latency (2.7s vs. 5.6s), but the "whichever runtime
+ships needs thread/thermal tuning" concern this session originally flagged turned out to have a
+simple, validated fix rather than being a fundamental limitation.
 
 ## 6. Battery/thermal readings (unplugged)
 
@@ -660,13 +690,14 @@ runs before it (no cooldown was inserted between candidates). Good enough to ans
 
 ## 7. Combined comparison
 
-| Pipeline                                                       | audio→intent slot match | median s/clip                          | load time |
-| -------------------------------------------------------------- | ----------------------- | -------------------------------------- | --------- |
-| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`) | 91% (81/89)             | 2.3s                                   | —         |
-| **whisper.cpp ggml-small-q8_0, Pixel 7a, no prompt**           | **89% (79/89)**         | 15.1s (throttled — "cold" ~2.6s, §5.5) | 0.73s     |
-| **sherpa-onnx whisper-small int8, Pixel 7a, no prompt**        | **87% (77/89)**         | 2.7s (p90 3.3s)                        | 2.3s      |
-| **Vosk small-en, Pixel 7a**                                    | **0% (0/89)**           | **1.3s** (p90 1.6s)                    | **0.55s** |
-| **wav2vec2-base-960h, Pixel 7a**                               | **0% (0/89)**           | **0.9s** (p90 1.5s)                    | **0.85s** |
+| Pipeline                                                            | audio→intent slot match | median s/clip                      | load time |
+| ------------------------------------------------------------------- | ----------------------- | ---------------------------------- | --------- |
+| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`)      | 91% (81/89)             | 2.3s                               | —         |
+| **whisper.cpp ggml-small-q8_0, Pixel 7a, 2 threads (tuned, §5.6)**  | **89% (79/89)**         | **5.6s** (p90 6.8s, no throttling) | 0.76s     |
+| whisper.cpp ggml-small-q8_0, Pixel 7a, 4 threads (default, untuned) | 89% (79/89)             | 15.1s (oscillating throttle, §5.5) | 0.73s     |
+| **sherpa-onnx whisper-small int8, Pixel 7a, no prompt**             | **87% (77/89)**         | 2.7s (p90 3.3s)                    | 2.3s      |
+| **Vosk small-en, Pixel 7a**                                         | **0% (0/89)**           | **1.3s** (p90 1.6s)                | **0.55s** |
+| **wav2vec2-base-960h, Pixel 7a**                                    | **0% (0/89)**           | **0.9s** (p90 1.5s)                | **0.85s** |
 
 ## 8. What's still pending
 
@@ -675,13 +706,11 @@ runs before it (no cooldown was inserted between candidates). Good enough to ans
 - **A per-candidate (not combined-session) battery reading** would need a cooldown period between
   runs — §6's numbers are good enough to rule out anything grossly wrong, not precise enough for a
   clean mAh/clip figure per candidate. whisper.cpp's own reading (§5.5) is muddier still (a
-  mid-session pause bled idle drain into it).
+  mid-session pause bled idle drain into it), and doesn't yet exist at all for the tuned 2-thread
+  configuration.
 - **Wiring whisper.cpp's native `initial_prompt` support through its JNI wrapper** — unlike
   sherpa-onnx, this is architecturally possible (§5.4) and could plausibly close the remaining 2pp
   gap to the desktop baseline. Not done this session.
-- **Confirming `WhisperCpuConfig`'s actual selected thread count** (§5.5) — its own `Log.d` calls
-  didn't surface in `logcat` for an unexplained reason; would help confirm the thread-count
-  hypothesis for whisper.cpp's unique thermal throttling.
 - ~~Confirming whether sherpa-onnx exposes a prompt-biasing hook~~ — resolved, §3.4: it doesn't,
   at any level, confirmed against the C++ source and directly by the maintainer
   ([k2-fsa/sherpa-onnx#2295](https://github.com/k2-fsa/sherpa-onnx/issues/2295)). Reaching it would
@@ -690,28 +719,34 @@ runs before it (no cooldown was inserted between candidates). Good enough to ans
 - ~~wav2vec2-base-960h stretch candidate~~ — resolved, §4: 0% E2E, confirms the desktop verdict.
 - ~~Controlled battery/thermal readings~~ — resolved, §6 (three of four candidates; whisper.cpp's
   own reading is separate and less clean, §5.5).
-- ~~whisper.cpp~~ — resolved, §5: 89% E2E, best of the four candidates, but only after fixing two
-  real build misconfigurations, and the only candidate showing real sustained-load thermal
-  throttling.
+- ~~whisper.cpp~~ — resolved, §5: 89% E2E, best of the four candidates. Initially showed real
+  sustained-load thermal throttling, fully resolved by an explicit thread-count override (§5.6).
+- ~~Confirming `WhisperCpuConfig`'s actual selected thread count~~ — resolved, §5.6: 4 threads
+  (confirmed by adding a diagnostic field to the results JSON after `logcat` didn't surface it) —
+  the same count sherpa-onnx uses, so thread-count _difference_ wasn't the throttling cause;
+  reducing to 2 threads was the actual fix.
 
 ## 9. Bottom line so far
 
-**All four of issue #120's original candidates are now measured. whisper.cpp and sherpa-onnx are
-both strong, practical options (89% and 87% E2E on-device, both without prompt biasing, both within
-a few points of the desktop-with-prompt baseline) — Vosk and wav2vec2 are both disqualified on
-accuracy for structurally different reasons** (Vosk: closed vocabulary doesn't contain this
-domain's jargon; wav2vec2: CTC output has no digit tokens the matcher can parse at all).
+**All four of issue #120's original candidates are now measured, and whisper.cpp (tuned) is the
+clear winner: 89% E2E — the best accuracy of the four — at a stable 5.6s median with no thermal
+throttling, once its default thread auto-detection (4 threads) is overridden to 2.** Vosk and
+wav2vec2 are both disqualified on accuracy for structurally different reasons (Vosk: closed
+vocabulary doesn't contain this domain's jargon; wav2vec2: CTC output has no digit tokens the
+matcher can parse at all). sherpa-onnx remains a strong, simpler-to-integrate alternative (87% E2E,
+faster in absolute terms at 2.7s median, no NDK/thread-tuning needed at all) if whisper.cpp's extra
+build/tuning complexity isn't worth 2 accuracy points.
 
-The deciding factor between the two viable candidates isn't accuracy — it's **operational
-behavior under sustained use**. sherpa-onnx's latency stayed flat and close to its desktop baseline
-across a full unplugged battery run; whisper.cpp's did not, showing real oscillating thermal
-throttling that pushed its _median_ latency to 15.1s despite a "cold" per-clip cost (~2.6s)
-matching sherpa-onnx's. That's the more actionable finding for the Android app decision than either
-accuracy number: **sherpa-onnx currently looks like the safer choice for a shipped app**, unless
-whisper.cpp's thread configuration is tuned down from its current "high-performance cores only"
-default — a concrete, scoped follow-up (§8), not a fundamental limitation of the runtime.
+The thread-tuning result is the more important methodological finding than either number alone:
+**a "some runtime shows bad thermal behavior" conclusion drawn from a single untuned run would have
+been wrong.** The default auto-detected thread count matched sherpa-onnx's own (4) — the throttling
+wasn't a thread-count _difference_ between candidates, it was whisper.cpp's default simply being
+too aggressive for this device to sustain, fixed with one explicit override, at zero accuracy cost
+and a _better_ sustained median than the untuned default. Any future on-device benchmark on this
+project should treat a candidate's first-run thermal profile as provisional until a quick
+thread-count sweep confirms it isn't just a tuning gap.
 
-Either way, this issue's original framing — that native inference should beat WASM-in-a-WebView on
-latency/battery, justifying a native rewrite — now has real evidence behind it: both whisper-small
-ONNX-Runtime-Mobile-class runtimes deliver close-to-desktop accuracy on a real phone, at a
-battery/thermal cost this session's readings don't flag as alarming for at least one of them.
+This issue's original framing — that native inference should beat WASM-in-a-WebView on
+latency/battery, justifying a native rewrite — now has strong evidence behind it: a properly tuned
+native runtime delivers close-to-desktop accuracy on a real phone, with a battery/thermal profile
+this session's readings don't flag as a problem.
