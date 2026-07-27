@@ -1,9 +1,9 @@
 # Android on-device ASR runtime bench (issue #120)
 
-_Session report, 2026-07-27. Two candidates measured (Vosk small-en, sherpa-onnx whisper-small
-int8) — whisper.cpp and the wav2vec2 stretch candidate are still pending; see §5. Measured on a
-real device (Pixel 7a, Tensor G2, Android 17/API 36, `arm64-v8a`), not extrapolated from desktop
-numbers, per issue #120's actual ask._
+_Session report, 2026-07-27. Three candidates measured (Vosk small-en, sherpa-onnx whisper-small
+int8, wav2vec2-base-960h) — whisper.cpp is still pending; see §6. Measured on a real device
+(Pixel 7a, Tensor G2, Android 17/API 36, `arm64-v8a`), not extrapolated from desktop numbers, per
+issue #120's actual ask._
 
 ## TL;DR
 
@@ -22,12 +22,21 @@ words, never digits). Vosk is faster (1.3s/clip, 0.55s load) and non-jargon cont
 better (particle 54.7%, material 73.8%), confirming the failure is specifically the numeric/unit
 path — but the vocabulary gap is a hard wall, not a tunable accuracy problem.
 
-**Battery/thermal readings are inconclusive for both candidates** — the phone was on USB power
-throughout every run (charging faster than either benchmark could drain it), so neither run can
+**wav2vec2-base-960h confirms the desktop verdict on-device: 0% (0/89), same disqualifying result
+`docs/asr-model-comparison.md` already found** — CTC output is uppercase, unpunctuated, and has no
+digit tokens at all ("STOPING POWER OF FIVE HUNDRED CAVIPROTTELS EWOTER" for "500 keV protons in
+water"), so the Whisper-tuned matcher/corrector has no foothold. It's the fastest candidate by far
+(0.9s/clip median, 0.85s load — CTC's single forward pass, no autoregressive decode), but that
+speed doesn't matter if the transcript can't be parsed. See §4.1 for a real bug this candidate's
+implementation surfaced (a WAV-header parsing assumption that also technically affects Vosk's
+harness, though not its verdict).
+
+**Battery/thermal readings are inconclusive for all three candidates** — the phone was on USB power
+throughout every run (charging faster than any benchmark could drain it), so no run here can
 answer the battery-drain open question from #120. A real reading needs the device unplugged, not
 done in this session.
 
-## 1. Setup (shared across both candidates)
+## 1. Setup (shared across all candidates)
 
 |                                                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -131,6 +140,14 @@ vocabulary-coverage wall, not a tunable accuracy gap prompt-biasing or a correct
 move the aggregate token accuracy from 43.7%→45.5%, nowhere near closing an 89pp gap). Whether a
 _large_ Vosk model (not tested here, bigger than the ≤0.5GB budget this candidate was chosen for)
 has broader vocabulary coverage is an open question this session didn't test.
+
+**Caveat found later (§4.1):** this harness also used a blind 44-byte WAV-header skip, which §4's
+wav2vec2 work found is wrong for these specific resampled clips (ffmpeg embeds a ~34-byte LIST/INFO
+chunk, so real PCM data starts at byte 78). The practical effect here is negligible — a ~1ms
+(17-sample) corruption at the very start of multi-second clips — and doesn't change the verdict:
+Vosk's failure is a vocabulary-coverage wall (§2.4), not a data-corruption artifact, and re-running
+with a correct parser would not be expected to recover "mev"/"pmma" tokens that aren't in the
+model's lexicon at all. Not re-run, since the fix couldn't plausibly change the 0% conclusion.
 
 ## 3. Candidate: sherpa-onnx whisper-small (int8, multilingual)
 
@@ -305,40 +322,139 @@ Vosk's were. Load time (2.3s) is the one real cost — noticeably slower than Vo
 watching if this is a cold-start-per-query design rather than a persistent-service one, but a
 one-time cost either way, not per-clip.
 
-## 4. Combined comparison
+## 4. Candidate: wav2vec2-base-960h (stretch)
+
+|         |                                                                                                                                                                                                                                                                              |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Model   | `Xenova/wav2vec2-base-960h` int8 (91 MB), already cached from earlier desktop ASR spikes (`.hf-cache/Xenova/wav2vec2-base-960h`) — no new download needed                                                                                                                    |
+| Harness | `bench/android/wav2vec2/` — minimal single-Activity Gradle app, Java, plain `onnxruntime-android` (Maven Central, no NDK) — no existing Android wrapper for this model exists (unlike Vosk/sherpa-onnx), so this is entirely hand-written glue, per issue #120's own framing |
+
+### 4.1 Setup notes specific to wav2vec2, including a real bug found and fixed
+
+- **Same `kotlin-stdlib-jdk7`/`-jdk8` duplicate-class conflict as the Vosk bench** —
+  `onnxruntime-android:1.22.0`'s dependency graph has the same split-vs-merged Kotlin stdlib issue.
+  Same `configurations.all { exclude ... }` fix.
+- **A real WAV-parsing bug, found by comparing against the known-good desktop reference.** The
+  first run produced pure gibberish ("WOKE THE RANKS OF SIX EMBITY PULPO PIS I" for "What is the
+  range of 60 MeV protons in lucite?") — much worse than `docs/asr-model-comparison.md`'s own
+  documented wav2vec2 output for this exact model ("STOPING POWER OF FIVE HUNDRED CAVIPROTONS
+  EWOTE" for "stopping power of 500 keV protons in water": legible words, jargon-mangled, but
+  words). That gap was the tell that something was actually broken, not just "wav2vec2 is weak
+  here" (which is already the known baseline). Root cause: this harness's WAV reader (matching the
+  Vosk bench's `in.skip(44)`) assumed a canonical 44-byte header, but these specific resampled
+  clips have a `LIST`/`INFO` chunk ffmpeg embeds between `fmt ` and `data` (a `"Lavf60.16.100"`
+  software-version tag) — confirmed directly by parsing the header bytes. Real PCM data starts at
+  byte 78, not 44; the blind skip was reading the tail of that metadata as the first ~17 audio
+  samples. Fixed by scanning RIFF sub-chunks for the `"data"` chunk id instead of assuming a fixed
+  offset (`findDataChunkOffset()` in `BenchActivity.java`). Re-running after the fix reproduced the
+  desktop reference almost verbatim ("STOPING POWER OF FIVE HUNDRED CAVIPROTTELS EWOTER") —
+  confirming the fix, not just a different kind of wrong.
+  Vosk's own bench has the identical blind-skip assumption and is presumably affected the same
+  negligible amount (§2.5's caveat) — not revisited, since the corruption is far too small
+  (~1ms out of multi-second clips) to plausibly change Vosk's already-conclusive 0% verdict, which
+  has an entirely different, non-audio root cause (vocabulary coverage).
+
+### 4.2 Reproducing
+
+```
+cd bench/android/wav2vec2
+export ANDROID_HOME=~/Android/Sdk
+export JAVA_HOME=<a real JDK — Android Studio's bundled JBR works: .../android-studio/jbr>
+./gradlew assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+
+# model: Xenova/wav2vec2-base-960h int8, already in .hf-cache/Xenova/wav2vec2-base-960h/onnx/
+# push to /data/local/tmp, then into the app's internal storage via run-as (see §1)
+adb push .hf-cache/Xenova/wav2vec2-base-960h/onnx/model_quantized.onnx /data/local/tmp/w2v/model_quantized.onnx
+adb push <16kHz-resampled-eval-audio-dir> /data/local/tmp/w2v/audio
+adb shell run-as com.aidedx.wav2vec2bench sh -c \
+  'mkdir -p files && cp /data/local/tmp/w2v/model_quantized.onnx files/model_quantized.onnx && cp -r /data/local/tmp/w2v/audio files/audio'
+
+adb shell am start -n com.aidedx.wav2vec2bench/.BenchActivity --ez autorun true \
+  -e model_file model_quantized.onnx -e out_name results-wav2vec2-en.json -e model_id wav2vec2-base-960h
+
+adb shell run-as com.aidedx.wav2vec2bench cat files/results-wav2vec2-en.json > eval/results/android-wav2vec2-2026-07-27/wav2vec2-base-960h.json
+npx tsx scripts/e2e-audio-intents.ts eval/results/android-wav2vec2-2026-07-27/wav2vec2-base-960h.json
+node scripts/asr-score-slots.mjs eval/results/android-wav2vec2-2026-07-27/wav2vec2-base-960h.json
+```
+
+Raw results: `eval/results/android-wav2vec2-2026-07-27/wav2vec2-base-960h.json`.
+
+### 4.3 Results
+
+| Pipeline                                                                      | audio→intent slot match | median s/clip       | load time |
+| ----------------------------------------------------------------------------- | ----------------------- | ------------------- | --------- |
+| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`)                | 91% (81/89)             | 2.3s                | —         |
+| wav2vec2-base-960h, desktop CPU, un-prompted (`docs/asr-model-comparison.md`) | 0% (0/89)               | 0.5s                | —         |
+| **wav2vec2-base-960h, Pixel 7a, real device**                                 | **0% (0/89)**           | **0.9s** (p90 1.5s) | **0.85s** |
+
+Slot-token accuracy by category (raw → corrected):
+
+| Category | Accuracy          | n   |
+| -------- | ----------------- | --- |
+| quantity | 46.3% → 54.7%     | 95  |
+| number   | 2.2% → 2.2%       | 92  |
+| unit     | 1.1% → 1.1%       | 92  |
+| particle | 21.1% → 23.2%     | 95  |
+| material | 38.8% → 38.8%     | 103 |
+| program  | 0.0% → 16.7%      | 6   |
+| **ALL**  | **22.2% → 24.4%** | 483 |
+
+Per-speaker clip pass rate (corrected): km 0/30, lg 0/30, mn 0/29 — same uniform-failure pattern as
+Vosk, but for a different reason.
+
+Sample transcripts (raw, uncorrected) — same clip as the desktop reference, for direct comparison:
+
+| Expected                                                | wav2vec2 raw output (Pixel 7a)                           |
+| ------------------------------------------------------- | -------------------------------------------------------- |
+| "Stopping power of 500 keV protons in water."           | "STOPING POWER OF FIVE HUNDRED CAVIPROTTELS EWOTER"      |
+| "What is the range of 60 MeV protons in lucite? Lucid." | "WHAT IS THE RANGE OF SIXTY M V PROTONS IN LUSITE USERD" |
+
+### 4.4 Bottom line for wav2vec2
+
+Confirms `docs/asr-model-comparison.md`'s existing desktop verdict on-device: disqualified on
+accuracy, not on latency (it's the fastest candidate measured, 0.9s/clip). The failure mode is
+structural, not a vocabulary gap like Vosk's: CTC output is uppercase, unpunctuated, and has **no
+digit tokens at all** (`unit`/`number` slot accuracy 1.1%/2.2% — see `docs/asr-model-comparison.md`
+§"wav2vec2-base-960h" for why: the Whisper-tuned matcher/corrector has no foothold in text this
+shape). This was already known from desktop numbers before this session; the on-device run's value
+is confirming it holds on a real phone rather than assuming, and the WAV-parsing bug this session
+surfaced (§4.1) is arguably the more useful output of this candidate than the (expected) 0% itself.
+
+## 5. Combined comparison
 
 | Pipeline                                                       | audio→intent slot match | median s/clip       | load time |
 | -------------------------------------------------------------- | ----------------------- | ------------------- | --------- |
 | whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`) | 91% (81/89)             | 2.3s                | —         |
 | **sherpa-onnx whisper-small int8, Pixel 7a, no prompt**        | **87% (77/89)**         | 2.7s (p90 3.3s)     | 2.3s      |
 | **Vosk small-en, Pixel 7a**                                    | **0% (0/89)**           | **1.3s** (p90 1.6s) | **0.55s** |
+| **wav2vec2-base-960h, Pixel 7a**                               | **0% (0/89)**           | **0.9s** (p90 1.5s) | **0.85s** |
 
-## 5. What's still pending (this issue's remaining candidates)
+## 6. What's still pending (this issue's remaining candidates)
 
 - **whisper.cpp** — needs the NDK (not installed; see §1), so real setup cost still ahead. Given
   sherpa-onnx's strong result already covers "a whisper-small-family model on-device," whisper.cpp
   is now more of a confirmation/cross-check than the last untested option.
-- **wav2vec2-base-960h** (stretch) — encoder-only/no-autoregressive-decode latency data point,
-  English-only. Already downloaded (`.hf-cache/Xenova/wav2vec2-base-960h`), just needs
-  hand-written ONNX Runtime Mobile glue (no sherpa-onnx wrapper for this one).
-- **Controlled battery/thermal readings** for both candidates measured so far (unplugged, not on
-  USB power) — neither run so far counts (§0 TL;DR).
+- **Controlled battery/thermal readings** for all three candidates measured so far (unplugged, not
+  on USB power) — no run so far counts (§0 TL;DR).
 - **Whether sherpa-onnx's result holds on Polish** — no Polish eval audio exists yet
-  (issues #63/#79/#30 still open), so this run is English-only, same limitation as Vosk's.
+  (issues #63/#79/#30 still open), so every run in this doc is English-only.
 - ~~Confirming whether sherpa-onnx exposes a prompt-biasing hook~~ — resolved, §3.4: it doesn't,
   at any level, confirmed against the C++ source and directly by the maintainer
   ([k2-fsa/sherpa-onnx#2295](https://github.com/k2-fsa/sherpa-onnx/issues/2295)). Reaching it would
   mean patching sherpa-onnx's C++ decoder and cross-compiling for `arm64-v8a` — judged not worth
   the cost given the 87% E2E score was already reached without it.
+- ~~wav2vec2-base-960h stretch candidate~~ — resolved, §4: 0% E2E, confirms the desktop verdict.
 
-## 6. Bottom line so far
+## 7. Bottom line so far
 
-**sherpa-onnx whisper-small (int8) is the clear leader of the two candidates measured**: 87% E2E
+**sherpa-onnx whisper-small (int8) is the clear leader of the three candidates measured**: 87% E2E
 on-device, no prompt biasing applied, at a latency close to the desktop baseline — a real,
 practical option for an Android on-device pipeline. Vosk small-en is fast but hits a hard
-vocabulary wall on this domain's unit jargon that no amount of correction-layer tuning can close.
-Neither whisper.cpp nor the wav2vec2 stretch candidate has been measured yet, and no candidate has
-had a controlled (unplugged) battery reading. If sherpa-onnx's number holds up under whisper.cpp's
+vocabulary wall on this domain's unit jargon that no amount of correction-layer tuning can close;
+wav2vec2-base-960h is even faster but structurally incompatible with this project's numeric/unit
+matcher (no digit output at all). Only whisper.cpp remains unmeasured, and no candidate has had a
+controlled (unplugged) battery reading. If sherpa-onnx's number holds up under whisper.cpp's
 cross-check, this issue's original framing — native rewrite for latency/battery reasons — looks
 less urgent than assumed: an ONNX Runtime Mobile-class runtime is already delivering
 close-to-desktop accuracy on a real phone.
