@@ -163,7 +163,7 @@ Java_com_whispercpp_java_whisper_WhisperLib_freeContext(
 
 JNIEXPORT void JNICALL
 Java_com_whispercpp_java_whisper_WhisperLib_fullTranscribe(
-        JNIEnv *env, jobject thiz, jlong context_ptr, jint num_threads, jfloatArray audio_data) {
+        JNIEnv *env, jobject thiz, jlong context_ptr, jint num_threads, jfloatArray audio_data, jstring prompt) {
     UNUSED(thiz);
     struct whisper_context *context = (struct whisper_context *) context_ptr;
     jfloat *audio_data_arr = (*env)->GetFloatArrayElements(env, audio_data, NULL);
@@ -182,6 +182,19 @@ Java_com_whispercpp_java_whisper_WhisperLib_fullTranscribe(
     params.no_context = true;
     params.single_segment = false;
 
+    // Domain-prompt biasing (issue #120/#25's desktop lever - scripts/asr-transcribe.mjs).
+    // params.initial_prompt is tokenized independently of no_context (confirmed in
+    // src/whisper.cpp: no_context only clears the past-transcription carry-over state used
+    // across successive streaming calls, not this single-shot initial prompt), so this is safe
+    // to set alongside no_context=true above.
+    const char *prompt_chars = NULL;
+    if (prompt != NULL) {
+        prompt_chars = (*env)->GetStringUTFChars(env, prompt, NULL);
+        if (prompt_chars != NULL && prompt_chars[0] != '\0') {
+            params.initial_prompt = prompt_chars;
+        }
+    }
+
     whisper_reset_timings(context);
 
     LOGI("About to run whisper_full");
@@ -191,6 +204,9 @@ Java_com_whispercpp_java_whisper_WhisperLib_fullTranscribe(
         whisper_print_timings(context);
     }
     (*env)->ReleaseFloatArrayElements(env, audio_data, audio_data_arr, JNI_ABORT);
+    if (prompt_chars != NULL) {
+        (*env)->ReleaseStringUTFChars(env, prompt, prompt_chars);
+    }
 }
 
 JNIEXPORT jint JNICALL

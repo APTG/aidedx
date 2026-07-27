@@ -28,13 +28,22 @@ public class WhisperContext {
   }
 
   public String transcribeData(float[] data) throws ExecutionException, InterruptedException {
-    return transcribeData(data, WhisperCpuConfig.getPreferredThreadCount());
+    return transcribeData(data, WhisperCpuConfig.getPreferredThreadCount(), null);
   }
 
   /** numThreads override added for issue #120's thread-tuning experiment
    * (docs/android-asr-runtime-bench.md S5.5's thermal-throttling finding) - upstream's
    * WhisperCpuConfig.getPreferredThreadCount() auto-detection is otherwise the only path. */
   public String transcribeData(float[] data, int numThreads) throws ExecutionException, InterruptedException {
+    return transcribeData(data, numThreads, null);
+  }
+
+  /** prompt wires whisper.cpp's native initial_prompt support through to whisper_full_params
+   * (jni.c) - the domain-prompt biasing lever docs/voice-pipeline-feasibility.md S2.4 found to be
+   * the single biggest desktop accuracy lever, and which sherpa-onnx has no equivalent for at all
+   * (docs/android-asr-runtime-bench.md S3.4). Pass null/empty for no prompt (matches the prior
+   * unprompted 89% E2E result). */
+  public String transcribeData(float[] data, int numThreads, String prompt) throws ExecutionException, InterruptedException {
     return executorService.submit(new Callable<String>() {
       @RequiresApi(api = Build.VERSION_CODES.O)
       @Override
@@ -46,7 +55,7 @@ public class WhisperContext {
 
         StringBuilder result = new StringBuilder();
         synchronized (this) {
-          WhisperLib.fullTranscribe(ptr, numThreads, data);
+          WhisperLib.fullTranscribe(ptr, numThreads, data, prompt);
           int textCount = WhisperLib.getTextSegmentCount(ptr);
           for (int i = 0; i < textCount; i++) {
             String sentence = WhisperLib.getTextSegment(ptr, i);

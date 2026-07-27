@@ -57,7 +57,7 @@ public class WhisperLib {
 
   public static native void freeContext(long contextPtr);
 
-  public static native void fullTranscribe(long contextPtr, int numThreads, float[] audioData);
+  public static native void fullTranscribe(long contextPtr, int numThreads, float[] audioData, String prompt);
 
   public static native int getTextSegmentCount(long contextPtr);
 

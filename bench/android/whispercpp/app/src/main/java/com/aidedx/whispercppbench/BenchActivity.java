@@ -36,6 +36,15 @@ import java.util.List;
  */
 public class BenchActivity extends Activity {
 
+    // Same domain-prompt text as scripts/asr-transcribe.mjs's DOMAIN_PROMPT, for a direct,
+    // apples-to-apples comparison against the desktop whisper-small+prompt baseline (91% E2E) -
+    // the single biggest accuracy lever docs/voice-pipeline-feasibility.md S2.4 found.
+    private static final String DOMAIN_PROMPT =
+            "MeV, keV, GeV, MeV/u, MeV/nucl, dE/dx, CSDA, PMMA, ASTAR, PSTAR, "
+            + "nucleon, proton, deuteron, carbon ion, neon ion, oxygen ion, "
+            + "helium-3, carbon-13, stopping power, LET, linear energy transfer, keV/um, "
+            + "Lucite, adipose tissue, Kapton, Mylar, Teflon, Pyrex glass, sodium iodide, cesium iodide";
+
     private TextView logText;
     private final StringBuilder log = new StringBuilder();
 
@@ -72,6 +81,9 @@ public class BenchActivity extends Activity {
         if (modelId == null) modelId = "whisper.cpp-" + modelFile;
         int numThreads = getIntent().getIntExtra("num_threads", WhisperCpuConfig.getPreferredThreadCount());
         appendLog("using " + numThreads + " threads");
+        boolean withPrompt = getIntent().getBooleanExtra("with_prompt", false);
+        String prompt = withPrompt ? DOMAIN_PROMPT : null;
+        appendLog(withPrompt ? "using domain prompt" : "no prompt");
 
         File base = getFilesDir();
         File modelPath = new File(base, modelFile);
@@ -111,7 +123,7 @@ public class BenchActivity extends Activity {
                 String error = null;
                 try {
                     float[] samples = readWavAsFloats(wav);
-                    raw = ctx.transcribeData(samples, numThreads).trim();
+                    raw = ctx.transcribeData(samples, numThreads, prompt).trim();
                 } catch (Exception e) {
                     error = String.valueOf(e.getMessage());
                 }
@@ -129,7 +141,7 @@ public class BenchActivity extends Activity {
         String json = "{\n"
                 + "  \"modelId\": " + jsonStr(modelId) + ",\n"
                 + "  \"dtype\": \"device\",\n"
-                + "  \"withPrompt\": false,\n"
+                + "  \"withPrompt\": " + withPrompt + ",\n"
                 + "  \"numThreads\": " + numThreads + ",\n"
                 + "  \"loadS\": " + loadS + ",\n"
                 + "  \"records\": [\n"

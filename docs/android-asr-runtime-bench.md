@@ -33,9 +33,12 @@ harness, though not its verdict).
 
 **whisper.cpp scores 89% (79/89) — the best on-device result of all four candidates, edging out
 sherpa-onnx's 87% and landing within 2pp of the desktop-with-prompt baseline, again with no prompt
-biasing applied** (though unlike sherpa-onnx, whisper.cpp's underlying library _does_ support
-`initial_prompt` natively — the vendored JNI wrapper used here just doesn't pass one through, see
-§5.4). Getting there required finding and fixing two real build misconfigurations that together
+biasing applied.** Unlike sherpa-onnx, whisper.cpp's underlying library _does_ support
+`initial_prompt` natively — wired it through and tested it (§5.7), and counter-intuitively it made
+things _worse_ (89%→83% E2E): the model echoes the prompt's own abbreviated hint text
+(`"MeV/nucl"`) into transcripts instead of the actual spoken words, and the existing corrector
+doesn't recognize that shape. 89% unprompted stands as the number to use. Getting the base result
+required finding and fixing two real build misconfigurations that together
 caused a measured **~8× slowdown** (35-58s/clip → 2.5-4.7s/clip): ggml's `GGML_NATIVE=ON` default
 tries to auto-detect ARM CPU features by probing `-mcpu=native` on the cross-compiler, which is
 meaningless without a real ARM host and silently produced unoptimized scalar code (§5.1). Once
@@ -557,11 +560,9 @@ program-name pair) — not a new failure mode.
 
 Whisper.cpp's underlying C library **does** support prompt biasing
 (`whisper_full_params.initial_prompt`, confirmed directly in `include/whisper.h`) — a real
-difference from sherpa-onnx, which lacks the mechanism entirely at the C++ level (§3.4). This
-benchmark's vendored JNI wrapper (`WhisperContext.transcribeData()` / `WhisperLib.fullTranscribe()`)
-doesn't pass one through, so this 89% result is also unprompted; closing the remaining 2pp gap to
-the desktop baseline by wiring up prompt support here is a small, concrete follow-up this session
-didn't do, unlike sherpa-onnx where it isn't possible without patching upstream.
+difference from sherpa-onnx, which lacks the mechanism entirely at the C++ level (§3.4). This 89%
+result is unprompted; §5.7 wires up prompt support and measures it directly — the result is
+counter-intuitive (accuracy gets _worse_, not better), so 89% unprompted stands as the number to use.
 
 ### 5.5 Real, oscillating thermal throttling — the standout finding of this candidate
 
@@ -627,19 +628,56 @@ without throttling at all. This is now a concrete, validated recommendation for 
 whisper.cpp on this class of device: **explicitly configure the thread count rather than trusting
 `WhisperCpuConfig`'s auto-detection**, and prefer fewer high-clock cores over more.
 
-### 5.7 Bottom line for whisper.cpp
+### 5.7 Wiring native `initial_prompt` support: it made accuracy _worse_, not better
 
-**Best accuracy of the four candidates (89% E2E), confirming sherpa-onnx's core finding: a
-whisper-small-family model reaches close-to-desktop accuracy on-device without any prompt
-biasing.** Getting there took real engineering work — two build misconfigurations caused an 8×
-slowdown that would have otherwise been reported as "whisper.cpp is just slow on mobile," which
+§5.4 noted whisper.cpp's underlying C library supports `whisper_full_params.initial_prompt`
+natively — unlike sherpa-onnx, where the mechanism doesn't exist at any level. Wired it through:
+added a `jstring prompt` parameter to `jni.c`'s `fullTranscribe()` (setting
+`params.initial_prompt` when non-empty — confirmed in `src/whisper.cpp` that `no_context` only
+clears cross-call past-transcription state, not this single-shot prompt, so the two settings don't
+conflict), threaded it through `WhisperLib`/`WhisperContext`, and passed the exact same
+`DOMAIN_PROMPT` text `scripts/asr-transcribe.mjs` uses for the desktop baseline, for a direct
+comparison.
+
+**Result: accuracy went down, not up** — 89% → 83% E2E (74/89, via `e2e-audio-intents.ts`'s real
+matcher-based scoring; the regex-based `asr-score-slots.mjs` shows a smaller but still real drop,
+89%→87%). Latency stayed clean (median 6.4s, range 4.1–7.9s — no throttling, consistent with §5.6's
+tuned 2-thread profile).
+
+**Root cause, confirmed directly from the raw transcripts**: the same physical utterance ("100 MeV
+per nucleon") gets transcribed inconsistently depending on speaker/clip — sometimes correctly
+spelled out, sometimes as `"MeV/N"`, `"MeV/nucl"`, or the garbled `"MeV/Nocleon"` — **lifted
+verbatim from the prompt's own abbreviated hint text** (`"...MeV/u, MeV/nucl, dE/dx..."`). The
+prompt is leaking its own formatting conventions into the output rather than purely priming
+vocabulary the way it does for desktop whisper-small's decoder. The existing correction layer
+(tuned against the desktop pipeline's typical spelled-out error shapes) doesn't recognize these
+abbreviated forms, so corrected accuracy suffers even where raw recognition improved (`unit` slot:
+79.3%→96.7% unprompted vs. 89.1%→92.4% prompted — better _raw_, worse _corrected_).
+
+This is a genuine, informative negative result, not a wiring bug: the mechanism works exactly as
+documented: the prompt text — designed for a different decoding harness's conditioning method — is
+the wrong shape for whisper.cpp's native `initial_prompt` on this model/device. A differently
+worded prompt (spelling out "per nucleon" instead of using the `/nucl` shorthand) might behave
+better, but wasn't tested here — not done this session; **the practical recommendation for now is
+no prompt**, since it's both simpler and scores higher.
+
+### 5.8 Bottom line for whisper.cpp
+
+**Best accuracy of the four candidates (89% E2E, unprompted), confirming sherpa-onnx's core
+finding: a whisper-small-family model reaches close-to-desktop accuracy on-device without any
+prompt biasing.** Getting there took real engineering work — two build misconfigurations caused an
+8× slowdown that would have otherwise been reported as "whisper.cpp is just slow on mobile," which
 would have been wrong, and the default thread auto-detection caused real oscillating thermal
 throttling that a one-line thread-count override (§5.6) fully eliminates, at **no accuracy cost and
-a _better_ sustained median latency** (5.6s vs. 15.1s) than the untuned default. Tuned, whisper.cpp
-is now the strongest candidate on accuracy and no longer has an operational red flag against it —
-sherpa-onnx is still faster in absolute median latency (2.7s vs. 5.6s), but the "whichever runtime
-ships needs thread/thermal tuning" concern this session originally flagged turned out to have a
-simple, validated fix rather than being a fundamental limitation.
+a _better_ sustained median latency** (5.6s vs. 15.1s) than the untuned default. Unlike sherpa-onnx,
+whisper.cpp _can_ take a prompt — but the desktop's own prompt text made things worse here (§5.7),
+a genuinely useful negative result, not a dead end: it means the 89% unprompted number is already
+close to what this specific prompt-text approach can deliver on-device, not a artificially
+depressed baseline with easy headroom above it. Tuned, whisper.cpp is now the strongest candidate
+on accuracy and no longer has an operational red flag against it — sherpa-onnx is still faster in
+absolute median latency (2.7s vs. 5.6s) and needs no NDK/build complexity at all, but the
+"whichever runtime ships needs thread/thermal tuning" concern this session originally flagged
+turned out to have a simple, validated fix rather than being a fundamental limitation.
 
 ## 6. Battery/thermal readings (unplugged)
 
@@ -690,14 +728,15 @@ runs before it (no cooldown was inserted between candidates). Good enough to ans
 
 ## 7. Combined comparison
 
-| Pipeline                                                            | audio→intent slot match | median s/clip                      | load time |
-| ------------------------------------------------------------------- | ----------------------- | ---------------------------------- | --------- |
-| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`)      | 91% (81/89)             | 2.3s                               | —         |
-| **whisper.cpp ggml-small-q8_0, Pixel 7a, 2 threads (tuned, §5.6)**  | **89% (79/89)**         | **5.6s** (p90 6.8s, no throttling) | 0.76s     |
-| whisper.cpp ggml-small-q8_0, Pixel 7a, 4 threads (default, untuned) | 89% (79/89)             | 15.1s (oscillating throttle, §5.5) | 0.73s     |
-| **sherpa-onnx whisper-small int8, Pixel 7a, no prompt**             | **87% (77/89)**         | 2.7s (p90 3.3s)                    | 2.3s      |
-| **Vosk small-en, Pixel 7a**                                         | **0% (0/89)**           | **1.3s** (p90 1.6s)                | **0.55s** |
-| **wav2vec2-base-960h, Pixel 7a**                                    | **0% (0/89)**           | **0.9s** (p90 1.5s)                | **0.85s** |
+| Pipeline                                                                             | audio→intent slot match | median s/clip                      | load time |
+| ------------------------------------------------------------------------------------ | ----------------------- | ---------------------------------- | --------- |
+| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`)                       | 91% (81/89)             | 2.3s                               | —         |
+| **whisper.cpp ggml-small-q8_0, Pixel 7a, 2 threads, no prompt (tuned, §5.6)**        | **89% (79/89)**         | **5.6s** (p90 6.8s, no throttling) | 0.76s     |
+| whisper.cpp ggml-small-q8_0, Pixel 7a, 2 threads, +prompt (§5.7 — worse, not better) | 83% (74/89)             | 6.4s (p90 7.4s, no throttling)     | 0.59s     |
+| whisper.cpp ggml-small-q8_0, Pixel 7a, 4 threads, no prompt (default, untuned)       | 89% (79/89)             | 15.1s (oscillating throttle, §5.5) | 0.73s     |
+| **sherpa-onnx whisper-small int8, Pixel 7a, no prompt**                              | **87% (77/89)**         | 2.7s (p90 3.3s)                    | 2.3s      |
+| **Vosk small-en, Pixel 7a**                                                          | **0% (0/89)**           | **1.3s** (p90 1.6s)                | **0.55s** |
+| **wav2vec2-base-960h, Pixel 7a**                                                     | **0% (0/89)**           | **0.9s** (p90 1.5s)                | **0.85s** |
 
 ## 8. What's still pending
 
@@ -708,9 +747,10 @@ runs before it (no cooldown was inserted between candidates). Good enough to ans
   clean mAh/clip figure per candidate. whisper.cpp's own reading (§5.5) is muddier still (a
   mid-session pause bled idle drain into it), and doesn't yet exist at all for the tuned 2-thread
   configuration.
-- **Wiring whisper.cpp's native `initial_prompt` support through its JNI wrapper** — unlike
-  sherpa-onnx, this is architecturally possible (§5.4) and could plausibly close the remaining 2pp
-  gap to the desktop baseline. Not done this session.
+- **A better-worded prompt for whisper.cpp** — §5.7 found the desktop's own prompt text (with
+  abbreviated hints like `"MeV/nucl"`) makes accuracy _worse_ on-device, because the model echoes
+  those abbreviations into transcripts. A prompt spelling out full forms (e.g. "per nucleon"
+  instead of "/nucl") might behave differently — not tested this session.
 - ~~Confirming whether sherpa-onnx exposes a prompt-biasing hook~~ — resolved, §3.4: it doesn't,
   at any level, confirmed against the C++ source and directly by the maintainer
   ([k2-fsa/sherpa-onnx#2295](https://github.com/k2-fsa/sherpa-onnx/issues/2295)). Reaching it would
@@ -721,6 +761,9 @@ runs before it (no cooldown was inserted between candidates). Good enough to ans
   own reading is separate and less clean, §5.5).
 - ~~whisper.cpp~~ — resolved, §5: 89% E2E, best of the four candidates. Initially showed real
   sustained-load thermal throttling, fully resolved by an explicit thread-count override (§5.6).
+- ~~Wiring whisper.cpp's native `initial_prompt` support~~ — resolved, §5.7: works correctly, but
+  the desktop's own prompt text _reduces_ accuracy on-device (89%→83% E2E) by leaking its own
+  abbreviated formatting into transcripts. 89% unprompted remains the number to use.
 - ~~Confirming `WhisperCpuConfig`'s actual selected thread count~~ — resolved, §5.6: 4 threads
   (confirmed by adding a diagnostic field to the results JSON after `logcat` didn't surface it) —
   the same count sherpa-onnx uses, so thread-count _difference_ wasn't the throttling cause;
@@ -745,6 +788,12 @@ too aggressive for this device to sustain, fixed with one explicit override, at 
 and a _better_ sustained median than the untuned default. Any future on-device benchmark on this
 project should treat a candidate's first-run thermal profile as provisional until a quick
 thread-count sweep confirms it isn't just a tuning gap.
+
+Prompt-biasing followed the same "verify, don't assume" pattern: whisper.cpp is the one candidate
+where it's architecturally possible (§5.7), but dropping in the exact desktop prompt text made
+accuracy _worse_, not better — the model echoed the prompt's own abbreviated hints into transcripts
+in a shape the existing corrector doesn't recognize. 89% unprompted is the number to use unless a
+differently-worded prompt is tried and actually measured, not assumed to help.
 
 This issue's original framing — that native inference should beat WASM-in-a-WebView on
 latency/battery, justifying a native rewrite — now has strong evidence behind it: a properly tuned
