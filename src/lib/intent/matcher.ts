@@ -728,7 +728,7 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
   );
 
   // Inverse queries carry no energy slot — only a target.
-  let rawEnergies: RawEnergy[] = [];
+  let rawEnergiesAll: RawEnergy[] = [];
   let negativeEnergySpans: Span[] = [];
   let target: TargetSlot | undefined;
   let targetSpan: Span | undefined;
@@ -745,16 +745,27 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
     // `incomplete` / low-confidence path instead of silently going through
     // with the sign stripped off.
     const allEnergies = extractEnergies(query, pack);
-    rawEnergies = allEnergies.filter((e) => !e.negative);
+    rawEnergiesAll = allEnergies.filter((e) => !e.negative);
     negativeEnergySpans = allEnergies.filter((e) => e.negative).map((e) => e.span);
   }
+  // Repeated mentions of the same energy collapse to one (same "one entity, not one per
+  // mention" rule issue #26 already applies to particles/materials below — this is that
+  // same fix, extended to the one slot type it was missing from). Without this, a
+  // comparison phrasing that states the shared energy once per particle clause ("a 200 MeV
+  // carbon ion and a 200 MeV neon ion") produces two *duplicate* energy entries, which tips
+  // `decideCompareDim` below to `"energy"` instead of `"particle"` — and `computeIntent`'s
+  // `compareDim: "energy"` branch only ever resolves `particles[0]`, so the second particle
+  // is silently never computed at all (issue #132). Keyed by (value, unit, perNucleon), not
+  // raw match text, so two *distinct* energies (a genuine multi-energy comparison) are
+  // correctly kept apart.
+  const rawEnergies = dedupeByKey(rawEnergiesAll, (e) => `${e.value}:${e.unit}:${e.perNucleon}`);
 
   // 3. Materials — over the spans not already claimed by particles/energies.
-  // Uses the *undeduplicated* particle spans, so a repeated mention is still excluded from
-  // the material scan even though only its first occurrence survives into the slot list.
+  // Uses the *undeduplicated* particle/energy spans, so a repeated mention is still excluded
+  // from the material scan even though only its first occurrence survives into the slot list.
   const consumedSpans: Span[] = [
     ...rawParticlesAll.map((p) => p.span),
-    ...rawEnergies.map((e) => e.span),
+    ...rawEnergiesAll.map((e) => e.span),
     ...negativeEnergySpans,
   ];
   if (targetSpan) consumedSpans.push(targetSpan);

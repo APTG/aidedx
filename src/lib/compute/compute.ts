@@ -585,7 +585,24 @@ export function computeIntent(intent: QueryIntent, service: LibdedxService): Com
     }
   } else {
     // "none" and "energy": a single series; energy comparisons carry multiple
-    // points via the energies list.
+    // points via the energies list. Both read only particles[0]/materials[0] — correct
+    // *only* because the matcher guarantees compareDim is "particle"/"material" whenever
+    // there's more than one distinct entity of that kind (issue #132's root cause was that
+    // guarantee not holding for a duplicate-energy phrasing, since fixed at the source in
+    // src/lib/intent/matcher.ts). Asserted here too, defensively: silently reading
+    // particles[0]/materials[0] while more entities exist is exactly how #132 produced a
+    // plausible-looking wrong answer instead of a loud failure, so a future matcher
+    // regression should hit this error, not repeat that silently.
+    if (intent.particles.length > 1) {
+      throw new ComputeError(
+        `compareDim "${intent.compareDim}" but ${intent.particles.length} particles present — only the first would be computed`,
+      );
+    }
+    if (intent.materials.length > 1) {
+      throw new ComputeError(
+        `compareDim "${intent.compareDim}" but ${intent.materials.length} materials present — only the first would be computed`,
+      );
+    }
     const particle = resolveParticleOrThrow(reqFirst(intent.particles, "particle").match);
     const material = resolveMaterialOrThrow(reqFirst(intent.materials, "material").match);
     const programId = resolveProgramId(intent, particle, material.id, service);

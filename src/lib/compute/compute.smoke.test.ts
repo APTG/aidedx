@@ -322,6 +322,57 @@ describe("computeIntent — issue #6 smoke cases", () => {
   });
 });
 
+describe("computeIntent — issue #132 particle-comparison regression", () => {
+  it("computes two genuinely different particles when compareDim is particle", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "csdaRange",
+        compareDim: "particle",
+        particles: [
+          { match: "carbon-12 ion", isotopeAssumed: "¹²C" },
+          { match: "neon-20 ion", isotopeAssumed: "²⁰Ne" },
+        ],
+        materials: [{ match: "water" }],
+        energies: [{ value: 200, unit: "MeV/nucl", perNucleonAssumed: true }],
+      }),
+      service,
+    );
+
+    expect(result.series).toHaveLength(2);
+    const carbon = req(result.series[0]);
+    const neon = req(result.series[1]);
+    expect(carbon.particle.id).toBe(6); // carbon
+    expect(neon.particle.id).toBe(10); // neon
+    const carbonRange = req(req(carbon.points[0]).csdaRange);
+    const neonRange = req(req(neon.points[0]).csdaRange);
+    expect(Number.isFinite(carbonRange)).toBe(true);
+    expect(Number.isFinite(neonRange)).toBe(true);
+    // The actual bug (issue #132): before the fix, a mis-detected `compareDim: "energy"`
+    // silently produced this same carbon value twice, never resolving neon at all.
+    expect(carbonRange).not.toBeCloseTo(neonRange, 1);
+  });
+
+  it("throws rather than silently reading particles[0] if compareDim is wrongly not particle", () => {
+    // Directly exercises the defensive guard added in src/lib/compute/compute.ts's
+    // "none"/"energy" branch — constructing the exact malformed shape issue #132's bug
+    // produced (2 particles, but compareDim left at the default) so a future regression in
+    // the matcher's compareDim selection fails loudly here instead of silently computing the
+    // wrong answer again.
+    expect(() =>
+      computeIntent(
+        intent({
+          quantity: "csdaRange",
+          compareDim: "none",
+          particles: [{ match: "carbon-12 ion" }, { match: "neon-20 ion" }],
+          materials: [{ match: "water" }],
+          energies: [{ value: 200, unit: "MeV/nucl", perNucleonAssumed: true }],
+        }),
+        service,
+      ),
+    ).toThrow(/2 particles present/);
+  });
+});
+
 describe("energyToMeVPerNucl", () => {
   it("passes MeV/nucl through unchanged", () => {
     expect(energyToMeVPerNucl({ value: 100, unit: "MeV/nucl" }, 20, 19.99)).toBe(100);
