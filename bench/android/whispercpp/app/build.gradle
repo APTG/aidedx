@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+
+android {
+    namespace "com.aidedx.whispercppbench"
+    compileSdkVersion 34
+    ndkVersion "28.2.13676358"
+
+    defaultConfig {
+        applicationId "com.aidedx.whispercppbench"
+        minSdkVersion 26
+        targetSdkVersion 34
+        versionCode 1
+        versionName "1.0"
+        ndk {
+            abiFilters "arm64-v8a"
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            externalNativeBuild {
+                cmake {
+                    // Default AGP debug build disables native optimizations, which is a critical
+                    // (10x+) performance regression for whisper.cpp - force Release in the native
+                    // build regardless of the AGP build type, matching upstream's own example.
+                    arguments "-DCMAKE_BUILD_TYPE=Release"
+                }
+            }
+        }
+        release {
+            minifyEnabled false
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/jni/whisper/CMakeLists.txt"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+configurations.all {
+    // Same duplicate-class conflict seen in the Vosk and wav2vec2 benches: something in the
+    // default AGP/AndroidX dependency graph pulls both merged kotlin-stdlib (1.8.22+) and the
+    // superseded split kotlin-stdlib-jdk7/-jdk8 artifacts (1.6.21).
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+}

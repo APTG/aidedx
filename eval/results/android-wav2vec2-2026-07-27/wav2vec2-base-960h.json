@@ -1,0 +1,631 @@
+{
+  "modelId": "wav2vec2-base-960h",
+  "dtype": "device",
+  "withPrompt": false,
+  "loadS": 0.849979859,
+  "records": [
+    {
+      "speaker": "km",
+      "id": "alias-001",
+      "raw": "WHAT IS THE RANGE OF SIXTY M V PROTONS IN LUSITE USERD",
+      "secs": 1.552787314,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-en-001",
+      "raw": "E TRD THE RANGE ATROKED ONS WATER AT ONE HUNDRED AND TWO HUNDRED EMPTITY",
+      "secs": 0.875904907,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-001",
+      "raw": "COMPARED THE TALKING POWER OF ARM ARMS WITH ANEVIPROTONS WOTHER ON BONE",
+      "secs": 0.729496217,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-004",
+      "raw": "RANGE OF ONE HANGER THAN FIFTY M  IPROTON I WATER ROME AND ADUPAL TISSUE",
+      "secs": 1.243945801,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-007",
+      "raw": "FOR ONE HUNDRED M I VI PERNUCLY ON CARBO IONS COMFERRED THE RANGE IN WATER AN PIAMILAE",
+      "secs": 0.89881722,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-par-003",
+      "raw": "HOW THE CARBUM OF NEUM ISOLS COMPORTIN RANGE WATER AT ONE  WITH EMPTYBE PORMENT",
+      "secs": 0.964969767,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-par-005",
+      "raw": "WHICH PONENTRATES DEEPER IN WATER AT SIXTY M  V A PROTON OR EN DUTRON",
+      "secs": 0.942905314,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-prog-001",
+      "raw": "COMPARED THE RANGE OF ONE HUNDRED FIFTY M EVI PROTONS IN WATER USING ATER AND PISTHORPE",
+      "secs": 1.189547445,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "conv-003",
+      "raw": "UM TO LIKE HOW FAR DOES THE ONE HUNDRED M E BROTUM GO IN WATER ROUGHLY",
+      "secs": 1.403765707,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "conv-008",
+      "raw": "OBAY SO I NEED THE RANGE OF TWO HUNDRED PARTIAN EMPTY PROGA WO",
+      "secs": 0.899292033,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-001",
+      "raw": "HOW FAR WILL AT SIXTY AMUVEPROTEM TRABLE IN WATER",
+      "secs": 0.651380574,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-003",
+      "raw": "AT WHAT RATE DOS THAUTHORDY M E PROTON SHOW ENERGY AS IT MOKS THROUGH ALMU",
+      "secs": 0.95971102,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-008",
+      "raw": "WHAT PENETUATION THAT DO EIGHT M E  PERNUPIUM OXYGEM ISANS RICH IN WOREM",
+      "secs": 1.411340292,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "inv-rng-001",
+      "raw": "WHAT ANARGY GIVES A TAN SENTIMY TO ARRANGE IN WATER FOR PROPLENCE",
+      "secs": 0.810286215,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "iso-002",
+      "raw": "STOPING POWER OF CARBLEN FRRTEEN ISLANDS IN WATER ADD TO ONE HONDSWETH M EV PERNOPLIUM",
+      "secs": 0.764572225,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "iso-004",
+      "raw": "STOPING POWER OVER HELIUM THREE ION IN WATER AT FORTY M E V PERNAPLIUM",
+      "secs": 0.799216472,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "pernuc-001",
+      "raw": "RANGE OF CARBON ISONS AND WATHER AT TWO HANS RE NINETY M  FOR YOU",
+      "secs": 0.853762777,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "pernuc-003",
+      "raw": "WHAT IS THE RANGE OF A CARBON IRON WHITH TREETUEN SITS G I VI TOTAL ENERGY IN WARLER",
+      "secs": 0.885207927,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-002",
+      "raw": "WHAT IS THAT SE AS THE RANGE OF ONE HUNDRED AND FIFTY PROVENT IN WADER",
+      "secs": 0.642754842,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-005",
+      "raw": "RANGE OF NINETY UMEVY BERNUPYAN CARBON ISLES AND WOTHER",
+      "secs": 0.527015747,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-008",
+      "raw": "HOW DEEP DOES A WORMHUNDED METY PROTEMT AN A TRITEI WODER",
+      "secs": 0.615904378,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-003",
+      "raw": "WAT THE THE EASLEGE DE X OF TWO FOUNDER AN FISTY EMITY PROVINCE IN P MANIER",
+      "secs": 1.175695842,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-005",
+      "raw": "STUPING BOWER FOR EHT M   BRNACOLY ON CATUBAN ION'S AN WOTHER",
+      "secs": 0.720612549,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-007",
+      "raw": "WHAT IS THE MUSTOPING POWER HOWER TWO HOUNTED M  PROSENCE IN COURTICAL BUM",
+      "secs": 0.74302828,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-008",
+      "raw": "THE IS LES THE EGGS OF THREE M EV DUTRONS IN SILICON",
+      "secs": 0.821575562,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "stress-001",
+      "raw": "I AM CURIOUS HOW FAR IN THE WATER THE TWO HUNDRED FOR THE K A K MY CARBON I WILL GO",
+      "secs": 1.052547161,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "stress-002",
+      "raw": "E FIRST UPPTING FOER F NAN IN WATER AND THER WORIT ANEVENIN OR",
+      "secs": 1.488752808,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-001",
+      "raw": "THE SLOKING POWER OF FIVE CLOWNS OF   V DROTON'S WORTE",
+      "secs": 0.761595296,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-003",
+      "raw": "WHAT IS THE TOPPING POWER OF ANE G   PROTONSE IN WATER",
+      "secs": 0.725821899,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-006",
+      "raw": "WHAT IS THE RANGE OF NINE HUNDRED Q E VI DUTRANS IN WATER",
+      "secs": 0.738437989,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "alias-001",
+      "raw": "WHETHER THE RAINT OF SIXTY A ME BE DROUP FIM ROSITE",
+      "secs": 0.610254477,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-en-001",
+      "raw": "CONVERE THE RANGE OF PRODONSAL WITHER AT ONE HUNDRED AND TWO HUNDRED IMMED",
+      "secs": 0.917723918,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-001",
+      "raw": "COMPARE THE LEPING COWER OF ONE HUNDRED EMYCROTOMS IN WATER AND BONE",
+      "secs": 0.778036744,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-004",
+      "raw": "RANGE OF ONE HUNDRED FIFTY IMMEDIATE PRUBBLES IN H WELTERED BONE AND AEQIL STITU",
+      "secs": 0.818175334,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-007",
+      "raw": "FOR ONE HUNDRED ANY TE HEARD NO COB E CARBON IONS COMPARED THE RANGE IN WEATHER AN PIEMA MAY",
+      "secs": 0.792952067,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-par-003",
+      "raw": "TOLDL CARBOM AND TE YOUNG AONSCOMFER IN RANGIN WATER UON O ANEDITERNAL PELL",
+      "secs": 0.851084676,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-par-005",
+      "raw": "WHICH PENETRATES THE PAR IN LATER OF SIXTY EE BE APROTO OR ADUTURO",
+      "secs": 0.785060995,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-prog-001",
+      "raw": "CONFERED THE RANGH OF ONE HUNDRED ITY AN PRUFFLENCE IN WATER IS IN CASETER AND PEASTER",
+      "secs": 0.89073523,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "conv-003",
+      "raw": "SO LIKE HOL FAR DOULSTASH AN WIT IMMETE PROTHOM GOING ABOUT WEATHER RAFNI",
+      "secs": 0.989488892,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "conv-008",
+      "raw": "BQE SYLANY THE RANGEOLS BIT FOM WIPS WORKY IMMEDIATE FOTE IN WEATHER FOR A LUND",
+      "secs": 0.943464397,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-001",
+      "raw": "HO FAR AWAY O OUR SIXTY ANY DE PROT ON TROVER IN WATER",
+      "secs": 0.801070191,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-003",
+      "raw": "THAT'S WHAT'S RIGHT THOS A TIRTY AND EDE PROTOE SHAT AND ENERGY AS IT MOS TO OTERLY NOW",
+      "secs": 1.025625326,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-008",
+      "raw": "WHAT PENETRATION THAT THE CH ENIDPERNOAN OXYGION IONS REACHING WEATHER",
+      "secs": 1.012769084,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "inv-rng-001",
+      "raw": "WHAT ANEGE GIVES THEM UP AND SEND ETHE RAN THE OTHER FER PROTERS",
+      "secs": 0.866510539,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "iso-002",
+      "raw": "STOPPING FOLLER OF CUT UBON TURKEY I HAVE SEEN WHATHER NOT ONE HOM ANY E TURNED ABROUND",
+      "secs": 1.076339804,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "iso-004",
+      "raw": "SOMETHING HOUR OF FAR YOU WOULD SPEET I A WATERUP FOR HE AND YOU ARE  TOM",
+      "secs": 1.813908529,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "pernuc-001",
+      "raw": "RANG OF CARBON ANS IN WHATER AT OR O CUNDRET MAN ANYARO",
+      "secs": 2.215266074,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "pernuc-003",
+      "raw": "WHAT IS THE RANGE OF CARBON ION WITH THREE POINT IX GITOTAL ENERGY AN WATER",
+      "secs": 1.465504436,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-002",
+      "raw": "WHAT IS THE SEA IS THE RAGE OF ONE HUNDRED TUTY AND MED YE PROTTLING WATER",
+      "secs": 1.381599366,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-005",
+      "raw": "RANCH OF NINETY TENEDI CARNAL CLOWN CARBON IONS IND WATER",
+      "secs": 2.126755087,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-008",
+      "raw": "HOW BEEP THAS A ONE HUNDRED ANPROTON PENETRATING WATER",
+      "secs": 1.858652955,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-003",
+      "raw": "WHAT THE DIICS OF TO HUNDRED TIFTI EMIDIT PROTONSINPIEMANE",
+      "secs": 2.214387167,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-005",
+      "raw": "SLIPPING COLLER FOR EIGHTY EMEDIPERNEPOW CARBON IONSKIN WATER",
+      "secs": 1.951878419,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-007",
+      "raw": "WHAT IS THE MASS SLIPPING COLOUR OFF TO CONRAT AMMEDIAT PROTEMS IN CARTICAL BONE",
+      "secs": 1.358470052,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-008",
+      "raw": "THE E D EGS OF THREE ANMEDIDIAL CURELS IN CITY CO",
+      "secs": 1.078084799,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "stress-001",
+      "raw": "I AM CURIOUS FORING ORILO",
+      "secs": 1.86443567,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "stress-002",
+      "raw": "CONVERSE LOPING COLOR OF NEON IE SEE WATER AND HARAFOR ONE ON ERTH MEGULEC O OTO",
+      "secs": 1.549390869,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-001",
+      "raw": "SLEPPING POWR OF FIVE HUNDRED K EY PRUCKLES TILL WALTER",
+      "secs": 1.266466798,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-003",
+      "raw": "WHAT IS THE STOPPING POWER OF ONIG E V TRUTTONS IN WANTER",
+      "secs": 0.893525879,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-006",
+      "raw": "WHAT THE THE RANGE OF FINE HUNDRED CA E BE WITH ER ONS LOTHER",
+      "secs": 0.95551526,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "alias-001",
+      "raw": "WHAT IS THE RANCH OF SIXTY EMY VE BROTONS INEU LUSAT",
+      "secs": 1.137647991,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-en-001",
+      "raw": "COMPEREDA RANGE OF BROTES YWATER AT ONE HUNDRED AND TWO HOUND EMINI",
+      "secs": 1.168062298,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-mat-001",
+      "raw": "PORTISDOUBLE POWER OF WAHTAN MEY BE BROUTLE TO WATHER OF BOP",
+      "secs": 0.853623861,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-mat-004",
+      "raw": "RANGE OF ONE HUNDRED FIFTY AN EVIPROTUNS IWATER BONE AND ADIPOLT TICU",
+      "secs": 1.25543453,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-par-003",
+      "raw": "HOWLU CARBAL AND NIEN ISLES COMPER IN RACH MOTHER AT ONE HUNDRED EMI V PERDUPIUM",
+      "secs": 1.148708334,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-par-005",
+      "raw": "WHICH BYTRIS DIPAR IN WATER AT SIXTI EMIVI A PROTOM OR A DOUTAM",
+      "secs": 0.934921062,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-prog-001",
+      "raw": "COM BER THE RANGE OF ONE HUNDRED FIFTY AND MEVY PROVLINCE INWATAR USING ASTER AND BIESTER",
+      "secs": 1.04466508,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "conv-003",
+      "raw": "AMSO LIKE HOW FAR DOES THE ONE HEART EM BE PROTOM GOTY WOTEN ROPLY",
+      "secs": 1.150275392,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "conv-008",
+      "raw": "OKAY SO I NEEW THE RACH OF TO UNDE PARTY AND MEETROTLS WATHER OROTA",
+      "secs": 1.204401409,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-001",
+      "raw": "HOW FAR WERE THE SIXTY ENMY OF E BROTON TRAVELIN WATER",
+      "secs": 0.724825155,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-003",
+      "raw": "AT WHAT RATE DOES I APTHEARD THE MIVE BROTTON SHUT AN ELOGY AS IS MOLTH THROUGH ALOMINU",
+      "secs": 1.144006226,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-008",
+      "raw": "WHAT PALATRECHENDEPTH TO A TE AMI VI PERNUPION OXYGEN ISLANDS RICH EWATER",
+      "secs": 0.983095745,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "inv-rng-001",
+      "raw": "WHAT ANARGY GIVES I WLL FANCY ME TO RANGE YOU ATHER FOR PROTEMS",
+      "secs": 0.80834432,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "iso-002",
+      "raw": "STOPPING FAR OF CARBON THIRTEEN ISONDS  WONTER AT ONE HUNDRED ENEVIPIRTIPIUM",
+      "secs": 0.915927409,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "iso-004",
+      "raw": "STOPPING FAR OF HUIUM FREE IRON IN WATER AT FORTY EMY V PERNUCLIAM",
+      "secs": 0.713142904,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "pernuc-001",
+      "raw": "RANCE OF CARBON IONS IN WATER AT TWO HUNDRED NINETY EMIFIPERYU",
+      "secs": 0.813187094,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "pernuc-003",
+      "raw": "WHAT IS THE RANGE OFER CARBAN ISON WITH THREE POINT SIX G E V TOTO ANERGI WATER",
+      "secs": 0.959153117,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-002",
+      "raw": "WHAT IS THE SEE AS THE A RANGE OVER ONE HUNDRED FIFTY M IVY PROTEN WATER",
+      "secs": 1.055694377,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-005",
+      "raw": "RANCH OF NINETY M E VIPER NUPIUN CARBON ISLANS E WATER",
+      "secs": 0.878437134,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-008",
+      "raw": "HOW DEEP DUS A ONE HUNDRED EMY BE BROUGHT ON PENETRATING WOTEN",
+      "secs": 0.755528158,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-003",
+      "raw": "WAS THA DE OVER THE X OF TWO HUNDRED FIFTY AND E V BROTONS  P N N A",
+      "secs": 1.054595867,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-005",
+      "raw": "STOPPING POWER FOR EGHTY AN E V PERNUCRION CARBON IONS  WATER",
+      "secs": 1.008808269,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-007",
+      "raw": "WHAT IS THE MAS STOPPING POWER OF TWO HUNDRED HENIVE BROTHENS FROM CORTIAC CORDCICAL BO",
+      "secs": 1.208813315,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-008",
+      "raw": "THEE OVER THE AX OF FREE M EVI DAUT TEROMS INSILICOM",
+      "secs": 1.011488933,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "stress-001",
+      "raw": "I AM CUROUS HOW FAR IN WATER PUN THE FORTY CE E THE CARBON ISLE WIDOW",
+      "secs": 0.719528931,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "stress-002",
+      "raw": "WORST O BE POWER OF MEA ON IONS  WATHER AND EN FORT WATIT AMPTIVI PARNUPIQ",
+      "secs": 1.053532634,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-001",
+      "raw": "STOPING POWER OF FIVE HUNDRED CAVIPROTTELS EWOTER",
+      "secs": 0.685336996,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-003",
+      "raw": "WHAT IS THE STEP OUR UA ANE EGOTIC LE",
+      "secs": 0.821562948,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-006",
+      "raw": "WHAT IS THE RANGE OF MINE HUNDRED C I VI DOU TARONS INGODER",
+      "secs": 0.558457886,
+      "error": null
+    }
+  ]
+}

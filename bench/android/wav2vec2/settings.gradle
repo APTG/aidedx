@@ -1,0 +1,2 @@
+rootProject.name = "wav2vec2-bench"
+include ":app"
