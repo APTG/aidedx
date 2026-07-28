@@ -91,6 +91,11 @@ export const EN_RULES: readonly CorrectionRule[] = [
     replacement: "Lucite",
   },
   { label: "range-of-phonetic", pattern: /\brains of\b/gi, replacement: "range of" },
+  // "Watt" is a real homophone of "What" at the start of an inverse-energy question ("Watt
+  // energy gives a 10 cm range…" — issue #122, NeMo Parakeet). Scoped to "energy" specifically
+  // (not a bare "watt" fix) so a genuine unit mention of watts, if this project ever adds one,
+  // isn't silently rewritten.
+  { label: "watt-energy-phonetic", pattern: /\bwatt\s+energy\b/gi, replacement: "what energy" },
   {
     label: "stopping-power-phonetic",
     pattern: /\bstop in power\b/gi,

@@ -85,6 +85,64 @@ interface Span {
 // ---------------------------------------------------------------------------
 
 /**
+ * Compose spelled-out hundreds ("two hundred and fifty" -> "250", "one hundred" -> "100",
+ * "one hundred fifty" -> "150") into digits, one length-preserving span at a time — a genuine
+ * multi-word composition, unlike `spellOutNumbers()`'s one-token-at-a-time substitution, so it
+ * must run first and replace the *whole* matched phrase, not word-by-word (issue #122: NeMo
+ * Parakeet has no ASR inverse-text-normalization, so hundreds come out fully spelled, not just
+ * the single digits issue #26 originally handled). The leading multiplier is restricted to
+ * `NUMBER_WORDS`' 1-9 entries ("ten hundred" isn't a real number); the optional trailing
+ * remainder is any `NUMBER_WORDS` entry (1-99), so both "and"-joined and bare forms resolve.
+ * "Thousand" and above is out of scope — not attested in this project's eval set.
+ */
+function composeHundreds(text: string, pack: LangPack): string {
+  if (!pack.HUNDRED_WORD) return text;
+  const digitOf = new Map(pack.NUMBER_WORDS);
+  const onesAlt = pack.NUMBER_WORDS.filter(([, d]) => Number(d) >= 1 && Number(d) <= 9)
+    .map(([w]) => w)
+    .join("|");
+  const remainderAlt = pack.NUMBER_WORDS.map(([w]) => w).join("|");
+  const re = new RegExp(
+    `\\b(${onesAlt})\\s+${pack.HUNDRED_WORD}\\b(?:\\s+(?:and\\s+)?(${remainderAlt})\\b)?`,
+    "gi",
+  );
+  return text.replace(re, (m, onesWord: string, remainderWord?: string) => {
+    const hundreds = Number(digitOf.get(onesWord.toLowerCase())) * 100;
+    const remainder = remainderWord ? Number(digitOf.get(remainderWord.toLowerCase())) : 0;
+    return String(hundreds + remainder).padEnd(m.length);
+  });
+}
+
+/**
+ * Compose a spelled-out decimal ("three point six" -> "3.6") into digits, same
+ * length-preserving whole-phrase substitution as `composeHundreds()` (issue #122 — some clips
+ * spell out "3.6 GeV" as "three point six GeV" instead of giving the digits directly). The
+ * whole-number part is any `NUMBER_WORDS` entry (1-99); each digit after "point" is restricted
+ * to the 0-9 entries ("point six", not "point sixty" — decimal digits are read one at a time).
+ */
+function composeDecimals(text: string, pack: LangPack): string {
+  if (!pack.POINT_WORD) return text;
+  const digitOf = new Map(pack.NUMBER_WORDS);
+  const wholeAlt = pack.NUMBER_WORDS.map(([w]) => w).join("|");
+  const digitAlt = pack.NUMBER_WORDS.filter(([, d]) => Number(d) <= 9)
+    .map(([w]) => w)
+    .join("|");
+  const re = new RegExp(
+    `\\b(${wholeAlt})\\s+${pack.POINT_WORD}\\s+((?:(?:${digitAlt})\\s*)+)`,
+    "gi",
+  );
+  return text.replace(re, (m, wholeWord: string, digitsPart: string) => {
+    const whole = digitOf.get(wholeWord.toLowerCase());
+    const digits = digitsPart
+      .trim()
+      .split(/\s+/)
+      .map((w) => digitOf.get(w.toLowerCase()))
+      .join("");
+    return `${whole}.${digits}`.padEnd(m.length);
+  });
+}
+
+/**
  * Replace a pack's spelled-out number words ("one", "three") with their digit form, padded
  * with trailing spaces so the string's length — and every character offset after it — is
  * unchanged (issue #26: "one GeV"/"three MeV" otherwise carry no energy slot at all, since
@@ -93,7 +151,7 @@ interface Span {
  * the substituted and original text, with no separate bookkeeping to reconcile them.
  */
 function spellOutNumbers(text: string, pack: LangPack): string {
-  let out = text;
+  let out = composeDecimals(composeHundreds(text, pack), pack);
   for (const [word, digit] of pack.NUMBER_WORDS) {
     out = out.replace(new RegExp(`\\b${word}\\b`, "gi"), (m) => digit.padEnd(m.length));
   }
@@ -361,8 +419,11 @@ function toMeV(value: number, unit: EnergyUnit): number {
 
 // [\s-]* (not \s*) between the number and unit — issue #26: a written "10-cm range" hyphenates
 // the compound adjective, which \s* alone doesn't match (a literal "-" isn't whitespace).
+// Spelled-out forms ("centimeters", "millimeters", "micrometers") added for issue #122 — NeMo
+// Parakeet, unlike Whisper, tends to spell length units out in full rather than abbreviate them
+// (the issue's own maintainer quote: "length units (cm, mm), usually spelled out in full").
 const LENGTH_TARGET_RE =
-  /(\d+(?:\.\d+)?)[\s-]*(g\s*\/\s*cm\s*\^?\s*2|g\s*cm\s*\^?\s*-?\s*2|mm|cm|[uµ]m|micron[s]?)\b/i;
+  /(\d+(?:\.\d+)?)[\s-]*(g\s*\/\s*cm\s*\^?\s*2|g\s*cm\s*\^?\s*-?\s*2|mm|millimeters?|cm|centimeters?|[uµ]m|micrometers?|micron[s]?)\b/i;
 
 interface RawTarget {
   slot: TargetSlot;
@@ -376,7 +437,10 @@ function extractRangeTarget(text: string): RawTarget | null {
   const raw = (m[2] ?? "").toLowerCase().replace(/\s+/g, "");
   let unit = raw;
   if (raw.startsWith("g/cm") || raw.startsWith("gcm")) unit = "g/cm2";
-  else if (raw === "micron" || raw === "microns" || raw === "µm") unit = "um";
+  else if (raw === "micron" || raw === "microns" || raw === "µm" || raw.startsWith("micrometer"))
+    unit = "um";
+  else if (raw.startsWith("centimeter")) unit = "cm";
+  else if (raw.startsWith("millimeter")) unit = "mm";
   const start = m.index ?? 0;
   return { slot: { value: Number(m[1]), unit }, span: { start, end: start + m[0].length } };
 }

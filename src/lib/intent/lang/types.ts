@@ -61,6 +61,18 @@ export interface LangPack {
    */
   NUMBER_WORDS: ReadonlyArray<readonly [word: string, digit: string]>;
   /**
+   * Multiplier word for spelled-out hundreds ("two hundred and fifty"), composed with
+   * `NUMBER_WORDS` by `composeHundreds()` before the per-word `NUMBER_WORDS` substitution runs
+   * (issue #122 — NeMo Parakeet has no ASR inverse-text-normalization, so it spells out
+   * hundreds, unlike Whisper). Null when a language has no vetted composition rule yet.
+   */
+  HUNDRED_WORD: string | null;
+  /**
+   * Connector word for spelled-out decimals ("three point six" -> 3.6), composed with
+   * `NUMBER_WORDS` by `composeDecimals()` (issue #122). Null when unimplemented.
+   */
+  POINT_WORD: string | null;
+  /**
    * Canonical quantity-keyword phrases eligible for edit-distance typo tolerance as a
    * last-resort fallback before indirect idioms fail through to the default guess (issue #26,
    * e.g. "Stoping power" still reads as stoppingPower). Kept to a short list of long,

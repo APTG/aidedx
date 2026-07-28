@@ -9,6 +9,7 @@ import com.k2fsa.sherpa.onnx.FeatureConfig
 import com.k2fsa.sherpa.onnx.OfflineModelConfig
 import com.k2fsa.sherpa.onnx.OfflineRecognizer
 import com.k2fsa.sherpa.onnx.OfflineRecognizerConfig
+import com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig
 import com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig
 import com.k2fsa.sherpa.onnx.WaveReader
 import java.io.File
@@ -19,15 +20,25 @@ import java.io.StringWriter
 /**
  * Not a product UI (issue #120's non-goal) - a bare launcher activity mirroring the Vosk bench
  * (bench/android/vosk): file-based recognition over every WAV pushed under
- * filesDir/audio/&lt;speaker&gt;/&lt;id&gt;.wav against a sherpa-onnx whisper-small int8 model
- * pushed to filesDir/&lt;modelDir&gt;, writing the same results JSON contract
- * scripts/asr-transcribe.mjs produces so it drops straight into
- * scripts/e2e-audio-intents.ts / scripts/asr-score-slots.mjs unmodified.
+ * filesDir/audio/&lt;speaker&gt;/&lt;id&gt;.wav against a sherpa-onnx model pushed to
+ * filesDir/&lt;modelDir&gt;, writing the same results JSON contract scripts/asr-transcribe.mjs
+ * produces so it drops straight into scripts/e2e-audio-intents.ts / scripts/asr-score-slots.mjs
+ * unmodified.
  *
  * Uses internal storage (filesDir) from the start, not external/adb-push-then-run-as - the
  * Vosk bench discovered adb push into Android/data/<pkg>/files isn't reliably readable by the
  * app itself under scoped storage (docs/android-asr-runtime-bench.md, S1). Same trick applies:
  * push to /data/local/tmp, then `adb shell run-as <pkg> cp -r ...` into filesDir.
+ *
+ * issue #122: extended beyond #120's whisper-small-only scope to also drive a NeMo Parakeet-v3
+ * TDT transducer model, via a `model_family` intent extra (`whisper` — #120's original path,
+ * default — or `nemo_transducer`), plus `hotwords_file` (a path, relative to filesDir, to a
+ * single-line file holding the raw hotwords string for `createStream(hotwords)` — same
+ * per-stream mechanism the desktop `scripts/sherpa-onnx-transcribe.mjs` harness uses; a *file*,
+ * not a plain string intent extra, because the hotwords string's `/` and `:` characters get
+ * mangled by adb shell's remote re-tokenization when passed as `-e hotwords "..."` directly) and
+ * `decoding_method` (defaults to "greedy_search"; the desktop comparison used
+ * "modified_beam_search", required for hotwords to take effect).
  */
 class BenchActivity : Activity() {
 
@@ -57,18 +68,35 @@ class BenchActivity : Activity() {
         val outName = intent.getStringExtra("out_name") ?: "results.json"
         val modelId = intent.getStringExtra("model_id") ?: "sherpa-onnx-$modelDir"
         val numThreads = intent.getIntExtra("num_threads", 4)
+        val modelFamily = intent.getStringExtra("model_family") ?: "whisper"
+        val decodingMethod = intent.getStringExtra("decoding_method") ?: "greedy_search"
+        val hotwordsFile = intent.getStringExtra("hotwords_file")
+        val hotwords = hotwordsFile?.let { File(filesDir, it).readText().trim() }
 
         val base = filesDir
         val modelPath = File(base, modelDir)
         val audioBase = File(base, "audio")
         val outFile = File(base, outName)
 
-        appendLog("model: $modelPath")
+        appendLog("model: $modelPath ($modelFamily)")
         appendLog("audio: $audioBase")
 
-        val config = OfflineRecognizerConfig(
-            featConfig = FeatureConfig(sampleRate = 16000, featureDim = 80),
-            modelConfig = OfflineModelConfig(
+        val modelConfig = if (modelFamily == "nemo_transducer") {
+            OfflineModelConfig(
+                transducer = OfflineTransducerModelConfig(
+                    encoder = File(modelPath, "encoder.int8.onnx").absolutePath,
+                    decoder = File(modelPath, "decoder.int8.onnx").absolutePath,
+                    joiner = File(modelPath, "joiner.int8.onnx").absolutePath,
+                ),
+                tokens = File(modelPath, "tokens.txt").absolutePath,
+                modelType = "nemo_transducer",
+                modelingUnit = "bpe",
+                bpeVocab = File(modelPath, "bpe.vocab").absolutePath,
+                numThreads = numThreads,
+                provider = "cpu",
+            )
+        } else {
+            OfflineModelConfig(
                 whisper = OfflineWhisperModelConfig(
                     encoder = File(modelPath, "small-encoder.int8.onnx").absolutePath,
                     decoder = File(modelPath, "small-decoder.int8.onnx").absolutePath,
@@ -79,7 +107,14 @@ class BenchActivity : Activity() {
                 modelType = "whisper",
                 numThreads = numThreads,
                 provider = "cpu",
-            ),
+            )
+        }
+
+        val config = OfflineRecognizerConfig(
+            featConfig = FeatureConfig(sampleRate = 16000, featureDim = 80),
+            modelConfig = modelConfig,
+            decodingMethod = decodingMethod,
+            hotwordsScore = 2.0f,
         )
 
         val loadStart = System.nanoTime()
@@ -108,10 +143,15 @@ class BenchActivity : Activity() {
                 var error: String? = null
                 try {
                     val waveData = WaveReader.readWave(wav.absolutePath)
-                    recognizer.createStream().use { stream ->
-                        stream.acceptWaveform(waveData.samples, waveData.sampleRate)
-                        recognizer.decode(stream)
-                        raw = recognizer.getResult(stream).text.trim()
+                    val stream = if (hotwords != null) {
+                        recognizer.createStream(hotwords)
+                    } else {
+                        recognizer.createStream()
+                    }
+                    stream.use {
+                        it.acceptWaveform(waveData.samples, waveData.sampleRate)
+                        recognizer.decode(it)
+                        raw = recognizer.getResult(it).text.trim()
                     }
                 } catch (e: Exception) {
                     error = e.message
