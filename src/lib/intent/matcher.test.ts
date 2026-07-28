@@ -404,6 +404,48 @@ describe("issue #26 — dedup repeated resolved entities", () => {
   });
 });
 
+describe("issue #132 — dedup repeated energy mentions", () => {
+  // A "compare A and B, both stated at the same energy" phrasing repeats the shared energy
+  // once per particle clause — two *identical* energy mentions, not two distinct ones. Before
+  // this fix, that duplicate tipped `decideCompareDim` to "energy" instead of "particle", and
+  // `computeIntent`'s `compareDim: "energy"` branch only ever resolves `particles[0]` —
+  // silently computing the first particle's value twice and never touching the second.
+  it("collapses a duplicate energy mention so a 2-particle range comparison resolves as such", () => {
+    const intent = matchQueryIntent(
+      "Compare the range of a 200 MeV per nucleon carbon-12 ion and a 200 MeV per nucleon neon-20 ion in water.",
+    );
+    expect(intent.particles).toHaveLength(2);
+    expect(intent.energies).toHaveLength(1);
+    expect(intent.compareDim).toBe("particle");
+  });
+
+  it("same fix for a stopping-power comparison stated as 'a 100 MeV X and a 100 MeV Y'", () => {
+    const intent = matchQueryIntent(
+      "Compare the stopping power of a 100 MeV proton and a 100 MeV carbon-12 ion in water.",
+    );
+    expect(intent.particles).toHaveLength(2);
+    expect(intent.energies).toHaveLength(1);
+    expect(intent.compareDim).toBe("particle");
+  });
+
+  it("still keeps a genuine multi-energy comparison as compareDim energy", () => {
+    const intent = matchQueryIntent(
+      "What is the range of protons in water at 100 MeV, 150 MeV, and 200 MeV?",
+    );
+    expect(intent.energies).toHaveLength(3);
+    expect(intent.compareDim).toBe("energy");
+  });
+
+  it("collapses three repeated mentions of the same energy the same way as two", () => {
+    const intent = matchQueryIntent(
+      "Compare the range of a 50 MeV proton, a 50 MeV deuteron, and a 50 MeV triton in water.",
+    );
+    expect(intent.particles).toHaveLength(3);
+    expect(intent.energies).toHaveLength(1);
+    expect(intent.compareDim).toBe("particle");
+  });
+});
+
 describe("issue #26 — hyphenated length/energy grammar", () => {
   it("accepts a hyphenated length target ('10-cm range')", () => {
     const intent = matchQueryIntent("What energy gives a 10-cm range in water for protons?");
