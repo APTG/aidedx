@@ -373,11 +373,37 @@ the MIT captioned lectures (ground-truth text, real forced alignment):
   Fixed by transcribing each podcast in fixed, non-overlapping ~28s windows ourselves instead:
   each window is a single native Whisper pass, so `return_timestamps=True` uses Whisper's own
   in-window timestamp tokens directly (no cross-window stitching, so nothing to desync), and the
-  window's own start offset — known exactly by construction — is added back. **Not yet re-run**;
-  `sbatch scripts/submit-forced-align.sh --only podcasts` re-transcribes just the two podcast
-  sources into a fresh results dir (MIT alignment is untouched by this bug and doesn't need
-  redoing); re-run `scripts/forced-align-analyze.py` against that dir afterward and update the
-  table/rows above once confirmed.
+  window's own start offset — known exactly by construction — is added back. **Confirmed fixed**
+  by the 2026-07-28 podcast-only re-run (job 2826271) — see "Results (podcast re-run)" below.
+
+#### Results (podcast re-run, 2026-07-28, job 2826271)
+
+`sbatch scripts/submit-forced-align.sh --only podcasts` re-transcribed just the `daniel-and-jorge`
+and `radio-naukowe` lanes with the windowed-transcription fix (MIT alignment untouched, since it
+was never affected by this bug). `python3 scripts/forced-align-analyze.py
+eval/results/forced-align-2826271` — 15 aligned instances, all `en`/`daniel-and-jorge` (`radio-naukowe`
+produced zero: verified directly against its transcript JSONs that none of the four episodes'
+Whisper output contains an `eV`/`keV`/`MeV`/`GeV`/`TeV` token at all this run, so this is a real
+content difference, not the alignment step silently dropping matches):
+
+| source           | unit | n   | rate_norm_dur (median / mean) |
+| ---------------- | ---- | --- | ----------------------------- |
+| daniel-and-jorge | GeV  | 6   | 2.90 / 3.07                   |
+| daniel-and-jorge | MeV  | 6   | 1.30 / 1.37                   |
+| daniel-and-jorge | eV   | 3   | 1.00 / 1.22                   |
+
+**Bug fix confirmed:** the specific instance flagged above — `daniel-and-jorge/neutrino-mass`'s
+`MeV` mention at `t≈2125s` — now aligns to `"It's half of an MEV, half of a mega electron volt."`
+(the real physics content), not the "Suite 305"/"Portlandia" ad-break text the old long-form
+chunking produced. All 6 `MeV` and 3 `eV` instances in this re-run land on physics sentences
+(`"10 MeV. We also know that the third"`, `"a few MeV, a few million electron volts"`, `"a proton
+is about a billion EV"`, etc.) — no ad-break contamination in this run's context strings.
+
+This re-run is too small (15 instances, one source) to revisit the §6.4 "prosodic emphasis
+dominates over a fixed rendering" conclusion, which was drawn from the 87-instance `mit-8.701`
+majority (untouched by this bug) — it only confirms the timestamp-desync bug is fixed and the
+`daniel-and-jorge` rows can now be trusted, superseding the "low-confidence until re-run" caveat
+on the original run's `daniel-and-jorge`/`radio-naukowe` rows above.
 
 ## 7. Recommendations
 
@@ -392,9 +418,22 @@ the MIT captioned lectures (ground-truth text, real forced alignment):
    left 2 of 3 stated energies unrecognized while still passing the "at least one energy found"
    incompleteness check). Validating against the abbreviated form matches what actually reaches
    the matcher in the real pipeline anyway, since Whisper normalizes any spoken rendering back to
-   the abbreviation before the matcher ever sees a transcript (§1). **Not yet synthesized/benched
-   on Athena** — `sbatch scripts/submit-v4.sh` regenerates the corpus, synthesizes it, transcribes
-   it with whisper-small q8, and scores it against v3's baseline
+   the abbreviation before the matcher ever sees a transcript (§1). **First submission failed,
+   root-caused, fixed (2026-07-28, job 2826275).** `sbatch scripts/submit-v4.sh` ran only 4s
+   (5.8% efficiency, 0.00 GPUh billed), too fast to have reached GPU work — its `.out` log showed
+   why: `submit-v4.sh`'s Step 0 ran a second, separate `tts-sentence-check.ts "$SENTENCES_FILE"`
+   confirmation pass (inherited unchanged from `submit-v2.sh`/`submit-v3.sh`) that re-validates
+   each written record's `text` field directly against the matcher. That pass was a no-op
+   confirmation for v2/v3 (where `text` was always the bare abbreviation, identical to what
+   `generate-1000-sentences.mjs` had already validated inline), but for v4 `text` is the
+   TTS-facing rendering — deliberately including forms like "megaelectronvolt" the matcher can't
+   parse (only Whisper normalizes it back, per §1) — so the confirmation pass failed 466/1000
+   sentences on legitimate, by-design mismatches and `set -euo pipefail` killed the job before any
+   TTS/GPU work. Fixed by dropping that redundant/incompatible pass from `submit-v4.sh`; inline
+   validation in `generate-1000-sentences.mjs` (against the abbreviated form, matching what the
+   real pipeline's matcher actually receives) is the correct and sufficient check. **Not yet
+   re-run** — `sbatch scripts/submit-v4.sh` regenerates the corpus, synthesizes it, transcribes it
+   with whisper-small q8, and scores it against v3's baseline
    (`eval/results/tts-1000-v3-*/score-new.json`).
 2. ~~Add letter-spelled unit forms to the phonetic corrector~~ **Done (2026-07-26).** Added
    `mev-letter-spelled`/`kev-letter-spelled`/`gev-letter-spelled` regex rules to `EN_RULES` in

@@ -67,8 +67,21 @@ echo "=== Step 0/3: generate + validate the 1000 sentences (unit-rendering varia
 # --experimental-strip-types: the generator imports tts-sentence-check.ts directly for
 # inline validation — required on Athena's older Node 22.17.1, which (unlike the CI
 # runner's Node 24, or Node 22.18+) doesn't strip .ts imports unflagged.
+#
+# UNLIKE v2/v3: no separate `tts-sentence-check.ts "$SENTENCES_FILE"` confirmation pass here.
+# That pass re-validates each written record's `text` field directly against the matcher —
+# a no-op confirmation for v2/v3, where `text` was always the bare abbreviation identical to
+# what generate-1000-sentences.mjs already validated inline. For v4, `text` is the
+# *TTS-facing* rendering (renderUnitsForSpeech(), applied in buildCategory() AFTER inline
+# validation — see that function's comment), which deliberately includes expanded/spaced-out
+# forms like "megaelectronvolt" that the deterministic matcher can't parse (only Whisper
+# normalizes it back to "MeV" before the matcher ever sees it — docs/unit-pronunciation-asr.md
+# §1). Running the confirmation pass against that field fails ~47% of records on legitimate,
+# by-design mismatches, and `set -euo pipefail` aborted the whole job before any TTS/GPU work
+# (job 2826275, 2026-07-28, 4s runtime, 0 GPUh billed) — diagnosed from its .out/.err logs.
+# Inline validation in generate-1000-sentences.mjs (against the abbreviated form, matching what
+# the real pipeline's matcher actually receives) is the correct and sufficient check here.
 node --experimental-strip-types scripts/generate-1000-sentences.mjs "$SENTENCES_FILE"
-node --experimental-strip-types scripts/tts-sentence-check.ts "$SENTENCES_FILE"
 
 echo "=== Step 1/3: TTS generation (resumes automatically from existing $AUDIO_DIR/*.wav) ==="
 source .venv-qwen/bin/activate
