@@ -125,6 +125,12 @@ describe("correctTranscript — quantity/program-name phonetic variants (regex f
     expect(correctText("a-star value")).toBe("ASTAR value");
     expect(correctText("p star value")).toBe("PSTAR value");
   });
+
+  it("normalizes 'Watt energy' as 'what energy' (issue #122 — NeMo Parakeet homophone)", () => {
+    expect(correctText("Watt energy gives a 10 cm range in water for protons")).toBe(
+      "what energy gives a 10 cm range in water for protons",
+    );
+  });
 });
 
 describe("applyRules", () => {

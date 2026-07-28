@@ -300,6 +300,65 @@ describe("issue #26 — spelled-out numbers", () => {
   });
 });
 
+describe("issue #122 — spelled-out tens and hundreds (NeMo Parakeet has no ASR ITN)", () => {
+  it("parses a standalone spelled-out tens word ('sixty')", () => {
+    expect(matchQueryIntent("How far will a sixty MeV proton travel in water?").energies).toEqual([
+      { value: 60, unit: "MeV" },
+    ]);
+  });
+
+  it("composes 'X hundred and Y' into digits", () => {
+    expect(
+      matchQueryIntent("What is the CSDA range of a one hundred and fifty MeV proton in water?")
+        .energies,
+    ).toEqual([{ value: 150, unit: "MeV" }]);
+  });
+
+  it("composes 'X hundred Y' (no 'and') into digits", () => {
+    expect(matchQueryIntent("Range of one hundred fifty MeV protons in water.").energies).toEqual([
+      { value: 150, unit: "MeV" },
+    ]);
+  });
+
+  it("composes a bare 'X hundred' into digits", () => {
+    expect(
+      matchQueryIntent("Stopping power of five hundred keV protons in water.").energies,
+    ).toEqual([{ value: 500, unit: "keV" }]);
+  });
+
+  it("does not shift spans for unrelated text around a composed hundred", () => {
+    const intent = matchQueryIntent(
+      "Compare the stopping power of one hundred MeV protons in water and bone.",
+    );
+    expect(intent.particles).toEqual([{ match: "protons" }]);
+    expect(intent.materials).toEqual([{ match: "water" }, { match: "bone" }]);
+  });
+
+  it("composes a spelled-out decimal ('three point six')", () => {
+    const intent = matchQueryIntent(
+      "What is the range of a carbon ion with three point six GeV total energy in water?",
+    );
+    expect(intent.energies).toEqual([{ value: 3.6, unit: "GeV", perNucleonAssumed: false }]);
+  });
+
+  it("recognizes a spelled-out length-target unit ('centimeters')", () => {
+    const intent = matchQueryIntent(
+      "What energy gives a 10 centimeters range in water for protons?",
+    );
+    expect(intent.quantity).toBe("energyFromRange");
+    expect(intent.target).toEqual({ value: 10, unit: "cm" });
+  });
+
+  it("recognizes spelled-out millimeters/micrometers the same way", () => {
+    expect(
+      matchQueryIntent("What energy gives a 5 millimeters range in water for protons?").target,
+    ).toEqual({ value: 5, unit: "mm" });
+    expect(
+      matchQueryIntent("What energy gives a 200 micrometers range in water for protons?").target,
+    ).toEqual({ value: 200, unit: "um" });
+  });
+});
+
 describe("issue #26 — unhyphenated isotope mentions", () => {
   it("resolves 'helium 3 ion' (space, not hyphen) as a particle, not a material", () => {
     const intent = matchQueryIntent("Range of a helium 3 ion in water at 40 MeV?");

@@ -99,6 +99,12 @@ export const FALLBACK_STOP_RE = /\bzatrzyma\w*\b/iu;
  */
 export const NUMBER_WORDS: ReadonlyArray<readonly [string, string]> = [];
 
+/** Null — no `HUNDRED_WORD` composition without `NUMBER_WORDS` to build it from (see above). */
+export const HUNDRED_WORD: string | null = null;
+
+/** Null — same reasoning as `HUNDRED_WORD` above. */
+export const POINT_WORD: string | null = null;
+
 /** "Zdolność hamowania" is Polish's own long, distinctive direct keyword (mirrors en.ts's
  * "stopping power" entry) — safe to extend the same edit-distance typo tolerance to. */
 export const FUZZY_QUANTITY_PHRASES: ReadonlyArray<{ phrase: string; quantity: Quantity }> = [

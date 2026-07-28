@@ -128,9 +128,15 @@ export function mentionsStoppingPowerKeyword(lower: string): boolean {
 /** Last-resort fallback: a bare "stops/stopped" verb reads as range. */
 export const FALLBACK_STOP_RE = /\bstop(?:s|ped)?\b/;
 
-/** Spelled-out one through ten — the small, closed set actually plausible in an energy
- * phrase ("one GeV", "three MeV"); not a full number-word parser (issue #26). */
+/** Spelled-out one through ninety-nine (by tens, no hyphenated compounds like "twenty-five" —
+ * not attested in this project's eval set). Started as just one-ten (issue #26, "one GeV",
+ * "three MeV"); extended to teens/tens (issue #122) once NeMo Parakeet's lack of ASR inverse-
+ * text-normalization showed "sixty MeV"/"ninety MeV" spelled out too, not just single digits.
+ * Still not a full number-word parser — `HUNDRED_WORD` below composes these with "hundred" for
+ * the multi-word case ("two hundred and fifty"), everything past that ("thousand") is out of
+ * scope. */
 export const NUMBER_WORDS: ReadonlyArray<readonly [string, string]> = [
+  ["zero", "0"],
   ["one", "1"],
   ["two", "2"],
   ["three", "3"],
@@ -141,7 +147,34 @@ export const NUMBER_WORDS: ReadonlyArray<readonly [string, string]> = [
   ["eight", "8"],
   ["nine", "9"],
   ["ten", "10"],
+  ["eleven", "11"],
+  ["twelve", "12"],
+  ["thirteen", "13"],
+  ["fourteen", "14"],
+  ["fifteen", "15"],
+  ["sixteen", "16"],
+  ["seventeen", "17"],
+  ["eighteen", "18"],
+  ["nineteen", "19"],
+  ["twenty", "20"],
+  ["thirty", "30"],
+  ["forty", "40"],
+  ["fifty", "50"],
+  ["sixty", "60"],
+  ["seventy", "70"],
+  ["eighty", "80"],
+  ["ninety", "90"],
 ];
+
+/** Multiplier word for spelled-out hundreds ("two hundred and fifty" -> 250), consumed by
+ * `composeHundreds()` in matcher.ts. Null for a language with no `HUNDRED_WORD` support yet
+ * (see pl.ts). */
+export const HUNDRED_WORD: string | null = "hundred";
+
+/** Connector word for spelled-out decimals ("three point six" -> 3.6), consumed by
+ * `composeDecimals()` in matcher.ts (issue #122 — "3.6 GeV" comes out fully spelled on some
+ * clips). Null for a language with no `POINT_WORD` support yet (see pl.ts). */
+export const POINT_WORD: string | null = "point";
 
 /** "Stopping power" is the only phrase judged safe for edit-distance typo tolerance (issue
  * #26, "Stoping power") — long and distinctive enough that a fuzzy match is unlikely to
