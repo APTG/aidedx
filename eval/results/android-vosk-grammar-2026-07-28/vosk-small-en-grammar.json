@@ -1,0 +1,633 @@
+{
+  "modelId": "vosk-model-small-en-us-0.15-grammar",
+  "dtype": "device",
+  "withPrompt": false,
+  "grammar": true,
+  "grammarWords": 118,
+  "loadS": 0.902633342,
+  "records": [
+    {
+      "speaker": "km",
+      "id": "alias-001",
+      "raw": "what is the range of sixty am eighty protons lucite lucite",
+      "secs": 0.179376018,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-en-001",
+      "raw": "compare the range protons in water at one hundred am two hundred am eighty",
+      "secs": 0.209638916,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-001",
+      "raw": "compare de stopping power of one hundred am eighty protons in water and bone",
+      "secs": 0.179947184,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-004",
+      "raw": "range of one hundred fifty am eighty protons in water bone and adipose tissue",
+      "secs": 0.227579427,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-mat-007",
+      "raw": "for one hundred [unk] carbon ions compare the range and [unk]",
+      "secs": 0.909754924,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-par-003",
+      "raw": "how do carbon and neon ions compare in range water at one hundred am [unk]",
+      "secs": 0.249488362,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-par-005",
+      "raw": "which penetrates deeper in water at sixty [unk] a proton or a deuterons",
+      "secs": 0.211305624,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "cmp-prog-001",
+      "raw": "compare the range of one hundred fifty am eighty protons in water using [unk]",
+      "secs": 0.276647624,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "conv-003",
+      "raw": "so like how far does a one hundred am eighty proton go in water roughly",
+      "secs": 0.239594116,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "conv-008",
+      "raw": "okay so i need the range of two hundred thirteen am eighty protons in water for a plan",
+      "secs": 0.213866618,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-001",
+      "raw": "how far will as sixty am eighty proton travel in water",
+      "secs": 0.160240193,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-003",
+      "raw": "it what rate does a thirty am eighty proton shed energy as it moves through aluminum",
+      "secs": 0.242730997,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "ind-008",
+      "raw": "what penetration depth do eighty [unk] oxygen ions reach in water",
+      "secs": 0.233119263,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "inv-rng-001",
+      "raw": "what energy gives [unk] or range water for protons",
+      "secs": 0.18592094,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "iso-002",
+      "raw": "stopping power of carbon fourteen ions in water at one hundred am [unk]",
+      "secs": 0.192797811,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "iso-004",
+      "raw": "stopping power of a helium three ion in water at forty [unk]",
+      "secs": 0.207946777,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "pernuc-001",
+      "raw": "range of carbon ions in water at two hundred ninety am [unk] per u",
+      "secs": 0.216063111,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "pernuc-003",
+      "raw": "what is the range of carbon ion with three point [unk] total energy in water",
+      "secs": 0.217883789,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-002",
+      "raw": "what is the cm de range of a one hundred fifty am eighty proton water",
+      "secs": 0.172518473,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-005",
+      "raw": "range of ninety [unk] carbon ions in water",
+      "secs": 0.14479183,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "rng-008",
+      "raw": "how deep does one hundred am eighty proton penetrate and water",
+      "secs": 0.162300944,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-003",
+      "raw": "what the the [unk] protons in [unk]",
+      "secs": 0.294468669,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-005",
+      "raw": "stopping power four eighty [unk] ions in water",
+      "secs": 0.209444376,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-007",
+      "raw": "what is the mass stopping power power of two hundred am protons in cortical bone",
+      "secs": 0.206008382,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "sp-008",
+      "raw": "[unk] dx of three am eleven deuterons in silicon",
+      "secs": 0.232083903,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "stress-001",
+      "raw": "i am curious how five the water the two hundred forty [unk] carbon ion will go",
+      "secs": 0.252094401,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "stress-002",
+      "raw": "compare stopping power neon ions in water [unk]",
+      "secs": 0.31450411,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-001",
+      "raw": "stopping power of five hundred [unk] protons in water",
+      "secs": 0.190294068,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-003",
+      "raw": "what is de stopping power of one de protons in water",
+      "secs": 0.170500001,
+      "error": null
+    },
+    {
+      "speaker": "km",
+      "id": "unit-006",
+      "raw": "what de range of nine hundred [unk] deuterons in water",
+      "secs": 0.178314331,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "alias-001",
+      "raw": "what as the range of sixty [unk] lucite",
+      "secs": 0.15541036,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-en-001",
+      "raw": "compare the range of proton water one hundred two hundred energy",
+      "secs": 0.187823405,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-001",
+      "raw": "compare de stopping power of one hundred energy protons in water and bone",
+      "secs": 0.187444662,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-004",
+      "raw": "range of one hundred fifty am eighty protons will thirty bone and adipose tissue",
+      "secs": 0.194352092,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-mat-007",
+      "raw": "for one hundred [unk] carbon ions compare the range water and am am eight",
+      "secs": 0.197397705,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-par-003",
+      "raw": "total carbon and neon ions cortical in range in water at one hundred energy [unk]",
+      "secs": 0.216363526,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-par-005",
+      "raw": "which penetrates deeper in water sixty am eighty proton or do zero",
+      "secs": 0.182511678,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "cmp-prog-001",
+      "raw": "[unk] protons in water using [unk]",
+      "secs": 0.216658895,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "conv-003",
+      "raw": "so like go far does hundred energy proton go in water roughly",
+      "secs": 0.211134807,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "conv-008",
+      "raw": "okay so i need the range of two hundred thirty am eighty proton in water for plan",
+      "secs": 0.20430306,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-001",
+      "raw": "how far will sixty energy proton travel water",
+      "secs": 0.164802246,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-003",
+      "raw": "what rate does thirty am eighty protons shed energy as moves through aluminum",
+      "secs": 0.239891399,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "ind-008",
+      "raw": "what penetration depth do eighty [unk] oxygen ions reach in water",
+      "secs": 0.196736979,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "inv-rng-001",
+      "raw": "what energy gives ten seventeen range water for protons",
+      "secs": 0.176150594,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "iso-002",
+      "raw": "stopping power of carbon thirty ion cm water at one hundred energy per aluminum",
+      "secs": 0.187602417,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "iso-004",
+      "raw": "stopping power of helium three ion in water forty [unk]",
+      "secs": 0.225632853,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "pernuc-001",
+      "raw": "range of carbon ions water at two hundred ninety need deeper u",
+      "secs": 0.177968588,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "pernuc-003",
+      "raw": "what does the range of carbon ion moves three point sixty total energy water",
+      "secs": 0.177430745,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-002",
+      "raw": "what does the cm the a range of one hundred fifty energy proton water",
+      "secs": 0.197848633,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-005",
+      "raw": "range of ninety [unk] carbon ions water",
+      "secs": 0.157479695,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "rng-008",
+      "raw": "how deep does water hundred energy proton penetrate in water",
+      "secs": 0.163802042,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-003",
+      "raw": "what the de dx two hundred fifty energy proton [unk]",
+      "secs": 0.238251587,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-005",
+      "raw": "stopping power far eighty [unk] carbon ions in water",
+      "secs": 0.194702556,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-007",
+      "raw": "what does the mass stopping power of two hundred am eighty protons in cortical bone",
+      "secs": 0.192962037,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "sp-008",
+      "raw": "the dx of three [unk] in silicon",
+      "secs": 0.151711752,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "stress-001",
+      "raw": "curious forty eighty carbon go",
+      "secs": 0.347710856,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "stress-002",
+      "raw": "compare stopping power of neon ion cm water air for one hundred [unk]",
+      "secs": 0.239317668,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-001",
+      "raw": "stopping power of five hundred okay eighty protons in water",
+      "secs": 0.209661377,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-003",
+      "raw": "what does the stopping power of one energy the protons in water",
+      "secs": 0.148129801,
+      "error": null
+    },
+    {
+      "speaker": "lg",
+      "id": "unit-006",
+      "raw": "what does range of nine hundred okay deuterons water",
+      "secs": 0.156031942,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "alias-001",
+      "raw": "what is the range of sixty energy protons in the lucite",
+      "secs": 0.166385539,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-en-001",
+      "raw": "compare the range of protons water at one hundred and two hundred [unk]",
+      "secs": 0.134485717,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-mat-001",
+      "raw": "compare de stopping power of what hundred am eighty protons in water and bone",
+      "secs": 0.140523682,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-mat-004",
+      "raw": "range of one hundred fifty am eighty protons in water bone and adipose tissue",
+      "secs": 0.210547892,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-par-003",
+      "raw": "how do carbon neon ions compare in reach water at one hundred [unk]",
+      "secs": 0.192784709,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-par-005",
+      "raw": "which penetrates deeper u water at sixty [unk] at proton [unk]",
+      "secs": 0.175181437,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "cmp-prog-001",
+      "raw": "compare the range of [unk] protons in water using [unk]",
+      "secs": 0.192868001,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "conv-003",
+      "raw": "am so like how far does the [unk] proton go in water roughly",
+      "secs": 0.208128987,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "conv-008",
+      "raw": "okay so need range of two hundred thirty energy protons in water for plan",
+      "secs": 0.186573771,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-001",
+      "raw": "how far with sixty [unk] proton travel water",
+      "secs": 0.142441325,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-003",
+      "raw": "at what rate does air thirty energy proton shed energy as moves through aluminum",
+      "secs": 0.210133708,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "ind-008",
+      "raw": "what penetration depth do eighty [unk] oxygen ions reach in water",
+      "secs": 0.191739665,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "inv-rng-001",
+      "raw": "what energy gives [unk] range in water four protons",
+      "secs": 0.159959839,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "iso-002",
+      "raw": "stopping four of carbon thirteen ions in water at [unk]",
+      "secs": 0.181178996,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "iso-004",
+      "raw": "stopping power of helium three ion in water at forty [unk]",
+      "secs": 0.144037028,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "pernuc-001",
+      "raw": "range of carbon ions in water at two hundred ninety energy per u",
+      "secs": 0.163792562,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "pernuc-003",
+      "raw": "what is the range of carbon ion with three point sixty de total energy water",
+      "secs": 0.188363891,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-002",
+      "raw": "what is the cm as the a range [unk] fifty [unk] proton water",
+      "secs": 0.225220296,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-005",
+      "raw": "range of ninety am [unk] carbon ions in water",
+      "secs": 0.167680705,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "rng-008",
+      "raw": "how deep does the one hundred am u proton penetrate in water",
+      "secs": 0.149913859,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-003",
+      "raw": "what the de of or dx of two hundred fifty am [unk] protons in de and a",
+      "secs": 0.206458008,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-005",
+      "raw": "stopping power four eighty and [unk] carbon ions in water",
+      "secs": 0.197076498,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-007",
+      "raw": "will does the mass stopping power of two hundred [unk] cortical bone",
+      "secs": 0.229867879,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "sp-008",
+      "raw": "de of or dx of [unk] deuterons in silicon",
+      "secs": 0.198452474,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "stress-001",
+      "raw": "[unk] water two hundred forty [unk] carbon ion will go",
+      "secs": 0.154411173,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "stress-002",
+      "raw": "compare stopping power of neon ions in water and [unk] [unk]",
+      "secs": 0.209256836,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-001",
+      "raw": "stopping power of five hundred [unk] protons in water",
+      "secs": 0.150917724,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-003",
+      "raw": "what does de stopping power what of one [unk] protons in water",
+      "secs": 0.17141329,
+      "error": null
+    },
+    {
+      "speaker": "mn",
+      "id": "unit-006",
+      "raw": "what does the range of [unk] hundred okay the deuterons in water",
+      "secs": 0.158696249,
+      "error": null
+    }
+  ]
+}

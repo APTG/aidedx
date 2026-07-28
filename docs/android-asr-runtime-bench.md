@@ -5,6 +5,15 @@ _Session report, 2026-07-27. All four candidates from issue #120's original list
 real device (Pixel 7a, Tensor G2, Android 17/API 36, `arm64-v8a`), not extrapolated from desktop
 numbers, per issue #120's actual ask._
 
+_2026-07-28 follow-up: two items from §8's pending list, resolved. A reworded whisper.cpp prompt
+(§5.9) that spells out "per nucleon"/"per micrometer" instead of the "/nucl"/"/um" shorthand that
+leaked into transcripts (§5.7) reaches **94% E2E (84/89)** - the best result of any
+candidate/configuration in this doc, beating both the unprompted 89% and the desktop 91% baseline.
+Vosk's grammar-constrained decoding (§2.6) was empirically tested (not just inferred): Vosk's own
+log directly confirms 9 domain terms are absent from the small model's vocabulary entirely, so
+grammar restriction cannot recover them - E2E stays 0%, though non-jargon slot categories improve
+sharply, cleanly isolating the vocabulary wall._
+
 ## TL;DR
 
 **sherpa-onnx whisper-small (int8, multilingual), on-device, scores 87% end-to-end audio→intent
@@ -171,6 +180,60 @@ chunk, so real PCM data starts at byte 78). The practical effect here is negligi
 Vosk's failure is a vocabulary-coverage wall (§2.4), not a data-corruption artifact, and re-running
 with a correct parser would not be expected to recover "mev"/"pmma" tokens that aren't in the
 model's lexicon at all. Not re-run, since the fix couldn't plausibly change the 0% conclusion.
+
+### 2.6 Follow-up (2026-07-28): grammar-constrained decoding, empirically tested
+
+§2.4 answered issue #122's grammar-constrained-decoding question by inference from raw transcripts
+("the total absence of anything close to those strings ... strongly suggests" an OOV lexicon gap)
+and flagged direct confirmation as "a small follow-up, not done in this session." Done here.
+
+**Method**: added `Recognizer(model, rate, grammarJson)` support to the bench harness (Vosk's
+grammar-mode constructor — confirmed via `javap` against the vendored
+`vosk-android-0.3.75-api.jar`: `org.vosk.Recognizer(Model, float, String)`). Built a 118-word closed
+grammar from every word in the 30 eval sentences' ground-truth text (`eval/intents.jsonl`) plus
+spelled-out number words 0-19/tens/hundred/thousand and explicit jargon tokens (`mev`, `kev`,
+`gev`, `pmma`, `nucl`, plus split/hyphen forms), plus the open-vocabulary escape token `[unk]`.
+
+**Result: Vosk's own log directly confirms the vocabulary-wall hypothesis — no inference needed.**
+`adb logcat` during grammar compilation shows, verbatim, for every one of the 89 clips:
+
+```
+W VoskAPI : UpdateGrammarFst():recognizer.cc:351) Ignoring word missing in vocabulary: 'astar'
+W VoskAPI : UpdateGrammarFst():recognizer.cc:351) Ignoring word missing in vocabulary: 'csda'
+W VoskAPI : UpdateGrammarFst():recognizer.cc:351) Ignoring word missing in vocabulary: 'dedx'
+W VoskAPI : UpdateGrammarFst():recognizer.cc:351) Ignoring word missing in vocabulary: 'deuteron'
+W VoskAPI : UpdateGrammarFst():recognizer.cc:351) Ignoring word missing in vocabulary: 'mev'
+W VoskAPI : UpdateGrammarFst():recognizer.cc:351) Ignoring word missing in vocabulary: 'nucl'
+W VoskAPI : UpdateGrammarFst():recognizer.cc:351) Ignoring word missing in vocabulary: 'nucleon'
+W VoskAPI : UpdateGrammarFst():recognizer.cc:351) Ignoring word missing in vocabulary: 'pmma'
+W VoskAPI : UpdateGrammarFst():recognizer.cc:351) Ignoring word missing in vocabulary: 'pstar'
+```
+
+These 9 words are silently dropped from the grammar FST before decoding even starts — there is no
+acoustic-to-token path to them regardless of how the decoder is biased, exactly as §2.4 predicted.
+**A genuinely non-obvious detail this test surfaced**: `kev` and `gev` are _not_ in that list (they
+survive grammar compilation — the model does have those tokens), and `deuterons` (plural) is not
+flagged even though `deuteron` (singular) is — an inflection-level gap, not a blanket "unit words
+are missing" story. Sample outputs with jargon forced out of reach: `"MeV"` decodes as `"am
+eighty"` (km/alias-001), `"MeV/nucl"` conflates into `"am eighty [unk]"`, `"keV"` decodes as
+`[unk]` despite being in-vocabulary alone (context-dependent within this tiny 110-state grammar).
+
+**Scored result: E2E stays 0% (0/89)**, same verdict as free-form decoding — confirming that even
+with the decoder given every correct non-jargon word as an explicit, biased-toward option, the
+`unit`/`number` slots still can't be recovered (unit 3.3%, number 8.7% corrected). But
+**constraining the search space sharply improved everything else**, which is the useful new
+signal: quantity 84.2% (vs. free-form's 77.9%), particle 90.5% (vs. 54.7%), material 90.3% (vs.
+73.8%) — all far closer to sherpa-onnx/whisper.cpp territory than Vosk's own free-form numbers.
+This cleanly isolates the failure to exactly the vocabulary-coverage wall §2.4 already named, with
+hard evidence instead of an inference from absence, and rules out "maybe grammar mode's bias would
+help if only it were tried" as an open question. Full results:
+`eval/results/android-vosk-grammar-2026-07-28/vosk-small-en-grammar.json`,
+grammar list inlined in `bench/android/vosk/app/src/main/java/com/aidedx/voskbench/BenchActivity.java`.
+
+Bottom line, updated: grammar-constrained decoding is not a viable path to recovering this domain's
+jargon on the small model — the words genuinely don't exist in its lexicon, confirmed directly
+rather than inferred. A _large_ Vosk model's lexicon coverage remains untested and is the only
+version of "give Vosk another look" still worth entertaining.
 
 ## 3. Candidate: sherpa-onnx whisper-small (int8, multilingual)
 
@@ -661,7 +724,7 @@ worded prompt (spelling out "per nucleon" instead of using the `/nucl` shorthand
 better, but wasn't tested here — not done this session; **the practical recommendation for now is
 no prompt**, since it's both simpler and scores higher.
 
-### 5.8 Bottom line for whisper.cpp
+### 5.8 Bottom line for whisper.cpp (unprompted / prompt v1)
 
 **Best accuracy of the four candidates (89% E2E, unprompted), confirming sherpa-onnx's core
 finding: a whisper-small-family model reaches close-to-desktop accuracy on-device without any
@@ -678,6 +741,50 @@ on accuracy and no longer has an operational red flag against it — sherpa-onnx
 absolute median latency (2.7s vs. 5.6s) and needs no NDK/build complexity at all, but the
 "whichever runtime ships needs thread/thermal tuning" concern this session originally flagged
 turned out to have a simple, validated fix rather than being a fundamental limitation.
+
+**Superseded by §5.9 below**: a reworded prompt reaches 94% E2E, beating both the 89% unprompted
+number this section calls "best of four" and the 91% desktop baseline. Kept as-is for the
+unprompted/v1-prompt history; §5.9 is the current recommendation.
+
+### 5.9 Follow-up (2026-07-28): reworded prompt (v2) reaches 94% E2E — the best result in this doc
+
+§5.7 flagged an untested hypothesis: a prompt that avoids the `/nucl`/`/um` shorthand the model was
+echoing verbatim might not have the same leak. Tested here. `DOMAIN_PROMPT_V2` replaces `"MeV/u,
+MeV/nucl"` with the single spelled-out phrase `"MeV per nucleon"`, replaces `"keV/um"` with `"keV
+per micrometer"`, and drops `"dE/dx"` entirely (same shorthand shape, not otherwise implicated) —
+every other term unchanged. Added as a second prompt variant (`prompt_variant=v2` intent extra)
+alongside the original rather than replacing it, so both remain reproducible from the same harness.
+
+**Result: 94% E2E (84/89), corrected — better than the 89% unprompted baseline (§5.4) and better
+than the 91% desktop whisper-small+prompt baseline this entire spike has been measured against.**
+
+| Pipeline                                                          | audio→intent slot match | median s/clip |
+| ----------------------------------------------------------------- | ----------------------- | ------------- |
+| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`)    | 91% (81/89)             | 2.3s          |
+| whisper.cpp ggml-small-q8_0, 2 threads, no prompt (§5.6)          | 89% (79/89)             | 5.6s          |
+| whisper.cpp ggml-small-q8_0, 2 threads, +prompt v1 (§5.7 — worse) | 83% (74/89)             | 6.4s          |
+| **whisper.cpp ggml-small-q8_0, 2 threads, +prompt v2 (this run)** | **94% (84/89)**         | **5.9s**      |
+
+Per-speaker (corrected): km **30/30 (100%)**, lg 26/30, mn 28/29 — km speaker now perfect. Slot-token
+accuracy (raw → corrected, via `asr-score-slots.mjs`): quantity 94.7%→98.9%, number 96.7%→98.9%,
+unit 92.4%→96.7%, particle 96.8%→98.9%, material 100%→100%, ALL 95.7%→98.3% (n=483) — every
+category at or above the unprompted run's own numbers (§5.4's ALL was 90.5%→97.5%).
+
+The 5 remaining `e2e-audio-intents.ts` failures are the same flavor of ordinary acoustic misses
+already documented for sherpa-onnx/whisper.cpp unprompted (isotope numbers, "A\*"/"P\*" program
+names, one stress-test sentence) — critically, **none of them reproduce the v1 leak pattern**
+(no `"MeV/Nocleon"`-style abbreviation echoing anywhere in the raw transcripts). That confirms the
+fix targeted the actual mechanism: removing shorthand forms from the prompt text stops the model
+from echoing them, so the prompt's vocabulary-priming benefit (which raw unit-slot accuracy already
+showed at 79.3%→89.1% even in the "worse" v1 run, per §5.7) comes through without the corrector-
+breaking side effect. Full results:
+`eval/results/android-whispercpp-promptv2-2026-07-28/whispercpp-ggml-small-q8_0-promptv2.json`.
+
+**Updated practical recommendation**: use `DOMAIN_PROMPT_V2` (spelled-out forms, no slash
+shorthand), not no-prompt. §5.7's "no prompt is safer" conclusion was correct for the specific text
+tested there, but was a property of that prompt's wording, not of prompting whisper.cpp in general
+— worth remembering as a general lesson for future prompt engineering on this runtime: a prompt
+leak is a reason to reword the prompt, not to abandon prompting.
 
 ## 6. Battery/thermal readings (unplugged)
 
@@ -728,15 +835,17 @@ runs before it (no cooldown was inserted between candidates). Good enough to ans
 
 ## 7. Combined comparison
 
-| Pipeline                                                                             | audio→intent slot match | median s/clip                      | load time |
-| ------------------------------------------------------------------------------------ | ----------------------- | ---------------------------------- | --------- |
-| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`)                       | 91% (81/89)             | 2.3s                               | —         |
-| **whisper.cpp ggml-small-q8_0, Pixel 7a, 2 threads, no prompt (tuned, §5.6)**        | **89% (79/89)**         | **5.6s** (p90 6.8s, no throttling) | 0.76s     |
-| whisper.cpp ggml-small-q8_0, Pixel 7a, 2 threads, +prompt (§5.7 — worse, not better) | 83% (74/89)             | 6.4s (p90 7.4s, no throttling)     | 0.59s     |
-| whisper.cpp ggml-small-q8_0, Pixel 7a, 4 threads, no prompt (default, untuned)       | 89% (79/89)             | 15.1s (oscillating throttle, §5.5) | 0.73s     |
-| **sherpa-onnx whisper-small int8, Pixel 7a, no prompt**                              | **87% (77/89)**         | 2.7s (p90 3.3s)                    | 2.3s      |
-| **Vosk small-en, Pixel 7a**                                                          | **0% (0/89)**           | **1.3s** (p90 1.6s)                | **0.55s** |
-| **wav2vec2-base-960h, Pixel 7a**                                                     | **0% (0/89)**           | **0.9s** (p90 1.5s)                | **0.85s** |
+| Pipeline                                                                                | audio→intent slot match | median s/clip                      | load time |
+| --------------------------------------------------------------------------------------- | ----------------------- | ---------------------------------- | --------- |
+| whisper-small + prompt, desktop CPU (Node, `onnxruntime-node`)                          | 91% (81/89)             | 2.3s                               | —         |
+| **whisper.cpp ggml-small-q8_0, Pixel 7a, 2 threads, +prompt v2 (best, §5.9)**           | **94% (84/89)**         | **5.9s** (no throttling)           | 0.72s     |
+| whisper.cpp ggml-small-q8_0, Pixel 7a, 2 threads, no prompt (tuned, §5.6)               | 89% (79/89)             | 5.6s (p90 6.8s, no throttling)     | 0.76s     |
+| whisper.cpp ggml-small-q8_0, Pixel 7a, 2 threads, +prompt v1 (§5.7 — worse, not better) | 83% (74/89)             | 6.4s (p90 7.4s, no throttling)     | 0.59s     |
+| whisper.cpp ggml-small-q8_0, Pixel 7a, 4 threads, no prompt (default, untuned)          | 89% (79/89)             | 15.1s (oscillating throttle, §5.5) | 0.73s     |
+| **sherpa-onnx whisper-small int8, Pixel 7a, no prompt**                                 | **87% (77/89)**         | 2.7s (p90 3.3s)                    | 2.3s      |
+| **Vosk small-en, Pixel 7a, free-form**                                                  | **0% (0/89)**           | **1.3s** (p90 1.6s)                | **0.55s** |
+| Vosk small-en, Pixel 7a, grammar-constrained (§2.6)                                     | 0% (0/89)               | 0.2s                               | 0.9s      |
+| **wav2vec2-base-960h, Pixel 7a**                                                        | **0% (0/89)**           | **0.9s** (p90 1.5s)                | **0.85s** |
 
 ## 8. What's still pending
 
@@ -747,10 +856,14 @@ runs before it (no cooldown was inserted between candidates). Good enough to ans
   clean mAh/clip figure per candidate. whisper.cpp's own reading (§5.5) is muddier still (a
   mid-session pause bled idle drain into it), and doesn't yet exist at all for the tuned 2-thread
   configuration.
-- **A better-worded prompt for whisper.cpp** — §5.7 found the desktop's own prompt text (with
-  abbreviated hints like `"MeV/nucl"`) makes accuracy _worse_ on-device, because the model echoes
-  those abbreviations into transcripts. A prompt spelling out full forms (e.g. "per nucleon"
-  instead of "/nucl") might behave differently — not tested this session.
+- ~~A better-worded prompt for whisper.cpp~~ — resolved, §5.9 (2026-07-28): spelling out "per
+  nucleon"/"per micrometer" instead of the `/nucl`/`/um` shorthand reaches **94% E2E**, beating both
+  the 89% unprompted number and the 91% desktop baseline. This is now the recommended configuration.
+- ~~Vosk grammar-constrained mode vs. issue #122's open question~~ — resolved, §2.6 (2026-07-28):
+  empirically confirmed (Vosk's own log, not inference) that 9 domain terms are absent from the
+  small model's lexicon and get dropped from the grammar FST before decoding; E2E stays 0% even
+  with a closed, correctly-biased grammar. A large Vosk model's lexicon remains the only untested
+  variant of this question.
 - ~~Confirming whether sherpa-onnx exposes a prompt-biasing hook~~ — resolved, §3.4: it doesn't,
   at any level, confirmed against the C++ source and directly by the maintainer
   ([k2-fsa/sherpa-onnx#2295](https://github.com/k2-fsa/sherpa-onnx/issues/2295)). Reaching it would
@@ -771,14 +884,17 @@ runs before it (no cooldown was inserted between candidates). Good enough to ans
 
 ## 9. Bottom line so far
 
-**All four of issue #120's original candidates are now measured, and whisper.cpp (tuned) is the
-clear winner: 89% E2E — the best accuracy of the four — at a stable 5.6s median with no thermal
-throttling, once its default thread auto-detection (4 threads) is overridden to 2.** Vosk and
-wav2vec2 are both disqualified on accuracy for structurally different reasons (Vosk: closed
-vocabulary doesn't contain this domain's jargon; wav2vec2: CTC output has no digit tokens the
-matcher can parse at all). sherpa-onnx remains a strong, simpler-to-integrate alternative (87% E2E,
-faster in absolute terms at 2.7s median, no NDK/thread-tuning needed at all) if whisper.cpp's extra
-build/tuning complexity isn't worth 2 accuracy points.
+**All four of issue #120's original candidates are now measured, and whisper.cpp (tuned, reworded
+prompt) is the clear winner: 94% E2E (§5.9) — beating not just the other three on-device candidates
+but the 91% desktop whisper-small+prompt baseline this entire spike has been measured against — at
+a stable 5.9s median with no thermal throttling, once its default thread auto-detection (4 threads)
+is overridden to 2 (§5.6) and its prompt avoids slash-shorthand the model echoes verbatim (§5.9).**
+Vosk and wav2vec2 are both disqualified on accuracy for structurally different reasons (Vosk: closed
+vocabulary doesn't contain this domain's jargon, confirmed directly in Vosk's own logs even under
+grammar-constrained decoding, §2.6; wav2vec2: CTC output has no digit tokens the matcher can parse
+at all). sherpa-onnx remains a strong, simpler-to-integrate alternative (87% E2E, faster in absolute
+terms at 2.7s median, no NDK/thread-tuning/prompt-tuning needed at all) if whisper.cpp's extra
+build/tuning complexity isn't worth the accuracy gap.
 
 The thread-tuning result is the more important methodological finding than either number alone:
 **a "some runtime shows bad thermal behavior" conclusion drawn from a single untuned run would have
@@ -789,13 +905,20 @@ and a _better_ sustained median than the untuned default. Any future on-device b
 project should treat a candidate's first-run thermal profile as provisional until a quick
 thread-count sweep confirms it isn't just a tuning gap.
 
-Prompt-biasing followed the same "verify, don't assume" pattern: whisper.cpp is the one candidate
-where it's architecturally possible (§5.7), but dropping in the exact desktop prompt text made
-accuracy _worse_, not better — the model echoed the prompt's own abbreviated hints into transcripts
-in a shape the existing corrector doesn't recognize. 89% unprompted is the number to use unless a
-differently-worded prompt is tried and actually measured, not assumed to help.
+Prompt-biasing followed the same "verify, don't assume" pattern, twice over: whisper.cpp is the one
+candidate where it's architecturally possible (§5.7), and dropping in the exact desktop prompt text
+made accuracy _worse_, not better — the model echoed the prompt's own abbreviated hints into
+transcripts in a shape the existing corrector doesn't recognize. Rather than concluding "no prompt"
+and stopping there, rewording the prompt to remove that shorthand (§5.9) reached 94% E2E — the best
+number in this entire document. The lesson generalizes: a prompt-leak failure is a reason to reword
+the prompt, not evidence that prompting itself doesn't help on this runtime.
+
+Vosk's grammar-mode question got the same treatment: §2.4's vocabulary-wall theory, inferred from
+raw transcripts, could have been left as a plausible-but-unconfirmed explanation. §2.6 tested it
+directly and got Vosk's own log stating exactly which words are missing from the lexicon — turning
+an inference into a fact, at the cost of one small harness change and a single logcat capture.
 
 This issue's original framing — that native inference should beat WASM-in-a-WebView on
 latency/battery, justifying a native rewrite — now has strong evidence behind it: a properly tuned
-native runtime delivers close-to-desktop accuracy on a real phone, with a battery/thermal profile
-this session's readings don't flag as a problem.
+native runtime delivers accuracy that beats the desktop baseline on a real phone, with a
+battery/thermal profile this session's readings don't flag as a problem.

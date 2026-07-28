@@ -45,6 +45,16 @@ public class BenchActivity extends Activity {
             + "helium-3, carbon-13, stopping power, LET, linear energy transfer, keV/um, "
             + "Lucite, adipose tissue, Kapton, Mylar, Teflon, Pyrex glass, sodium iodide, cesium iodide";
 
+    // Follow-up to S5.7's negative result: DOMAIN_PROMPT's "/nucl" and "/um" shorthand got
+    // echoed verbatim into transcripts instead of priming vocabulary. This variant spells those
+    // two forms out in full and drops dE/dx (not implicated in the leak, but same shorthand
+    // shape) to test whether removing all slash-abbreviations from the prompt text fixes it.
+    private static final String DOMAIN_PROMPT_V2 =
+            "MeV, keV, GeV, MeV per nucleon, CSDA, PMMA, ASTAR, PSTAR, "
+            + "nucleon, proton, deuteron, carbon ion, neon ion, oxygen ion, "
+            + "helium-3, carbon-13, stopping power, LET, linear energy transfer, keV per micrometer, "
+            + "Lucite, adipose tissue, Kapton, Mylar, Teflon, Pyrex glass, sodium iodide, cesium iodide";
+
     private TextView logText;
     private final StringBuilder log = new StringBuilder();
 
@@ -82,8 +92,9 @@ public class BenchActivity extends Activity {
         int numThreads = getIntent().getIntExtra("num_threads", WhisperCpuConfig.getPreferredThreadCount());
         appendLog("using " + numThreads + " threads");
         boolean withPrompt = getIntent().getBooleanExtra("with_prompt", false);
-        String prompt = withPrompt ? DOMAIN_PROMPT : null;
-        appendLog(withPrompt ? "using domain prompt" : "no prompt");
+        String promptVariant = getIntent().getStringExtra("prompt_variant");
+        String prompt = !withPrompt ? null : "v2".equals(promptVariant) ? DOMAIN_PROMPT_V2 : DOMAIN_PROMPT;
+        appendLog(prompt == null ? "no prompt" : "using domain prompt (" + (promptVariant == null ? "v1" : promptVariant) + "): " + prompt);
 
         File base = getFilesDir();
         File modelPath = new File(base, modelFile);
@@ -142,6 +153,7 @@ public class BenchActivity extends Activity {
                 + "  \"modelId\": " + jsonStr(modelId) + ",\n"
                 + "  \"dtype\": \"device\",\n"
                 + "  \"withPrompt\": " + withPrompt + ",\n"
+                + "  \"promptVariant\": " + jsonStr(withPrompt ? (promptVariant == null ? "v1" : promptVariant) : "none") + ",\n"
                 + "  \"numThreads\": " + numThreads + ",\n"
                 + "  \"loadS\": " + loadS + ",\n"
                 + "  \"records\": [\n"

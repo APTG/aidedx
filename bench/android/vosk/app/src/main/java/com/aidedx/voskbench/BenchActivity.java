@@ -44,7 +44,9 @@ public class BenchActivity extends Activity {
         logText.setMovementMethod(new ScrollingMovementMethod());
         Button runButton = findViewById(R.id.run_button);
         runButton.setOnClickListener(v -> new Thread(this::runBenchmark).start());
-        LibVosk.setLogLevel(LogLevel.INFO);
+        // DEBUG (not INFO) so any "word not in vocabulary" grammar-compilation diagnostics
+        // surface in logcat - issue #122's open question about OOV words in grammar mode.
+        LibVosk.setLogLevel(LogLevel.DEBUG);
         appendLog("Ready. Tap \"Run benchmark\".");
         if (getIntent().getBooleanExtra("autorun", false)) {
             new Thread(this::runBenchmark).start();
@@ -63,11 +65,34 @@ public class BenchActivity extends Activity {
         if (outName == null) outName = "results.json";
         String modelId = getIntent().getStringExtra("model_id");
         if (modelId == null) modelId = "vosk-" + modelDir;
+        // Issue #122's open question: does restricting the decoder to a closed domain
+        // vocabulary (Recognizer's grammar mode) recover jargon a free-form small model
+        // mangles? grammarFile is a JSON word-list file already pushed into filesDir (same
+        // way model/audio are), not an intent extra, since JSON needs no shell-escaping this way.
+        String grammarFile = getIntent().getStringExtra("grammar_file");
 
         File base = getFilesDir();
         File modelPath = new File(base, modelDir);
         File audioBase = new File(base, "audio");
         File outFile = new File(base, outName);
+
+        String grammarJson = null;
+        int grammarWords = 0;
+        if (grammarFile != null) {
+            try {
+                grammarJson = new String(java.nio.file.Files.readAllBytes(new File(base, grammarFile).toPath()));
+                for (int i = 0; i < grammarJson.length(); i++) {
+                    if (grammarJson.charAt(i) == ',') grammarWords++;
+                }
+                grammarWords++;
+                appendLog("grammar: " + grammarFile + " (" + grammarWords + " words)");
+            } catch (Exception e) {
+                appendLog("FAILED to read grammar file " + grammarFile + ": " + e);
+                return;
+            }
+        } else {
+            appendLog("no grammar (free-form decoding)");
+        }
 
         appendLog("model: " + modelPath);
         appendLog("audio: " + audioBase);
@@ -101,7 +126,7 @@ public class BenchActivity extends Activity {
                 String raw = "";
                 String error = null;
                 try {
-                    raw = recognizeFile(model, wav);
+                    raw = recognizeFile(model, wav, grammarJson);
                 } catch (Exception e) {
                     error = String.valueOf(e.getMessage());
                 }
@@ -117,6 +142,8 @@ public class BenchActivity extends Activity {
                 + "  \"modelId\": " + jsonStr(modelId) + ",\n"
                 + "  \"dtype\": \"device\",\n"
                 + "  \"withPrompt\": false,\n"
+                + "  \"grammar\": " + (grammarJson != null) + ",\n"
+                + "  \"grammarWords\": " + grammarWords + ",\n"
                 + "  \"loadS\": " + loadS + ",\n"
                 + "  \"records\": [\n"
                 + String.join(",\n", records)
@@ -132,9 +159,13 @@ public class BenchActivity extends Activity {
     }
 
     /** Feeds raw PCM16LE mono 16kHz bytes (WAV header already stripped by the resampler) to a
-     * fresh Recognizer, chunked the same way the upstream vosk-android demo does. */
-    private String recognizeFile(Model model, File wav) throws Exception {
-        Recognizer rec = new Recognizer(model, 16000.f);
+     * fresh Recognizer, chunked the same way the upstream vosk-android demo does. When
+     * grammarJson is non-null, uses Recognizer's grammar-mode constructor to restrict decoding
+     * to that closed word list instead of free-form decoding. */
+    private String recognizeFile(Model model, File wav, String grammarJson) throws Exception {
+        Recognizer rec = grammarJson != null
+                ? new Recognizer(model, 16000.f, grammarJson)
+                : new Recognizer(model, 16000.f);
         try (InputStream in = new FileInputStream(wav)) {
             if (in.skip(44) != 44) throw new java.io.IOException("file too short");
             byte[] buf = new byte[4096];
