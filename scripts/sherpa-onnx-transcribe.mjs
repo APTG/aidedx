@@ -223,18 +223,31 @@ function transcribe(hotwords) {
         recognizer.decode(stream);
         raw = recognizer.getResult(stream).text.trim();
       } catch (e) {
-        error = String(e && e.message ? e.message : e);
+        // Prefer the Error's own message; fall back to stringifying whatever was thrown.
+        if (e && e.message) {
+          error = String(e.message);
+        } else {
+          error = String(e);
+        }
       }
       const secs = (Date.now() - t1) / 1000;
       records.push({ speaker, id, raw, secs, error });
-      console.log(`  ${speaker}/${id}: (${secs.toFixed(1)}s) ${error ? "ERROR " + error : raw}`);
+      let logLine = raw;
+      if (error) {
+        logLine = "ERROR " + error;
+      }
+      console.log(`  ${speaker}/${id}: (${secs.toFixed(1)}s) ${logLine}`);
     }
   }
   return records;
 }
 
 const hotwordsOnly = process.argv.includes("--hotwords-only");
-const suffix = process.argv[3] && !process.argv[3].startsWith("--") ? `-${process.argv[3]}` : "";
+// argv[3] is the optional suffix arg, unless it's actually a flag like --hotwords-only.
+let suffix = "";
+if (process.argv[3] && !process.argv[3].startsWith("--")) {
+  suffix = `-${process.argv[3]}`;
+}
 
 if (!hotwordsOnly) {
   console.log("\n=== unbiased ===");

@@ -108,7 +108,11 @@ function composeHundreds(text: string, pack: LangPack): string {
   );
   return text.replace(re, (m, onesWord: string, remainderWord?: string) => {
     const hundreds = Number(digitOf.get(onesWord.toLowerCase())) * 100;
-    const remainder = remainderWord ? Number(digitOf.get(remainderWord.toLowerCase())) : 0;
+    // No trailing remainder word ("just "one hundred") means the remainder is 0.
+    let remainder = 0;
+    if (remainderWord) {
+      remainder = Number(digitOf.get(remainderWord.toLowerCase()));
+    }
     return String(hundreds + remainder).padEnd(m.length);
   });
 }
