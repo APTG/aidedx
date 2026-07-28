@@ -30,6 +30,11 @@ struct input_stream_context {
 
     jmethodID mid_available;
     jmethodID mid_read;
+
+    // available() == 0 doesn't mean EOF for all InputStream implementations (it's only a lower
+    // bound on bytes readable without blocking) - track EOF explicitly from read()'s own return
+    // value instead, which is the only reliable EOF signal per the InputStream contract.
+    bool eof;
 };
 
 size_t inputStreamRead(void * ctx, void * output, size_t read_size) {
@@ -42,25 +47,28 @@ size_t inputStreamRead(void * ctx, void * output, size_t read_size) {
 
     jint n_read = (*is->env)->CallIntMethod(is->env, is->input_stream, is->mid_read, byte_array, 0, size_to_copy);
 
+    if (n_read <= 0) {
+        is->eof = true;
+        n_read = 0;
+    }
+
     if (size_to_copy != read_size || size_to_copy != n_read) {
         LOGI("Insufficient Read: Req=%zu, ToCopy=%d, Available=%d", read_size, size_to_copy, n_read);
     }
 
     jbyte* byte_array_elements = (*is->env)->GetByteArrayElements(is->env, byte_array, NULL);
-    memcpy(output, byte_array_elements, size_to_copy);
+    memcpy(output, byte_array_elements, n_read);
     (*is->env)->ReleaseByteArrayElements(is->env, byte_array, byte_array_elements, JNI_ABORT);
 
     (*is->env)->DeleteLocalRef(is->env, byte_array);
 
-    is->offset += size_to_copy;
+    is->offset += n_read;
 
-    return size_to_copy;
+    return n_read;
 }
 bool inputStreamEof(void * ctx) {
     struct input_stream_context* is = (struct input_stream_context*)ctx;
-
-    jint result = (*is->env)->CallIntMethod(is->env, is->input_stream, is->mid_available);
-    return result <= 0;
+    return is->eof;
 }
 void inputStreamClose(void * ctx) {
 

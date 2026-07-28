@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -158,25 +160,46 @@ public class BenchActivity extends Activity {
         appendLog("wrote " + outFile + " (" + records.size() + " records)");
     }
 
-    /** Feeds raw PCM16LE mono 16kHz bytes (WAV header already stripped by the resampler) to a
-     * fresh Recognizer, chunked the same way the upstream vosk-android demo does. When
-     * grammarJson is non-null, uses Recognizer's grammar-mode constructor to restrict decoding
-     * to that closed word list instead of free-form decoding. */
+    /** Feeds raw PCM16LE mono 16kHz bytes to a fresh Recognizer, chunked the same way the
+     * upstream vosk-android demo does. When grammarJson is non-null, uses Recognizer's
+     * grammar-mode constructor to restrict decoding to that closed word list instead of
+     * free-form decoding. */
     private String recognizeFile(Model model, File wav, String grammarJson) throws Exception {
         Recognizer rec = grammarJson != null
                 ? new Recognizer(model, 16000.f, grammarJson)
                 : new Recognizer(model, 16000.f);
+        byte[] bytes;
         try (InputStream in = new FileInputStream(wav)) {
-            if (in.skip(44) != 44) throw new java.io.IOException("file too short");
-            byte[] buf = new byte[4096];
-            int n;
-            while ((n = in.read(buf)) >= 0) {
-                rec.acceptWaveForm(buf, n);
-            }
+            bytes = in.readAllBytes();
+        }
+        int dataOffset = findDataChunkOffset(bytes);
+        byte[] buf = new byte[4096];
+        for (int pos = dataOffset; pos < bytes.length; pos += buf.length) {
+            int n = Math.min(buf.length, bytes.length - pos);
+            System.arraycopy(bytes, pos, buf, 0, n);
+            rec.acceptWaveForm(buf, n);
         }
         String finalJson = rec.getFinalResult();
         rec.close();
         return extractText(finalJson);
+    }
+
+    /** Locates the "data" chunk by scanning RIFF sub-chunks instead of assuming a fixed 44-byte
+     * header - ffmpeg's pcm_s16le output embeds a LIST/INFO chunk pushing the real payload past
+     * byte 44 for these resampled clips (same fix already used in the wav2vec2/whisper.cpp
+     * benches, docs/android-asr-runtime-bench.md S4.1). */
+    private static int findDataChunkOffset(byte[] bytes) {
+        ByteBuffer header = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+        int pos = 12;
+        while (pos + 8 <= bytes.length) {
+            int id = header.getInt(pos);
+            int size = header.getInt(pos + 4);
+            if (id == 0x61746164) { // "data" little-endian
+                return pos + 8;
+            }
+            pos += 8 + size + (size % 2);
+        }
+        throw new IllegalStateException("no \"data\" chunk found in " + bytes.length + " byte WAV");
     }
 
     /** Vosk returns {"text": "..."} (or {"text": ""} on silence) - avoid a JSON library

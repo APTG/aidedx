@@ -108,12 +108,11 @@ class BenchActivity : Activity() {
                 var error: String? = null
                 try {
                     val waveData = WaveReader.readWave(wav.absolutePath)
-                    val stream = recognizer.createStream()
-                    stream.acceptWaveform(waveData.samples, waveData.sampleRate)
-                    recognizer.decode(stream)
-                    val result = recognizer.getResult(stream)
-                    raw = result.text.trim()
-                    stream.release()
+                    recognizer.createStream().use { stream ->
+                        stream.acceptWaveform(waveData.samples, waveData.sampleRate)
+                        recognizer.decode(stream)
+                        raw = recognizer.getResult(stream).text.trim()
+                    }
                 } catch (e: Exception) {
                     error = e.message
                 }

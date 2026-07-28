@@ -173,13 +173,18 @@ move the aggregate token accuracy from 43.7%→45.5%, nowhere near closing an 89
 _large_ Vosk model (not tested here, bigger than the ≤0.5GB budget this candidate was chosen for)
 has broader vocabulary coverage is an open question this session didn't test.
 
-**Caveat found later (§4.1):** this harness also used a blind 44-byte WAV-header skip, which §4's
-wav2vec2 work found is wrong for these specific resampled clips (ffmpeg embeds a ~34-byte LIST/INFO
-chunk, so real PCM data starts at byte 78). The practical effect here is negligible — a ~1ms
-(17-sample) corruption at the very start of multi-second clips — and doesn't change the verdict:
-Vosk's failure is a vocabulary-coverage wall (§2.4), not a data-corruption artifact, and re-running
-with a correct parser would not be expected to recover "mev"/"pmma" tokens that aren't in the
-model's lexicon at all. Not re-run, since the fix couldn't plausibly change the 0% conclusion.
+**Caveat found later (§4.1), fixed 2026-07-28:** this harness originally used a blind 44-byte
+WAV-header skip, which §4's wav2vec2 work found is wrong for these specific resampled clips
+(ffmpeg embeds a ~34-byte LIST/INFO chunk, so real PCM data starts at byte 78). The practical
+effect was negligible — a ~1ms (17-sample) corruption at the very start of multi-second clips — and
+didn't change the verdict at the time: Vosk's failure is a vocabulary-coverage wall (§2.4), not a
+data-corruption artifact. A PR review (GitHub Copilot, on #126) flagged the same blind-skip code as
+a real bug worth fixing properly rather than leaving as a documented caveat, so
+`recognizeFile()`/`findDataChunkOffset()` now scan RIFF sub-chunks the same way the wav2vec2/
+whisper.cpp benches already did. Re-verified against the free-form baseline after the fix: still 0%
+E2E (0/89), transcripts essentially unchanged (e.g. `alias-001`: "sixty mtv protons ... lucite
+lucid" before and after) — confirms the predicted "negligible, doesn't change the verdict" claim
+empirically rather than leaving it as an assumption.
 
 ### 2.6 Follow-up (2026-07-28): grammar-constrained decoding, empirically tested
 
