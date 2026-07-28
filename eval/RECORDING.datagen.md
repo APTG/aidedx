@@ -230,7 +230,8 @@ tuple, not just "computes _a_ finite positive number").
 (`src/lib/intent/matcher.ts`'s `compareDim` auto-selection, `src/lib/compute/compute.ts`'s
 `compareDim: "energy"` branch), predating this issue and reachable by any real user query
 phrased the "repeat the energy per particle" way, not just by this generator's own original
-phrasing. Worth a follow-up issue; out of scope for a sentence-set PR.
+phrasing. Filed as **#132**, with the full repro and both candidate fixes; out of scope for a
+sentence-set PR.
 
 ## Ground-truth appendix (verified against libdedx)
 
