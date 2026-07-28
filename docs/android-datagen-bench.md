@@ -1,11 +1,13 @@
 # Android benchmark data generator (issue #130)
 
-Status: **Part 1 (sentence set) done and merged-ready** (`eval/datagen-sentences.json`,
-`eval/RECORDING.datagen.md`). **Part 2 (the `DataGenActivity` app) is written and compiles**
-(`./gradlew assembleDebug` succeeds, manifest confirmed via `aapt dump xmltree`) but **has not
-been run on a real device yet** — this session had no working `adb` (see "Known limitation"
-below). Parts 3 (PC-side import/scoring) and 4 (findings) are not started. This doc will grow
-a "Results" section once a real recording session exists.
+Status: **Part 1 (sentence set) done.** **Part 2 (the `DataGenActivity` app) is written and
+compiles** (`./gradlew assembleDebug` succeeds, manifest confirmed via `aapt dump xmltree`) but
+**has not been run on a real device yet** — this session had no working `adb` (see "Known
+limitation" below). **Part 3 (PC-side import/scoring) is written and smoke-tested** with a
+synthetic session (see "Part 3" below) — the scripts are proven correct on fabricated data, but
+have never scored a single real transcript. **Part 4 (findings) is not started** — there is no
+recording session to draw findings from yet. This doc will grow a "Results" section once a
+real recording session exists.
 
 ## What `DataGenActivity` does
 
@@ -45,6 +47,51 @@ this session. Consequently:
 **Next step, on a machine with working `adb`**: run the reproducing steps below, and if
 anything breaks, it breaks in exactly the areas listed as unverified above — check there
 first.
+
+## Part 3 — PC-side import and scoring
+
+Three new pieces, all smoke-tested against a **fabricated** session (fake WAVs, transcripts
+copied from `eval/datagen-sentences.json` with a few words deliberately deleted) since no real
+recording exists yet — proven mechanically correct, not proven accurate on real audio:
+
+- **`scripts/import-datagen-session.sh <speaker>`** — pulls `filesDir/out/<speaker>/` off the
+  device (`adb shell run-as com.aidedx.sherpabench sh -c 'cd files/out/<speaker> && tar cf - .'`
+  piped into a local `tar xf -`, the same run-as pattern every other on-device doc in this repo
+  already uses) into `eval/audio/<speaker>/` (WAVs) + `eval/results/datagen-<speaker>-<date>/`
+  (`session.json` + `results-{parakeet,whisper}-<lang>.json`). Verifies each WAV is really 16 kHz
+  mono `pcm_s16le` via `ffprobe` if available, rather than trusting the extension. `--from-dir
+  <dir>` skips `adb` entirely (what the smoke test used, and useful for importing a session
+  someone else already pulled by hand).
+- **`scripts/datagen-to-manifest.mjs <en|pl>`** — flattens `eval/datagen-sentences.json`'s
+  per-tuple `{id, en:{...}, pl:{...}}` shape into the flat per-clip `{id, text, quantity, multi,
+slotTruth}` shape `scripts/asr-score-slots-generic.mjs` already expects (same shape
+  `scripts/generate-1000-sentences.mjs`'s own output uses). **A real gap this caught**: issue
+  #130's own Part 1 plan claimed `asr-score-slots-generic.mjs` "needs no change" for this set —
+  true for its Polish-word regex support, false for the JSON shape, which it cannot read
+  directly (it expects a flat manifest, not the nested en/pl shape this set is committed in).
+  Output is derived and gitignored, like the 1000-sentence batches.
+- **`scripts/e2e-audio-intents-datagen.ts <en|pl> <results.json>`** — the same E2E
+  audio→intent metric `scripts/e2e-audio-intents.ts` computes for `eval/intents.jsonl`, adapted
+  for two differences: ground truth is derived by re-matching each record's own `canonical` text
+  (no hand-authored `expected` field exists here — `checkCandidate()` already proved every
+  canonical sentence resolves to a complete, libdedx-computable intent, so that resolved intent
+  IS the comparison target) rather than defaulted to English, `lang` is a required argument
+  threaded through `matchIntent`. Also reports word error rate against `canonical`.
+
+Smoke test (both scorers agree, and correctly flag exactly the clips a fabricated perturbation
+touched — full command sequence in `scripts/import-datagen-session.sh`'s own usage comment):
+
+```
+node scripts/asr-score-slots-generic.mjs eval/datagen-manifest-en.json <results.json> --new
+node scripts/e2e-audio-intents-datagen.ts en <results.json>
+```
+
+Ran against a synthetic 50-clip English session with `canonical` copied verbatim as the "raw"
+transcript except 4 clips with one material word deleted: both scorers independently reported
+**46/50**, both listed the same 4 failing ids, and the E2E scorer's mean WER (0.6%) was
+consistent with "4 single-word deletions across ~50 clips." The Polish side, scored against an
+unperturbed session, reported **50/50** on both scorers with 0.0% WER — confirms the `lang`
+plumbing (matcher + manifest + slot regexes) works end to end for Polish, not just English.
 
 ## Reproducing
 
@@ -105,9 +152,12 @@ adb shell am start -n com.aidedx.sherpabench/.DataGenActivity \
 # ... record through the deck on the phone (interactive — Record/Stop, then Keep/Re-record/Skip
 # per card) ...
 
-# pull results back
-adb shell run-as com.aidedx.sherpabench sh -c 'cd files/out/km && tar cf - .' | tar xf - -C eval/results/datagen-km-<date>/
+# import + score (see "Part 3" above) — replaces the manual run-as/tar pull this doc's earlier
+# draft described
+scripts/import-datagen-session.sh km
+node scripts/datagen-to-manifest.mjs en
+node scripts/datagen-to-manifest.mjs pl
+node scripts/asr-score-slots-generic.mjs eval/datagen-manifest-en.json eval/results/datagen-km-<date>/results-parakeet-en.json --new
+node scripts/e2e-audio-intents-datagen.ts en eval/results/datagen-km-<date>/results-parakeet-en.json
+# repeat for results-whisper-en.json and the -pl.json pair
 ```
-
-Once results exist, Part 3's PC-side import/scoring picks up from
-`eval/results/datagen-<speaker>-<date>/` — not built yet.
