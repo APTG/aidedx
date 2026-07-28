@@ -226,12 +226,15 @@ confirmed for all three affected sentences, and now enforced by `scripts/generat
 own inline validation gate (which asserts `compareDim`/particle-count for every multi-particle
 tuple, not just "computes _a_ finite positive number").
 
-**Not fixed here** — this is a real bug in the shared `matchIntent`/`computeIntent` pipeline
-(`src/lib/intent/matcher.ts`'s `compareDim` auto-selection, `src/lib/compute/compute.ts`'s
+**Not fixed here at the time** — this was a real bug in the shared `matchIntent`/`computeIntent`
+pipeline (`src/lib/intent/matcher.ts`'s `compareDim` auto-selection, `src/lib/compute/compute.ts`'s
 `compareDim: "energy"` branch), predating this issue and reachable by any real user query
 phrased the "repeat the energy per particle" way, not just by this generator's own original
-phrasing. Filed as **#132**, with the full repro and both candidate fixes; out of scope for a
-sentence-set PR.
+phrasing. Filed as **#132** and **fixed in #133** (merged) — `rawEnergies` now gets the same
+repeated-mention dedup particles/materials already had (issue #26), so the original "repeat
+the energy per particle clause" phrasing now resolves correctly too. The workaround above is
+kept as-is regardless: stating the energy once, trailing, reads as the more natural English
+sentence anyway (no repeated "200 MeV per nucleon"), not merely a bug avoidance.
 
 ## Ground-truth appendix (verified against libdedx)
 
