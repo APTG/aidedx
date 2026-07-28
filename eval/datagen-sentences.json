@@ -1,0 +1,1830 @@
+[
+  {
+    "id": "dg-01",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the CSDA range of a 150 MeV proton in water?",
+      "display": "What is the see-ess-dee-ay range of a 150 MeV proton in water?",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 150,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg CSDA protonu o energii 150 MeV w wodzie?",
+      "display": "Jaki jest zasięg CSDA protonu o energii 150 MeV w wodzie?",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 150,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-02",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the range of a 100 MeV proton in cortical bone?",
+      "display": "What is the range of a 100 MeV proton in cortical bone?",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["bone"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg protonu o energii 100 MeV w kości korowej?",
+      "display": "Jaki jest zasięg protonu o energii 100 MeV w kości korowej?",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["kości korowej"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-03",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How far will a 250 MeV proton travel through PMMA?",
+      "display": "How far will a 250 MeV proton travel through PMMA?",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["pmma"],
+        "energies": [
+          {
+            "value": 250,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "how far"
+      }
+    },
+    "pl": {
+      "canonical": "Jak daleko doleci proton o energii 250 MeV w PMMA?",
+      "display": "Jak daleko doleci proton o energii 250 MeV w PMMA?",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["pmma"],
+        "energies": [
+          {
+            "value": 250,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "daleko"
+      }
+    }
+  },
+  {
+    "id": "dg-04",
+    "quantity": "csdaRange",
+    "energyRendering": "expanded",
+    "en": {
+      "canonical": "What is the range of a 500 keV proton in water?",
+      "display": "What is the range of a 500 kiloelectronvolt proton in water?",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 500,
+            "unit": "keV"
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg protonu o energii 500 keV w wodzie?",
+      "display": "Jaki jest zasięg protonu o energii 500 kiloelektronowoltów w wodzie?",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 500,
+            "unit": "keV"
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-05",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the range of a 60 MeV deuteron in silicon?",
+      "display": "What is the range of a 60 MeV deuteron in silicon?",
+      "slotTruth": {
+        "particles": ["deuterons?"],
+        "materials": ["silicon"],
+        "energies": [
+          {
+            "value": 60,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg deuteronu o energii 60 MeV w krzemie?",
+      "display": "Jaki jest zasięg deuteronu o energii 60 MeV w krzemie?",
+      "slotTruth": {
+        "particles": ["deuteron(?:u)?"],
+        "materials": ["krzemie"],
+        "energies": [
+          {
+            "value": 60,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-06",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How deep does a 40 MeV triton penetrate into PMMA?",
+      "display": "How deep does a 40 MeV triton penetrate into PMMA?",
+      "slotTruth": {
+        "particles": ["tritons?"],
+        "materials": ["pmma"],
+        "energies": [
+          {
+            "value": 40,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "penetrat"
+      }
+    },
+    "pl": {
+      "canonical": "Jak głęboko wniknie tryton o energii 40 MeV w PMMA?",
+      "display": "Jak głęboko wniknie tryton o energii 40 MeV w PMMA?",
+      "slotTruth": {
+        "particles": ["tryton(?:u)?"],
+        "materials": ["pmma"],
+        "energies": [
+          {
+            "value": 40,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "głęboko"
+      }
+    }
+  },
+  {
+    "id": "dg-07",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How far will a 20 MeV alpha particle travel through air?",
+      "display": "How far will a 20 MeV alpha particle travel through air?",
+      "slotTruth": {
+        "particles": ["alpha"],
+        "materials": ["\\bair\\b"],
+        "energies": [
+          {
+            "value": 20,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "how far"
+      }
+    },
+    "pl": {
+      "canonical": "Jak daleko doleci cząstka alfa o energii 20 MeV w powietrzu?",
+      "display": "Jak daleko doleci cząstka alfa o energii 20 MeV w powietrzu?",
+      "slotTruth": {
+        "particles": ["cząstk[ai] alfa|cząstce alfa"],
+        "materials": ["powietrzu"],
+        "energies": [
+          {
+            "value": 20,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "daleko"
+      }
+    }
+  },
+  {
+    "id": "dg-08",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How deep does a 30 MeV helium-3 ion penetrate into graphite?",
+      "display": "How deep does a 30 MeV helium-3 ion penetrate into graphite?",
+      "slotTruth": {
+        "particles": ["helium"],
+        "materials": ["graphite"],
+        "energies": [
+          {
+            "value": 30,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "penetrat"
+      }
+    },
+    "pl": {
+      "canonical": "Jak głęboko wniknie jon helu-3 o energii 30 MeV w graficie?",
+      "display": "Jak głęboko wniknie jon helu-3 o energii 30 MeV w graficie?",
+      "slotTruth": {
+        "particles": ["helu-3"],
+        "materials": ["graficie"],
+        "energies": [
+          {
+            "value": 30,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "głęboko"
+      }
+    }
+  },
+  {
+    "id": "dg-09",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the range of a 50 MeV per nucleon lithium ion in polycarbonate?",
+      "display": "What is the range of a 50 MeV per nucleon lithium ion in polycarbonate?",
+      "slotTruth": {
+        "particles": ["lithium"],
+        "materials": ["polycarbonate"],
+        "energies": [
+          {
+            "value": 50,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg jonu litu o energii 50 MeV na nukleon w poliwęglanie?",
+      "display": "Jaki jest zasięg jonu litu o energii 50 MeV na nukleon w poliwęglanie?",
+      "slotTruth": {
+        "particles": ["litu"],
+        "materials": ["poliwęglanie"],
+        "energies": [
+          {
+            "value": 50,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-10",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the range of a 100 MeV per nucleon boron ion in polyethylene?",
+      "display": "What is the range of a 100 MeV per nucleon boron ion in polyethylene?",
+      "slotTruth": {
+        "particles": ["boron"],
+        "materials": ["polyethylene"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg jonu boru o energii 100 MeV na nukleon w polietylenie?",
+      "display": "Jaki jest zasięg jonu boru o energii 100 MeV na nukleon w polietylenie?",
+      "slotTruth": {
+        "particles": ["boru"],
+        "materials": ["polietylenie"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-11",
+    "quantity": "csdaRange",
+    "energyRendering": "expanded",
+    "en": {
+      "canonical": "What is the range of a 300 MeV per nucleon carbon ion in water?",
+      "display": "What is the range of a 300 megaelectronvolt per nucleon carbon ion in water?",
+      "slotTruth": {
+        "particles": ["carbon"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 300,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg jonu węgla o energii 300 MeV na nukleon w wodzie?",
+      "display": "Jaki jest zasięg jonu węgla o energii 300 megaelektronowoltów na nukleon w wodzie?",
+      "slotTruth": {
+        "particles": ["węgla"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 300,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-12",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How far will a 180 MeV per nucleon nitrogen ion travel through cortical bone?",
+      "display": "How far will a 180 MeV per nucleon nitrogen ion travel through cortical bone?",
+      "slotTruth": {
+        "particles": ["nitrogen"],
+        "materials": ["bone"],
+        "energies": [
+          {
+            "value": 180,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "how far"
+      }
+    },
+    "pl": {
+      "canonical": "Jak daleko doleci jon azotu o energii 180 MeV na nukleon w kości korowej?",
+      "display": "Jak daleko doleci jon azotu o energii 180 MeV na nukleon w kości korowej?",
+      "slotTruth": {
+        "particles": ["azotu"],
+        "materials": ["kości korowej"],
+        "energies": [
+          {
+            "value": 180,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "daleko"
+      }
+    }
+  },
+  {
+    "id": "dg-13",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the CSDA range of a 250 MeV per nucleon oxygen ion in PMMA?",
+      "display": "What is the see-ess-dee-ay range of a 250 MeV per nucleon oxygen ion in PMMA?",
+      "slotTruth": {
+        "particles": ["oxygen"],
+        "materials": ["pmma"],
+        "energies": [
+          {
+            "value": 250,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg CSDA jonu tlenu o energii 250 MeV na nukleon w PMMA?",
+      "display": "Jaki jest zasięg CSDA jonu tlenu o energii 250 MeV na nukleon w PMMA?",
+      "slotTruth": {
+        "particles": ["tlenu"],
+        "materials": ["pmma"],
+        "energies": [
+          {
+            "value": 250,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-14",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How deep does a 400 MeV per nucleon neon ion penetrate into water?",
+      "display": "How deep does a 400 MeV per nucleon neon ion penetrate into water?",
+      "slotTruth": {
+        "particles": ["neon"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 400,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "penetrat"
+      }
+    },
+    "pl": {
+      "canonical": "Jak głęboko wniknie jon neonu o energii 400 MeV na nukleon w wodzie?",
+      "display": "Jak głęboko wniknie jon neonu o energii 400 MeV na nukleon w wodzie?",
+      "slotTruth": {
+        "particles": ["neonu"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 400,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "głęboko"
+      }
+    }
+  },
+  {
+    "id": "dg-15",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the range of a 150 MeV per nucleon magnesium ion in A-150 tissue-equivalent plastic?",
+      "display": "What is the range of a 150 MeV per nucleon magnesium ion in A-150 tissue-equivalent plastic?",
+      "slotTruth": {
+        "particles": ["magnesium"],
+        "materials": ["a[- ]?150"],
+        "energies": [
+          {
+            "value": 150,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg jonu magnezu o energii 150 MeV na nukleon w plastiku tkankopodobnym A-150?",
+      "display": "Jaki jest zasięg jonu magnezu o energii 150 MeV na nukleon w plastiku tkankopodobnym A-150?",
+      "slotTruth": {
+        "particles": ["magnezu"],
+        "materials": ["plastiku tkankopodobnym a[- ]?150"],
+        "energies": [
+          {
+            "value": 150,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-16",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the range of a 300 MeV per nucleon silicon ion in silicon dioxide?",
+      "display": "What is the range of a 300 MeV per nucleon silicon ion in silicon dioxide?",
+      "slotTruth": {
+        "particles": ["silicon"],
+        "materials": ["silicon"],
+        "energies": [
+          {
+            "value": 300,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg jonu krzemu o energii 300 MeV na nukleon w dwutlenku krzemu?",
+      "display": "Jaki jest zasięg jonu krzemu o energii 300 MeV na nukleon w dwutlenku krzemu?",
+      "slotTruth": {
+        "particles": ["krzemu"],
+        "materials": ["dwutlenku krzemu"],
+        "energies": [
+          {
+            "value": 300,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-17",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How far will a 350 MeV per nucleon argon ion travel through water?",
+      "display": "How far will a 350 MeV per nucleon argon ion travel through water?",
+      "slotTruth": {
+        "particles": ["argon"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 350,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "how far"
+      }
+    },
+    "pl": {
+      "canonical": "Jak daleko doleci jon argonu o energii 350 MeV na nukleon w wodzie?",
+      "display": "Jak daleko doleci jon argonu o energii 350 MeV na nukleon w wodzie?",
+      "slotTruth": {
+        "particles": ["argonu"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 350,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "daleko"
+      }
+    }
+  },
+  {
+    "id": "dg-18",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the range of a 200 MeV per nucleon calcium ion in adipose tissue?",
+      "display": "What is the range of a 200 MeV per nucleon calcium ion in adipose tissue?",
+      "slotTruth": {
+        "particles": ["calcium"],
+        "materials": ["adipose"],
+        "energies": [
+          {
+            "value": 200,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg jonu wapnia o energii 200 MeV na nukleon w tkance tłuszczowej?",
+      "display": "Jaki jest zasięg jonu wapnia o energii 200 MeV na nukleon w tkance tłuszczowej?",
+      "slotTruth": {
+        "particles": ["wapnia"],
+        "materials": ["tkance tłuszczowej"],
+        "energies": [
+          {
+            "value": 200,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-19",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How deep does a 600 MeV per nucleon titanium ion penetrate into water?",
+      "display": "How deep does a 600 MeV per nucleon titanium ion penetrate into water?",
+      "slotTruth": {
+        "particles": ["titanium"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 600,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "penetrat"
+      }
+    },
+    "pl": {
+      "canonical": "Jak głęboko wniknie jon tytanu o energii 600 MeV na nukleon w wodzie?",
+      "display": "Jak głęboko wniknie jon tytanu o energii 600 MeV na nukleon w wodzie?",
+      "slotTruth": {
+        "particles": ["tytanu"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 600,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "głęboko"
+      }
+    }
+  },
+  {
+    "id": "dg-20",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the CSDA range of a 600 MeV per nucleon iron ion in aluminum?",
+      "display": "What is the see-ess-dee-ay range of a 600 MeV per nucleon iron ion in aluminum?",
+      "slotTruth": {
+        "particles": ["iron"],
+        "materials": ["aluminum|aluminium"],
+        "energies": [
+          {
+            "value": 600,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg CSDA jonu żelaza o energii 600 MeV na nukleon w aluminium?",
+      "display": "Jaki jest zasięg CSDA jonu żelaza o energii 600 MeV na nukleon w aluminium?",
+      "slotTruth": {
+        "particles": ["żelaza"],
+        "materials": ["aluminium"],
+        "energies": [
+          {
+            "value": 600,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-21",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the range of a 500 MeV per nucleon copper ion in lead?",
+      "display": "What is the range of a 500 MeV per nucleon copper ion in lead?",
+      "slotTruth": {
+        "particles": ["copper"],
+        "materials": ["lead"],
+        "energies": [
+          {
+            "value": 500,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg jonu miedzi o energii 500 MeV na nukleon w ołowiu?",
+      "display": "Jaki jest zasięg jonu miedzi o energii 500 MeV na nukleon w ołowiu?",
+      "slotTruth": {
+        "particles": ["miedzi"],
+        "materials": ["ołowiu"],
+        "energies": [
+          {
+            "value": 500,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-22",
+    "quantity": "csdaRange",
+    "energyRendering": "expanded",
+    "en": {
+      "canonical": "How far will a 1 GeV proton travel through water?",
+      "display": "How far will a 1 gigaelectronvolt proton travel through water?",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 1,
+            "unit": "GeV"
+          }
+        ],
+        "quantityKeyword": "how far"
+      }
+    },
+    "pl": {
+      "canonical": "Jak daleko doleci proton o energii 1 GeV w wodzie?",
+      "display": "Jak daleko doleci proton o energii 1 gigaelektronowolt w wodzie?",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 1,
+            "unit": "GeV"
+          }
+        ],
+        "quantityKeyword": "daleko"
+      }
+    }
+  },
+  {
+    "id": "dg-23",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the range of protons in water at 100 MeV, 150 MeV, and 200 MeV?",
+      "display": "What is the range of protons in water at 100 MeV, 150 MeV, and 200 MeV?",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV"
+          },
+          {
+            "value": 150,
+            "unit": "MeV"
+          },
+          {
+            "value": 200,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg protonu w wodzie dla energii 100 MeV, 150 MeV i 200 MeV?",
+      "display": "Jaki jest zasięg protonu w wodzie dla energii 100 MeV, 150 MeV i 200 MeV?",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV"
+          },
+          {
+            "value": 150,
+            "unit": "MeV"
+          },
+          {
+            "value": 200,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-24",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the range of carbon ions in water at 200 MeV per nucleon, 300 MeV per nucleon, and 400 MeV per nucleon?",
+      "display": "What is the range of carbon ions in water at 200 MeV per nucleon, 300 MeV per nucleon, and 400 MeV per nucleon?",
+      "slotTruth": {
+        "particles": ["carbon"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 200,
+            "unit": "MeV",
+            "perNucleon": true
+          },
+          {
+            "value": 300,
+            "unit": "MeV",
+            "perNucleon": true
+          },
+          {
+            "value": 400,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg jonu węgla w wodzie dla energii 200 MeV na nukleon, 300 MeV na nukleon i 400 MeV na nukleon?",
+      "display": "Jaki jest zasięg jonu węgla w wodzie dla energii 200 MeV na nukleon, 300 MeV na nukleon i 400 MeV na nukleon?",
+      "slotTruth": {
+        "particles": ["węgla"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 200,
+            "unit": "MeV",
+            "perNucleon": true
+          },
+          {
+            "value": 300,
+            "unit": "MeV",
+            "perNucleon": true
+          },
+          {
+            "value": 400,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-25",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the range of alpha particles in air at 5 MeV, 10 MeV, and 20 MeV?",
+      "display": "What is the range of alpha particles in air at 5 MeV, 10 MeV, and 20 MeV?",
+      "slotTruth": {
+        "particles": ["alpha"],
+        "materials": ["\\bair\\b"],
+        "energies": [
+          {
+            "value": 5,
+            "unit": "MeV"
+          },
+          {
+            "value": 10,
+            "unit": "MeV"
+          },
+          {
+            "value": 20,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest zasięg cząstki alfa w powietrzu dla energii 5 MeV, 10 MeV i 20 MeV?",
+      "display": "Jaki jest zasięg cząstki alfa w powietrzu dla energii 5 MeV, 10 MeV i 20 MeV?",
+      "slotTruth": {
+        "particles": ["cząstk[ai] alfa|cząstce alfa"],
+        "materials": ["powietrzu"],
+        "energies": [
+          {
+            "value": 5,
+            "unit": "MeV"
+          },
+          {
+            "value": 10,
+            "unit": "MeV"
+          },
+          {
+            "value": 20,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-26",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "Compare the range of a 150 MeV proton in water, PMMA, and cortical bone.",
+      "display": "Compare the range of a 150 MeV proton in water, PMMA, and cortical bone.",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["water", "pmma", "bone"],
+        "energies": [
+          {
+            "value": 150,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Porównaj zasięg protonu o energii 150 MeV w wodzie, PMMA i kości korowej.",
+      "display": "Porównaj zasięg protonu o energii 150 MeV w wodzie, PMMA i kości korowej.",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie", "pmma", "kości korowej"],
+        "energies": [
+          {
+            "value": 150,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-27",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "Compare the range of a 300 MeV per nucleon oxygen ion in water and aluminum.",
+      "display": "Compare the range of a 300 MeV per nucleon oxygen ion in water and aluminum.",
+      "slotTruth": {
+        "particles": ["oxygen"],
+        "materials": ["water", "aluminum|aluminium"],
+        "energies": [
+          {
+            "value": 300,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Porównaj zasięg jonu tlenu o energii 300 MeV na nukleon w wodzie i aluminium.",
+      "display": "Porównaj zasięg jonu tlenu o energii 300 MeV na nukleon w wodzie i aluminium.",
+      "slotTruth": {
+        "particles": ["tlenu"],
+        "materials": ["wodzie", "aluminium"],
+        "energies": [
+          {
+            "value": 300,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-28",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "Compare the range of a 100 MeV proton in water and adipose tissue.",
+      "display": "Compare the range of a 100 MeV proton in water and adipose tissue.",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["water", "adipose"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Porównaj zasięg protonu o energii 100 MeV w wodzie i tkance tłuszczowej.",
+      "display": "Porównaj zasięg protonu o energii 100 MeV w wodzie i tkance tłuszczowej.",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie", "tkance tłuszczowej"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "zasięg"
+      }
+    }
+  },
+  {
+    "id": "dg-29",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "Compare the range of a carbon ion and a neon ion in water, both at 200 MeV per nucleon.",
+      "display": "Compare the range of a carbon ion and a neon ion in water, both at 200 MeV per nucleon.",
+      "slotTruth": {
+        "particles": ["carbon", "neon"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 200,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Co wniknie głębiej w wodzie przy 200 MeV na nukleon: jon węgla czy jon neonu?",
+      "display": "Co wniknie głębiej w wodzie przy 200 MeV na nukleon: jon węgla czy jon neonu?",
+      "slotTruth": {
+        "particles": ["węgla", "neonu"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 200,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "głębiej"
+      }
+    }
+  },
+  {
+    "id": "dg-30",
+    "quantity": "csdaRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "Compare the range of a proton and a deuteron in water, both at 60 MeV.",
+      "display": "Compare the range of a proton and a deuteron in water, both at 60 MeV.",
+      "slotTruth": {
+        "particles": ["protons?", "deuterons?"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 60,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "range"
+      }
+    },
+    "pl": {
+      "canonical": "Co wniknie głębiej w wodzie przy 60 MeV: proton czy deuteron?",
+      "display": "Co wniknie głębiej w wodzie przy 60 MeV: proton czy deuteron?",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?", "deuteron(?:u)?"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 60,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "głębiej"
+      }
+    }
+  },
+  {
+    "id": "dg-31",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What energy gives a 20 cm range in water for protons?",
+      "display": "What energy gives a 20 centimeter range in water for protons?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["protons?"],
+        "materials": ["water"],
+        "target": {
+          "value": 20,
+          "unit": "cm"
+        },
+        "quantityKeyword": "what energy"
+      }
+    },
+    "pl": {
+      "canonical": "Jaką energię musi mieć proton, żeby jego zasięg w wodzie wynosił 20 cm?",
+      "display": "Jaką energię musi mieć proton, żeby jego zasięg w wodzie wynosił 20 centymetrów?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie"],
+        "target": {
+          "value": 20,
+          "unit": "cm"
+        },
+        "quantityKeyword": "jak(?:ą|iej|a|ie)\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-32",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How energetic must a proton be for a 15 cm range in water?",
+      "display": "How energetic must a proton be for a 15 centimeter range in water?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["protons?"],
+        "materials": ["water"],
+        "target": {
+          "value": 15,
+          "unit": "cm"
+        },
+        "quantityKeyword": "how energetic"
+      }
+    },
+    "pl": {
+      "canonical": "Ile energii potrzebuje proton na zasięg 15 cm w wodzie?",
+      "display": "Ile energii potrzebuje proton na zasięg 15 centymetrów w wodzie?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie"],
+        "target": {
+          "value": 15,
+          "unit": "cm"
+        },
+        "quantityKeyword": "ile\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-33",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What energy gives a 5 cm range in PMMA for protons?",
+      "display": "What energy gives a 5 centimeter range in PMMA for protons?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["protons?"],
+        "materials": ["pmma"],
+        "target": {
+          "value": 5,
+          "unit": "cm"
+        },
+        "quantityKeyword": "what energy"
+      }
+    },
+    "pl": {
+      "canonical": "Jaką energię musi mieć proton, żeby jego zasięg w PMMA wynosił 5 cm?",
+      "display": "Jaką energię musi mieć proton, żeby jego zasięg w PMMA wynosił 5 centymetrów?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["pmma"],
+        "target": {
+          "value": 5,
+          "unit": "cm"
+        },
+        "quantityKeyword": "jak(?:ą|iej|a|ie)\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-34",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How energetic must a carbon-14 ion be for a 10 cm range in water?",
+      "display": "How energetic must a carbon-14 ion be for a 10 centimeter range in water?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["carbon"],
+        "materials": ["water"],
+        "target": {
+          "value": 10,
+          "unit": "cm"
+        },
+        "quantityKeyword": "how energetic"
+      }
+    },
+    "pl": {
+      "canonical": "Ile energii potrzebuje jon węgla-14 na zasięg 10 cm w wodzie?",
+      "display": "Ile energii potrzebuje jon węgla-14 na zasięg 10 centymetrów w wodzie?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["węgla-14"],
+        "materials": ["wodzie"],
+        "target": {
+          "value": 10,
+          "unit": "cm"
+        },
+        "quantityKeyword": "ile\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-35",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What energy gives a 30 mm range in muscle tissue for alpha particles?",
+      "display": "What energy gives a 30 millimeter range in muscle tissue for alpha particles?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["alpha"],
+        "materials": ["muscle"],
+        "target": {
+          "value": 30,
+          "unit": "mm"
+        },
+        "quantityKeyword": "what energy"
+      }
+    },
+    "pl": {
+      "canonical": "Jaką energię musi mieć cząstka alfa, żeby jej zasięg w tkance mięśniowej wynosił 30 mm?",
+      "display": "Jaką energię musi mieć cząstka alfa, żeby jej zasięg w tkance mięśniowej wynosił 30 milimetrów?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["cząstk[ai] alfa|cząstce alfa"],
+        "materials": ["tkance mięśniowej"],
+        "target": {
+          "value": 30,
+          "unit": "mm"
+        },
+        "quantityKeyword": "jak(?:ą|iej|a|ie)\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-36",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How energetic must an iron ion be for a 3 cm range in water?",
+      "display": "How energetic must an iron ion be for a 3 centimeter range in water?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["iron"],
+        "materials": ["water"],
+        "target": {
+          "value": 3,
+          "unit": "cm"
+        },
+        "quantityKeyword": "how energetic"
+      }
+    },
+    "pl": {
+      "canonical": "Ile energii potrzebuje jon żelaza na zasięg 3 cm w wodzie?",
+      "display": "Ile energii potrzebuje jon żelaza na zasięg 3 centymetry w wodzie?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["żelaza"],
+        "materials": ["wodzie"],
+        "target": {
+          "value": 3,
+          "unit": "cm"
+        },
+        "quantityKeyword": "ile\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-37",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What energy gives a 12 cm range in water for oxygen ions?",
+      "display": "What energy gives a 12 centimeter range in water for oxygen ions?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["oxygen"],
+        "materials": ["water"],
+        "target": {
+          "value": 12,
+          "unit": "cm"
+        },
+        "quantityKeyword": "what energy"
+      }
+    },
+    "pl": {
+      "canonical": "Jaką energię musi mieć jon tlenu, żeby jego zasięg w wodzie wynosił 12 cm?",
+      "display": "Jaką energię musi mieć jon tlenu, żeby jego zasięg w wodzie wynosił 12 centymetrów?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["tlenu"],
+        "materials": ["wodzie"],
+        "target": {
+          "value": 12,
+          "unit": "cm"
+        },
+        "quantityKeyword": "jak(?:ą|iej|a|ie)\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-38",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "How energetic must a proton be for a 9 cm range in cortical bone?",
+      "display": "How energetic must a proton be for a 9 centimeter range in cortical bone?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["protons?"],
+        "materials": ["bone"],
+        "target": {
+          "value": 9,
+          "unit": "cm"
+        },
+        "quantityKeyword": "how energetic"
+      }
+    },
+    "pl": {
+      "canonical": "Ile energii potrzebuje proton na zasięg 9 cm w kości korowej?",
+      "display": "Ile energii potrzebuje proton na zasięg 9 centymetrów w kości korowej?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["kości korowej"],
+        "target": {
+          "value": 9,
+          "unit": "cm"
+        },
+        "quantityKeyword": "ile\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-39",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What energy gives a 5 cm range in PMMA for calcium ions?",
+      "display": "What energy gives a 5 centimeter range in PMMA for calcium ions?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["calcium"],
+        "materials": ["pmma"],
+        "target": {
+          "value": 5,
+          "unit": "cm"
+        },
+        "quantityKeyword": "what energy"
+      }
+    },
+    "pl": {
+      "canonical": "Jaką energię musi mieć jon wapnia, żeby jego zasięg w PMMA wynosił 5 cm?",
+      "display": "Jaką energię musi mieć jon wapnia, żeby jego zasięg w PMMA wynosił 5 centymetrów?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["wapnia"],
+        "materials": ["pmma"],
+        "target": {
+          "value": 5,
+          "unit": "cm"
+        },
+        "quantityKeyword": "jak(?:ą|iej|a|ie)\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-40",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What energy do protons need for a 10 cm range in water and PMMA?",
+      "display": "What energy do protons need for a 10 centimeter range in water and PMMA?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["protons?"],
+        "materials": ["water", "pmma"],
+        "target": {
+          "value": 10,
+          "unit": "cm"
+        },
+        "quantityKeyword": "what energy"
+      }
+    },
+    "pl": {
+      "canonical": "Jaką energię musi mieć proton, aby uzyskać zasięg 10 cm w wodzie i PMMA?",
+      "display": "Jaką energię musi mieć proton, aby uzyskać zasięg 10 centymetrów w wodzie i PMMA?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie", "pmma"],
+        "target": {
+          "value": 10,
+          "unit": "cm"
+        },
+        "quantityKeyword": "jak(?:ą|iej|a|ie)\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-41",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What energy do protons need for a 15 cm range in water, cortical bone, and adipose tissue?",
+      "display": "What energy do protons need for a 15 centimeter range in water, cortical bone, and adipose tissue?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["protons?"],
+        "materials": ["water", "bone", "adipose"],
+        "target": {
+          "value": 15,
+          "unit": "cm"
+        },
+        "quantityKeyword": "what energy"
+      }
+    },
+    "pl": {
+      "canonical": "Jaką energię musi mieć proton, aby uzyskać zasięg 15 cm w wodzie, kości korowej i tkance tłuszczowej?",
+      "display": "Jaką energię musi mieć proton, aby uzyskać zasięg 15 centymetrów w wodzie, kości korowej i tkance tłuszczowej?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie", "kości korowej", "tkance tłuszczowej"],
+        "target": {
+          "value": 15,
+          "unit": "cm"
+        },
+        "quantityKeyword": "jak(?:ą|iej|a|ie)\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-42",
+    "quantity": "energyFromRange",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What energy do protons need for a 15 cm range in water? What about carbon ions?",
+      "display": "What energy do protons need for a 15 centimeter range in water? What about carbon ions?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["protons?", "carbon"],
+        "materials": ["water"],
+        "target": {
+          "value": 15,
+          "unit": "cm"
+        },
+        "quantityKeyword": "what energy"
+      }
+    },
+    "pl": {
+      "canonical": "Jaką energię potrzebuje proton na zasięg 15 cm w wodzie? A jon węgla?",
+      "display": "Jaką energię potrzebuje proton na zasięg 15 centymetrów w wodzie? A jon węgla?",
+      "slotTruth": {
+        "isInverse": true,
+        "particles": ["proton(?:u|y|ów)?", "węgla"],
+        "materials": ["wodzie"],
+        "target": {
+          "value": 15,
+          "unit": "cm"
+        },
+        "quantityKeyword": "jak(?:ą|iej|a|ie)\\s+energi"
+      }
+    }
+  },
+  {
+    "id": "dg-43",
+    "quantity": "stoppingPower",
+    "energyRendering": "expanded",
+    "en": {
+      "canonical": "What is the LET of a 100 MeV proton in water?",
+      "display": "What is the el-ee-tee of a 100 megaelectronvolt proton in water?",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest LET protonu o energii 100 MeV w wodzie?",
+      "display": "Jaki jest LET protonu o energii 100 megaelektronowoltów w wodzie?",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    }
+  },
+  {
+    "id": "dg-44",
+    "quantity": "stoppingPower",
+    "energyRendering": "expanded",
+    "en": {
+      "canonical": "What is the stopping power of a 200 MeV per nucleon carbon ion in water?",
+      "display": "What is the stopping power of a 200 megaelectronvolt per nucleon carbon ion in water?",
+      "slotTruth": {
+        "particles": ["carbon"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 200,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "stopping power"
+      }
+    },
+    "pl": {
+      "canonical": "Jaka jest zdolność hamowania jonu węgla o energii 200 MeV na nukleon w wodzie?",
+      "display": "Jaka jest zdolność hamowania jonu węgla o energii 200 megaelektronowoltów na nukleon w wodzie?",
+      "slotTruth": {
+        "particles": ["węgla"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 200,
+            "unit": "MeV",
+            "perNucleon": true
+          }
+        ],
+        "quantityKeyword": "zdolność hamowania"
+      }
+    }
+  },
+  {
+    "id": "dg-45",
+    "quantity": "stoppingPower",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the LET of a 10 MeV proton in aluminum?",
+      "display": "What is the el-ee-tee of a 10 MeV proton in aluminum?",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["aluminum|aluminium"],
+        "energies": [
+          {
+            "value": 10,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest LET protonu o energii 10 MeV w aluminium?",
+      "display": "Jaki jest LET protonu o energii 10 MeV w aluminium?",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["aluminium"],
+        "energies": [
+          {
+            "value": 10,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    }
+  },
+  {
+    "id": "dg-46",
+    "quantity": "stoppingPower",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the LET of a 40 MeV deuteron in air?",
+      "display": "What is the el-ee-tee of a 40 MeV deuteron in air?",
+      "slotTruth": {
+        "particles": ["deuterons?"],
+        "materials": ["\\bair\\b"],
+        "energies": [
+          {
+            "value": 40,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest LET deuteronu o energii 40 MeV w powietrzu?",
+      "display": "Jaki jest LET deuteronu o energii 40 MeV w powietrzu?",
+      "slotTruth": {
+        "particles": ["deuteron(?:u)?"],
+        "materials": ["powietrzu"],
+        "energies": [
+          {
+            "value": 40,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    }
+  },
+  {
+    "id": "dg-47",
+    "quantity": "stoppingPower",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the LET of a 5 MeV alpha particle in silicon?",
+      "display": "What is the el-ee-tee of a 5 MeV alpha particle in silicon?",
+      "slotTruth": {
+        "particles": ["alpha"],
+        "materials": ["silicon"],
+        "energies": [
+          {
+            "value": 5,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    },
+    "pl": {
+      "canonical": "Jaki jest LET cząstki alfa o energii 5 MeV w krzemie?",
+      "display": "Jaki jest LET cząstki alfa o energii 5 MeV w krzemie?",
+      "slotTruth": {
+        "particles": ["cząstk[ai] alfa|cząstce alfa"],
+        "materials": ["krzemie"],
+        "energies": [
+          {
+            "value": 5,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    }
+  },
+  {
+    "id": "dg-48",
+    "quantity": "stoppingPower",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "Compare the LET of a 150 MeV proton in water, PMMA, and cortical bone.",
+      "display": "Compare the el-ee-tee of a 150 MeV proton in water, PMMA, and cortical bone.",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["water", "pmma", "bone"],
+        "energies": [
+          {
+            "value": 150,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    },
+    "pl": {
+      "canonical": "Porównaj LET protonu o energii 150 MeV w wodzie, PMMA i kości korowej.",
+      "display": "Porównaj LET protonu o energii 150 MeV w wodzie, PMMA i kości korowej.",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie", "pmma", "kości korowej"],
+        "energies": [
+          {
+            "value": 150,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    }
+  },
+  {
+    "id": "dg-49",
+    "quantity": "stoppingPower",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "What is the LET of protons in water at 50 MeV, 100 MeV, and 150 MeV?",
+      "display": "What is the el-ee-tee of protons in water at 50 MeV, 100 MeV, and 150 MeV?",
+      "slotTruth": {
+        "particles": ["protons?"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 50,
+            "unit": "MeV"
+          },
+          {
+            "value": 100,
+            "unit": "MeV"
+          },
+          {
+            "value": 150,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    },
+    "pl": {
+      "canonical": "Porównaj LET protonu w wodzie przy 50 MeV, 100 MeV i 150 MeV.",
+      "display": "Porównaj LET protonu w wodzie przy 50 MeV, 100 MeV i 150 MeV.",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 50,
+            "unit": "MeV"
+          },
+          {
+            "value": 100,
+            "unit": "MeV"
+          },
+          {
+            "value": 150,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    }
+  },
+  {
+    "id": "dg-50",
+    "quantity": "stoppingPower",
+    "energyRendering": "abbrev",
+    "en": {
+      "canonical": "Compare the LET of a proton and a carbon ion in water, both at 100 MeV.",
+      "display": "Compare the el-ee-tee of a proton and a carbon ion in water, both at 100 MeV.",
+      "slotTruth": {
+        "particles": ["protons?", "carbon"],
+        "materials": ["water"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    },
+    "pl": {
+      "canonical": "Porównaj LET protonu i jonu węgla w wodzie przy 100 MeV.",
+      "display": "Porównaj LET protonu i jonu węgla w wodzie przy 100 MeV.",
+      "slotTruth": {
+        "particles": ["proton(?:u|y|ów)?", "węgla"],
+        "materials": ["wodzie"],
+        "energies": [
+          {
+            "value": 100,
+            "unit": "MeV"
+          }
+        ],
+        "quantityKeyword": "\\blet\\b"
+      }
+    }
+  }
+]
