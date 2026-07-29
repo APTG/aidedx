@@ -431,10 +431,10 @@ on the original run's `daniel-and-jorge`/`radio-naukowe` rows above.
    sentences on legitimate, by-design mismatches and `set -euo pipefail` killed the job before any
    TTS/GPU work. Fixed by dropping that redundant/incompatible pass from `submit-v4.sh`; inline
    validation in `generate-1000-sentences.mjs` (against the abbreviated form, matching what the
-   real pipeline's matcher actually receives) is the correct and sufficient check. **Not yet
-   re-run** — `sbatch scripts/submit-v4.sh` regenerates the corpus, synthesizes it, transcribes it
-   with whisper-small q8, and scores it against v3's baseline
-   (`eval/results/tts-1000-v3-*/score-new.json`).
+   real pipeline's matcher actually receives) is the correct and sufficient check. **Re-run
+   completed 2026-07-29 (job 2835178) — see §9 for the full result.** Headline: varying the
+   rendering hurts measured accuracy substantially (clip-level pass rate 84.0% → 59.6% after the
+   shipped corrector), concentrated almost entirely in the non-abbreviated energy-unit forms.
 2. ~~Add letter-spelled unit forms to the phonetic corrector~~ **Done (2026-07-26).** Added
    `mev-letter-spelled`/`kev-letter-spelled`/`gev-letter-spelled` regex rules to `EN_RULES` in
    `src/lib/asr/correct/en.ts` — not `LEXICON` as originally proposed: `LEXICON`'s fuzzy pass is
@@ -458,10 +458,9 @@ on the original run's `daniel-and-jorge`/`radio-naukowe` rows above.
    sentence's own typical word length with a long tail driven by sentence position/emphasis, not a
    clean two-cluster split — weaker support for the original binary premise than hoped, though
    duration alone can't fully settle it (would need the actual words spoken, which the caption text
-   already collapses per §1). ~~Fix the podcast-lane context-window bug~~ **Fixed (§6.4,
-   2026-07-26), not yet re-run** — `sbatch scripts/submit-forced-align.sh --only podcasts`
-   re-transcribes just the `daniel-and-jorge`/`radio-naukowe` rows into a fresh results dir; update
-   the table above once that's synced back and re-analyzed.
+   already collapses per §1). ~~Fix the podcast-lane context-window bug~~ **Fixed and re-run
+   (§6.4, 2026-07-28, job 2826271)** — confirmed the timestamp-desync bug is gone and the
+   `daniel-and-jorge` rows can now be trusted.
 6. ~~Check whether a bigger Whisper actually recognizes the unit correctly on real lecture
    speech, not just synthesized probes~~ **Done (§8, 2026-07-24).** `whisper-large-v3-ONNX__q8` is
    the only pair that gets all 11/11 real-speech unit mentions right, but at ~3x the shipped
@@ -534,3 +533,95 @@ each pair two ways: **raw** (does the untouched transcript contain the expected 
   complete drop, not a wrong-spelling the corrector could plausibly be extended to catch. Worth
   revisiting if the real-speech sample grows (more MIT chapters, or the podcast sources once
   §6.4's context-window bug is fixed) and the same failure mode keeps showing up.
+
+## 9. v4 corpus results — does varying the spoken rendering change measured accuracy? (issue #118 TODO item 1)
+
+§7 item 1's `renderUnitsForSpeech()` makes the corpus's own TTS-facing text say each keV/MeV/GeV
+mention as one of three forms (abbreviation / no-space compound word / spaced-out words, weighted
+50/30/20) and each cm/mm mention as one of two (abbreviation / expanded word, 50/50) instead of
+always the bare abbreviation — closing the data-validity gap §3 found (no single TTS engine's G2P
+covers this range on its own). `sbatch scripts/submit-v4.sh` regenerates the 1000-sentence corpus
+with this variance, synthesizes it (Qwen3-TTS, same engine/voice pool as v3), transcribes it
+(shipped `whisper-small q8` + domain prompt), and scores all three correction layers against v3's
+byte-identical-except-rendering baseline (`eval/results/tts-1000-v3-2026-07-18/`).
+
+**Run 2026-07-29, job 2835178.** TTS generation (1000/1000 clips, 11,158.8s) and ASR transcription
+(1000/1000 records) both completed and synced back normally. Step 3 (scoring) did not: the job
+ended on its own within its time budget (03:50:01 of the 06:00:00 requested — not a SLURM
+timeout), but `score-base.log` came back 0 bytes and none of the `score-{base,ext,new}.json` files
+that step writes were ever created — consistent with the first scoring command failing before
+producing any stdout (`tee` had nothing to write), which under this script's `set -euo pipefail`
+would abort the rest of Step 3 without a further trace in the synced output. The likely mechanism:
+`scripts/asr-score-slots-generic.mjs` statically imports `src/lib/asr/correct/core.ts`, and Step 3
+invokes `node` without `--experimental-strip-types` — the same class of Athena-node-version issue
+Step 0 hit and was fixed for once already this run (job 2826275, item 1 above), just on a
+different line; not confirmed against the job's own `.err` log, since reaching it requires Athena
+access this session didn't use. **Scoring has no GPU/Athena dependency**, so rather than chase the
+exact cause further, the already-synced manifest + transcripts
+(`scripts/sync-athena-to-local.sh`) were scored locally instead — same script, same data, ordinary
+Node 24 — producing the results below (`eval/results/tts-1000-v4-2026-07-29/`).
+`scripts/submit-v4.sh`'s Step 3 now also passes `--experimental-strip-types` defensively, matching
+Step 0's precedent, in case the crash-suspect line is in fact the cause and this is re-run on
+Athena again.
+
+### Headline: clip-level accuracy, raw vs. each correction layer
+
+| corrector                                  | v3 (bare abbreviation only) | v4 (varied rendering) |
+| ------------------------------------------- | ---------------------------- | ---------------------- |
+| raw (no correction)                        | 782/1000 (78.2%)             | 502/1000 (50.2%)       |
+| base-corrector (`scripts/asr-correct.mjs`) | 782/1000 (78.2%)             | 506/1000 (50.6%)       |
+| new-corrector (shipped, `src/lib/asr/correct`) | 840/1000 (84.0%)         | 596/1000 (59.6%)       |
+
+### Per-unit accuracy, raw → corrected (new-corrector)
+
+| unit     | v3                           | v4                           |
+| -------- | ----------------------------- | ----------------------------- |
+| MeV      | 84.2% → 89.4% (n=482)         | 40.4% → 56.6% (n=498)         |
+| MeV/nucl | 80.1% → 93.8% (n=322)         | 39.7% → 63.2% (n=315)         |
+| keV      | 98.8% → 98.8% (n=83)          | 46.3% → 50.7% (n=67)          |
+| GeV      | 66.7% → 66.7% (n=15)          | 26.1% → 34.8% (n=23)          |
+| cm       | 100.0% → 100.0% (n=184)       | 99.5% → 99.5% (n=185)         |
+| mm       | 95.5% → 95.5% (n=66)          | 96.9% → 96.9% (n=65)          |
+
+### The gap is almost entirely the non-abbreviated energy renderings, not a general regression
+
+Cross-referencing each clip's actual TTS-facing text (`renderUnitsForSpeech()`'s output, recorded
+verbatim in the manifest) against its pass/fail, bucketed by which energy-unit rendering the
+sentence used:
+
+| rendering                          | n   | raw pass          | corrected pass     |
+| ----------------------------------- | --- | ------------------ | -------------------- |
+| abbrev ("MeV")                     | 385 | 271/385 (70.4%)    | 311/385 (80.8%)      |
+| compound ("megaelectronvolt")      | 186 | 0/186 (0.0%)       | 26/186 (14.0%)       |
+| spaced ("mega electron volt")      | 156 | 0/156 (0.0%)       | 22/156 (14.1%)        |
+| mixed (multi-energy, both forms)   | 23  | 0/23 (0.0%)        | 6/23 (26.1%)          |
+
+The abbreviated-rendering subset alone (385/1000 clips) scores 80.8% corrected — within noise of
+v3's 84.0% on the same energy units. **Every clip whose energy unit was rendered as a compound or
+spaced-out word failed raw transcription, with zero exceptions** (0/186, 0/156). `whisper-small`
+does not reliably recognize "megaelectronvolt"/"mega electron volt" as a coherent phrase at all —
+looking at the raw transcripts behind the missed clips, it doesn't consistently mishear it as one
+wrong-but-fixed alternative (which a lexicon/regex rule could target); it produces a different
+near-neologism almost every time: "megaphone volt", "megawatt electron volt", "megailectron-volt",
+"megoelectron-volt", "megapelectron-volt", "megaplectron-volt", "megalactron volt", "megapron
+volt", "megapolt". The shipped corrector recovers some of this (14.0%/14.1% corrected, up from
+0%) via its general per-nucleon/keV/GeV phonetic passes and the letter-spelled rules landed
+earlier in this PR, but a fixed-vocabulary correction layer has no realistic way to enumerate
+whisper-small's full space of mis-hearings for a five-syllable compound word — this is a
+transcription-accuracy ceiling, not a spelling-correction gap.
+
+Length units (cm/mm) — which `renderUnitsForSpeech()` only varies between abbreviation and one
+expanded word, never a multi-syllable compound like the energy units — show no measurable
+regression (99.5%/96.9% in v4 vs. 100.0%/95.5% in v3), consistent with this being specifically
+about the energy units' harder-to-recognize expanded forms, not the rendering-variance idea itself.
+
+**Conclusion:** §1's finding that Whisper normalizes a spoken unit rendering back to the bare
+abbreviation held for the specific clips inspected there, but doesn't generalize across the wider
+rendering distribution this corpus now exercises — a substantial fraction (~34%) of naturally-worded
+energy-unit mentions are essentially unrecognizable to the shipped model, corrector or not. This
+is a real, previously-unmeasured gap between the frozen eval set's historical near-exclusive use of
+the bare abbreviation and what a human might actually say. Given the ~7x cost of `whisper-large-v3`
+(§8) isn't justified by a single real-lecture miss, the more promising next step for this specific
+gap is probably at the TTS/G2P or prompt-biasing layer (make the *voice* say "MeV" the way a
+physicist does even when the input text spells it out) rather than trying to out-guess
+whisper-small's mis-hearings after the fact — out of scope for this measurement.

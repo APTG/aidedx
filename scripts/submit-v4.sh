@@ -103,11 +103,19 @@ node scripts/asr-transcribe-manifest.mjs "$AUDIO_DIR" "$AUDIO_DIR/manifest.json"
   onnx-community/whisper-small q8 "$RESULTS_DIR/small-q8-prompt.json"
 
 echo "=== Step 3/3: score against all three correction layers ==="
-node scripts/asr-score-slots-generic.mjs "$AUDIO_DIR/manifest.json" "$RESULTS_DIR/small-q8-prompt.json" \
+# --experimental-strip-types: this script statically imports src/lib/asr/correct/core.ts
+# regardless of which correction layer is selected (see its own header comment) — same
+# unflagged-.ts-import hazard on Athena's Node 22.17.1 that Step 0 above already hit once
+# (job 2826275) and had to work around, just via a different import site. The 2026-07-29
+# run (job 2835178) never reached this comment: Step 3 died with zero output on the
+# first invocation below (see docs/unit-pronunciation-asr.md §9 for the observed
+# symptoms and the scoring-has-no-GPU-dependency workaround used that time), which is
+# consistent with this same cause but wasn't confirmed against the job's own .err log.
+node --experimental-strip-types scripts/asr-score-slots-generic.mjs "$AUDIO_DIR/manifest.json" "$RESULTS_DIR/small-q8-prompt.json" \
   --json "$RESULTS_DIR/score-base.json" | tee "$RESULTS_DIR/score-base.log"
-node scripts/asr-score-slots-generic.mjs "$AUDIO_DIR/manifest.json" "$RESULTS_DIR/small-q8-prompt.json" --ext \
+node --experimental-strip-types scripts/asr-score-slots-generic.mjs "$AUDIO_DIR/manifest.json" "$RESULTS_DIR/small-q8-prompt.json" --ext \
   --json "$RESULTS_DIR/score-ext.json" | tee "$RESULTS_DIR/score-ext.log"
-node scripts/asr-score-slots-generic.mjs "$AUDIO_DIR/manifest.json" "$RESULTS_DIR/small-q8-prompt.json" --new \
+node --experimental-strip-types scripts/asr-score-slots-generic.mjs "$AUDIO_DIR/manifest.json" "$RESULTS_DIR/small-q8-prompt.json" --new \
   --json "$RESULTS_DIR/score-new.json" | tee "$RESULTS_DIR/score-new.log"
 
 echo "=== Done — results in $RESULTS_DIR ==="
