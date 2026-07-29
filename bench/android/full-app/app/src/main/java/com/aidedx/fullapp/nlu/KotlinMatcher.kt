@@ -3,8 +3,13 @@ package com.aidedx.fullapp.nlu
 /**
  * issue #136 goal 4 — a Kotlin matcher "inspired by" `src/lib/intent/matcher.ts` +
  * `src/lib/intent/lang/en.ts`, deliberately NOT a port of the full 865-line pipeline (compareDim,
- * inverse queries, indirect idioms, fuzzy typo tolerance, spelled-out numbers, and coordinated
- * particle/material lists are all out of scope here — see the issue's goal 4 scoping note).
+ * inverse queries, fuzzy typo tolerance, and coordinated particle/material lists are still out of
+ * scope — see the issue's goal 4 scoping note). issue #143 closed three of the originally-listed
+ * gaps (indirect idioms, advanced stopping-power synonyms, explicit isotope notation), each
+ * ported from the matching `en.ts`/`lookup.ts` logic named in the comments below, since the
+ * measured agreement in `docs/android-full-app-spike.md` traced most of the disagreement to
+ * exactly those three features being absent.
+ *
  * Covers exactly the two shapes goal 4 requires: a single particle + single material + single
  * energy, asking for stopping power or CSDA range (`compareDim: "none"` in the TS schema's
  * terms — see `eval/intents.jsonl`'s `sp-*`/`rng-*` examples this was scoped against).
@@ -31,13 +36,50 @@ data class MatchedIntent(
 object KotlinMatcher {
 
     // Same direct-keyword vocabulary as en.ts's DIRECT_STOPPING/DIRECT_RANGE + LET synonym check
-    // (mentionsStoppingPowerSynonym) — indirect idioms and fuzzy typo-tolerant matching are the
-    // parts intentionally left out of this minimal port.
+    // (mentionsStoppingPowerSynonym) — fuzzy typo-tolerant matching is still out of scope.
     private val STOPPING_POWER_RE = Regex(
-        "stopping power|de/dx|dE/dx|energy loss|specific ionization|bethe-bloch|\\blet\\b|linear energy transfer",
+        "stopping power|de\\s*/\\s*dx|energy loss|specific ioni[sz]ation|bethe[\\s-]bloch|" +
+            "retarding force|energy deposition(?:\\s+density)?|" +
+            "dose per (?:micrometer|micrometre|micron|[uµ]m)|\\blet\\b|linear energy transfer",
         RegexOption.IGNORE_CASE,
     )
     private val RANGE_RE = Regex("\\bcsda\\b|\\brange\\b", RegexOption.IGNORE_CASE)
+
+    // issue #143 — ported from en.ts's INDIRECT_IDIOMS. Only consulted when neither direct regex
+    // above matches (see `detectQuantity()`), same fallback ordering `matcher.ts` uses.
+    private val INDIRECT_IDIOMS: List<Pair<Regex, Quantity>> = listOf(
+        "\\bhow far\\b" to Quantity.CSDA_RANGE,
+        "\\bhow deep\\b" to Quantity.CSDA_RANGE,
+        "\\bhow thick\\b" to Quantity.CSDA_RANGE,
+        "\\bpenetration depth\\b" to Quantity.CSDA_RANGE,
+        "\\bpenetrat(?:e|es|ing|ion)\\b" to Quantity.CSDA_RANGE,
+        "\\bcome(?:s)? to rest\\b" to Quantity.CSDA_RANGE,
+        "\\bbefore stopping\\b" to Quantity.CSDA_RANGE,
+        "\\b(?:will|can|does|do)\\b[^.?!]*\\btravel\\b" to Quantity.CSDA_RANGE,
+        "\\bshorter distance\\b" to Quantity.CSDA_RANGE,
+        "\\bgo(?:es)? in\\b" to Quantity.CSDA_RANGE,
+        "\\bget into\\b" to Quantity.CSDA_RANGE,
+        "\\bmake it\\b" to Quantity.CSDA_RANGE,
+        "\\b(?:lose[s]?|lost)\\s+energy\\b" to Quantity.STOPPING_POWER,
+        "\\bshed[s]? energy\\b" to Quantity.STOPPING_POWER,
+        "\\bslowed down\\b" to Quantity.STOPPING_POWER,
+        "\\bat what rate\\b" to Quantity.STOPPING_POWER,
+        "\\bhow quickly\\b" to Quantity.STOPPING_POWER,
+        ("\\b(?:lose[s]?|lost)\\b[^.?!]*\\bper\\s+(?:centimeter|millimeter|cm|mm|unit length)\\b") to
+            Quantity.STOPPING_POWER,
+        ("\\b(?:per|after)\\s+(?:each\\s+)?(?:centimeter|millimeter|cm|mm|unit length)\\b") to
+            Quantity.STOPPING_POWER,
+        (
+            "\\benergy\\b[^.?!]*\\bdeposited\\b[^.?!]*\\bper\\s+" +
+                "(?:micrometer|micrometre|micron|[uµ]m)\\b"
+            ) to Quantity.STOPPING_POWER,
+    ).map { (pattern, quantity) -> Regex(pattern, RegexOption.IGNORE_CASE) to quantity }
+
+    private fun detectQuantity(text: String): Quantity? = when {
+        STOPPING_POWER_RE.containsMatchIn(text) -> Quantity.STOPPING_POWER
+        RANGE_RE.containsMatchIn(text) -> Quantity.CSDA_RANGE
+        else -> INDIRECT_IDIOMS.firstOrNull { (regex, _) -> regex.containsMatchIn(text) }?.second
+    }
 
     private val ENERGY_RE = Regex(
         "(\\d+(?:\\.\\d+)?)\\s*(MeV/nucleon|MeV/nucl|MeV/u|MeV per nucleon|MeV|keV|GeV)\\b",
@@ -107,24 +149,10 @@ object KotlinMatcher {
     private fun overlaps(range: IntRange, start: Int, end: Int): Boolean =
         range.first < end && start < range.last + 1
 
-    fun match(rawText: String, aliases: AliasTables): MatchedIntent? {
-        val text = normalizeSpelledNumbers(rawText)
-        val quantity = when {
-            STOPPING_POWER_RE.containsMatchIn(text) -> Quantity.STOPPING_POWER
-            RANGE_RE.containsMatchIn(text) -> Quantity.CSDA_RANGE
-            else -> return null
-        }
+    private data class ParticleFind(val phrase: String, val alias: ParticleAlias, val range: IntRange)
 
-        val energyMatch = ENERGY_RE.find(text) ?: return null
-        val (unit, perNucleonAssumed) = normalizeEnergyUnit(energyMatch.groupValues[2])
-        val energy = EnergyValue(energyMatch.groupValues[1].toDouble(), unit, perNucleonAssumed)
-
-        val tokens = TOKEN_RE.findAll(text).map { it.value }.toList()
-
-        var particleMatch: String? = null
-        var particleAlias: ParticleAlias? = null
-        var particleRange: IntRange? = null
-        outerParticle@ for (windowSize in 2 downTo 1) {
+    private fun findParticle(tokens: List<String>, aliases: AliasTables): ParticleFind? {
+        for (windowSize in 2 downTo 1) {
             for (start in 0..tokens.size - windowSize) {
                 val phrase = tokens.subList(start, start + windowSize).joinToString(" ")
                 // Single-token candidates shorter than 3 chars are rejected — same guard
@@ -133,13 +161,54 @@ object KotlinMatcher {
                 // one-letter alias before the real "protons" token is ever reached.
                 if (windowSize == 1 && phrase.length < 3) continue
                 val hit = aliases.resolveParticle(phrase) ?: continue
-                particleMatch = phrase
-                particleAlias = hit
-                particleRange = start..(start + windowSize - 1)
-                break@outerParticle
+                return ParticleFind(phrase, hit, start..(start + windowSize - 1))
             }
         }
-        if (particleMatch == null || particleAlias == null || particleRange == null) return null
+        return null
+    }
+
+    // issue #143 — matches lookup.ts's parseIsotope() input shape: an element name/symbol
+    // directly adjacent to a 1-3 digit mass number, hyphenated in this port's tokenizer (which
+    // keeps "-" inside a token) — "carbon-13", "he-3". lookup.ts also accepts the reverse order
+    // ("13 c") and no separator at all; narrowed here to the hyphenated form since that is what
+    // every isotope example in eval/intents.jsonl actually uses.
+    private val ISOTOPE_TOKEN_RE = Regex("^([a-zA-Z]+)-([0-9]{1,3})$")
+    private val ION_SUFFIX_WORDS = setOf("ion", "ions")
+
+    private fun resolveIsotopeParticle(tokens: List<String>, aliases: AliasTables): ParticleFind? {
+        for (i in tokens.indices) {
+            val isotopeMatch = ISOTOPE_TOKEN_RE.find(tokens[i]) ?: continue
+            val (elementWord, massNumberStr) = isotopeMatch.destructured
+            val base = aliases.resolveParticle(elementWord) ?: continue
+            val hasIonSuffix = i + 1 < tokens.size && tokens[i + 1].lowercase() in ION_SUFFIX_WORDS
+            val range = if (hasIonSuffix) i..(i + 1) else i..i
+            val phrase = tokens.subList(range.first, range.last + 1).joinToString(" ")
+            val alias = ParticleAlias(id = base.id, name = base.name, massNumber = massNumberStr.toInt())
+            return ParticleFind(phrase, alias, range)
+        }
+        return null
+    }
+
+    fun match(rawText: String, aliases: AliasTables): MatchedIntent? {
+        val text = normalizeSpelledNumbers(rawText)
+        val quantity = detectQuantity(text) ?: return null
+
+        val energyMatch = ENERGY_RE.find(text) ?: return null
+        val (unit, perNucleonAssumed) = normalizeEnergyUnit(energyMatch.groupValues[2])
+        val energy = EnergyValue(energyMatch.groupValues[1].toDouble(), unit, perNucleonAssumed)
+
+        val tokens = TOKEN_RE.findAll(text).map { it.value }.toList()
+
+        // issue #143 — explicit isotope notation ("carbon-13 ions", "helium-3 ion") never has a
+        // literal alias-table entry (isotopes aren't enumerated per-element there), so the plain
+        // window scan always misses them; `resolveIsotopeParticle()` ports lookup.ts's
+        // `parseIsotope()`, which resolves the same shape (element name/symbol + mass number)
+        // against the *same* alias data this port already loads, then overrides the resolved
+        // entry's default mass number with the explicit one. Tried only as a fallback, after the
+        // plain scan, since it's the rarer shape.
+        val particleFind = findParticle(tokens, aliases) ?: resolveIsotopeParticle(tokens, aliases)
+            ?: return null
+        val (particleMatch, particleAlias, particleRange) = particleFind
 
         var materialMatch: String? = null
         var materialAlias: MaterialAlias? = null

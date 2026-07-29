@@ -68,8 +68,16 @@ class KotlinMatcherAgreementTest {
             // disagreement instead of a cosmetic match-string difference.
             val strippedParticlePhrase = expectedParticlePhrase
                 .replace(Regex("\\s+ions?$", RegexOption.IGNORE_CASE), "")
+            // issue #143 — same treatment for isotope notation ("carbon-13 ions" -> "carbon-13"
+            // -> "carbon"): KotlinMatcher now resolves these (resolveIsotopeParticle), but the
+            // alias table has no literal "carbon-13" entry, so the *expected*-side id computation
+            // needs the same element-name extraction or every isotope example would wrongly count
+            // as a disagreement despite KotlinMatcher now resolving them correctly.
+            val isotopeElement = Regex("^([a-zA-Z]+)-[0-9]{1,3}$").find(strippedParticlePhrase)
+                ?.groupValues?.get(1)
             val expectedParticleId = aliases.resolveParticle(expectedParticlePhrase)?.id
                 ?: aliases.resolveParticle(strippedParticlePhrase)?.id
+                ?: isotopeElement?.let { aliases.resolveParticle(it)?.id }
             val expectedMaterialId = aliases.resolveMaterial(expectedMaterialPhrase)?.id
 
             val actual = KotlinMatcher.match(text, aliases)

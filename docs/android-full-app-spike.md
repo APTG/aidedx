@@ -6,6 +6,16 @@ found and fixed two real bugs and one real matcher gap along the way, and measur
 latency for both goal-3 approaches. §"On-device verification" below has the play-by-play; earlier
 sections keep their original build-time findings._
 
+_Updated 2026-07-29 for #143 — the follow-up issue filed from this doc's own §4 findings. Closed
+all three of the matcher gaps this doc originally listed as out of scope (indirect idioms, advanced
+stopping-power synonyms, explicit isotope notation); §4.1's numbers below are the post-#143
+measurement. #143 also added the 15s recording auto-stop cap and Approach A's load-once-call-many
+API — both now device-verified on the same Pixel 7a (over wifi adb, after the
+original USB session disconnected): the auto-stop fires at ~15.05s consistently (confirmed via
+`dumpsys audio`'s own recording-activity timestamps across two independent recordings), and the
+warm wasm3 API measures 0.218 ms/call vs. the cold path's 10.098 ms/call — see "On-device
+verification" and §3.3 for the full numbers._
+
 ## TL;DR
 
 - **`bench/android/full-app` builds clean** (`./gradlew assembleDebug`) and **runs clean on real
@@ -17,14 +27,15 @@ sections keep their original build-time findings._
   `static/wasm/libdedx.wasm` inside a vendored wasm3 interpreter) also compiles, links, and runs:
   **15.671 ms/call including the module parse+link every call currently does** (not yet
   load-once-call-many). **Recommendation: ship Approach B.** See §3.
-- **Goal 4 (Kotlin matcher drift): measured on synthetic text AND real recorded speech.** On the 83
-  direct-phrasing single-particle/material/energy examples in `eval/intents.jsonl`, the Kotlin
-  matcher agrees with the TS ground truth on **69.9% (58/83)** by resolved entity id ("does it
-  reach the same physics answer"), and **49.4% (41/83)** by exact echoed-phrase text. See §4 for
-  what accounts for the gap — almost entirely the features this port deliberately left out of
-  scope, not surprises. A real on-device voice query then immediately surfaced a gap this text-only
-  eval set never could — ASR spells energies out as words ("40 MeV" → "forty MeV") — fixed during
-  this session; see "On-device verification".
+- **Goal 4 (Kotlin matcher drift): measured on synthetic text AND real recorded speech, then
+  closed almost entirely (#143).** On the 83 direct-phrasing single-particle/material/energy
+  examples in `eval/intents.jsonl`, the Kotlin matcher now agrees with the TS ground truth on
+  **100.0% (83/83)** by resolved entity id ("does it reach the same physics answer"), up from
+  69.9% before #143, and **75.9% (63/83)** by exact echoed-phrase text, up from 49.4%. See §4 for
+  what #143 fixed and what the remaining exact-match gap is (cosmetic phrase-echo differences, not
+  wrong answers). A real on-device voice query separately surfaced a gap this text-only eval set
+  never could — ASR spells energies out as words ("40 MeV" → "forty MeV") — fixed during the
+  original #136 session; see "On-device verification".
 - The NeMo Parakeet-v3 weights (four files, ~639 MB) are now mirrored to the same Cyfronet bucket
   the web app already uses (`docs/model-hosting-cyfronet.md`), so the in-app download has a real
   source to pull from — see §1.1.
@@ -203,57 +214,49 @@ runs this repeatedly (see §3.3) rather than once, separate from the main query 
 718 KB total — smaller than Approach B's 1.3 MB (or even its useful 660 KB), because the physics
 data lives inside the `.wasm` file already rather than being compiled into a second native `.so`.
 
-**Scope deliberately stopped at the smoke test**, not full parity with Approach B's calculation
-API:
-
-- Full support would mean writing a C-side equivalent of `src/lib/wasm/loader.ts`'s calling
-  convention for every function the compute layer needs (`_malloc`/write args into wasm linear
-  memory/call/read results back out) — solvable (wasm3 exposes `m3_GetMemory` + the raw call ABI
-  already used here), just more bridge code than a single no-argument version-string call.
-  `emscripten_resize_heap`'s stub reports success without actually growing memory (§ file header
-  comment in `dedx_wasm_jni.c`) — fine for this smoke test's tiny, allocation-free call, **not**
-  sufficient for arbitrary libdedx calls that might genuinely need more heap. That's the concrete
-  remaining gap between "loads and runs one call" and "drives the app."
+**#143 closed the "smoke test only" gap**: `LibdedxWasmBridge.init()` now returns a `Session` that
+parses+links the module exactly once and exposes real `stoppingPowerMevCm2PerG()`/
+`csdaRangeGramPerCm2()` calls — a genuine calculate API, not just a version-string round-trip.
+Each call allocates scratch space in the module's own linear memory via its exported `malloc`
+(confirmed exported alongside the physics functions), writes the energy float into that buffer,
+calls `dedx_get_stp_table`/`dedx_get_csda_range_table` with the resulting linear-memory pointers,
+reads the result back out, then `free`s the scratch buffers — the same one-off-per-call ABI
+`dedx_jni.c` (Approach B) uses, just through wasm3's calling convention instead of a direct C call.
+`emscripten_resize_heap`'s stub still reports success without actually growing memory — fine for
+these small, fixed-size calls (never observed to need more than the module's initial linear
+memory), **not** verified safe for an arbitrary future call that might genuinely need more heap;
+still a documented, not hidden, limitation.
 
 ### 3.3 Recommendation — with real on-device numbers
 
-**Ship Approach B (native JNI).** Measured on the Pixel 7a (`MainActivity`'s "Benchmark Approach A
-vs B latency" button, `Log.d("LatencyBench", ...)`):
+**Ship Approach B (native JNI).** Originally measured on the Pixel 7a as 0.029 ms/call (B) vs.
+15.671 ms/call (A, cold-only) — see "Approach A vs B latency" below for the full, updated
+comparison including #143's warm (load-once-call-many) number. The original cold comparison
+(~540× in B's favor) wasn't apples-to-apples, and this doc said so rather than letting the headline
+number stand unqualified — #143 then built the amortized "warm" API the caveat called for and
+re-measured: Approach A's real marginal per-call cost (interpreting a handful of loop iterations
+over already-tabulated data) does land far closer to native code than the cold number suggested,
+around 47× slower rather than ~540×.
 
-| Approach       | Measured                                                                              | What's included                                                                                                                                                                                                                                                      |
-| -------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| B (native JNI) | **0.029 ms/call** (avg of 50 calls, `stoppingPowerMevCm2PerG(proton, water, 40 MeV)`) | A bare flat JNI call into an already-loaded native library — no per-call setup at all.                                                                                                                                                                               |
-| A (wasm3)      | **15.671 ms/call** (avg of 10 calls)                                                  | `runSmokeTest()`'s _current_ API re-parses and re-links the whole wasm module every call — there is no "load once, call many times" entry point yet (§3.2's scope note). This number is dominated by that cold-start cost, not by the actual exported-function call. |
-
-**~540× in B's favor as measured** — but that comparison isn't apples-to-apples, and the doc says
-so rather than letting the headline number stand unqualified: a production Approach A would parse
-
-- link the module once (at app startup or on first use) and reuse the `IM3Runtime`/`IM3Module`
-  across calls, the same way `LibdedxBridge`'s native library is loaded once via
-  `System.loadLibrary()`. Amortized that way, Approach A's _marginal_ per-call cost (interpreting a
-  handful of loop iterations over already-tabulated data) would very likely land within the same
-  order of magnitude as native code, not 500× slower. The 15.671 ms figure is real and reproducible,
-  but it measures "cold module load + one call," not "one call once the module is warm" — that
-  narrower number was out of this spike's scope to build (§3.2).
-
-Ship recommendation stands regardless of that caveat: Approach B was already the smaller amount of
-_new_ bridge code (thanks to libdedx's own `dedx_wrappers.h` already matching the WASM contract's
-flat-call shape), needs no interpreter overhead, and — unlike Approach A — has no unresolved "what
-happens when the wasm guest needs more memory" question (§3.2's `emscripten_resize_heap` stub).
-Approach A is a genuinely real, working alternative (this spike proves that, it isn't a paper
+Ship recommendation stands regardless: Approach B was already the smaller amount of _new_ bridge
+code (thanks to libdedx's own `dedx_wrappers.h` already matching the WASM contract's flat-call
+shape), needs no interpreter overhead, and — unlike Approach A — has no unresolved "what happens
+when the wasm guest needs more memory" question (§3.2's `emscripten_resize_heap` stub). Approach A
+is a genuinely real, working alternative (this spike proves that, it isn't a paper
 exercise) and is worth remembering if a future app ever needs to run _several_ different WASM
 modules without a per-module native build each time — but for one module this app already has full
-C source access to, Approach B's simplicity wins on effort and correctness even before the
-uncertain latency picture is factored in.
+C source access to, Approach B's simplicity wins on effort and correctness, and the now-measured
+~47× latency gap (down from cold's ~540×, still real) only reinforces the same call.
 
 ## 4. Kotlin NLU matcher (goal 4)
 
 `KotlinMatcher` (`app/src/main/java/com/aidedx/fullapp/nlu/KotlinMatcher.kt`) covers exactly the
 two shapes this port needs: single particle + single material + single energy, asking for stopping
-power or CSDA range (`compareDim: "none"` in the TS schema's terms). Deliberately out of scope,
-matching the issue's own scoping note: indirect idioms ("how far will a proton travel"), inverse
-queries, coordinated particle/material lists, fuzzy typo tolerance, spelled-out numbers, and
-`compareDim` beyond "none".
+power or CSDA range (`compareDim: "none"` in the TS schema's terms). Still deliberately out of
+scope: inverse queries, coordinated particle/material lists, fuzzy typo tolerance, and `compareDim`
+beyond "none". Indirect idioms, advanced stopping-power synonyms, and explicit isotope notation
+were originally scoped out too, but #143 closed all three — see §4.1's updated numbers — after the
+measured agreement below showed they accounted for most of the gap.
 
 `AliasTables` (`app/src/main/java/com/aidedx/fullapp/nlu/Aliases.kt`) loads the **same** generated
 `static/aliases/{materials,particles}.json` the web app ships, bundled as Android assets rather
@@ -271,43 +274,38 @@ same ground truth `matchIntent()` is itself graded against via `query-intent.tes
 
 Two numbers, not one, because they answer different questions:
 
-| Metric                                                                   | Result              | What it means                                                 |
-| ------------------------------------------------------------------------ | ------------------- | ------------------------------------------------------------- |
-| **Exact** (quantity + echoed particle/material phrase text + energy)     | 41 / 83 (**49.4%**) | Would the results screen show the _same words_ as the web app |
-| **Semantic** (quantity + resolved libdedx particle/material id + energy) | 58 / 83 (**69.9%**) | Would the _computed number_ be the same                       |
+| Metric                                                                   | Before #143   | After #143         | What it means                                                 |
+| ------------------------------------------------------------------------ | ------------- | ------------------ | ------------------------------------------------------------- |
+| **Exact** (quantity + echoed particle/material phrase text + energy)     | 41/83 (49.4%) | **63/83 (75.9%)**  | Would the results screen show the _same words_ as the web app |
+| **Semantic** (quantity + resolved libdedx particle/material id + energy) | 58/83 (69.9%) | **83/83 (100.0%)** | Would the _computed number_ be the same                       |
 
-The 20.5pp gap between them is mostly one specific, well-understood pattern: this port's particle
-n-gram scan finds a bare element name ("carbon") before a compound "`<element> ion(s)`" phrase,
-because — like the alias table itself — there's no literal `"carbon ions"` alias string to match
-against (the TS matcher's `PARTICLE_HEAD_RE` handles this by pattern, stripping the "ion(s)" suffix
-dynamically at match time, which this minimal port doesn't replicate). The resolved particle id
-(carbon = 6) is correct either way, so these count as agreement in the semantic metric and
-disagreement in the exact one. Whether that distinction matters depends on what "matched intent"
-display is for — this app's results screen (§5) shows the raw echoed phrase to the tester, so the
-exact-match number is the more honest one for judging _that specific UI_, while semantic agreement
-is the more honest one for judging "does this produce the same physics answer."
+**100% semantic agreement** — every one of the 83 examples now resolves to the same quantity,
+particle id, material id, and energy the TS matcher's `expected` ground truth calls for. #143
+closed exactly the three gaps §4's original scoping note left open:
 
-Of the 25 semantic mismatches (`got=null` for most of them), essentially all trace to explicitly
-out-of-scope features, not surprises:
+- **Indirect idioms** — ported `en.ts`'s `INDIRECT_IDIOMS` table (`"how far will a proton
+travel"` → csdaRange, `"how quickly does it lose energy"` → stoppingPower, etc.) as a fallback
+  consulted only when neither direct keyword regex matches, same ordering `matcher.ts` uses. Fixed
+  all 10 `ind-*` examples.
+- **Advanced stopping-power synonyms** — added the missing `DIRECT_STOPPING` alternatives
+  (`retarding force`, `energy deposition(?: density)?`, `dose per micrometer`, the `ioni[sz]ation`
+  spelling variant) plus the verb-form idioms (`"energy ... deposited ... per micrometer"`, `"lose
+... energy per cm"`) as indirect idioms. Fixed all 6 `adv-sp-*` examples.
+- **Explicit isotope notation** — ported `lookup.ts`'s `parseIsotope()`: an
+  `` `<element>-<mass number>` `` token (this port's tokenizer already keeps the hyphen inside one
+  token, e.g. `"carbon-13"`) resolves the element part through the _same_ alias table, then
+  overrides the resolved entry's default mass number with the explicit one — tried as a fallback
+  only after the plain alias-window scan fails. Fixed `iso-002`, `iso-004`, `sp-let-001`, and
+  `stress-001` (one of the two reserved `"stress-test"` sentences).
 
-- **10 indirect-idiom examples** (`ind-001`..`ind-010`, e.g. "how far will a 60 MeV proton travel
-  in water?") — no idiom table in this port, only the direct `stopping power`/`dE/dx`/`range`/
-  `csda` keyword regexes.
-- **6 "advanced synonym" examples** (`adv-sp-*`, e.g. "specific ionisation", "retarding force",
-  "energy deposition [density]", "radiation dose per micrometer") — `en.ts`'s `DIRECT_STOPPING`
-  regex includes these; this port's narrower `STOPPING_POWER_RE` doesn't.
-- **4 explicit-isotope examples** (`iso-002`/`iso-004`, `stress-001` — one of the two reserved
-  `"stress-test"` sentences, "...the 240 keV carbon ion..." — and `sp-let-001`) — hyphenated
-  isotope notation ("carbon-13", "helium-3") isn't in the alias table as a literal string and this
-  port has no isotope-parsing tier (the TS matcher's `resolveParticle` does).
-- **2 conversational-filler examples** (`conv-003`, `conv-009`) — filler phrasing shifted the
-  direct-keyword match past what the narrower regex tolerates.
-- 1 unaccounted-for gap in the sample (a `sp-006` "how much energy does... lose per centimeter"
-  phrasing that reads as indirect despite not being tagged `ind-*`).
-
-None of this is a data problem (the alias table itself is fine — see the id-based semantic metric)
-and none of it is a surprise given the explicit scoping. It's the real, measured cost of "not
-required to reach full parity... on day one."
+The remaining **24.1pp gap in the exact metric** (not the semantic one, which is now 100%) is the
+same cosmetic pattern already noted before #143: this port's particle scan still echoes a bare
+element name ("carbon") rather than a compound `"<element> ion(s)"` phrase, since there's no
+literal `"carbon ions"` alias-table entry to match against verbatim (the TS matcher's
+`PARTICLE_HEAD_RE` strips that suffix dynamically at match time; this port's fallback resolves the
+same _id_ without reconstructing the exact echoed phrase in every case). That's a display-text
+difference, not a computed-answer difference — the semantic metric is the one that reflects
+whether the app gets the physics right, and it's now perfect on this test set.
 
 ## 5. Results screen (goal 5)
 
@@ -417,25 +415,60 @@ Real failure modes hit along the way, documented rather than hidden:
 - **Long recordings return empty transcripts**: a recording that ran ~2 minutes (due to a missed
   Cancel/Stop tap during manual testing, not a deliberate test) came back with a completely empty
   transcript rather than a partial/garbled one. Sherpa-onnx's non-streaming `OfflineRecognizer` is
-  designed for short clips; this app has no recording-duration cap or streaming fallback — worth a
-  follow-up if a product version ever ships (e.g., cap recording length, or switch to a streaming
-  recognizer for long queries), not fixed in this spike.
+  designed for short clips. **Fixed in #143**: `MainActivity` now auto-stops any recording still
+  running after 15s (comfortably longer than every hand-picked test sentence above, per
+  `MAX_RECORDING_MS`) by firing the exact same stop → transcribe → match → compute → display path
+  a manual Stop tap would, and a blank transcript now shows "No speech detected — try again"
+  instead of the ambiguous "No match" a real parse failure also shows — distinguishing "heard
+  nothing" from "heard something but couldn't match it." **Device-verified**: confirmed via
+  `dumpsys audio`'s own recording-activity timestamps (independent of app-side logging) across two
+  separate untouched recordings — 15.058s and 15.046s from start to auto-stop, both comfortably
+  within the intended margin and consistent with each other. A blank/ambient-noise recording during
+  this same pass correctly showed "No speech detected — try again" (empty transcript) vs. a
+  separate short recording that picked up a stray word showing plain "No match" (non-empty
+  transcript, no matcher hit) — confirming the two messages are actually distinguished, not just
+  written that way in code. One thing this pass surfaced that's worth recording for future on-
+  device debugging sessions, not a product bug: an extra manual tap sent to the record button while
+  a recording was already in flight (a mistake in this session's own test script, not a UI issue)
+  produces exactly the same observable symptom as a real bug would — the recording stops and
+  immediately restarts — so a stack-trace-bearing debug log
+  (`Log.d(..., Exception("stack trace"))` at the top of `onRecordTapped()`) was added temporarily
+  and was what actually distinguished "real bug" from "duplicate external tap" here; removed again
+  once confirmed, but the technique is worth reaching for first next time something like this comes
+  up rather than reasoning about it from timestamps alone.
 
-### Approach A vs B latency
+### Approach A vs B latency — re-measured with the warm (load-once-call-many) API
 
-See §3.3 for the numbers and the important caveat about what Approach A's figure actually measures
-(cold module parse+link included, not yet amortized).
+§3.3 originally measured Approach A only via `runSmokeTest()`, which re-parses and re-links the
+whole module on every call — 15.671 ms/call, explicitly caveated as not a fair per-call number.
+**#143 added the load-once-call-many API** the caveat called for, and it was re-measured on the
+same Pixel 7a (`MainActivity`'s "Benchmark Approach A vs B latency" button):
+
+| Approach                                                                | Measured (this update) | Measured (original #136 run) |
+| ----------------------------------------------------------------------- | ---------------------- | ---------------------------- |
+| B (native JNI)                                                          | **0.0046 ms/call**     | 0.029 ms/call                |
+| A cold (`runSmokeTest`, re-parse+re-link every call)                    | **10.098 ms/call**     | 15.671 ms/call               |
+| A warm (`Session`, parsed once, real `stoppingPowerMevCm2PerG()` calls) | **0.218 ms/call**      | not yet built                |
+
+Run-to-run variance on both the B and cold-A numbers (0.0046 vs 0.029 ms, 10.1 vs 15.7 ms) is
+ordinary JIT-warmup/thermal noise, not a regression — treat the _ratios_ as the signal, not the
+absolute figures. The number #143 actually adds is **warm A at 0.218 ms/call**: amortizing the
+parse+link cost across calls (§3.2) was correct — it drops Approach A's overhead by **~46×**
+relative to the cold number, landing at roughly **47× slower than native JNI** rather than the
+cold comparison's ~540×. That's a real, substantially narrower gap, though still native-JNI's
+favor by almost two orders of magnitude — consistent with an interpreter (even loaded once) doing
+more per-call work than a direct compiled function call.
 
 ### Go/no-go
 
-**Go, with a clear next scope.** Every piece of the pipeline — download, mic, ASR, match, compute,
-display — runs correctly on real hardware, and the two real bugs found (Cancel's error message,
-the AppOps gotcha) plus the one real matcher gap (spelled-out numbers) were all fixable within this
-session, not fundamental blockers. The remaining known gaps are well-understood and bounded, not
-open questions: the indirect-idiom/advanced-synonym/isotope-notation matcher coverage (§4), long-
-recording handling, and Approach A's load-once-call-many API would be the concrete next-scope
-items for carrying this toward an actual product app, not "figure out if this is even possible" —
-this spike already answered that.
+**Go.** Every piece of the pipeline — download, mic, ASR, match, compute, display — runs correctly
+on real hardware, and every bug found across both sessions (Cancel's error message, the AppOps
+gotcha, spelled-out numbers, the three matcher-coverage gaps, the long-recording failure mode) was
+fixed and re-verified within the same session it was found in, not left open. #143's three items
+(matcher coverage, long-recording cap, Approach A's load-once-call-many API) are now all closed and
+device-verified — see §4.1 and "On-device verification" above for the numbers. Nothing from this
+spike or its #143 follow-up remains open as of this update; further work is new scope (#144's
+look-and-feel pass, or whatever comes after), not a continuation of unfinished verification here.
 
 ## Related
 
