@@ -18,7 +18,7 @@ object AnswerFormatter {
     fun formatSignificant(value: Double, sigFigs: Int = 4): String {
         if (value.isNaN() || value.isInfinite()) return "n/a"
         if (value == 0.0) return "0"
-        val rounded = BigDecimal(value).round(MathContext(sigFigs))
+        val rounded = BigDecimal.valueOf(value).round(MathContext(sigFigs))
         return rounded.stripTrailingZeros().toPlainString()
     }
 

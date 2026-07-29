@@ -1,7 +1,7 @@
 # Android full-app spike (issue #136)
 
-_Session report, 2026-07-29. Status: **device-verified** — a real Pixel 7a (`3A091JEHN03521`, USB
-adb) ran the full download → record → transcribe → match → compute → display pipeline end to end,
+_Session report, 2026-07-29. Status: **device-verified** — a real Pixel 7a (USB adb) ran the full
+download → record → transcribe → match → compute → display pipeline end to end,
 found and fixed two real bugs and one real matcher gap along the way, and measured real per-call
 latency for both goal-3 approaches. §"On-device verification" below has the play-by-play; earlier
 sections keep their original build-time findings._
@@ -321,7 +321,7 @@ rather than a canonicalized name, same as `render.ts`.
 intent (quantity, resolved particle/material ids, energy), and the formatted result — specifically
 so a tester can tell _which stage_ produced a wrong answer, per the issue's own framing.
 
-## On-device verification (Pixel 7a, `3A091JEHN03521`, USB adb)
+## On-device verification (Pixel 7a, USB adb)
 
 Every acceptance-criteria item that needed a real device was run this session. Two real app bugs
 and one real matcher gap were found and fixed in the process — not just "it worked," the process

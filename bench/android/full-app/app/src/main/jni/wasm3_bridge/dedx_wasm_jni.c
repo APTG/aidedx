@@ -39,6 +39,7 @@
  *                                        scope, which was the persistent-runtime API itself).
  */
 #include <jni.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -84,48 +85,58 @@ JNIEXPORT jstring JNICALL
 Java_com_aidedx_fullapp_compute_LibdedxWasmBridge_nativeSmokeTest(JNIEnv *env, jobject thiz,
                                                                    jbyteArray wasmBytes) {
   (void)thiz;
-  char resultBuf[256];
+  char resultBuf[256] = {0};
   jsize len = (*env)->GetArrayLength(env, wasmBytes);
   jbyte *bytes = (*env)->GetByteArrayElements(env, wasmBytes, NULL);
 
-  IM3Environment m3env = m3_NewEnvironment();
+  /* Single cleanup path below frees whatever of runtime/env got created, on every exit
+   * (success or failure) — this smoke test is called `coldRuns` times per benchmark run, so a
+   * leaked environment/runtime per call would compound quickly. Mirrors initContext()'s
+   * teardown further down in this file. */
+  IM3Environment m3env = NULL;
+  IM3Runtime runtime = NULL;
+  IM3Module module;
+  M3Result result = NULL;
+
+  m3env = m3_NewEnvironment();
   if (!m3env) {
     (*env)->ReleaseByteArrayElements(env, wasmBytes, bytes, JNI_ABORT);
-    return (*env)->NewStringUTF(env, "FAIL: m3_NewEnvironment");
+    snprintf(resultBuf, sizeof(resultBuf), "FAIL: m3_NewEnvironment");
+    goto cleanup;
   }
 
-  IM3Runtime runtime = m3_NewRuntime(m3env, WASM3_STACK_SIZE, NULL);
+  runtime = m3_NewRuntime(m3env, WASM3_STACK_SIZE, NULL);
   if (!runtime) {
     (*env)->ReleaseByteArrayElements(env, wasmBytes, bytes, JNI_ABORT);
-    return (*env)->NewStringUTF(env, "FAIL: m3_NewRuntime");
+    snprintf(resultBuf, sizeof(resultBuf), "FAIL: m3_NewRuntime");
+    goto cleanup;
   }
 
-  IM3Module module;
-  M3Result result = m3_ParseModule(m3env, &module, (const uint8_t *)bytes, (uint32_t)len);
+  result = m3_ParseModule(m3env, &module, (const uint8_t *)bytes, (uint32_t)len);
   (*env)->ReleaseByteArrayElements(env, wasmBytes, bytes, JNI_ABORT);
   if (result) {
     snprintf(resultBuf, sizeof(resultBuf), "FAIL: m3_ParseModule: %s", result);
-    return (*env)->NewStringUTF(env, resultBuf);
+    goto cleanup;
   }
 
   result = m3_LoadModule(runtime, module);
   if (result) {
     snprintf(resultBuf, sizeof(resultBuf), "FAIL: m3_LoadModule: %s", result);
-    return (*env)->NewStringUTF(env, resultBuf);
+    goto cleanup;
   }
 
   result = m3_LinkRawFunction(module, "wasi_snapshot_preview1", "fd_write", "i(iiii)",
                                &fd_write_stub);
   if (result && result != m3Err_functionLookupFailed) {
     snprintf(resultBuf, sizeof(resultBuf), "FAIL: link fd_write: %s", result);
-    return (*env)->NewStringUTF(env, resultBuf);
+    goto cleanup;
   }
 
   result = m3_LinkRawFunction(module, "env", "emscripten_resize_heap", "i(i)",
                                &emscripten_resize_heap_stub);
   if (result && result != m3Err_functionLookupFailed) {
     snprintf(resultBuf, sizeof(resultBuf), "FAIL: link emscripten_resize_heap: %s", result);
-    return (*env)->NewStringUTF(env, resultBuf);
+    goto cleanup;
   }
 
   IM3Function versionFn;
@@ -133,29 +144,35 @@ Java_com_aidedx_fullapp_compute_LibdedxWasmBridge_nativeSmokeTest(JNIEnv *env, j
   if (result) {
     snprintf(resultBuf, sizeof(resultBuf), "FAIL: m3_FindFunction(dedx_get_version_string): %s",
              result);
-    return (*env)->NewStringUTF(env, resultBuf);
+    goto cleanup;
   }
 
   result = m3_CallV(versionFn);
   if (result) {
     snprintf(resultBuf, sizeof(resultBuf), "FAIL: m3_CallV(dedx_get_version_string): %s", result);
-    return (*env)->NewStringUTF(env, resultBuf);
+    goto cleanup;
   }
 
   uint32_t versionPtr = 0;
   result = m3_GetResultsV(versionFn, &versionPtr);
   if (result) {
     snprintf(resultBuf, sizeof(resultBuf), "FAIL: m3_GetResultsV: %s", result);
-    return (*env)->NewStringUTF(env, resultBuf);
+    goto cleanup;
   }
 
-  uint8_t *wasmMemory = m3_GetMemory(runtime, NULL, 0);
-  if (!wasmMemory) {
-    return (*env)->NewStringUTF(env, "FAIL: m3_GetMemory returned NULL");
+  {
+    uint8_t *wasmMemory = m3_GetMemory(runtime, NULL, 0);
+    if (!wasmMemory) {
+      snprintf(resultBuf, sizeof(resultBuf), "FAIL: m3_GetMemory returned NULL");
+      goto cleanup;
+    }
+    snprintf(resultBuf, sizeof(resultBuf), "OK: dedx_get_version_string() = \"%.*s\"",
+             (int)sizeof(resultBuf) - 40, (const char *)(wasmMemory + versionPtr));
   }
 
-  snprintf(resultBuf, sizeof(resultBuf), "OK: dedx_get_version_string() = \"%.*s\"",
-           (int)sizeof(resultBuf) - 40, (const char *)(wasmMemory + versionPtr));
+cleanup:
+  if (runtime) m3_FreeRuntime(runtime);
+  if (m3env) m3_FreeEnvironment(m3env);
   return (*env)->NewStringUTF(env, resultBuf);
 }
 

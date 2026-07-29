@@ -154,6 +154,10 @@ class ModelDownloadManager(private val filesDir: File) {
                 activeConnection = null
             }
 
+            // dest can already exist here (e.g. a stale/wrong-size leftover from a previous
+            // model version) — renameTo() fails in that case on most filesystems, so clear it
+            // first rather than leaving the download unrecoverable without a manual delete.
+            dest.delete()
             if (!partial.renameTo(dest)) {
                 partial.delete()
                 throw IOException("Failed to finalize ${file.fileName}")

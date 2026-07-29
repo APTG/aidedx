@@ -186,6 +186,10 @@ class MainActivity : Activity() {
     private fun onRecordTapped() {
         val currentRecorder = recorder
         if (currentRecorder == null) {
+            if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_RECORD_AUDIO)
+                return
+            }
             recorder = AudioRecorder().also { it.start() }
             recordButton.text = "Tap to stop"
             transcriptText.text = ""
@@ -258,7 +262,10 @@ class MainActivity : Activity() {
             "GeV" -> matched.energy.value * 1000.0
             else -> matched.energy.value
         }
-        return if (matched.energy.unit == "MeV/nucl") {
+        // massNumber is 0 for particles libdedx doesn't treat as nucleon-composed (e.g. the
+        // electron alias entry) — per-nucleon division would divide by zero, so fall back to
+        // treating the energy as already-total, same as the explicit MeV/nucl case.
+        return if (matched.energy.unit == "MeV/nucl" || matched.massNumber <= 0) {
             totalMev.toFloat()
         } else {
             (totalMev / matched.massNumber).toFloat()

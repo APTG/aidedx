@@ -1,2 +1,2 @@
-rootProject.name = "sherpa-onnx-bench"
+rootProject.name = "full-app-bench"
 include ":app"
