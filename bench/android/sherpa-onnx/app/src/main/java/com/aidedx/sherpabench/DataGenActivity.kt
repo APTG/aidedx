@@ -8,7 +8,10 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
+import android.view.View
 import android.widget.Button
+import android.widget.EditText
+import android.widget.RadioGroup
 import android.widget.TextView
 import com.k2fsa.sherpa.onnx.FeatureConfig
 import com.k2fsa.sherpa.onnx.OfflineModelConfig
@@ -48,7 +51,16 @@ import java.io.StringWriter
  * (Part 3) re-scores every saved transcript through the real pipeline for the number that
  * actually counts.
  *
- * Intent extras (all optional except `speaker`):
+ * Launch either via `adb shell am start ... -e speaker ...` (all extras below) OR with no
+ * extras at all, in which case an on-screen setup panel (speaker/lang/hotwords fields, prefilled
+ * with `speaker="lgpixel"`, `lang="both"`, `hotwords_file="hotwords-v3.txt"`) asks for them
+ * instead — lets the app be relaunched from the phone alone (e.g. via a generic "activity
+ * launcher" app's home-screen shortcut, see docs/android-datagen-bench.md) without needing adb
+ * or a computer for every session. Tapping "Start" just fills these same intent extras in code
+ * and proceeds through the identical `setup()` path below.
+ *
+ * Intent extras (all optional except `speaker`, and `speaker` itself is only required when
+ * skipping the on-screen setup panel by launching with at least one extra already set):
  *   speaker             (required) output subdirectory name under filesDir/out/
  *   lang                "en" | "pl" | "both" (default "both") — which language(s) to prompt;
  *                       "both" interleaves each tuple's EN card immediately before its PL card
@@ -110,6 +122,12 @@ class DataGenActivity : Activity() {
     private lateinit var rerecordButton: Button
     private lateinit var skipButton: Button
 
+    private lateinit var setupPanel: View
+    private lateinit var setupSpeakerInput: EditText
+    private lateinit var setupLangGroup: RadioGroup
+    private lateinit var setupHotwordsInput: EditText
+    private lateinit var setupStartButton: Button
+
     private val log = StringBuilder()
 
     private var parakeetRecognizer: OfflineRecognizer? = null
@@ -149,6 +167,13 @@ class DataGenActivity : Activity() {
         rerecordButton = findViewById(R.id.dg_rerecord_button)
         skipButton = findViewById(R.id.dg_skip_button)
 
+        setupPanel = findViewById(R.id.dg_setup_panel)
+        setupSpeakerInput = findViewById(R.id.dg_setup_speaker)
+        setupLangGroup = findViewById(R.id.dg_setup_lang)
+        setupHotwordsInput = findViewById(R.id.dg_setup_hotwords)
+        setupStartButton = findViewById(R.id.dg_setup_start)
+        setupStartButton.setOnClickListener { onSetupStartTapped() }
+
         recordButton.setOnClickListener { onRecordTapped() }
         keepButton.setOnClickListener { onKeepTapped() }
         rerecordButton.setOnClickListener { onRerecordTapped() }
@@ -164,6 +189,34 @@ class DataGenActivity : Activity() {
             requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 1)
         }
 
+        if (intent.getStringExtra("speaker") != null) {
+            setupPanel.visibility = View.GONE
+            Thread { setup() }.start()
+        } else {
+            setupSpeakerInput.setText("lgpixel")
+            setupHotwordsInput.setText("hotwords-v3.txt")
+            (findViewById<View>(R.id.dg_setup_lang_both) as android.widget.RadioButton).isChecked = true
+        }
+    }
+
+    /** Fills the same intent extras `setup()` already reads from an `am start -e ...` launch,
+     * then proceeds through the identical path — see the class doc comment. Lets the app be
+     * relaunched from the phone alone (no adb) with sensible defaults prefilled. */
+    private fun onSetupStartTapped() {
+        val speaker = setupSpeakerInput.text.toString().trim().ifEmpty { "lgpixel" }
+        val lang = when (setupLangGroup.checkedRadioButtonId) {
+            R.id.dg_setup_lang_en -> "en"
+            R.id.dg_setup_lang_pl -> "pl"
+            else -> "both"
+        }
+        val hotwordsFile = setupHotwordsInput.text.toString().trim()
+
+        intent.putExtra("speaker", speaker)
+        intent.putExtra("lang", lang)
+        if (hotwordsFile.isNotEmpty()) intent.putExtra("hotwords_file", hotwordsFile)
+
+        setupPanel.visibility = View.GONE
+        setupStartButton.isEnabled = false
         Thread { setup() }.start()
     }
 
@@ -196,7 +249,14 @@ class DataGenActivity : Activity() {
         val numThreads = intent.getIntExtra("num_threads", 2)
         val force = intent.getBooleanExtra("force", false)
 
-        hotwords = hotwordsFile?.let { File(filesDir, it).readText().trim() }
+        hotwords = hotwordsFile?.let {
+            try {
+                File(filesDir, it).readText().trim()
+            } catch (e: Exception) {
+                appendLog("WARNING: couldn't read hotwords file \"$it\" (${e.message}) — continuing unbiased")
+                null
+            }
+        }
         outDir = File(File(filesDir, "out"), speaker)
         outDir.mkdirs()
 

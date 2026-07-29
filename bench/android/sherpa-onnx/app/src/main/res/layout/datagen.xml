@@ -5,6 +5,65 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <LinearLayout
+        android:id="@+id/dg_setup_panel"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp">
+
+        <EditText
+            android:id="@+id/dg_setup_speaker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="speaker"
+            android:inputType="text" />
+
+        <RadioGroup
+            android:id="@+id/dg_setup_lang"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <RadioButton
+                android:id="@+id/dg_setup_lang_en"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="en" />
+
+            <RadioButton
+                android:id="@+id/dg_setup_lang_pl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="pl" />
+
+            <RadioButton
+                android:id="@+id/dg_setup_lang_both"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="both" />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/dg_setup_hotwords"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="hotwords file (optional, relative to filesDir)"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/dg_setup_start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Start" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/dg_progress_text"
         android:layout_width="match_parent"

@@ -39,12 +39,16 @@ issue #120/#122's published numbers stay reproducible from the same icon) but it
 `adb`:
 
 1. Install **Activity Launcher** (Peter Kalauskas) from the Play Store.
-2. Find **SherpaBench** → **DataGenActivity** in its activity list.
-3. Add string extras: `speaker` (pick a name), `lang` = `both`, `hotwords_file` =
-   `hotwords-v3.txt`.
-4. Save as a home-screen shortcut. Tapping it resumes from `session.json` — safe to record in
-   short batches across many sessions, on the phone alone, no PC needed after the initial
-   install/push.
+2. Find **SherpaBench** → **DataGenActivity** in its activity list, no extras needed.
+3. Save as a home-screen shortcut.
+
+Launching with no intent extras (from that shortcut, or from the app's own recents-list re-open)
+now shows an on-screen setup panel — speaker/lang/hotwords fields prefilled with sensible
+defaults (`speaker="lgpixel"`, `lang="both"`, `hotwords_file="hotwords-v3.txt"`) — instead of the
+old "missing required intent extra \"speaker\"" failure a no-extras launch used to hit. Tapping
+**Start** resumes from that speaker's `session.json` exactly like the `adb`-launched path does,
+so short recording sessions across many days, on the phone alone, work with no PC involved after
+the initial install/push.
 
 ## What `DataGenActivity` does
 
