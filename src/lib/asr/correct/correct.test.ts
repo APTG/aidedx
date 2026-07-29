@@ -92,6 +92,19 @@ describe("correctTranscript — letter-spelled energy units (issue #118)", () =>
   it("does not treat an unrelated unit like 'km' as a letter-spelled energy unit", () => {
     expect(correctText("the target is 100 km wide")).toBe("the target is 100 km wide");
   });
+
+  it("fixes a letter-spelled unit after a spelled-out number (issue #147)", () => {
+    // sherpa-onnx/Parakeet-v3 (no ASR inverse-text-normalization) spoke both "twenty" and
+    // "MeV" as words, splitting the unit into "Me V" — every rule above originally required a
+    // literal digit immediately before the unit, so this combination slipped through untouched
+    // and silently produced a "No match" on Android (the bug this test guards against).
+    expect(correctText("Range of twenty Me V proton in silicon.")).toBe(
+      "Range of twenty MeV proton in silicon.",
+    );
+    expect(correctText("Stopping power of twenty Me V proton in silicon.")).toBe(
+      "Stopping power of twenty MeV proton in silicon.",
+    );
+  });
 });
 
 describe("correctTranscript — per-nucleon phonetic variants", () => {

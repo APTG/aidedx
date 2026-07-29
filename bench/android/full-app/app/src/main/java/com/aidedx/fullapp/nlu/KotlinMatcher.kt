@@ -115,8 +115,13 @@ object KotlinMatcher {
     )
     private val NUMBER_WORD_ALTERNATION =
         (ONES_WORDS.keys + TENS_WORDS.keys + setOf("hundred")).joinToString("|")
+    // "and" may optionally join "hundred" to a remainder word ("two hundred and forty") without
+    // itself being a number word — matches en.ts's `composeHundreds()`, which the same shape of
+    // sentence exercises on the web side (correct.test.ts's "two hundred and forty MeV" case).
+    // Without this, the run stops at "hundred" and "and forty" is left as a separate,
+    // unconverted word, silently corrupting the value ("two hundred and forty" -> "200 and 40").
     private val NUMBER_WORD_RUN_RE = Regex(
-        "\\b(?:$NUMBER_WORD_ALTERNATION)(?:[\\s-]+(?:$NUMBER_WORD_ALTERNATION))*\\b",
+        "\\b(?:$NUMBER_WORD_ALTERNATION)(?:[\\s-]+(?:and\\s+)?(?:$NUMBER_WORD_ALTERNATION))*\\b",
         RegexOption.IGNORE_CASE,
     )
 
@@ -190,7 +195,10 @@ object KotlinMatcher {
     }
 
     fun match(rawText: String, aliases: AliasTables): MatchedIntent? {
-        val text = normalizeSpelledNumbers(rawText)
+        // issue #147 — number normalization must run before the ASR correction rules, since
+        // several of them (letter-spelled units, glued-unit-before-particle) are digit-gated;
+        // see AsrCorrections.kt's header for why this ordering is itself part of the fix.
+        val text = AsrCorrections.correct(normalizeSpelledNumbers(rawText))
         val quantity = detectQuantity(text) ?: return null
 
         val energyMatch = ENERGY_RE.find(text) ?: return null

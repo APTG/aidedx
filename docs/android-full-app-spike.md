@@ -21,6 +21,22 @@ shape/spacing language, and mic-button states (§6), **device-verified** on the 
 build (`./gradlew assembleDebug`, Kotlin included), both Activities walked in light and dark mode,
 all three record-button states, and the launcher icon — see §6.7._
 
+_Updated 2026-07-29 for #147 — a real user recording ("range"/"stopping power of twenty MeV
+proton in silicon") came back "No match": the on-device ASR spoke "MeV" as two separate words
+("Me V"), which `ENERGY_RE` requires as one unbroken token. This is the same digit-only-prefix
+assumption §"Matcher gap found and fixed" below already found and partly fixed for spelled-out
+*numbers* — no rule existed yet for a letter-spelled *unit*. Turned out to be a **latent bug in
+the web app's `en.ts` correction rules too** (verified directly: `correctTranscript()` +
+`matchIntent()` on the same sentence lost the energy slot there as well), masked because
+`eval/intents.jsonl` is hand-authored clean text that never combines a spelled-out number with a
+letter-spelled unit. Fixed on both sides: `en.ts`'s digit-gated rules now also accept a
+spelled-out number prefix (`NUMBER_PREFIX_SRC`), and a new `AsrCorrections.kt` ports the relevant
+subset of `en.ts`'s `EN_RULES` (letter-spelled units, per-nucleon/particle/material/quantity
+phonetic fixes) into the Kotlin matcher, run after `normalizeSpelledNumbers()` — see that file's
+header for the full rationale and which `en.ts` rules were deliberately left unported (ASTAR/PSTAR,
+"compare", cm/mm inverse-query targets — none of which this port supports). Re-verified on the JVM
+agreement test: **no regression**, still 83/83 (100.0%) semantic agreement._
+
 ## TL;DR
 
 - **`bench/android/full-app` builds clean** (`./gradlew assembleDebug`) and **runs clean on real
