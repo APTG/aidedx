@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:allowBackup="false"
         android:label="SherpaBench"
@@ -13,5 +15,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- issue #130 Part 2 — launched explicitly via
+             `am start -n com.aidedx.sherpabench/.DataGenActivity`, not the launcher icon
+             (BenchActivity already owns that). -->
+        <activity
+            android:name=".DataGenActivity"
+            android:exported="true" />
     </application>
 </manifest>

@@ -91,3 +91,8 @@ __pycache__/
 /scripts/tts-1000-sentences-pl.json
 /aidedx-tts1000-pl-*.out
 /aidedx-tts1000-pl-*.err
+
+# Benchmark-data-generator per-language manifests (issue #130 Part 3) — derived from
+# eval/datagen-sentences.json by scripts/datagen-to-manifest.mjs, regenerable on demand, same
+# rationale as the 1000-sentence batches above.
+/eval/datagen-manifest-*.json
