@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -39,6 +41,8 @@ class MainActivity : Activity() {
 
     private var transcriber: ParakeetTranscriber? = null
     private var recorder: AudioRecorder? = null
+    private val autoStopHandler = Handler(Looper.getMainLooper())
+    private val autoStopRunnable = Runnable { onRecordTapped() }
 
     private lateinit var downloadPromptPanel: View
     private lateinit var downloadProgressPanel: View
@@ -105,6 +109,7 @@ class MainActivity : Activity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        autoStopHandler.removeCallbacks(autoStopRunnable)
         transcriber?.release()
     }
 
@@ -186,7 +191,15 @@ class MainActivity : Activity() {
             transcriptText.text = ""
             intentText.text = ""
             resultText.text = ""
+            // issue #143 — sherpa-onnx's non-streaming OfflineRecognizer is built for short
+            // clips; a recording left running for minutes (observed during #136's on-device
+            // testing, from a missed Stop tap) came back with a silently empty transcript rather
+            // than a partial/garbled one. Auto-stop instead of leaving that failure mode open —
+            // this fires `onRecordTapped()` again exactly as if the user had tapped Stop, so it
+            // goes through the identical stop -> transcribe -> match -> compute -> display path.
+            autoStopHandler.postDelayed(autoStopRunnable, MAX_RECORDING_MS)
         } else {
+            autoStopHandler.removeCallbacks(autoStopRunnable)
             recordButton.isEnabled = false
             recordButton.text = "Processing…"
             val samples = currentRecorder.stop()
@@ -199,9 +212,13 @@ class MainActivity : Activity() {
         Thread {
             val floats = ParakeetTranscriber.shortsToFloats(samples)
             val transcript = transcriber?.transcribe(floats) ?: ""
-            val matched = KotlinMatcher.match(transcript, aliases)
+            val matched = if (transcript.isBlank()) null else KotlinMatcher.match(transcript, aliases)
 
-            var intentLine = "No match"
+            // issue #143 — distinguish "heard nothing at all" from "heard something but couldn't
+            // match it" instead of both silently reading as the same "No match" — the ambiguity
+            // is exactly what made the long-recording empty-transcript failure mode confusing to
+            // diagnose on-device (see the auto-stop cap above and docs/android-full-app-spike.md).
+            var intentLine = if (transcript.isBlank()) "No speech detected — try again" else "No match"
             var resultLine = ""
             if (matched != null) {
                 intentLine = "${matched.quantity} | particle=${matched.particleMatch} " +
@@ -253,13 +270,14 @@ class MainActivity : Activity() {
     /**
      * issue #136 goal 3 — real per-call latency for the findings doc, not a guess. Approach B
      * (`LibdedxBridge`) is a bare flat JNI call into an already-loaded native library — no
-     * per-call setup. Approach A's *current* smoke-test API (`LibdedxWasmBridge.runSmokeTest`)
-     * re-parses and re-links the whole wasm module on every call (there is no "load once, call
-     * many times" entry point yet — see `docs/android-full-app-spike.md` §3.2's scope note), so
-     * its measured number necessarily includes that cold-start cost; a production Approach A
-     * implementation amortizing the parse/link once across calls would look different. Logged via
-     * `Log.d` (grep logcat for "LatencyBench") rather than surfaced in the UI — a one-off spike
-     * measurement, not a feature.
+     * per-call setup.
+     *
+     * issue #143 — Approach A is now measured two ways so the comparison is fair. "Cold"
+     * (`runSmokeTest`, unchanged) re-parses and re-links the whole wasm module on every call —
+     * #136's original 15.671 ms/call number. "Warm" (`LibdedxWasmBridge.init()`'s `Session`,
+     * added for #143) parses+links once and reuses that runtime for every calculate call, the
+     * same load-once-call-many shape Approach B's `System.loadLibrary()` already has — this is the
+     * number that's actually comparable to Approach B's.
      */
     private fun runLatencyBenchmark() {
         Thread {
@@ -269,15 +287,35 @@ class MainActivity : Activity() {
             val bAvgMs = (System.nanoTime() - bStart) / 50 / 1_000_000.0
             android.util.Log.d("LatencyBench", "Approach B (JNI) warmup=$bWarmup avg=${bAvgMs}ms over 50 calls")
 
-            val aRuns = 10
-            val aStart = System.nanoTime()
-            repeat(aRuns) { LibdedxWasmBridge.runSmokeTest(assets) }
-            val aAvgMs = (System.nanoTime() - aStart) / aRuns / 1_000_000.0
-            android.util.Log.d("LatencyBench", "Approach A (wasm3, incl. parse+link) avg=${aAvgMs}ms over $aRuns calls")
+            val coldRuns = 10
+            val coldStart = System.nanoTime()
+            repeat(coldRuns) { LibdedxWasmBridge.runSmokeTest(assets) }
+            val coldAvgMs = (System.nanoTime() - coldStart) / coldRuns / 1_000_000.0
+            android.util.Log.d(
+                "LatencyBench",
+                "Approach A cold (wasm3, incl. parse+link) avg=${coldAvgMs}ms over $coldRuns calls",
+            )
+
+            val session = LibdedxWasmBridge.init(assets)
+            var warmAvgMs = Double.NaN
+            if (session.isValid) {
+                val warmWarmup = session.stoppingPowerMevCm2PerG(1, 276, 40f)
+                val warmStart = System.nanoTime()
+                repeat(50) { session.stoppingPowerMevCm2PerG(1, 276, 40f) }
+                warmAvgMs = (System.nanoTime() - warmStart) / 50 / 1_000_000.0
+                android.util.Log.d(
+                    "LatencyBench",
+                    "Approach A warm (wasm3, parsed once) warmup=$warmWarmup avg=${warmAvgMs}ms over 50 calls",
+                )
+                session.release()
+            } else {
+                android.util.Log.d("LatencyBench", "Approach A warm: session init failed")
+            }
 
             runOnUiThread {
                 wasmResultText.text = "B (JNI): ${"%.3f".format(bAvgMs)} ms/call | " +
-                    "A (wasm3, incl. parse+link): ${"%.3f".format(aAvgMs)} ms/call"
+                    "A cold (wasm3): ${"%.3f".format(coldAvgMs)} ms/call | " +
+                    "A warm (wasm3): ${"%.3f".format(warmAvgMs)} ms/call"
             }
         }.start()
     }
@@ -286,5 +324,12 @@ class MainActivity : Activity() {
 
     companion object {
         private const val REQUEST_RECORD_AUDIO = 1
+
+        // issue #143 — sherpa-onnx's OfflineRecognizer is a non-streaming, whole-clip decoder;
+        // every hand-picked test sentence in this app's own test set (docs/android-full-app-
+        // spike.md) is well under 10s spoken, so 15s leaves comfortable margin for a real query
+        // without leaving the door open to the multi-minute silent-empty-transcript failure mode
+        // #136 hit on-device.
+        private const val MAX_RECORDING_MS = 15_000L
     }
 }
