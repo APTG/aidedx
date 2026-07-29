@@ -210,6 +210,59 @@ function energyPhrase(e) {
 }
 
 // ---------------------------------------------------------------------------
+// Spoken unit-rendering variance (issue #118 TODO item 1, docs/unit-pronunciation-asr.md §7#1):
+// a bare abbreviation is only one of several ways a human reads these units aloud, and no single
+// TTS engine's G2P covers the range (§3 of that doc) — so the corpus's INPUT TEXT needs to vary
+// the rendering rather than relying on synthesis quirks to do it by accident.
+//
+// This is applied to `attempt.text` in buildCategory() AFTER checkCandidate() has already
+// validated the sentence — never before. The real matcher (src/lib/intent/matcher.ts's
+// energyRe/STP_UNIT_RE) only recognizes the bare abbreviation, which is also, per §1, exactly
+// what Whisper's own ASR normalizes any spoken rendering back to before the matcher ever sees a
+// real transcript — so validating against the abbreviated form matches what actually reaches the
+// matcher in the real pipeline. Rendering a unit into something else *before* validation instead
+// breaks multi-energy candidates silently: matchIntent only recognizes whichever energies still
+// say "MeV"/"keV"/"GeV" in a list like "50, 100, and 150 MeV", and "at least one energy found" is
+// enough to pass the incompleteness check — so a sentence can validate "ok" while quietly having
+// fewer energies than slotTruth lists.
+const ENERGY_UNIT_WORDS = {
+  keV: ["keV", "kiloelectronvolt", "kilo electron volt"],
+  MeV: ["MeV", "megaelectronvolt", "mega electron volt"],
+  GeV: ["GeV", "gigaelectronvolt", "giga electron volt"],
+};
+const LENGTH_UNIT_WORDS = {
+  cm: ["cm", "centimeter"],
+  mm: ["mm", "millimeter"],
+};
+const UNIT_WORDS = { ...ENERGY_UNIT_WORDS, ...LENGTH_UNIT_WORDS };
+
+// No strong evidence for the "true" human distribution — that's the open question issue #118
+// investigates, not something settled here. Biased toward the bare abbreviation (still the
+// majority rendering in the real-lecture forced-alignment sample, docs/unit-pronunciation-asr.md
+// §6.4) while giving the other renderings enough weight to actually exercise the corrector and
+// matcher against them.
+function renderUnitWord(words) {
+  const r = rng();
+  if (words.length === 3) return r < 0.5 ? words[0] : r < 0.8 ? words[1] : words[2];
+  return r < 0.5 ? words[0] : words[1];
+}
+
+// One rendering choice per unit-abbreviation PRESENT in the sentence (not per occurrence) — a
+// multi-energy sentence repeating "MeV" reads more like one speaker's consistent habit than a
+// mid-sentence style switch, and it keeps this from multiplying rng() draws unpredictably based
+// on how many times a unit happens to appear.
+function renderUnitsForSpeech(text) {
+  let out = text;
+  for (const [abbrev, words] of Object.entries(UNIT_WORDS)) {
+    const boundary = `\\b${abbrev}\\b`;
+    if (!new RegExp(boundary).test(out)) continue;
+    const rendering = renderUnitWord(words);
+    if (rendering !== abbrev) out = out.replace(new RegExp(boundary, "g"), rendering);
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
 // Phrasing templates — each entry is { fn, kw }. `kw` is the exact quantity-indicating
 // phrase *that template's own text actually contains* (a regex-ready fragment), recorded
 // as slot-truth ground truth. Earlier draft mistakenly recorded a fixed "range"/"stopping
@@ -750,7 +803,7 @@ function buildCategory(
     i++;
     out.push({
       id,
-      text: attempt.text,
+      text: renderUnitsForSpeech(attempt.text),
       quantity,
       multi,
       slotTruth: attempt.slotTruth,

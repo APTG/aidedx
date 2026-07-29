@@ -1,0 +1,81 @@
+
+=== onnx-community/whisper-small [q8] +prompt new-corrector ===
+clips: 1000   median inference: 2.5s   load: 1.8s
+clip-level all-slots-correct:  raw 502/1000 (50.2%)   corrected 596/1000 (59.6%)
+
+by quantity (corrected):
+  csdaRange        300/600 (50.0%)
+  energyFromRange  231/250 (92.4%)
+  stoppingPower    65/150 (43.3%)
+
+by scenario type (corrected):
+  single     463/800 (57.9%)
+  energy     65/100 (65.0%)
+  material   37/55 (67.3%)
+  particle   31/45 (68.9%)
+
+by stratum (corrected) — issue #92, clinical-core vs. long-tail robustness:
+  long-tail      409/690 (59.3%)
+  clinical-core  187/310 (60.3%)
+
+by voice profile (corrected), worst 10:
+  custom-aiden-curious             8/24 (33.3%)
+  us-male-formal-slow              10/27 (37.0%)
+  italian-accented-male-animated   10/27 (37.0%)
+  jamaican-male-animated           10/25 (40.0%)
+  australian-female-cheerful       9/21 (42.9%)
+  indian-male-confident            10/22 (45.5%)
+  dutch-accented-female-relaxed    7/15 (46.7%)
+  us-elderly-female-sleepy         9/19 (47.4%)
+  south-african-male-serious       7/14 (50.0%)
+  spanish-accented-male-animated   13/25 (52.0%)
+
+slot-token accuracy by category (raw -> corrected):
+  quantity   97.9% ->  98.5%  (n=1250)
+  particle   92.6% ->  92.6%  (n=1045)
+  material   98.6% ->  98.7%  (n=1087)
+  number     98.2% ->  98.3%  (n=1153)
+  unit       52.9% ->  66.8%  (n=1153)
+  ALL        88.0% ->  91.0%  (n=5688)
+
+per-unit accuracy (raw -> corrected), issue #92:
+  MeV         40.4% ->  56.6%  (n=498)
+  MeV/nucl    39.7% ->  63.2%  (n=315)
+  keV         46.3% ->  50.7%  (n=67)
+  GeV         26.1% ->  34.8%  (n=23)
+  cm          99.5% ->  99.5%  (n=185)
+  mm          96.9% ->  96.9%  (n=65)
+
+failing clips after correction (404 total, showing first 30):
+  rng-0002 missing[unit]: How deep does a 120-EV per nucleon nitrogen 14 ion penetrate into polycarbonate?
+  rng-0003 missing[unit]: range of a 350-megaphone volt per nucleon silicon, 28 ion in water, please.
+  rng-0005 missing[particle]: How deep does a 100 MAV trite and penetrate into air?
+  rng-0006 missing[unit]: range of a 220 megelectronvolt proton in compact bone, please.
+  rng-0007 missing[unit]: Find the CSDA range for 80 megilatron volt deuteron in polystyrene.
+  rng-0009 missing[particle]: range of a 200 MeV per nucleon phosphorous 31 ion in brain please.
+  rng-0010 missing[unit]: Determine the range of 20-megaphone volt helium-3 ions in gold.
+  rng-0012 missing[unit]: What is the CSDA range of a 300 kilo electron volt proton in aluminum oxide?
+  rng-0013 missing[particle,unit]: So roughly how far would a 350 kilo electron volt flurry 19 ion make it into blood?
+  rng-0014 missing[particle,unit]: Quick one, how far does a 350-megaproton go in concrete?
+  rng-0016 missing[unit]: Find the CSDA range for 50-megailectron-volt alpha particles and silicon dioxide.
+  rng-0018 missing[unit]: Before coming to rest, how far does a 400-megapolt per nucleon xenon-132 ion get through cesium iodide?
+  rng-0020 missing[unit]: What is the CSDA range of a 200 kilo electron volt beryllium-9 ion and compact bone?
+  rng-0021 missing[unit]: How deep does a 50-megapelectron-volt-helium-3 ion penetrate into aluminum?
+  rng-0022 missing[particle]: Find the CSDA range for 100 MeV-healium-3 ions in aluminum oxide.
+  rng-0024 missing[unit]: What's the range of a 30 megelectron volt per nucleon, krypton, 84 ion, and aluminum oxide?
+  rng-0026 missing[number,unit]: Quick one, how far does an ADMEV per nucleon sulfur-32 ion go in compact bone?
+  rng-0027 missing[particle,unit]: Determine the range of 10-megaprotons in PMMA.
+  rng-0028 missing[unit]: Before coming to rest, how far does a 25-megoelectron-volt deuteron get through boron?
+  rng-0032 missing[unit]: What's the range of a 20-megawatt electron volt, triton, and air?
+  rng-0033 missing[unit]: range of a 250 megaelectron volt proton in polystyrene, please.
+  rng-0034 missing[particle,unit]: Find the CSDA range for 60 Mv per NCl, 35 ions in Teflon
+  rng-0036 missing[unit]: Before coming to rest, how far does a 50-megapron volt per nucleon boron-11 ion get through adipose tissue?
+  rng-0037 missing[particle,unit]: Before coming to rest, how far does a 250-megalactron volt per nucleon-nion-20 ion get through aluminum?
+  rng-0039 missing[unit]: How deep does a 15-megapelectron-volt triton penetrate into Kapton?
+  rng-0044 missing[unit]: What's the range of a 5-megawatt electron-volt alpha particle in boron?
+  rng-0045 missing[unit]: Quick one. How far does a 25-megaplectron-volt helium-3 ion go in A150 tissue-equivalent plastic?
+  rng-0046 missing[unit]: Before coming to rest, how far does a 150-megawatt electron volt per nucleon carbon-13 ion get through water?
+  rng-0047 missing[unit]: How deep does a 50 kilo electron volt neon-20 ion penetrate into polyethylene?
+  rng-0048 missing[unit]: What is the CSDA range of a 180 megelectron volt per nucleon beryllium-9 ion and Kapton?
+
+wrote eval/results/tts-1000-v4-2026-07-29/score-new.json

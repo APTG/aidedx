@@ -38,6 +38,11 @@
 # after a timeout is the expected recovery path, not a bug to fix first.
 #
 # Submit:  sbatch scripts/submit-forced-align.sh   (that's it — venv + deps install on first run)
+# Any extra arguments are forwarded to forced-align-corpus.py — e.g. after a fix that only
+# affects the podcast transcription path (docs/unit-pronunciation-asr.md §6.4's context-window
+# bug), re-run just that lane into a fresh results dir without redoing the (unaffected, known-
+# transcript) MIT lecture alignment:
+#   sbatch scripts/submit-forced-align.sh --only podcasts
 set -euo pipefail
 
 cd "${SLURM_SUBMIT_DIR:-$(pwd)}"
@@ -74,7 +79,7 @@ RESULTS_DIR="eval/results/forced-align-${JOB}"
 mkdir -p "$RESULTS_DIR"
 
 echo "=== forced alignment: results -> $RESULTS_DIR ==="
-if python3 scripts/forced-align-corpus.py "$RESULTS_DIR"; then
+if python3 scripts/forced-align-corpus.py "$RESULTS_DIR" "$@"; then
   STATUS=0
 else
   STATUS=$?

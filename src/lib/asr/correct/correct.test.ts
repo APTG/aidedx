@@ -73,6 +73,27 @@ describe("correctTranscript — number/unit mishearings", () => {
   });
 });
 
+describe("correctTranscript — letter-spelled energy units (issue #118)", () => {
+  it("fixes the hyphenated letter-spelling confirmed in real transcripts (docs/unit-pronunciation-asr.md §1, rng-0573)", () => {
+    expect(correctText("100 M-E-V per nucleon")).toBe("100 MeV per nucleon");
+  });
+
+  it("fixes hyphenated keV/GeV letter-spellings", () => {
+    expect(correctText("500 K-E-V protons in silicon")).toBe("500 keV protons in silicon");
+    expect(correctText("3 G-E-V protons in air")).toBe("3 GeV protons in air");
+  });
+
+  it("fixes fully-spelled-out letter names (scripts/generate-unit-probe.py's 'letters' rendering)", () => {
+    expect(correctText("150 em e v protons in water")).toBe("150 MeV protons in water");
+    expect(correctText("500 kay e v protons in silicon")).toBe("500 keV protons in silicon");
+    expect(correctText("3 gee e v protons in air")).toBe("3 GeV protons in air");
+  });
+
+  it("does not treat an unrelated unit like 'km' as a letter-spelled energy unit", () => {
+    expect(correctText("the target is 100 km wide")).toBe("the target is 100 km wide");
+  });
+});
+
 describe("correctTranscript — per-nucleon phonetic variants", () => {
   it("normalizes the napelion/nutlion/nukleon family to 'per nucleon'", () => {
     expect(correctText("per napelion energy loss")).toBe("per nucleon energy loss");

@@ -70,6 +70,8 @@ from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor, pipeline
 SAMPLE_RATE = 16000
 UNIT_TOKENS = {"ev", "kev", "mev", "gev", "tev"}
 SEG_PAD_S = 0.2  # audio padding around each segment's known/ASR timestamps
+PODCAST_WINDOW_S = 28.0  # see process_podcasts() docstring for why the ASR pipeline below is
+# never given more than this much audio in one call
 
 CTC_MODELS = {
     "en": "jonatasgrosman/wav2vec2-large-xlsr-53-english",
@@ -270,6 +272,23 @@ def process_mit(corpus_dir, models, device, out_dir, unit_sink, limit):
 
 
 def process_podcasts(corpus_dir, models, asr, out_dir, unit_sink, limit):
+    """Transcribe each podcast in fixed, non-overlapping PODCAST_WINDOW_S windows, rather than
+    handing the whole file to the pipeline in one call with chunk_length_s/stride_length_s set.
+
+    That long-form path splits the file into overlapping chunks and reconciles consecutive
+    chunks' timestamps by matching overlapping token sequences to derive a running audio offset.
+    A chunk whose content doesn't overlap cleanly with its neighbor (e.g. a distinct ad-break
+    segment) can desync that offset — after which every later chunk's reported timestamp is
+    shifted from where the audio actually is. That's the root cause of the bug flagged in
+    docs/unit-pronunciation-asr.md §6.4 (a `daniel-and-jorge` MeV instance's printed context was
+    an unrelated ad break; the real mention sat elsewhere in the same episode, correctly
+    transcribed but under a different, offset timestamp).
+
+    Each window here is a single native Whisper pass (<= its own 30s context), so
+    `return_timestamps=True` uses Whisper's own in-window timestamp tokens directly — there is no
+    cross-window stitching, so no offset to desync. The window's own start time is added back
+    exactly, since it's known by construction rather than reconstructed from token overlap.
+    """
     for lang, source in (("en", "daniel-and-jorge"), ("pl", "radio-naukowe")):
         pod_dir = corpus_dir / lang / source
         mp3s = sorted(pod_dir.glob("*.mp3"))[:limit]
@@ -281,22 +300,30 @@ def process_podcasts(corpus_dir, models, asr, out_dir, unit_sink, limit):
                 continue
             print(f"=== {source}: {mp3_path.name} (transcribing, this is the slow step) ===", file=sys.stderr)
             waveform = load_audio(mp3_path)
-            chunks = asr(
-                str(mp3_path),
-                return_timestamps=True,
-                generate_kwargs={"language": lang, "task": "transcribe"},
-            )["chunks"]
+            total_s = waveform.shape[-1] / SAMPLE_RATE
             full_sink = []
             meta = {"lang": lang, "source": source, "file": mp3_path.stem}
-            total_s = waveform.shape[-1] / SAMPLE_RATE
-            for chunk in chunks:
-                start, end = chunk["timestamp"]
-                if start is None:
-                    continue
-                if end is None:
-                    end = total_s
-                process_segment(model, processor, waveform, start, end, chunk["text"], lang, models["device"],
-                                 meta, unit_sink, full_sink)
+            n_windows = max(1, int(np.ceil(total_s / PODCAST_WINDOW_S)))
+            for wi in range(n_windows):
+                w_start = wi * PODCAST_WINDOW_S
+                w_end = min(total_s, w_start + PODCAST_WINDOW_S)
+                i0, i1 = int(w_start * SAMPLE_RATE), int(w_end * SAMPLE_RATE)
+                window_audio = waveform[..., i0:i1].squeeze(0).numpy()
+                if window_audio.shape[-1] < SAMPLE_RATE * 0.5:
+                    continue  # trailing sliver, not worth a forward pass
+                result = asr(
+                    {"array": window_audio, "sampling_rate": SAMPLE_RATE},
+                    return_timestamps=True,
+                    generate_kwargs={"language": lang, "task": "transcribe"},
+                )
+                for chunk in result["chunks"]:
+                    start, end = chunk["timestamp"]
+                    if start is None:
+                        continue
+                    if end is None:
+                        end = w_end - w_start
+                    process_segment(model, processor, waveform, w_start + start, w_start + end,
+                                     chunk["text"], lang, models["device"], meta, unit_sink, full_sink)
             write_full(out_dir, f"{source}-{mp3_path.stem}", full_sink)
             done_marker.parent.mkdir(parents=True, exist_ok=True)
             done_marker.touch()
@@ -344,13 +371,18 @@ def main():
 
         if args.only != "mit":
             print(f"loading ASR pipeline ({args.whisper_model})...", file=sys.stderr)
+            # No chunk_length_s/stride_length_s here: process_podcasts() always calls this
+            # pipeline with <= PODCAST_WINDOW_S (28s) of audio per call, well under a single
+            # native Whisper window, so there is never a second overlapping chunk for the
+            # pipeline's long-form stitching to reconcile. Leaving those args unset (rather than
+            # set-but-inert) means a future change to PODCAST_WINDOW_S can't silently re-enable
+            # the cross-chunk timestamp drift this file's docstring and process_podcasts()
+            # explain (the bug docs/unit-pronunciation-asr.md §6.4 found).
             asr = pipeline(
                 "automatic-speech-recognition",
                 model=args.whisper_model,
                 device=0 if device == "cuda" else -1,
                 torch_dtype=torch.float16 if device == "cuda" else torch.float32,
-                chunk_length_s=30,
-                stride_length_s=5,
             )
             print("--- podcasts (ASR + alignment) ---", file=sys.stderr)
             process_podcasts(corpus_dir, models, asr, out_dir, unit_sink, args.limit or 10**9)

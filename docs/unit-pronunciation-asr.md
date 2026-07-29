@@ -356,25 +356,94 @@ the MIT captioned lectures (ground-truth text, real forced alignment):
   shows the printed context is an unrelated podcast-ad break ("Suite 305", "Portlandia", "Everyone
   Watches Women's Sports" — no physics content at all), while the _real_ `MeV` mentions in that
   same episode ("It's half of an MeV, half of a mega electron volt...", "a few MeV, a few million
-  electron volts...") sit in different, correctly-captioned parts of the transcript. Root cause not
-  chased down (likely a segment-boundary/offset issue specific to how `forced-align-corpus.py`
-  windows context for Whisper-transcribed — as opposed to `.srt`-captioned — sources, since spot
-  checks of `mit-8.701` context strings above are all correct, short, and on-topic). **Practical
+  electron volts...") sit in different, correctly-captioned parts of the transcript. **Practical
   effect is small** (`daniel-and-jorge` is only 11 of 95 instances, `radio-naukowe` 1 of 95) but it
   means the `daniel-and-jorge`/`radio-naukowe` rows in the table above should be treated as
   low-confidence until someone listens to the actual audio at the given timestamps — the
   `mit-8.701` rows (87 of 95 instances, real `.srt` ground truth) are the trustworthy majority of
   this run.
 
+  **Root cause found and fixed:** `process_podcasts()` handed each whole podcast file to the HF
+  ASR pipeline in one call with `chunk_length_s=30, stride_length_s=5` — the "long-form" path that
+  splits audio into overlapping chunks and reconciles consecutive chunks' timestamps by matching
+  their overlapping token sequences to derive a running offset. A chunk that doesn't overlap
+  cleanly with its neighbor (an ad break, unlike the surrounding physics content, is exactly that)
+  can desync this offset, after which every later chunk's reported timestamp is shifted from where
+  the audio actually is — matching the ad-break-timestamp-pointing-at-real-content pattern above.
+  Fixed by transcribing each podcast in fixed, non-overlapping ~28s windows ourselves instead:
+  each window is a single native Whisper pass, so `return_timestamps=True` uses Whisper's own
+  in-window timestamp tokens directly (no cross-window stitching, so nothing to desync), and the
+  window's own start offset — known exactly by construction — is added back. **Confirmed fixed**
+  by the 2026-07-28 podcast-only re-run (job 2826271) — see "Results (podcast re-run)" below.
+
+#### Results (podcast re-run, 2026-07-28, job 2826271)
+
+`sbatch scripts/submit-forced-align.sh --only podcasts` re-transcribed just the `daniel-and-jorge`
+and `radio-naukowe` lanes with the windowed-transcription fix (MIT alignment untouched, since it
+was never affected by this bug). `python3 scripts/forced-align-analyze.py
+eval/results/forced-align-2826271` — 15 aligned instances, all `en`/`daniel-and-jorge` (`radio-naukowe`
+produced zero: verified directly against its transcript JSONs that none of the four episodes'
+Whisper output contains an `eV`/`keV`/`MeV`/`GeV`/`TeV` token at all this run, so this is a real
+content difference, not the alignment step silently dropping matches):
+
+| source           | unit | n   | rate_norm_dur (median / mean) |
+| ---------------- | ---- | --- | ----------------------------- |
+| daniel-and-jorge | GeV  | 6   | 2.90 / 3.07                   |
+| daniel-and-jorge | MeV  | 6   | 1.30 / 1.37                   |
+| daniel-and-jorge | eV   | 3   | 1.00 / 1.22                   |
+
+**Bug fix confirmed:** the specific instance flagged above — `daniel-and-jorge/neutrino-mass`'s
+`MeV` mention at `t≈2125s` — now aligns to `"It's half of an MEV, half of a mega electron volt."`
+(the real physics content), not the "Suite 305"/"Portlandia" ad-break text the old long-form
+chunking produced. All 6 `MeV` and 3 `eV` instances in this re-run land on physics sentences
+(`"10 MeV. We also know that the third"`, `"a few MeV, a few million electron volts"`, `"a proton
+is about a billion EV"`, etc.) — no ad-break contamination in this run's context strings.
+
+This re-run is too small (15 instances, one source) to revisit the §6.4 "prosodic emphasis
+dominates over a fixed rendering" conclusion, which was drawn from the 87-instance `mit-8.701`
+majority (untouched by this bug) — it only confirms the timestamp-desync bug is fixed and the
+`daniel-and-jorge` rows can now be trusted, superseding the "low-confidence until re-run" caveat
+on the original run's `daniel-and-jorge`/`radio-naukowe` rows above.
+
 ## 7. Recommendations
 
-1. **Fix the data-validity gap, not the model.** For a corpus that spans the _human_ pronunciation
-   distribution, control the TTS **input text** (emit `MeV` / `megaelectronvolt` / `mega electron
-volt` and `cm` / `centimeters` variants) rather than trusting any one engine's G2P — none of
-   the three covers the range. Source: `scripts/generate-1000-sentences.mjs` (`energyPhrase()`
-   ~L209, range units ~L635).
-2. **Add letter-spelled unit forms to the phonetic corrector** — closes the confirmed `M-E-V` gap
-   (§1, §4), low-risk, matches `docs/phonetic-corrector.md`'s design.
+1. ~~Fix the data-validity gap, not the model~~ **Done (2026-07-26).** `scripts/generate-1000-sentences.mjs`
+   now renders each keV/MeV/GeV/cm/mm mention as one of several spoken-out variants (abbrev /
+   expanded / spaced-out for energy; abbrev / expanded for length — `renderUnitsForSpeech()`)
+   instead of always the bare abbreviation. Applied to the TTS-facing text only, **after**
+   `checkCandidate()` has already validated the sentence against the real matcher/WASM using the
+   abbreviated form — rendering the variance _before_ validation was tried first and silently
+   broke multi-energy candidates (the matcher only recognizes "MeV"/"keV"/"GeV" literally, so an
+   expanded rendering in a list like "at 700 kiloelectronvolt, 150 MeV, and 200 megaelectronvolt"
+   left 2 of 3 stated energies unrecognized while still passing the "at least one energy found"
+   incompleteness check). Validating against the abbreviated form matches what actually reaches
+   the matcher in the real pipeline anyway, since Whisper normalizes any spoken rendering back to
+   the abbreviation before the matcher ever sees a transcript (§1). **First submission failed,
+   root-caused, fixed (2026-07-28, job 2826275).** `sbatch scripts/submit-v4.sh` ran only 4s
+   (5.8% efficiency, 0.00 GPUh billed), too fast to have reached GPU work — its `.out` log showed
+   why: `submit-v4.sh`'s Step 0 ran a second, separate `tts-sentence-check.ts "$SENTENCES_FILE"`
+   confirmation pass (inherited unchanged from `submit-v2.sh`/`submit-v3.sh`) that re-validates
+   each written record's `text` field directly against the matcher. That pass was a no-op
+   confirmation for v2/v3 (where `text` was always the bare abbreviation, identical to what
+   `generate-1000-sentences.mjs` had already validated inline), but for v4 `text` is the
+   TTS-facing rendering — deliberately including forms like "megaelectronvolt" the matcher can't
+   parse (only Whisper normalizes it back, per §1) — so the confirmation pass failed 466/1000
+   sentences on legitimate, by-design mismatches and `set -euo pipefail` killed the job before any
+   TTS/GPU work. Fixed by dropping that redundant/incompatible pass from `submit-v4.sh`; inline
+   validation in `generate-1000-sentences.mjs` (against the abbreviated form, matching what the
+   real pipeline's matcher actually receives) is the correct and sufficient check. **Re-run
+   completed 2026-07-29 (job 2835178) — see §9 for the full result.** Headline: varying the
+   rendering hurts measured accuracy substantially (clip-level pass rate 84.0% → 59.6% after the
+   shipped corrector), concentrated almost entirely in the non-abbreviated energy-unit forms.
+2. ~~Add letter-spelled unit forms to the phonetic corrector~~ **Done (2026-07-26).** Added
+   `mev-letter-spelled`/`kev-letter-spelled`/`gev-letter-spelled` regex rules to `EN_RULES` in
+   `src/lib/asr/correct/en.ts` — not `LEXICON` as originally proposed: `LEXICON`'s fuzzy pass is
+   single-token, edit-distance-capped (max 1 for a token this short), and can't reach "M-E-V" from
+   "MeV" (2 hyphen-insertions) or a 3-word "em e v" at all (`applyPhoneticPass` only inspects one
+   token right after a number). A regex rule matching `(?:em|m)[\s.,-]*(?:ee|e)[\s.,-]*(?:vee|v)`
+   (and the keV/GeV equivalents) after a number closes the confirmed `M-E-V` gap (`rng-0573`, §1)
+   and also covers the fully-spelled letter-name form the unit-probe generator uses. Tested in
+   `src/lib/asr/correct/correct.test.ts`.
 3. ~~Run the §5 probe~~ **Done (§5.1, 2026-07-23/24).** Qwen-EN's split held up (length expands,
    energy compresses even past the letter-spelled baseline); the "Chatterbox looks like Piper"
    guess did not survive contact with the measured ratios — both diverged from the espeak-IPA
@@ -389,8 +458,9 @@ volt` and `cm` / `centimeters` variants) rather than trusting any one engine's G
    sentence's own typical word length with a long tail driven by sentence position/emphasis, not a
    clean two-cluster split — weaker support for the original binary premise than hoped, though
    duration alone can't fully settle it (would need the actual words spoken, which the caption text
-   already collapses per §1). Fix the podcast-lane context-window bug (§6.4) before trusting or
-   expanding the `daniel-and-jorge`/`radio-naukowe` rows.
+   already collapses per §1). ~~Fix the podcast-lane context-window bug~~ **Fixed and re-run
+   (§6.4, 2026-07-28, job 2826271)** — confirmed the timestamp-desync bug is gone and the
+   `daniel-and-jorge` rows can now be trusted.
 6. ~~Check whether a bigger Whisper actually recognizes the unit correctly on real lecture
    speech, not just synthesized probes~~ **Done (§8, 2026-07-24).** `whisper-large-v3-ONNX__q8` is
    the only pair that gets all 11/11 real-speech unit mentions right, but at ~3x the shipped
@@ -463,3 +533,95 @@ each pair two ways: **raw** (does the untouched transcript contain the expected 
   complete drop, not a wrong-spelling the corrector could plausibly be extended to catch. Worth
   revisiting if the real-speech sample grows (more MIT chapters, or the podcast sources once
   §6.4's context-window bug is fixed) and the same failure mode keeps showing up.
+
+## 9. v4 corpus results — does varying the spoken rendering change measured accuracy? (issue #118 TODO item 1)
+
+§7 item 1's `renderUnitsForSpeech()` makes the corpus's own TTS-facing text say each keV/MeV/GeV
+mention as one of three forms (abbreviation / no-space compound word / spaced-out words, weighted
+50/30/20) and each cm/mm mention as one of two (abbreviation / expanded word, 50/50) instead of
+always the bare abbreviation — closing the data-validity gap §3 found (no single TTS engine's G2P
+covers this range on its own). `sbatch scripts/submit-v4.sh` regenerates the 1000-sentence corpus
+with this variance, synthesizes it (Qwen3-TTS, same engine/voice pool as v3), transcribes it
+(shipped `whisper-small q8` + domain prompt), and scores all three correction layers against v3's
+byte-identical-except-rendering baseline (`eval/results/tts-1000-v3-2026-07-18/`).
+
+**Run 2026-07-29, job 2835178.** TTS generation (1000/1000 clips, 11,158.8s) and ASR transcription
+(1000/1000 records) both completed and synced back normally. Step 3 (scoring) did not: the job
+ended on its own within its time budget (03:50:01 of the 06:00:00 requested — not a SLURM
+timeout), but `score-base.log` came back 0 bytes and none of the `score-{base,ext,new}.json` files
+that step writes were ever created — consistent with the first scoring command failing before
+producing any stdout (`tee` had nothing to write), which under this script's `set -euo pipefail`
+would abort the rest of Step 3 without a further trace in the synced output. The likely mechanism:
+`scripts/asr-score-slots-generic.mjs` statically imports `src/lib/asr/correct/core.ts`, and Step 3
+invokes `node` without `--experimental-strip-types` — the same class of Athena-node-version issue
+Step 0 hit and was fixed for once already this run (job 2826275, item 1 above), just on a
+different line; not confirmed against the job's own `.err` log, since reaching it requires Athena
+access this session didn't use. **Scoring has no GPU/Athena dependency**, so rather than chase the
+exact cause further, the already-synced manifest + transcripts
+(`scripts/sync-athena-to-local.sh`) were scored locally instead — same script, same data, ordinary
+Node 24 — producing the results below (`eval/results/tts-1000-v4-2026-07-29/`).
+`scripts/submit-v4.sh`'s Step 3 now also passes `--experimental-strip-types` defensively, matching
+Step 0's precedent, in case the crash-suspect line is in fact the cause and this is re-run on
+Athena again.
+
+### Headline: clip-level accuracy, raw vs. each correction layer
+
+| corrector                                      | v3 (bare abbreviation only) | v4 (varied rendering) |
+| ---------------------------------------------- | --------------------------- | --------------------- |
+| raw (no correction)                            | 782/1000 (78.2%)            | 502/1000 (50.2%)      |
+| base-corrector (`scripts/asr-correct.mjs`)     | 782/1000 (78.2%)            | 506/1000 (50.6%)      |
+| new-corrector (shipped, `src/lib/asr/correct`) | 840/1000 (84.0%)            | 596/1000 (59.6%)      |
+
+### Per-unit accuracy, raw → corrected (new-corrector)
+
+| unit     | v3                      | v4                    |
+| -------- | ----------------------- | --------------------- |
+| MeV      | 84.2% → 89.4% (n=482)   | 40.4% → 56.6% (n=498) |
+| MeV/nucl | 80.1% → 93.8% (n=322)   | 39.7% → 63.2% (n=315) |
+| keV      | 98.8% → 98.8% (n=83)    | 46.3% → 50.7% (n=67)  |
+| GeV      | 66.7% → 66.7% (n=15)    | 26.1% → 34.8% (n=23)  |
+| cm       | 100.0% → 100.0% (n=184) | 99.5% → 99.5% (n=185) |
+| mm       | 95.5% → 95.5% (n=66)    | 96.9% → 96.9% (n=65)  |
+
+### The gap is almost entirely the non-abbreviated energy renderings, not a general regression
+
+Cross-referencing each clip's actual TTS-facing text (`renderUnitsForSpeech()`'s output, recorded
+verbatim in the manifest) against its pass/fail, bucketed by which energy-unit rendering the
+sentence used:
+
+| rendering                        | n   | raw pass        | corrected pass  |
+| -------------------------------- | --- | --------------- | --------------- |
+| abbrev ("MeV")                   | 385 | 271/385 (70.4%) | 311/385 (80.8%) |
+| compound ("megaelectronvolt")    | 186 | 0/186 (0.0%)    | 26/186 (14.0%)  |
+| spaced ("mega electron volt")    | 156 | 0/156 (0.0%)    | 22/156 (14.1%)  |
+| mixed (multi-energy, both forms) | 23  | 0/23 (0.0%)     | 6/23 (26.1%)    |
+
+The abbreviated-rendering subset alone (385/1000 clips) scores 80.8% corrected — within noise of
+v3's 84.0% on the same energy units. **Every clip whose energy unit was rendered as a compound or
+spaced-out word failed raw transcription, with zero exceptions** (0/186, 0/156). `whisper-small`
+does not reliably recognize "megaelectronvolt"/"mega electron volt" as a coherent phrase at all —
+looking at the raw transcripts behind the missed clips, it doesn't consistently mishear it as one
+wrong-but-fixed alternative (which a lexicon/regex rule could target); it produces a different
+near-neologism almost every time: "megaphone volt", "megawatt electron volt", "megailectron-volt",
+"megoelectron-volt", "megapelectron-volt", "megaplectron-volt", "megalactron volt", "megapron
+volt", "megapolt". The shipped corrector recovers some of this (14.0%/14.1% corrected, up from
+0%) via its general per-nucleon/keV/GeV phonetic passes and the letter-spelled rules landed
+earlier in this PR, but a fixed-vocabulary correction layer has no realistic way to enumerate
+whisper-small's full space of mis-hearings for a five-syllable compound word — this is a
+transcription-accuracy ceiling, not a spelling-correction gap.
+
+Length units (cm/mm) — which `renderUnitsForSpeech()` only varies between abbreviation and one
+expanded word, never a multi-syllable compound like the energy units — show no measurable
+regression (99.5%/96.9% in v4 vs. 100.0%/95.5% in v3), consistent with this being specifically
+about the energy units' harder-to-recognize expanded forms, not the rendering-variance idea itself.
+
+**Conclusion:** §1's finding that Whisper normalizes a spoken unit rendering back to the bare
+abbreviation held for the specific clips inspected there, but doesn't generalize across the wider
+rendering distribution this corpus now exercises — a substantial fraction (~34%) of naturally-worded
+energy-unit mentions are essentially unrecognizable to the shipped model, corrector or not. This
+is a real, previously-unmeasured gap between the frozen eval set's historical near-exclusive use of
+the bare abbreviation and what a human might actually say. Given the ~7x cost of `whisper-large-v3`
+(§8) isn't justified by a single real-lecture miss, the more promising next step for this specific
+gap is probably at the TTS/G2P or prompt-biasing layer (make the _voice_ say "MeV" the way a
+physicist does even when the input text spells it out) rather than trying to out-guess
+whisper-small's mis-hearings after the fact — out of scope for this measurement.
