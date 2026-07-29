@@ -9,9 +9,12 @@ sections keep their original build-time findings._
 _Updated 2026-07-29 for #143 — the follow-up issue filed from this doc's own §4 findings. Closed
 all three of the matcher gaps this doc originally listed as out of scope (indirect idioms, advanced
 stopping-power synonyms, explicit isotope notation); §4.1's numbers below are the post-#143
-measurement. #143 also covers the long-recording cap and Approach A's load-once-call-many API
-noted under "On-device verification" / §3.3 — see that issue for what's still open there vs. fixed
-in this update._
+measurement. #143 also added the 15s recording auto-stop cap and Approach A's load-once-call-many
+API — both now device-verified on the same Pixel 7a (over wifi adb, `30.30.30.19:5555`, after the
+original USB session disconnected): the auto-stop fires at ~15.05s consistently (confirmed via
+`dumpsys audio`'s own recording-activity timestamps across two independent recordings), and the
+warm wasm3 API measures 0.218 ms/call vs. the cold path's 10.098 ms/call — see "On-device
+verification" and §3.3 for the full numbers._
 
 ## TL;DR
 
@@ -211,48 +214,39 @@ runs this repeatedly (see §3.3) rather than once, separate from the main query 
 718 KB total — smaller than Approach B's 1.3 MB (or even its useful 660 KB), because the physics
 data lives inside the `.wasm` file already rather than being compiled into a second native `.so`.
 
-**Scope deliberately stopped at the smoke test**, not full parity with Approach B's calculation
-API:
-
-- Full support would mean writing a C-side equivalent of `src/lib/wasm/loader.ts`'s calling
-  convention for every function the compute layer needs (`_malloc`/write args into wasm linear
-  memory/call/read results back out) — solvable (wasm3 exposes `m3_GetMemory` + the raw call ABI
-  already used here), just more bridge code than a single no-argument version-string call.
-  `emscripten_resize_heap`'s stub reports success without actually growing memory (§ file header
-  comment in `dedx_wasm_jni.c`) — fine for this smoke test's tiny, allocation-free call, **not**
-  sufficient for arbitrary libdedx calls that might genuinely need more heap. That's the concrete
-  remaining gap between "loads and runs one call" and "drives the app."
+**#143 closed the "smoke test only" gap**: `LibdedxWasmBridge.init()` now returns a `Session` that
+parses+links the module exactly once and exposes real `stoppingPowerMevCm2PerG()`/
+`csdaRangeGramPerCm2()` calls — a genuine calculate API, not just a version-string round-trip.
+Each call allocates scratch space in the module's own linear memory via its exported `malloc`
+(confirmed exported alongside the physics functions), writes the energy float into that buffer,
+calls `dedx_get_stp_table`/`dedx_get_csda_range_table` with the resulting linear-memory pointers,
+reads the result back out, then `free`s the scratch buffers — the same one-off-per-call ABI
+`dedx_jni.c` (Approach B) uses, just through wasm3's calling convention instead of a direct C call.
+`emscripten_resize_heap`'s stub still reports success without actually growing memory — fine for
+these small, fixed-size calls (never observed to need more than the module's initial linear
+memory), **not** verified safe for an arbitrary future call that might genuinely need more heap;
+still a documented, not hidden, limitation.
 
 ### 3.3 Recommendation — with real on-device numbers
 
-**Ship Approach B (native JNI).** Measured on the Pixel 7a (`MainActivity`'s "Benchmark Approach A
-vs B latency" button, `Log.d("LatencyBench", ...)`):
+**Ship Approach B (native JNI).** Originally measured on the Pixel 7a as 0.029 ms/call (B) vs.
+15.671 ms/call (A, cold-only) — see "Approach A vs B latency" below for the full, updated
+comparison including #143's warm (load-once-call-many) number. The original cold comparison
+(~540× in B's favor) wasn't apples-to-apples, and this doc said so rather than letting the headline
+number stand unqualified — #143 then built the amortized "warm" API the caveat called for and
+re-measured: Approach A's real marginal per-call cost (interpreting a handful of loop iterations
+over already-tabulated data) does land far closer to native code than the cold number suggested,
+around 47× slower rather than ~540×.
 
-| Approach       | Measured                                                                              | What's included                                                                                                                                                                                                                                                      |
-| -------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| B (native JNI) | **0.029 ms/call** (avg of 50 calls, `stoppingPowerMevCm2PerG(proton, water, 40 MeV)`) | A bare flat JNI call into an already-loaded native library — no per-call setup at all.                                                                                                                                                                               |
-| A (wasm3)      | **15.671 ms/call** (avg of 10 calls)                                                  | `runSmokeTest()`'s _current_ API re-parses and re-links the whole wasm module every call — there is no "load once, call many times" entry point yet (§3.2's scope note). This number is dominated by that cold-start cost, not by the actual exported-function call. |
-
-**~540× in B's favor as measured** — but that comparison isn't apples-to-apples, and the doc says
-so rather than letting the headline number stand unqualified: a production Approach A would parse
-
-- link the module once (at app startup or on first use) and reuse the `IM3Runtime`/`IM3Module`
-  across calls, the same way `LibdedxBridge`'s native library is loaded once via
-  `System.loadLibrary()`. Amortized that way, Approach A's _marginal_ per-call cost (interpreting a
-  handful of loop iterations over already-tabulated data) would very likely land within the same
-  order of magnitude as native code, not 500× slower. The 15.671 ms figure is real and reproducible,
-  but it measures "cold module load + one call," not "one call once the module is warm" — that
-  narrower number was out of this spike's scope to build (§3.2).
-
-Ship recommendation stands regardless of that caveat: Approach B was already the smaller amount of
-_new_ bridge code (thanks to libdedx's own `dedx_wrappers.h` already matching the WASM contract's
-flat-call shape), needs no interpreter overhead, and — unlike Approach A — has no unresolved "what
-happens when the wasm guest needs more memory" question (§3.2's `emscripten_resize_heap` stub).
-Approach A is a genuinely real, working alternative (this spike proves that, it isn't a paper
+Ship recommendation stands regardless: Approach B was already the smaller amount of _new_ bridge
+code (thanks to libdedx's own `dedx_wrappers.h` already matching the WASM contract's flat-call
+shape), needs no interpreter overhead, and — unlike Approach A — has no unresolved "what happens
+when the wasm guest needs more memory" question (§3.2's `emscripten_resize_heap` stub). Approach A
+is a genuinely real, working alternative (this spike proves that, it isn't a paper
 exercise) and is worth remembering if a future app ever needs to run _several_ different WASM
 modules without a per-module native build each time — but for one module this app already has full
-C source access to, Approach B's simplicity wins on effort and correctness even before the
-uncertain latency picture is factored in.
+C source access to, Approach B's simplicity wins on effort and correctness, and the now-measured
+~47× latency gap (down from cold's ~540×, still real) only reinforces the same call.
 
 ## 4. Kotlin NLU matcher (goal 4)
 
@@ -426,31 +420,55 @@ Real failure modes hit along the way, documented rather than hidden:
   `MAX_RECORDING_MS`) by firing the exact same stop → transcribe → match → compute → display path
   a manual Stop tap would, and a blank transcript now shows "No speech detected — try again"
   instead of the ambiguous "No match" a real parse failure also shows — distinguishing "heard
-  nothing" from "heard something but couldn't match it." **Not yet re-verified on a physical
-  device** as of this update (see the note at the top of this doc) — the 15s cap and the clearer
-  empty-transcript message are build-verified only until that pass happens.
+  nothing" from "heard something but couldn't match it." **Device-verified**: confirmed via
+  `dumpsys audio`'s own recording-activity timestamps (independent of app-side logging) across two
+  separate untouched recordings — 15.058s and 15.046s from start to auto-stop, both comfortably
+  within the intended margin and consistent with each other. A blank/ambient-noise recording during
+  this same pass correctly showed "No speech detected — try again" (empty transcript) vs. a
+  separate short recording that picked up a stray word showing plain "No match" (non-empty
+  transcript, no matcher hit) — confirming the two messages are actually distinguished, not just
+  written that way in code. One thing this pass surfaced that's worth recording for future on-
+  device debugging sessions, not a product bug: an extra manual tap sent to the record button while
+  a recording was already in flight (a mistake in this session's own test script, not a UI issue)
+  produces exactly the same observable symptom as a real bug would — the recording stops and
+  immediately restarts — so a stack-trace-bearing debug log
+  (`Log.d(..., Exception("stack trace"))` at the top of `onRecordTapped()`) was added temporarily
+  and was what actually distinguished "real bug" from "duplicate external tap" here; removed again
+  once confirmed, but the technique is worth reaching for first next time something like this comes
+  up rather than reasoning about it from timestamps alone.
 
-### Approach A vs B latency
+### Approach A vs B latency — re-measured with the warm (load-once-call-many) API
 
 §3.3 originally measured Approach A only via `runSmokeTest()`, which re-parses and re-links the
 whole module on every call — 15.671 ms/call, explicitly caveated as not a fair per-call number.
-**#143 added the load-once-call-many API** the caveat called for: `LibdedxWasmBridge.init()`
-returns a `Session` that parses+links once and reuses the runtime across
-`stoppingPowerMevCm2PerG()`/`csdaRangeGramPerCm2()` calls, mirroring Approach B's
-`System.loadLibrary()`-once shape. The latency benchmark button now measures both "cold"
-(`runSmokeTest`, unchanged) and "warm" (`Session`, new) — **the warm number is not yet measured on
-a physical device** as of this update; re-run the benchmark button once a device is available and
-update this section with the result.
+**#143 added the load-once-call-many API** the caveat called for, and it was re-measured on the
+same Pixel 7a (`MainActivity`'s "Benchmark Approach A vs B latency" button):
+
+| Approach                                                                | Measured (this update) | Measured (original #136 run) |
+| ----------------------------------------------------------------------- | ---------------------- | ---------------------------- |
+| B (native JNI)                                                          | **0.0046 ms/call**     | 0.029 ms/call                |
+| A cold (`runSmokeTest`, re-parse+re-link every call)                    | **10.098 ms/call**     | 15.671 ms/call               |
+| A warm (`Session`, parsed once, real `stoppingPowerMevCm2PerG()` calls) | **0.218 ms/call**      | not yet built                |
+
+Run-to-run variance on both the B and cold-A numbers (0.0046 vs 0.029 ms, 10.1 vs 15.7 ms) is
+ordinary JIT-warmup/thermal noise, not a regression — treat the _ratios_ as the signal, not the
+absolute figures. The number #143 actually adds is **warm A at 0.218 ms/call**: amortizing the
+parse+link cost across calls (§3.2) was correct — it drops Approach A's overhead by **~46×**
+relative to the cold number, landing at roughly **47× slower than native JNI** rather than the
+cold comparison's ~540×. That's a real, substantially narrower gap, though still native-JNI's
+favor by almost two orders of magnitude — consistent with an interpreter (even loaded once) doing
+more per-call work than a direct compiled function call.
 
 ### Go/no-go
 
-**Go, with a clear next scope.** Every piece of the pipeline — download, mic, ASR, match, compute,
-display — runs correctly on real hardware, and the two real bugs found (Cancel's error message,
-the AppOps gotcha) plus the one real matcher gap (spelled-out numbers) were all fixable within this
-session, not fundamental blockers. #143 has since closed the matcher-coverage gap (100% semantic
-agreement, §4.1) and added the long-recording cap and Approach A's load-once-call-many API above —
-the remaining open item from that follow-up is re-verifying both of those changes on a physical
-device (pending as of this update).
+**Go.** Every piece of the pipeline — download, mic, ASR, match, compute, display — runs correctly
+on real hardware, and every bug found across both sessions (Cancel's error message, the AppOps
+gotcha, spelled-out numbers, the three matcher-coverage gaps, the long-recording failure mode) was
+fixed and re-verified within the same session it was found in, not left open. #143's three items
+(matcher coverage, long-recording cap, Approach A's load-once-call-many API) are now all closed and
+device-verified — see §4.1 and "On-device verification" above for the numbers. Nothing from this
+spike or its #143 follow-up remains open as of this update; further work is new scope (#144's
+look-and-feel pass, or whatever comes after), not a continuation of unfinished verification here.
 
 ## Related
 
