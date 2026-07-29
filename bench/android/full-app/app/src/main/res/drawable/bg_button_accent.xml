@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- issue #144 — rounded-md solid accent button (web: bg-accent text-accent-foreground, the
+     ModelDownloadBanner.svelte "Download" button and MicButton.svelte's accent progress fill). -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="#33FFFFFF">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/accent" />
+            <corners android:radius="6dp" />
+        </shape>
+    </item>
+</ripple>

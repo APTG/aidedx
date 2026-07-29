@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- issue #144 — adaptive icon translation of static/favicon.svg (black rounded square, white
+     bold-monospace "dE" mark): the foreground PNGs (per-density, generated from DejaVu Sans Mono
+     Bold via PIL — favicon.svg's <text> relies on the browser's generic "monospace" font, which
+     has no SVG->Android equivalent, so this is a deliberate substitution, not a pixel copy) supply
+     the glyph; the background is the same flat #111111 as an @color rather than a duplicated
+     drawable. minSdk 26 means adaptive icons are always available — no legacy mipmap fallback
+     needed. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+</adaptive-icon>

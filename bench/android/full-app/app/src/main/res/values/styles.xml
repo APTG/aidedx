@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  issue #144 — deliberately a hand-rolled theme over the platform's own Theme.Material, not
+  AppCompat/MaterialComponents. MainActivity/ModelManagerActivity extend plain android.app.Activity
+  (see MainActivity's own doc comment: "no Fragments/Compose/coroutines/ViewModel... matches every
+  other bench/android app's convention") and use framework android.widget.* views throughout, not
+  androidx equivalents — pulling in the Material Components *library* would mean either switching
+  those Activities to AppCompatActivity (a bigger architecture change than a reskin should make)
+  or fighting theme attributes that only half-apply to a plain Activity. Framework
+  Theme.Material(.Light) + a values-night color/style split gets the same OKLCH palette, rounded
+  shape language, and automatic light/dark (Android's own day/night resource qualifier, honored by
+  the framework since Android 10's system dark theme with zero AppCompat involvement) without that
+  cost. See docs/android-full-app-spike.md for the full writeup.
+-->
+<resources>
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:textColorPrimary">@color/foreground</item>
+        <item name="android:textColorSecondary">@color/muted_foreground</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:colorControlActivated">@color/accent</item>
+        <item name="android:progressBarStyleHorizontal">@style/AppProgressBar</item>
+    </style>
+
+    <style name="AppProgressBar" parent="android:Widget.Material.Light.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_accent</item>
+        <item name="android:minHeight">4dp</item>
+        <item name="android:maxHeight">4dp</item>
+    </style>
+
+    <style name="AppToolbar">
+        <item name="android:background">@color/card</item>
+        <item name="android:elevation">0dp</item>
+        <item name="android:theme">@style/AppTheme</item>
+    </style>
+
+    <style name="ToolbarTitle">
+        <item name="android:textColor">@color/foreground</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+
+    <style name="FooterTagline">
+        <item name="android:textColor">@color/muted_foreground</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="SectionLabel">
+        <item name="android:textColor">@color/foreground</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BodyText">
+        <item name="android:textColor">@color/foreground</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="MutedHintText">
+        <item name="android:textColor">@color/muted_foreground</item>
+        <item name="android:textSize">11.5sp</item>
+    </style>
+
+    <!-- rounded-md outline button (web: border-input bg-card) — idle/default action button. -->
+    <style name="Button.Outline" parent="android:Widget.Material.Light.Button">
+        <item name="android:background">@drawable/bg_button_outline</item>
+        <item name="android:textColor">@color/foreground</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+
+    <!-- rounded-md solid accent button (web: bg-accent text-accent-foreground) — primary action. -->
+    <style name="Button.Accent" parent="Button.Outline">
+        <item name="android:background">@drawable/bg_button_accent</item>
+        <item name="android:textColor">@color/accent_foreground</item>
+    </style>
+
+    <!-- rounded-md solid danger button (web MicButton.svelte's recording state). -->
+    <style name="Button.Danger" parent="Button.Outline">
+        <item name="android:background">@drawable/bg_button_danger</item>
+        <item name="android:textColor">@color/danger_foreground</item>
+    </style>
+
+    <!-- muted-background disabled-look button (web MicButton.svelte's transcribing state). -->
+    <style name="Button.Muted" parent="Button.Outline">
+        <item name="android:background">@drawable/bg_button_muted</item>
+        <item name="android:textColor">@color/muted_foreground</item>
+    </style>
+</resources>

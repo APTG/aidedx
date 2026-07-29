@@ -8,7 +8,9 @@
     <application
         android:allowBackup="false"
         android:label="AidedxFullApp"
-        android:theme="@android:style/Theme.Material.Light">
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:exported="true">

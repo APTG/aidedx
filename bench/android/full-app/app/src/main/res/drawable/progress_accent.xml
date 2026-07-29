@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- issue #144 — rounded-full accent-on-muted progress bar (web MicButton.svelte's
+     "h-1 overflow-hidden rounded-full bg-muted" track + accent/muted-foreground fill). -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <corners android:radius="2dp" />
+            <solid android:color="@color/muted" />
+        </shape>
+    </item>
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="2dp" />
+                <solid android:color="@color/accent" />
+            </shape>
+        </clip>
+    </item>
+</layer-list>
