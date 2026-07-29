@@ -566,22 +566,22 @@ Athena again.
 
 ### Headline: clip-level accuracy, raw vs. each correction layer
 
-| corrector                                  | v3 (bare abbreviation only) | v4 (varied rendering) |
-| ------------------------------------------- | ---------------------------- | ---------------------- |
-| raw (no correction)                        | 782/1000 (78.2%)             | 502/1000 (50.2%)       |
-| base-corrector (`scripts/asr-correct.mjs`) | 782/1000 (78.2%)             | 506/1000 (50.6%)       |
-| new-corrector (shipped, `src/lib/asr/correct`) | 840/1000 (84.0%)         | 596/1000 (59.6%)       |
+| corrector                                      | v3 (bare abbreviation only) | v4 (varied rendering) |
+| ---------------------------------------------- | --------------------------- | --------------------- |
+| raw (no correction)                            | 782/1000 (78.2%)            | 502/1000 (50.2%)      |
+| base-corrector (`scripts/asr-correct.mjs`)     | 782/1000 (78.2%)            | 506/1000 (50.6%)      |
+| new-corrector (shipped, `src/lib/asr/correct`) | 840/1000 (84.0%)            | 596/1000 (59.6%)      |
 
 ### Per-unit accuracy, raw → corrected (new-corrector)
 
-| unit     | v3                           | v4                           |
-| -------- | ----------------------------- | ----------------------------- |
-| MeV      | 84.2% → 89.4% (n=482)         | 40.4% → 56.6% (n=498)         |
-| MeV/nucl | 80.1% → 93.8% (n=322)         | 39.7% → 63.2% (n=315)         |
-| keV      | 98.8% → 98.8% (n=83)          | 46.3% → 50.7% (n=67)          |
-| GeV      | 66.7% → 66.7% (n=15)          | 26.1% → 34.8% (n=23)          |
-| cm       | 100.0% → 100.0% (n=184)       | 99.5% → 99.5% (n=185)         |
-| mm       | 95.5% → 95.5% (n=66)          | 96.9% → 96.9% (n=65)          |
+| unit     | v3                      | v4                    |
+| -------- | ----------------------- | --------------------- |
+| MeV      | 84.2% → 89.4% (n=482)   | 40.4% → 56.6% (n=498) |
+| MeV/nucl | 80.1% → 93.8% (n=322)   | 39.7% → 63.2% (n=315) |
+| keV      | 98.8% → 98.8% (n=83)    | 46.3% → 50.7% (n=67)  |
+| GeV      | 66.7% → 66.7% (n=15)    | 26.1% → 34.8% (n=23)  |
+| cm       | 100.0% → 100.0% (n=184) | 99.5% → 99.5% (n=185) |
+| mm       | 95.5% → 95.5% (n=66)    | 96.9% → 96.9% (n=65)  |
 
 ### The gap is almost entirely the non-abbreviated energy renderings, not a general regression
 
@@ -589,12 +589,12 @@ Cross-referencing each clip's actual TTS-facing text (`renderUnitsForSpeech()`'s
 verbatim in the manifest) against its pass/fail, bucketed by which energy-unit rendering the
 sentence used:
 
-| rendering                          | n   | raw pass          | corrected pass     |
-| ----------------------------------- | --- | ------------------ | -------------------- |
-| abbrev ("MeV")                     | 385 | 271/385 (70.4%)    | 311/385 (80.8%)      |
-| compound ("megaelectronvolt")      | 186 | 0/186 (0.0%)       | 26/186 (14.0%)       |
-| spaced ("mega electron volt")      | 156 | 0/156 (0.0%)       | 22/156 (14.1%)        |
-| mixed (multi-energy, both forms)   | 23  | 0/23 (0.0%)        | 6/23 (26.1%)          |
+| rendering                        | n   | raw pass        | corrected pass  |
+| -------------------------------- | --- | --------------- | --------------- |
+| abbrev ("MeV")                   | 385 | 271/385 (70.4%) | 311/385 (80.8%) |
+| compound ("megaelectronvolt")    | 186 | 0/186 (0.0%)    | 26/186 (14.0%)  |
+| spaced ("mega electron volt")    | 156 | 0/156 (0.0%)    | 22/156 (14.1%)  |
+| mixed (multi-energy, both forms) | 23  | 0/23 (0.0%)     | 6/23 (26.1%)    |
 
 The abbreviated-rendering subset alone (385/1000 clips) scores 80.8% corrected — within noise of
 v3's 84.0% on the same energy units. **Every clip whose energy unit was rendered as a compound or
@@ -622,6 +622,6 @@ energy-unit mentions are essentially unrecognizable to the shipped model, correc
 is a real, previously-unmeasured gap between the frozen eval set's historical near-exclusive use of
 the bare abbreviation and what a human might actually say. Given the ~7x cost of `whisper-large-v3`
 (§8) isn't justified by a single real-lecture miss, the more promising next step for this specific
-gap is probably at the TTS/G2P or prompt-biasing layer (make the *voice* say "MeV" the way a
+gap is probably at the TTS/G2P or prompt-biasing layer (make the _voice_ say "MeV" the way a
 physicist does even when the input text spells it out) rather than trying to out-guess
 whisper-small's mis-hearings after the fact — out of scope for this measurement.

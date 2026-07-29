@@ -368,4136 +368,2965 @@
   "failures": [
     {
       "id": "rng-0002",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 120-EV per nucleon nitrogen 14 ion penetrate into polycarbonate?",
       "corrected": "How deep does a 120-EV per nucleon nitrogen 14 ion penetrate into polycarbonate?"
     },
     {
       "id": "rng-0003",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 350-megaphone volt per nucleon silicon, 28 ion in water, please.",
       "corrected": "range of a 350-megaphone volt per nucleon silicon, 28 ion in water, please."
     },
     {
       "id": "rng-0005",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "How deep does a 100 MAV trite and penetrate into air?",
       "corrected": "How deep does a 100 MAV trite and penetrate into air?"
     },
     {
       "id": "rng-0006",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 220 megelectronvolt proton in compact bone, please.",
       "corrected": "range of a 220 megelectronvolt proton in compact bone, please."
     },
     {
       "id": "rng-0007",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 80 megilatron volt deuteron in polystyrene.",
       "corrected": "Find the CSDA range for 80 megilatron volt deuteron in polystyrene."
     },
     {
       "id": "rng-0008",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Range of a 200 MAV per nucleon phosphorus 31 ion in Pyrex glass, please.",
       "corrected": "Range of a 200 MAV per nucleon phosphorus 31 ion in Pyrex glass, please."
     },
     {
       "id": "rng-0009",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "range of a 200 MeV per nucleon phosphorous 31 ion in brain please.",
       "corrected": "range of a 200 MeV per nucleon phosphorous 31 ion in brain please."
     },
     {
       "id": "rng-0010",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 20-megaphone volt helium-3 ions in gold.",
       "corrected": "Determine the range of 20-megaphone volt helium-3 ions in gold."
     },
     {
       "id": "rng-0012",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 300 kilo electron volt proton in aluminum oxide?",
       "corrected": "What is the CSDA range of a 300 kilo electron volt proton in aluminum oxide?"
     },
     {
       "id": "rng-0013",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "So roughly how far would a 350 kilo electron volt flurry 19 ion make it into blood?",
       "corrected": "So roughly how far would a 350 kilo electron volt flurry 19 ion make it into blood?"
     },
     {
       "id": "rng-0014",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Quick one, how far does a 350-megaproton go in concrete?",
       "corrected": "Quick one, how far does a 350-megaproton go in concrete?"
     },
     {
       "id": "rng-0015",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 20 Mv alpha particles in air.",
       "corrected": "Determine the range of 20 Mv alpha particles in air."
     },
     {
       "id": "rng-0016",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 50-megailectron-volt alpha particles and silicon dioxide.",
       "corrected": "Find the CSDA range for 50-megailectron-volt alpha particles and silicon dioxide."
     },
     {
       "id": "rng-0018",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 400-megapolt per nucleon xenon-132 ion get through cesium iodide?",
       "corrected": "Before coming to rest, how far does a 400-megapolt per nucleon xenon-132 ion get through cesium iodide?"
     },
     {
       "id": "rng-0020",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 200 kilo electron volt beryllium-9 ion and compact bone?",
       "corrected": "What is the CSDA range of a 200 kilo electron volt beryllium-9 ion and compact bone?"
     },
     {
       "id": "rng-0021",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 50-megapelectron-volt-helium-3 ion penetrate into aluminum?",
       "corrected": "How deep does a 50-megapelectron-volt-helium-3 ion penetrate into aluminum?"
     },
     {
       "id": "rng-0022",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "Find the CSDA range for 100 MeV-healium-3 ions in aluminum oxide.",
       "corrected": "Find the CSDA range for 100 MeV-healium-3 ions in aluminum oxide."
     },
     {
       "id": "rng-0024",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 30 megelectron volt per nucleon, krypton, 84 ion, and aluminum oxide?",
       "corrected": "What's the range of a 30 megelectron volt per nucleon, krypton, 84 ion, and aluminum oxide?"
     },
     {
       "id": "rng-0026",
-      "missed": [
-        "number",
-        "unit"
-      ],
+      "missed": ["number", "unit"],
       "raw": "Quick one, how far does an ADMEV per nucleon sulfur-32 ion go in compact bone?",
       "corrected": "Quick one, how far does an ADMEV per nucleon sulfur-32 ion go in compact bone?"
     },
     {
       "id": "rng-0027",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Determine the range of 10-megaprotons in PMMA.",
       "corrected": "Determine the range of 10-megaprotons in PMMA."
     },
     {
       "id": "rng-0028",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 25-megoelectron-volt deuteron get through boron?",
       "corrected": "Before coming to rest, how far does a 25-megoelectron-volt deuteron get through boron?"
     },
     {
       "id": "rng-0032",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 20-megawatt electron volt, triton, and air?",
       "corrected": "What's the range of a 20-megawatt electron volt, triton, and air?"
     },
     {
       "id": "rng-0033",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 250 megaelectron volt proton in polystyrene, please.",
       "corrected": "range of a 250 megaelectron volt proton in polystyrene, please."
     },
     {
       "id": "rng-0034",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Find the CSDA range for 60 Mv per NCl, 35 ions in Teflon",
       "corrected": "Find the CSDA range for 60 Mv per NCl, 35 ions in Teflon"
     },
     {
       "id": "rng-0036",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 50-megapron volt per nucleon boron-11 ion get through adipose tissue?",
       "corrected": "Before coming to rest, how far does a 50-megapron volt per nucleon boron-11 ion get through adipose tissue?"
     },
     {
       "id": "rng-0037",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Before coming to rest, how far does a 250-megalactron volt per nucleon-nion-20 ion get through aluminum?",
       "corrected": "Before coming to rest, how far does a 250-megalactron volt per nucleon-nion-20 ion get through aluminum?"
     },
     {
       "id": "rng-0039",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 15-megapelectron-volt triton penetrate into Kapton?",
       "corrected": "How deep does a 15-megapelectron-volt triton penetrate into Kapton?"
     },
     {
       "id": "rng-0043",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 2MV Tritons in blood.",
       "corrected": "Find the CSDA range for 2MV Tritons in blood."
     },
     {
       "id": "rng-0044",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 5-megawatt electron-volt alpha particle in boron?",
       "corrected": "What's the range of a 5-megawatt electron-volt alpha particle in boron?"
     },
     {
       "id": "rng-0045",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one. How far does a 25-megaplectron-volt helium-3 ion go in A150 tissue-equivalent plastic?",
       "corrected": "Quick one. How far does a 25-megaplectron-volt helium-3 ion go in A150 tissue-equivalent plastic?"
     },
     {
       "id": "rng-0046",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 150-megawatt electron volt per nucleon carbon-13 ion get through water?",
       "corrected": "Before coming to rest, how far does a 150-megawatt electron volt per nucleon carbon-13 ion get through water?"
     },
     {
       "id": "rng-0047",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 50 kilo electron volt neon-20 ion penetrate into polyethylene?",
       "corrected": "How deep does a 50 kilo electron volt neon-20 ion penetrate into polyethylene?"
     },
     {
       "id": "rng-0048",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 180 megelectron volt per nucleon beryllium-9 ion and Kapton?",
       "corrected": "What is the CSDA range of a 180 megelectron volt per nucleon beryllium-9 ion and Kapton?"
     },
     {
       "id": "rng-0049",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does an 80-megai electron volt helium-3 ion get through boron carbide?",
       "corrected": "Before coming to rest, how far does an 80-megai electron volt helium-3 ion get through boron carbide?"
     },
     {
       "id": "rng-0052",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly how far would a 50-megial electron volt per nucleon fluorine 19 ion make it into lithium fluoride?",
       "corrected": "So roughly how far would a 50-megial electron volt per nucleon fluorine 19 ion make it into lithium fluoride?"
     },
     {
       "id": "rng-0056",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Range of a 700 kilolokton volt proton in soft tissue, please.",
       "corrected": "Range of a 700 kilolokton volt proton in soft tissue, please."
     },
     {
       "id": "rng-0059",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does a 40-megalatron volt per nucleon boron 11 ion go in blood?",
       "corrected": "Quick one, how far does a 40-megalatron volt per nucleon boron 11 ion go in blood?"
     },
     {
       "id": "rng-0060",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 5-megalitron volt deuteron and polystyrene?",
       "corrected": "What's the range of a 5-megalitron volt deuteron and polystyrene?"
     },
     {
       "id": "rng-0061",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly, how far would a 60-megaplectron volt per nucleon magnesium 24 ion make it into compact bone?",
       "corrected": "So roughly, how far would a 60-megaplectron volt per nucleon magnesium 24 ion make it into compact bone?"
     },
     {
       "id": "rng-0063",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 180-megaphone volt per nucleon, boron, 11 ion, and Kapton?",
       "corrected": "What is the CSDA range of a 180-megaphone volt per nucleon, boron, 11 ion, and Kapton?"
     },
     {
       "id": "rng-0064",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 20 mega electron volt proton in muscle tissue, please.",
       "corrected": "range of a 20 mega electron volt proton in muscle tissue, please."
     },
     {
       "id": "rng-0068",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 1-gigie electron-volt proton travel through air?",
       "corrected": "How far will a 1-gigie electron-volt proton travel through air?"
     },
     {
       "id": "rng-0069",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Find the CSDA range for 300 Mv per Nlithium-7 ions in blood.",
       "corrected": "Find the CSDA range for 300 Mv per Nlithium-7 ions in blood."
     },
     {
       "id": "rng-0072",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does a 400 mega electron volt per nucleon carbon-13 ion go in Mylar?",
       "corrected": "Quick one, how far does a 400 mega electron volt per nucleon carbon-13 ion go in Mylar?"
     },
     {
       "id": "rng-0074",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Determine the range of 80-megaprotons and muscle tissue.",
       "corrected": "Determine the range of 80-megaprotons and muscle tissue."
     },
     {
       "id": "rng-0075",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "So roughly how far would a 20 MeEphelium-3 ion make it into lung?",
       "corrected": "So roughly how far would a 20 MeEphelium-3 ion make it into lung?"
     },
     {
       "id": "rng-0078",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does a 150 kilo electron volt xenon-132 ion go in PMMA?",
       "corrected": "Quick one, how far does a 150 kilo electron volt xenon-132 ion go in PMMA?"
     },
     {
       "id": "rng-0081",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "before coming to rest, how far does a 250 MOV per nucleon carbon-13 ion get through PMMA?",
       "corrected": "before coming to rest, how far does a 250 MOV per nucleon carbon-13 ion get through PMMA?"
     },
     {
       "id": "rng-0082",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Determine the range of 50 mega-electron volt per nucleon-flory 19 ions in silicon.",
       "corrected": "Determine the range of 50 mega-electron volt per nucleon-flory 19 ions in silicon."
     },
     {
       "id": "rng-0083",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of 80 EMEV Triton and Kapton, please.",
       "corrected": "range of 80 EMEV Triton and Kapton, please."
     },
     {
       "id": "rng-0085",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 30-megai electron volt deuteron travel through silicon?",
       "corrected": "How far will a 30-megai electron volt deuteron travel through silicon?"
     },
     {
       "id": "rng-0086",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 100 EEV protons and sodium iodide.",
       "corrected": "Determine the range of 100 EEV protons and sodium iodide."
     },
     {
       "id": "rng-0087",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "How deep does a 2MeV-healium-3 ion penetrate into boron oxide?",
       "corrected": "How deep does a 2MeV-healium-3 ion penetrate into boron oxide?"
     },
     {
       "id": "rng-0089",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 30-megalektron volt deuteron penetrate into Teflon?",
       "corrected": "How deep does a 30-megalektron volt deuteron penetrate into Teflon?"
     },
     {
       "id": "rng-0092",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "So, roughly how far would a 10-megaparticle make it into boron oxide?",
       "corrected": "So, roughly how far would a 10-megaparticle make it into boron oxide?"
     },
     {
       "id": "rng-0093",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Range of a 60-Mega-electron volt-triton in polycarbonate, please.",
       "corrected": "Range of a 60-Mega-electron volt-triton in polycarbonate, please."
     },
     {
       "id": "rng-0096",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "So roughly how far would a 60-megaproton make it into muscle tissue?",
       "corrected": "So roughly how far would a 60-megaproton make it into muscle tissue?"
     },
     {
       "id": "rng-0097",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "What is the CSDA range of a 60-megawatt electron volt per nucleon-led 208 ion in water?",
       "corrected": "What is the CSDA range of a 60-megawatt electron volt per nucleon-led 208 ion in water?"
     },
     {
       "id": "rng-0098",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 15-megalectron-volt alpha particle in lithium fluoride?",
       "corrected": "What is the CSDA range of a 15-megalectron-volt alpha particle in lithium fluoride?"
     },
     {
       "id": "rng-0099",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 15-megawatt electron volt helium-3 ion in Mylar?",
       "corrected": "What is the CSDA range of a 15-megawatt electron volt helium-3 ion in Mylar?"
     },
     {
       "id": "rng-0100",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "before coming to rest. How far does a 100 kilolokton volt magnesium-24 ion get through PMMA?",
       "corrected": "before coming to rest. How far does a 100 kilolokton volt magnesium-24 ion get through PMMA?"
     },
     {
       "id": "rng-0102",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "What's the range of an 8-megaparticle in concrete?",
       "corrected": "What's the range of an 8-megaparticle in concrete?"
     },
     {
       "id": "rng-0103",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 100 megavolt protons in boron carbide.",
       "corrected": "Determine the range of 100 megavolt protons in boron carbide."
     },
     {
       "id": "rng-0104",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 100 megilektron volt proton in Mylar?",
       "corrected": "What is the CSDA range of a 100 megilektron volt proton in Mylar?"
     },
     {
       "id": "rng-0109",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 80 MAV protons in lithium fluoride.",
       "corrected": "Determine the range of 80 MAV protons in lithium fluoride."
     },
     {
       "id": "rng-0113",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 40 megaelectron volt per nucleon gold, 197 ions in Teflon.",
       "corrected": "Find the CSDA range for 40 megaelectron volt per nucleon gold, 197 ions in Teflon."
     },
     {
       "id": "rng-0114",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 5-megaphone volt triton in polystyrene?",
       "corrected": "What's the range of a 5-megaphone volt triton in polystyrene?"
     },
     {
       "id": "rng-0115",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 8-niv Triton and lithium fluoride?",
       "corrected": "What's the range of a 8-niv Triton and lithium fluoride?"
     },
     {
       "id": "rng-0116",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 40-megapelectron volt per nucleon uranium 238 ion travel through Kapton?",
       "corrected": "How far will a 40-megapelectron volt per nucleon uranium 238 ion travel through Kapton?"
     },
     {
       "id": "rng-0118",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly how far would a 150-megapelectron volt per nucleon uranium 238 ion make it into silicon?",
       "corrected": "So roughly how far would a 150-megapelectron volt per nucleon uranium 238 ion make it into silicon?"
     },
     {
       "id": "rng-0119",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 100-megaphone volt triton in skin?",
       "corrected": "What is the CSDA range of a 100-megaphone volt triton in skin?"
     },
     {
       "id": "rng-0123",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of 80 megaelectron volt triton in muscle tissue, please.",
       "corrected": "range of 80 megaelectron volt triton in muscle tissue, please."
     },
     {
       "id": "rng-0125",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Find the CSDA range for 25 Mv tri-dons in sodium iodide.",
       "corrected": "Find the CSDA range for 25 Mv tri-dons in sodium iodide."
     },
     {
       "id": "rng-0126",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Find the CSDA range for 50 MV per N carb and 12 ions in aluminum oxide.",
       "corrected": "Find the CSDA range for 50 MV per N carb and 12 ions in aluminum oxide."
     },
     {
       "id": "rng-0127",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 200-megapelectron volt per nucleon phosphorus-31 ion penetrate into Pyrex glass?",
       "corrected": "How deep does a 200-megapelectron volt per nucleon phosphorus-31 ion penetrate into Pyrex glass?"
     },
     {
       "id": "rng-0128",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find this CSDA range for 5-NV helium-3 ions and muscle tissue.",
       "corrected": "Find this CSDA range for 5-NV helium-3 ions and muscle tissue."
     },
     {
       "id": "rng-0129",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does an 80-megapolt per nucleon sulfur 32 ion go in graphite?",
       "corrected": "Quick one, how far does an 80-megapolt per nucleon sulfur 32 ion go in graphite?"
     },
     {
       "id": "rng-0130",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does an 80MIE proton go in boron carbide?",
       "corrected": "Quick one, how far does an 80MIE proton go in boron carbide?"
     },
     {
       "id": "rng-0131",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "range of a 200-megaproton in graphite, please.",
       "corrected": "range of a 200-megaproton in graphite, please."
     },
     {
       "id": "rng-0132",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Find the CSDA range for 40 MV per NL, 7 ions in graphite.",
       "corrected": "Find the CSDA range for 40 MV per NL, 7 ions in graphite."
     },
     {
       "id": "rng-0133",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 20MV protons and polyethylene.",
       "corrected": "Find the CSDA range for 20MV protons and polyethylene."
     },
     {
       "id": "rng-0139",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does a 30 megalectron volt alpha particle go in cortical bone?",
       "corrected": "Quick one, how far does a 30 megalectron volt alpha particle go in cortical bone?"
     },
     {
       "id": "rng-0140",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 80-megapelectron-volt-alpha particle penetrate into Teflon?",
       "corrected": "How deep does a 80-megapelectron-volt-alpha particle penetrate into Teflon?"
     },
     {
       "id": "rng-0141",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 25-megapelectron-volt deuteron penetrate into silicon dioxide?",
       "corrected": "How deep does a 25-megapelectron-volt deuteron penetrate into silicon dioxide?"
     },
     {
       "id": "rng-0143",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 30 Mv per nucleon, lithium-7 ions and boron.",
       "corrected": "Determine the range of 30 Mv per nucleon, lithium-7 ions and boron."
     },
     {
       "id": "rng-0144",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 40-megaphone volt triton and graphite?",
       "corrected": "What is the CSDA range of a 40-megaphone volt triton and graphite?"
     },
     {
       "id": "rng-0145",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 50mV helium-3 ion penetrate into graphite?",
       "corrected": "How deep does a 50mV helium-3 ion penetrate into graphite?"
     },
     {
       "id": "rng-0147",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 1GV protons and aluminum.",
       "corrected": "Find the CSDA range for 1GV protons and aluminum."
     },
     {
       "id": "rng-0148",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does a 250 MV per nucleon carbon-13 ion go in air?",
       "corrected": "Quick one, how far does a 250 MV per nucleon carbon-13 ion go in air?"
     },
     {
       "id": "rng-0149",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 30-megapelectron-volt deuteron and adipose tissue.",
       "corrected": "Find the CSDA range for 30-megapelectron-volt deuteron and adipose tissue."
     },
     {
       "id": "rng-0150",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 20 megA electron volt triton travel through compact bone?",
       "corrected": "How far will a 20 megA electron volt triton travel through compact bone?"
     },
     {
       "id": "rng-0152",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Watch the range of a 150-megapelectron-volt proton in silicon.",
       "corrected": "Watch the range of a 150-megapelectron-volt proton in silicon."
     },
     {
       "id": "rng-0153",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 60-megaplectron volt alpha particle in silicon, please.",
       "corrected": "range of a 60-megaplectron volt alpha particle in silicon, please."
     },
     {
       "id": "rng-0158",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Bind the CSDA range for 20 MV Tritons in aluminum.",
       "corrected": "Bind the CSDA range for 20 MV Tritons in aluminum."
     },
     {
       "id": "rng-0160",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 40-megalitron-volt helium-3 ion in soft tissue?",
       "corrected": "What is the CSDA range of a 40-megalitron-volt helium-3 ion in soft tissue?"
     },
     {
       "id": "rng-0162",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 2-megaelectron volt deuteron in brain?",
       "corrected": "What's the range of a 2-megaelectron volt deuteron in brain?"
     },
     {
       "id": "rng-0163",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Find the CSDA range for 100-megaprotons in Pyrex glass.",
       "corrected": "Find the CSDA range for 100-megaprotons in Pyrex glass."
     },
     {
       "id": "rng-0164",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 300 MAV protons in soft tissue.",
       "corrected": "Determine the range of 300 MAV protons in soft tissue."
     },
     {
       "id": "rng-0167",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 350-megapelectron volt per nucleon, krypton, 84-ion and silicon?",
       "corrected": "What is the CSDA range of a 350-megapelectron volt per nucleon, krypton, 84-ion and silicon?"
     },
     {
       "id": "rng-0168",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does a 100-mav alpha particle go in aluminum oxide?",
       "corrected": "Quick one, how far does a 100-mav alpha particle go in aluminum oxide?"
     },
     {
       "id": "rng-0171",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 60-megai electron volt per nucleon carbon-13 ion and boron, please.",
       "corrected": "range of a 60-megai electron volt per nucleon carbon-13 ion and boron, please."
     },
     {
       "id": "rng-0172",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 100 MV protons and concrete.",
       "corrected": "Find the CSDA range for 100 MV protons and concrete."
     },
     {
       "id": "rng-0173",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly how far would a 15-megaphone volt deuteron make it into Mylar?",
       "corrected": "So roughly how far would a 15-megaphone volt deuteron make it into Mylar?"
     },
     {
       "id": "rng-0179",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 250 MAV per nucleon carbon-13 ion and polycarbonate please.",
       "corrected": "range of a 250 MAV per nucleon carbon-13 ion and polycarbonate please."
     },
     {
       "id": "rng-0180",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So, roughly how far would a 60-megaelactron-volt proton make it into air?",
       "corrected": "So, roughly how far would a 60-megaelactron-volt proton make it into air?"
     },
     {
       "id": "rng-0182",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 300-megai-electron-volt per nucleon-iron-56 ion penetrate into boron?",
       "corrected": "How deep does a 300-megai-electron-volt per nucleon-iron-56 ion penetrate into boron?"
     },
     {
       "id": "rng-0187",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Fine, the CSDA range for 100 MAG electron volt helium, 3 ions in silicon dioxide.",
       "corrected": "Fine, the CSDA range for 100 MAG electron volt helium, 3 ions in silicon dioxide."
     },
     {
       "id": "rng-0188",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 15-megapelectron-volt deuteron get through aluminum oxide?",
       "corrected": "Before coming to rest, how far does a 15-megapelectron-volt deuteron get through aluminum oxide?"
     },
     {
       "id": "rng-0189",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 180-megawatt electron volt per nucleon neon-20 ion in air?",
       "corrected": "What's the range of a 180-megawatt electron volt per nucleon neon-20 ion in air?"
     },
     {
       "id": "rng-0190",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of an 80-megaphone volt per nucleon boron-11, ion and water?",
       "corrected": "What is the CSDA range of an 80-megaphone volt per nucleon boron-11, ion and water?"
     },
     {
       "id": "rng-0191",
-      "missed": [
-        "number"
-      ],
+      "missed": ["number"],
       "raw": "Quick one, how far does a 213MeV proton go in concrete?",
       "corrected": "Quick one, how far does a 213MeV proton go in concrete?"
     },
     {
       "id": "rng-0193",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 250 kilo electron volt carbon, 13 ion and silicon dioxide?",
       "corrected": "What's the range of a 250 kilo electron volt carbon, 13 ion and silicon dioxide?"
     },
     {
       "id": "rng-0194",
-      "missed": [
-        "number"
-      ],
+      "missed": ["number"],
       "raw": "How far will a 1-0-e-a-d MeV per nucleon lead 208 ion travel through aluminum oxide?",
       "corrected": "How far will a 1-0-e-a-d MeV per nucleon lead 208 ion travel through aluminum oxide?"
     },
     {
       "id": "rng-0195",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "quick one, how far does a 200 kilo electron volt lithium-7 ion go in Teflon?",
       "corrected": "quick one, how far does a 200 kilo electron volt lithium-7 ion go in Teflon?"
     },
     {
       "id": "rng-0196",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So, roughly how far would a 90 meg electron volt proton make it into adipose tissue?",
       "corrected": "So, roughly how far would a 90 meg electron volt proton make it into adipose tissue?"
     },
     {
       "id": "rng-0199",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 100 AVE per nucleon calcium 40 ion in polyethylene, please.",
       "corrected": "range of a 100 AVE per nucleon calcium 40 ion in polyethylene, please."
     },
     {
       "id": "rng-0200",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one. How far does a 120-megailectron volt per nucleon nitrogen 14 ion go in polycarbonate?",
       "corrected": "Quick one. How far does a 120-megailectron volt per nucleon nitrogen 14 ion go in polycarbonate?"
     },
     {
       "id": "rng-0201",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 50-MV proton penetrate into sodium iodide?",
       "corrected": "How deep does a 50-MV proton penetrate into sodium iodide?"
     },
     {
       "id": "rng-0204",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 25-megaplectron-volt-alpha particle get through skin?",
       "corrected": "Before coming to rest, how far does a 25-megaplectron-volt-alpha particle get through skin?"
     },
     {
       "id": "rng-0205",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Fine, the CSDA range for 400 NVE per nucleon, neon-20 ions and silicon dioxide.",
       "corrected": "Fine, the CSDA range for 400 NVE per nucleon, neon-20 ions and silicon dioxide."
     },
     {
       "id": "rng-0206",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 20 megaelectron volt deuteron in lung?",
       "corrected": "What is the CSDA range of a 20 megaelectron volt deuteron in lung?"
     },
     {
       "id": "rng-0208",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 30 mega-electron-vol-deuteron and skin!",
       "corrected": "Find the CSDA range for 30 mega-electron-vol-deuteron and skin!"
     },
     {
       "id": "rng-0210",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 20-megaphone-volt helium-3 ion travel through adipose tissue?",
       "corrected": "How far will a 20-megaphone-volt helium-3 ion travel through adipose tissue?"
     },
     {
       "id": "rng-0211",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 350 mega-electron volt proton in air, please!",
       "corrected": "range of a 350 mega-electron volt proton in air, please!"
     },
     {
       "id": "rng-0213",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 20 megalactron volt per nucleon phosphorus 31 ion in skin?",
       "corrected": "What is the CSDA range of a 20 megalactron volt per nucleon phosphorus 31 ion in skin?"
     },
     {
       "id": "rng-0214",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 100 MAV per nucleon lithium-7 ions in Kapton.",
       "corrected": "Determine the range of 100 MAV per nucleon lithium-7 ions in Kapton."
     },
     {
       "id": "rng-0216",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 200-megaphone volt per nucleon boron-11 ion in air?",
       "corrected": "What is the CSDA range of a 200-megaphone volt per nucleon boron-11 ion in air?"
     },
     {
       "id": "rng-0218",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 40-megapolt Tritons in silicon dioxide.",
       "corrected": "Determine the range of 40-megapolt Tritons in silicon dioxide."
     },
     {
       "id": "rng-0219",
-      "missed": [
-        "number"
-      ],
+      "missed": ["number"],
       "raw": "How deep does a 2.0 MeV proton penetrate into aluminum oxide?",
       "corrected": "How deep does a 2.0 MeV proton penetrate into aluminum oxide?"
     },
     {
       "id": "rng-0220",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 200 mega-electron volt per nucleon, boron, 11 ions, and Kapton.",
       "corrected": "Find the CSDA range for 200 mega-electron volt per nucleon, boron, 11 ions, and Kapton."
     },
     {
       "id": "rng-0221",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "Quick one, how far does a 2 MeV-2 Teuron go in silicon?",
       "corrected": "Quick one, how far does a 2 MeV-2 Teuron go in silicon?"
     },
     {
       "id": "rng-0223",
-      "missed": [
-        "material"
-      ],
+      "missed": ["material"],
       "raw": "Quick one, how far does a 90 MeV proton go in there?",
       "corrected": "Quick one, how far does a 90 MeV proton go in there?"
     },
     {
       "id": "rng-0225",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "How far will a 40-megaproton electron-volt travel through Kapton?",
       "corrected": "How far will a 40-megaproton electron-volt travel through Kapton?"
     },
     {
       "id": "rng-0226",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Find the CSDA range for 70-megaprotons and polyethylene.",
       "corrected": "Find the CSDA range for 70-megaprotons and polyethylene."
     },
     {
       "id": "rng-0228",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "So, roughly how far would a 60-megaproton make it into silicon dioxide?",
       "corrected": "So, roughly how far would a 60-megaproton make it into silicon dioxide?"
     },
     {
       "id": "rng-0229",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 120-megai electron-volt proton travel through soft tissue?",
       "corrected": "How far will a 120-megai electron-volt proton travel through soft tissue?"
     },
     {
       "id": "rng-0231",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "What is the CSDA range of a 180-megalactron volt per nucleon-led 208-ion and boron oxide?",
       "corrected": "What is the CSDA range of a 180-megalactron volt per nucleon-led 208-ion and boron oxide?"
     },
     {
       "id": "rng-0232",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 220-megalactron-volt proton travel through lung?",
       "corrected": "How far will a 220-megalactron-volt proton travel through lung?"
     },
     {
       "id": "rng-0234",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 20-megapolt electron volt per nucleon xenon-132 ion in Mylar?",
       "corrected": "What is the CSDA range of a 20-megapolt electron volt per nucleon xenon-132 ion in Mylar?"
     },
     {
       "id": "rng-0235",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "Find this CSDA range for 150 keV crypton-84 ions in cortical bone?",
       "corrected": "Find this CSDA range for 150 keV crypton-84 ions in cortical bone?"
     },
     {
       "id": "rng-0236",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 30-megapelectron volt per nucleon oxygen, 16-ion and silicon dioxide?",
       "corrected": "What's the range of a 30-megapelectron volt per nucleon oxygen, 16-ion and silicon dioxide?"
     },
     {
       "id": "rng-0241",
-      "missed": [
-        "particle",
-        "material",
-        "unit"
-      ],
+      "missed": ["particle", "material", "unit"],
       "raw": "What is the CSDA range of a 180-megaproton-incesium iodide?",
       "corrected": "What is the CSDA range of a 180-megaproton-incesium iodide?"
     },
     {
       "id": "rng-0242",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "How far will a 100-megaparticle travel through boron oxide?",
       "corrected": "How far will a 100-megaparticle travel through boron oxide?"
     },
     {
       "id": "rng-0244",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 80-megailactron-volt proton travel through boron carbide?",
       "corrected": "How far will a 80-megailactron-volt proton travel through boron carbide?"
     },
     {
       "id": "rng-0245",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of it? 80 Mega-electron volt alpha particle in aluminum.",
       "corrected": "What's the range of it? 80 Mega-electron volt alpha particle in aluminum."
     },
     {
       "id": "rng-0246",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 150 megE electron volt per nucleon sulfur, 32 ions in polyethylene.",
       "corrected": "Find the CSDA range for 150 megE electron volt per nucleon sulfur, 32 ions in polyethylene."
     },
     {
       "id": "rng-0247",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 50 mega-electron-volt protons in brain.",
       "corrected": "Find the CSDA range for 50 mega-electron-volt protons in brain."
     },
     {
       "id": "rng-0248",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "So, roughly how far would it 8nMeV-healium-3 ion make it into cortical bone?",
       "corrected": "So, roughly how far would it 8nMeV-healium-3 ion make it into cortical bone?"
     },
     {
       "id": "rng-0249",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly how far would a 300 MAV per nucleon argon 40 ion make it into Teflon?",
       "corrected": "So roughly how far would a 300 MAV per nucleon argon 40 ion make it into Teflon?"
     },
     {
       "id": "rng-0250",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 220-EV proton in water?",
       "corrected": "What's the range of a 220-EV proton in water?"
     },
     {
       "id": "rng-0254",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 200 MV for nucleon, carbon-12 ions, and silicon dioxide",
       "corrected": "Find the CSDA range for 200 MV for nucleon, carbon-12 ions, and silicon dioxide"
     },
     {
       "id": "rng-0255",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 5 MAV deuteron in adipose tissue.",
       "corrected": "Determine the range of 5 MAV deuteron in adipose tissue."
     },
     {
       "id": "rng-0258",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Before coming to rest, how far does an 80-megaproton get through lung?",
       "corrected": "Before coming to rest, how far does an 80-megaproton get through lung?"
     },
     {
       "id": "rng-0259",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 400 mega-electron volt per nucleon gold, 197 ions in skin.",
       "corrected": "Determine the range of 400 mega-electron volt per nucleon gold, 197 ions in skin."
     },
     {
       "id": "rng-0260",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 250-megapolt proton in Teflon?",
       "corrected": "What's the range of a 250-megapolt proton in Teflon?"
     },
     {
       "id": "rng-0263",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Find the CSDA range for 10-megaprotons and boron.",
       "corrected": "Find the CSDA range for 10-megaprotons and boron."
     },
     {
       "id": "rng-0265",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 10-megawatt electron volt proton get through boron?",
       "corrected": "Before coming to rest, how far does a 10-megawatt electron volt proton get through boron?"
     },
     {
       "id": "rng-0268",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Good for coming to rest. How far does a 70 megelectron volt proton get through brain?",
       "corrected": "Good for coming to rest. How far does a 70 megelectron volt proton get through brain?"
     },
     {
       "id": "rng-0269",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 700 kilo-electron volt proton in boron carbide?",
       "corrected": "What is the CSDA range of a 700 kilo-electron volt proton in boron carbide?"
     },
     {
       "id": "rng-0270",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Find the CSDA range for 250 Mv per N, 2,000 N ions in gold.",
       "corrected": "Find the CSDA range for 250 Mv per N, 2,000 N ions in gold."
     },
     {
       "id": "rng-0271",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 50MV deuteron penetrate into boron?",
       "corrected": "How deep does a 50MV deuteron penetrate into boron?"
     },
     {
       "id": "rng-0272",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "So roughly how far would a 15-megai electron volt try to make it into Mylar?",
       "corrected": "So roughly how far would a 15-megai electron volt try to make it into Mylar?"
     },
     {
       "id": "rng-0273",
-      "missed": [
-        "number"
-      ],
+      "missed": ["number"],
       "raw": "range of a hundred MeV proton in concrete, please.",
       "corrected": "range of a hundred MeV proton in concrete, please."
     },
     {
       "id": "rng-0274",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 100 MeAV per nucleon uranium, 238 ions in polystyrene.",
       "corrected": "Determine the range of 100 MeAV per nucleon uranium, 238 ions in polystyrene."
     },
     {
       "id": "rng-0275",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 250-megawatt electron volt per nucleon uranium 238 ion get through air?",
       "corrected": "Before coming to rest, how far does a 250-megawatt electron volt per nucleon uranium 238 ion get through air?"
     },
     {
       "id": "rng-0277",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So, roughly how far would a 20-megapelectron volt per nucleon lithium-7 ion make it into soft tissue?",
       "corrected": "So, roughly how far would a 20-megapelectron volt per nucleon lithium-7 ion make it into soft tissue?"
     },
     {
       "id": "rng-0279",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 20-eV alpha particle penetrate into skin?",
       "corrected": "How deep does a 20-eV alpha particle penetrate into skin?"
     },
     {
       "id": "rng-0280",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 10 megoelectron volt tritons in water.",
       "corrected": "Determine the range of 10 megoelectron volt tritons in water."
     },
     {
       "id": "rng-0281",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 40-megai electron-volt alpha particle in Pyrex glass, please.",
       "corrected": "range of a 40-megai electron-volt alpha particle in Pyrex glass, please."
     },
     {
       "id": "rng-0282",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly how far would a 50-megapelectron volt triton make it into silicon?",
       "corrected": "So roughly how far would a 50-megapelectron volt triton make it into silicon?"
     },
     {
       "id": "rng-0283",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Determine the range of 10-megaparticles in muscle tissue.",
       "corrected": "Determine the range of 10-megaparticles in muscle tissue."
     },
     {
       "id": "rng-0284",
-      "missed": [
-        "number",
-        "unit"
-      ],
+      "missed": ["number", "unit"],
       "raw": "Find the CSDA range for ADMEV per nucleon lithium 7 ions in brain.",
       "corrected": "Find the CSDA range for ADMEV per nucleon lithium 7 ions in brain."
     },
     {
       "id": "rng-0285",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "What's the range of an 80 MeV per nucleon led to 288 ion in air?",
       "corrected": "What's the range of an 80 MeV per nucleon led to 288 ion in air?"
     },
     {
       "id": "rng-0286",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 30-megawatt alpha particle travel through a 150-tissue equivalent plastic?",
       "corrected": "How far will a 30-megawatt alpha particle travel through a 150-tissue equivalent plastic?"
     },
     {
       "id": "rng-0287",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 60 EMEV-Alpha particle in Kapton?",
       "corrected": "What's the range of a 60 EMEV-Alpha particle in Kapton?"
     },
     {
       "id": "rng-0289",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 20-megai-electron volt, deuteron and skin?",
       "corrected": "What is the CSDA range of a 20-megai-electron volt, deuteron and skin?"
     },
     {
       "id": "rng-0290",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 40 mega-electron-volt protons in Mylar",
       "corrected": "Determine the range of 40 mega-electron-volt protons in Mylar"
     },
     {
       "id": "rng-0292",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 120MV proton penetrate into adipose tissue?",
       "corrected": "How deep does a 120MV proton penetrate into adipose tissue?"
     },
     {
       "id": "rng-0293",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 30 Mv per Nucleon calcium 40 ions in lung.",
       "corrected": "Determine the range of 30 Mv per Nucleon calcium 40 ions in lung."
     },
     {
       "id": "rng-0294",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "So roughly how far would a 25-megaparticle make it into gold?",
       "corrected": "So roughly how far would a 25-megaparticle make it into gold?"
     },
     {
       "id": "rng-0295",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 100-megaphone volt per nucleon boron-11 ion in Kapton?",
       "corrected": "What is the CSDA range of a 100-megaphone volt per nucleon boron-11 ion in Kapton?"
     },
     {
       "id": "rng-0301",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 180 MAV proton get through skin?",
       "corrected": "Before coming to rest, how far does a 180 MAV proton get through skin?"
     },
     {
       "id": "rng-0302",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of 100 MV per nucleon, lithium-7 ion and water?",
       "corrected": "What is the CSDA range of 100 MV per nucleon, lithium-7 ion and water?"
     },
     {
       "id": "rng-0303",
-      "missed": [
-        "material",
-        "unit"
-      ],
+      "missed": ["material", "unit"],
       "raw": "Find the CSDA range for 20-Mega-electron-volt helium-3 ions in captain.",
       "corrected": "Find the CSDA range for 20-Mega-electron-volt helium-3 ions in captain."
     },
     {
       "id": "rng-0306",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly how far would a 100 megawatt electron volt per nucleon silicon 28 ion make it into polystyrene?",
       "corrected": "So roughly how far would a 100 megawatt electron volt per nucleon silicon 28 ion make it into polystyrene?"
     },
     {
       "id": "rng-0308",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 80-megapelectron volt triton in polycarbonate?",
       "corrected": "What's the range of a 80-megapelectron volt triton in polycarbonate?"
     },
     {
       "id": "rng-0310",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 20-megapelectronapole deuteron and silicon dioxide?",
       "corrected": "What's the range of a 20-megapelectronapole deuteron and silicon dioxide?"
     },
     {
       "id": "rng-0311",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 60-megai electron volt per nucleon fluorine 19 ion in concrete, please.",
       "corrected": "range of a 60-megai electron volt per nucleon fluorine 19 ion in concrete, please."
     },
     {
       "id": "rng-0312",
-      "missed": [
-        "number",
-        "unit"
-      ],
+      "missed": ["number", "unit"],
       "raw": "Before coming to rest, how far does a ATMEV-alpha particle get through silicon?",
       "corrected": "Before coming to rest, how far does a ATMEV-alpha particle get through silicon?"
     },
     {
       "id": "rng-0313",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 220-megapelectron volt proton in skin?",
       "corrected": "What is the CSDA range of a 220-megapelectron volt proton in skin?"
     },
     {
       "id": "rng-0314",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 400 MAV per nucleon boron-11 ion travel through Teflon?",
       "corrected": "How far will a 400 MAV per nucleon boron-11 ion travel through Teflon?"
     },
     {
       "id": "rng-0315",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one. How far does a 900 kilo electron volt proton go in sodium iodide?",
       "corrected": "Quick one. How far does a 900 kilo electron volt proton go in sodium iodide?"
     },
     {
       "id": "rng-0316",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of 100 megalectron volt proton and cortical bone, please.",
       "corrected": "range of 100 megalectron volt proton and cortical bone, please."
     },
     {
       "id": "rng-0317",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 180-megai electron-volt proton travel through soft tissue?",
       "corrected": "How far will a 180-megai electron-volt proton travel through soft tissue?"
     },
     {
       "id": "rng-0318",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 120 MpEV per Nucleon silicon, 28 ions in silicon dioxide.",
       "corrected": "Find the CSDA range for 120 MpEV per Nucleon silicon, 28 ions in silicon dioxide."
     },
     {
       "id": "rng-0320",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one. How far does a 40-megaphone volt deuteron go in lung?",
       "corrected": "Quick one. How far does a 40-megaphone volt deuteron go in lung?"
     },
     {
       "id": "rng-0321",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of 80 megialactron volt proton in gold, please.",
       "corrected": "range of 80 megialactron volt proton in gold, please."
     },
     {
       "id": "rng-0324",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 20-megapelectron volt deuteron penetrate into silicon dioxide?",
       "corrected": "How deep does a 20-megapelectron volt deuteron penetrate into silicon dioxide?"
     },
     {
       "id": "rng-0326",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 20 Mv per Nucleon silicon, 28 ions in PMMA.",
       "corrected": "Determine the range of 20 Mv per Nucleon silicon, 28 ions in PMMA."
     },
     {
       "id": "rng-0329",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 200 kiloelectron volt oxygen, 16 ions in polystyrene.",
       "corrected": "Find the CSDA range for 200 kiloelectron volt oxygen, 16 ions in polystyrene."
     },
     {
       "id": "rng-0330",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of an 80-megapelectron volt per nucleon beryllium-9 ion and polycarbonate, please.",
       "corrected": "range of an 80-megapelectron volt per nucleon beryllium-9 ion and polycarbonate, please."
     },
     {
       "id": "rng-0331",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 50-megaphone volt deuteron in cortical bone, please.",
       "corrected": "range of a 50-megaphone volt deuteron in cortical bone, please."
     },
     {
       "id": "rng-0332",
-      "missed": [
-        "material",
-        "unit"
-      ],
+      "missed": ["material", "unit"],
       "raw": "How far will a 50-megaphone volt helium-3 ion travel through A15T tissue equivalent plastic?",
       "corrected": "How far will a 50-megaphone volt helium-3 ion travel through A15T tissue equivalent plastic?"
     },
     {
       "id": "rng-0333",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 8 MV deuteron and soft tissue.",
       "corrected": "Find the CSDA range for 8 MV deuteron and soft tissue."
     },
     {
       "id": "rng-0334",
-      "missed": [
-        "quantity",
-        "unit"
-      ],
+      "missed": ["quantity", "unit"],
       "raw": "Rains of a 250 MBV per nucleon phosphorus, 31 ion and compact bone, please.",
       "corrected": "Rains of a 250 MBV per nucleon phosphorus, 31 ion and compact bone, please."
     },
     {
       "id": "rng-0335",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 20-megapixel electron volt deuteron in air?",
       "corrected": "What's the range of a 20-megapixel electron volt deuteron in air?"
     },
     {
       "id": "rng-0337",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 30-megailectron volt per nucleon gold 197 ion in Mylar?",
       "corrected": "What's the range of a 30-megailectron volt per nucleon gold 197 ion in Mylar?"
     },
     {
       "id": "rng-0338",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Find the CSDA range for 150 MV per NCl35 ions in air.",
       "corrected": "Find the CSDA range for 150 MV per NCl35 ions in air."
     },
     {
       "id": "rng-0341",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 15 AB, helium-3, ion and boron, please!",
       "corrected": "range of a 15 AB, helium-3, ion and boron, please!"
     },
     {
       "id": "rng-0343",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 40-megal electron-volt helium-3 ion penetrate into silicon dioxide?",
       "corrected": "How deep does a 40-megal electron-volt helium-3 ion penetrate into silicon dioxide?"
     },
     {
       "id": "rng-0344",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly how far would a 300 megilektron volt per nucleon beryllium-9 ion make it into lung?",
       "corrected": "So roughly how far would a 300 megilektron volt per nucleon beryllium-9 ion make it into lung?"
     },
     {
       "id": "rng-0347",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 60-megai-electron-volt-alpha particle in soft tissue, please.",
       "corrected": "range of a 60-megai-electron-volt-alpha particle in soft tissue, please."
     },
     {
       "id": "rng-0348",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one! How far does a 300-NAV per nucleon magnesium-24 ion go in polyethylene?",
       "corrected": "Quick one! How far does a 300-NAV per nucleon magnesium-24 ion go in polyethylene?"
     },
     {
       "id": "rng-0349",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Quick one, how far does a 180-megalactron volt per nucleon-led 208-ion go in boron oxide?",
       "corrected": "Quick one, how far does a 180-megalactron volt per nucleon-led 208-ion go in boron oxide?"
     },
     {
       "id": "rng-0350",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 5-megawatt electron-volt alpha particle travel through gold?",
       "corrected": "How far will a 5-megawatt electron-volt alpha particle travel through gold?"
     },
     {
       "id": "rng-0355",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "How far will a 250 MAV per nucleon-nion-20 ion travel through silicon?",
       "corrected": "How far will a 250 MAV per nucleon-nion-20 ion travel through silicon?"
     },
     {
       "id": "rng-0358",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 40-megaphone volt helium-3 ion and PMMA please.",
       "corrected": "range of a 40-megaphone volt helium-3 ion and PMMA please."
     },
     {
       "id": "rng-0359",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 4G, V-protons and polyethylene.",
       "corrected": "Find the CSDA range for 4G, V-protons and polyethylene."
     },
     {
       "id": "rng-0361",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly how far would an 8-megapixel volt triton make it into cesium iodide?",
       "corrected": "So roughly how far would an 8-megapixel volt triton make it into cesium iodide?"
     },
     {
       "id": "rng-0365",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 10MV protons in Pyrex glass",
       "corrected": "Find the CSDA range for 10MV protons in Pyrex glass"
     },
     {
       "id": "rng-0366",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "How deep does a 200-megaproton penetrate into concrete?",
       "corrected": "How deep does a 200-megaproton penetrate into concrete?"
     },
     {
       "id": "rng-0368",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "What is the CSDA range of a 180 MeV per nucleon-led 208 ion in muscle tissue?",
       "corrected": "What is the CSDA range of a 180 MeV per nucleon-led 208 ion in muscle tissue?"
     },
     {
       "id": "rng-0369",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 70-megapelectron-volt proton travel through silicon dioxide?",
       "corrected": "How far will a 70-megapelectron-volt proton travel through silicon dioxide?"
     },
     {
       "id": "rng-0370",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So, roughly how far would a 25-megaelectron-volt alpha particle make it into polystyrene?",
       "corrected": "So, roughly how far would a 25-megaelectron-volt alpha particle make it into polystyrene?"
     },
     {
       "id": "rng-0371",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 30-megailectron-volt alpha particle in brain?",
       "corrected": "What's the range of a 30-megailectron-volt alpha particle in brain?"
     },
     {
       "id": "rng-0372",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 180-megai electron volt per nucleon carbon-13 ion in silicon?",
       "corrected": "What's the range of a 180-megai electron volt per nucleon carbon-13 ion in silicon?"
     },
     {
       "id": "rng-0373",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 900 kilo electron volt proton penetrate into polyethylene?",
       "corrected": "How deep does a 900 kilo electron volt proton penetrate into polyethylene?"
     },
     {
       "id": "rng-0375",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 25 MV alpha particles in water.",
       "corrected": "Determine the range of 25 MV alpha particles in water."
     },
     {
       "id": "rng-0378",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 350-megaphone volt per nucleon boron 11 ion in adipose tissue?",
       "corrected": "What's the range of a 350-megaphone volt per nucleon boron 11 ion in adipose tissue?"
     },
     {
       "id": "rng-0380",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly, how far would a 20MDE alpha particle make it into sodium iodide?",
       "corrected": "So roughly, how far would a 20MDE alpha particle make it into sodium iodide?"
     },
     {
       "id": "rng-0381",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 350-megaelectron volt per nucleon silicon-28 ion travel through graphite?",
       "corrected": "How far will a 350-megaelectron volt per nucleon silicon-28 ion travel through graphite?"
     },
     {
       "id": "rng-0382",
-      "missed": [
-        "particle",
-        "number"
-      ],
+      "missed": ["particle", "number"],
       "raw": "Determine the range of two MeV-healium-3 ions in compact bone.",
       "corrected": "Determine the range of two MeV-healium-3 ions in compact bone."
     },
     {
       "id": "rng-0383",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 60-megapelectron volt per nucleon-nitrogen-14 ion get through concrete?",
       "corrected": "Before coming to rest, how far does a 60-megapelectron volt per nucleon-nitrogen-14 ion get through concrete?"
     },
     {
       "id": "rng-0385",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does a 40-megailectron volt per nucleon iron 56 ion go in soft tissue?",
       "corrected": "Quick one, how far does a 40-megailectron volt per nucleon iron 56 ion go in soft tissue?"
     },
     {
       "id": "rng-0388",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does 8-mega-electron-volt triton get through cesium iodide?",
       "corrected": "Before coming to rest, how far does 8-mega-electron-volt triton get through cesium iodide?"
     },
     {
       "id": "rng-0389",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 10 megialactron-volt protons in silicon.",
       "corrected": "Determine the range of 10 megialactron-volt protons in silicon."
     },
     {
       "id": "rng-0392",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "Quick one, how far does a 400 keV flurry 19 ion go in water?",
       "corrected": "Quick one, how far does a 400 keV flurry 19 ion go in water?"
     },
     {
       "id": "rng-0393",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does a 200-megapelectron-volt proton go in Pyrex glass?",
       "corrected": "Quick one, how far does a 200-megapelectron-volt proton go in Pyrex glass?"
     },
     {
       "id": "rng-0394",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 400-megawatt electron volt per nucleon, krypton, 84-ion and PMMA?",
       "corrected": "What is the CSDA range of a 400-megawatt electron volt per nucleon, krypton, 84-ion and PMMA?"
     },
     {
       "id": "rng-0396",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 100 megaelectron volt helium, 3 ions in aluminum.",
       "corrected": "Determine the range of 100 megaelectron volt helium, 3 ions in aluminum."
     },
     {
       "id": "rng-0399",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 300-megapelectron-volt proton penetrate into silicon?",
       "corrected": "How deep does a 300-megapelectron-volt proton penetrate into silicon?"
     },
     {
       "id": "rng-0401",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 40-megalelectron-volt helium-3 ion travel through air?",
       "corrected": "How far will a 40-megalelectron-volt helium-3 ion travel through air?"
     },
     {
       "id": "rng-0402",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "Range of a 120 MeV per nucleon led 208 ion in aluminum oxide, please.",
       "corrected": "Range of a 120 MeV per nucleon led 208 ion in aluminum oxide, please."
     },
     {
       "id": "rng-0403",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 30 MAV per nucleon lithium-7 ion get through skin?",
       "corrected": "Before coming to rest, how far does a 30 MAV per nucleon lithium-7 ion get through skin?"
     },
     {
       "id": "rng-0404",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Before coming to rest, how far does a 350-megapelectron volt per nucleon seen on 132 ion get through sodium iodide?",
       "corrected": "Before coming to rest, how far does a 350-megapelectron volt per nucleon seen on 132 ion get through sodium iodide?"
     },
     {
       "id": "rng-0411",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does 120 megialatron volt proton penetrate into silicon?",
       "corrected": "How deep does 120 megialatron volt proton penetrate into silicon?"
     },
     {
       "id": "rng-0412",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 60-megapelectron-volt per nucleon-chlorine-35-ion travel through Mylar?",
       "corrected": "How far will a 60-megapelectron-volt per nucleon-chlorine-35-ion travel through Mylar?"
     },
     {
       "id": "rng-0416",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 50MAV proton get through Teflon?",
       "corrected": "Before coming to rest, how far does a 50MAV proton get through Teflon?"
     },
     {
       "id": "rng-0420",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 250-megalexron-volt proton in brain?",
       "corrected": "What is the CSDA range of a 250-megalexron-volt proton in brain?"
     },
     {
       "id": "rng-0423",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does a 300 kilo electron volt carbon-12 ion go in polycarbonate?",
       "corrected": "Quick one, how far does a 300 kilo electron volt carbon-12 ion go in polycarbonate?"
     },
     {
       "id": "rng-0424",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "What's the range of a 400-megaphone volt per nucleon-magnetium-24 ion in polyethylene?",
       "corrected": "What's the range of a 400-megaphone volt per nucleon-magnetium-24 ion in polyethylene?"
     },
     {
       "id": "rng-0425",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "range of a 90-megaproton in muscle tissue, please.",
       "corrected": "range of a 90-megaproton in muscle tissue, please."
     },
     {
       "id": "rng-0426",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly how far would a 2G proton make it into silicon?",
       "corrected": "So roughly how far would a 2G proton make it into silicon?"
     },
     {
       "id": "rng-0427",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "range of a 100 mega-electron volt per nucleon, gold 197 ion in brain, please.",
       "corrected": "range of a 100 mega-electron volt per nucleon, gold 197 ion in brain, please."
     },
     {
       "id": "rng-0428",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 90-megaproton proton travel through polycarbonate?",
       "corrected": "How far will a 90-megaproton proton travel through polycarbonate?"
     },
     {
       "id": "rng-0429",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will 150-megaphone volt per nucleon gold-97 ion travel through gold?",
       "corrected": "How far will 150-megaphone volt per nucleon gold-97 ion travel through gold?"
     },
     {
       "id": "rng-0430",
-      "missed": [
-        "material"
-      ],
+      "missed": ["material"],
       "raw": "range of a 100 MeV deuteron in captain, please.",
       "corrected": "range of a 100 MeV deuteron in captain, please."
     },
     {
       "id": "rng-0433",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 3G, EV, proton and gold?",
       "corrected": "What's the range of a 3G, EV, proton and gold?"
     },
     {
       "id": "rng-0434",
-      "missed": [
-        "number",
-        "unit"
-      ],
+      "missed": ["number", "unit"],
       "raw": "Determine the range of two MBV alpha particles in boron.",
       "corrected": "Determine the range of two MBV alpha particles in boron."
     },
     {
       "id": "rng-0436",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "What is the CSDA range of a 350-megapelectron volt per nucleon ion 56 ion in concrete?",
       "corrected": "What is the CSDA range of a 350-megapelectron volt per nucleon ion 56 ion in concrete?"
     },
     {
       "id": "rng-0440",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So roughly, how far would a 100-megapelectron volt per nucleon neon-20 ion make it into polyethylene?",
       "corrected": "So roughly, how far would a 100-megapelectron volt per nucleon neon-20 ion make it into polyethylene?"
     },
     {
       "id": "rng-0441",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 30-MIEV proton penetrate into blood?",
       "corrected": "How deep does a 30-MIEV proton penetrate into blood?"
     },
     {
       "id": "rng-0444",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 10-megai-electron volt triton and cortical bone?",
       "corrected": "What's the range of a 10-megai-electron volt triton and cortical bone?"
     },
     {
       "id": "rng-0445",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 50-megalatron-volt-alpha particle in Teflon?",
       "corrected": "What's the range of a 50-megalatron-volt-alpha particle in Teflon?"
     },
     {
       "id": "rng-0446",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So, roughly how far would 120-megaphone volt per nucleon xenon-132 ion make it into Pyrex glass?",
       "corrected": "So, roughly how far would 120-megaphone volt per nucleon xenon-132 ion make it into Pyrex glass?"
     },
     {
       "id": "rng-0447",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 15-megapelectron-volt triton penetrate into cortical bone?",
       "corrected": "How deep does a 15-megapelectron-volt triton penetrate into cortical bone?"
     },
     {
       "id": "rng-0448",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "How deep does a 20-eV-3 ion penetrate into boron?",
       "corrected": "How deep does a 20-eV-3 ion penetrate into boron?"
     },
     {
       "id": "rng-0449",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "What is the CSDA range of 120 MeV per nucleon led 208 ion and adipose tissue?",
       "corrected": "What is the CSDA range of 120 MeV per nucleon led 208 ion and adipose tissue?"
     },
     {
       "id": "rng-0451",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "How far will a 400 MeV per nucleon crypton 84 ion travel through soft tissue?",
       "corrected": "How far will a 400 MeV per nucleon crypton 84 ion travel through soft tissue?"
     },
     {
       "id": "rng-0453",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of an 80-megawatt electron volt proton and boron carbide?",
       "corrected": "What's the range of an 80-megawatt electron volt proton and boron carbide?"
     },
     {
       "id": "rng-0455",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 30-megawatt electron-volt proton get through Kapton?",
       "corrected": "Before coming to rest, how far does a 30-megawatt electron-volt proton get through Kapton?"
     },
     {
       "id": "rng-0456",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 30-megapixel electron volt deuteron and boron carbide?",
       "corrected": "What is the CSDA range of a 30-megapixel electron volt deuteron and boron carbide?"
     },
     {
       "id": "rng-0458",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 300 kV silicon, 28 ions in polyethylene.",
       "corrected": "Determine the range of 300 kV silicon, 28 ions in polyethylene."
     },
     {
       "id": "rng-0459",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 50 kilo electron volt, beryllium-9 ion get through Pyrex glass?",
       "corrected": "Before coming to rest, how far does a 50 kilo electron volt, beryllium-9 ion get through Pyrex glass?"
     },
     {
       "id": "rng-0460",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 700 kiloelectron volt proton in cesium iodide?",
       "corrected": "What is the CSDA range of a 700 kiloelectron volt proton in cesium iodide?"
     },
     {
       "id": "rng-0462",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "How deep does a 60-megapelectron-fold per nucleon-led 208-ion penetrate into Pyrex glass?",
       "corrected": "How deep does a 60-megapelectron-fold per nucleon-led 208-ion penetrate into Pyrex glass?"
     },
     {
       "id": "rng-0464",
-      "missed": [
-        "quantity",
-        "particle"
-      ],
+      "missed": ["quantity", "particle"],
       "raw": "For like 120 MeV-poton travel through Teflon.",
       "corrected": "For like 120 MeV-poton travel through Teflon."
     },
     {
       "id": "rng-0465",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 5 EneV-Helium-3 ions in adipose tissue.",
       "corrected": "Find the CSDA range for 5 EneV-Helium-3 ions in adipose tissue."
     },
     {
       "id": "rng-0466",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Range of a 180-Mega-electron volt per nucleon krypton 84 ion in polyethylene, please.",
       "corrected": "Range of a 180-Mega-electron volt per nucleon krypton 84 ion in polyethylene, please."
     },
     {
       "id": "rng-0467",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "How deep does a 40-megapelectron volt per nucleon-crypton-84 ion penetrate into adipose tissue?",
       "corrected": "How deep does a 40-megapelectron volt per nucleon-crypton-84 ion penetrate into adipose tissue?"
     },
     {
       "id": "rng-0469",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick one, how far does a 100-megai electron volt per nucleon uranium 238 ion go in compact bone?",
       "corrected": "Quick one, how far does a 100-megai electron volt per nucleon uranium 238 ion go in compact bone?"
     },
     {
       "id": "rng-0470",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 2MV Tritons in Teflon.",
       "corrected": "Find the CSDA range for 2MV Tritons in Teflon."
     },
     {
       "id": "rng-0471",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the range of a 20-megawatt electron volt deuteron in aluminum oxide?",
       "corrected": "What's the range of a 20-megawatt electron volt deuteron in aluminum oxide?"
     },
     {
       "id": "rng-0472",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 8-megai-electron-volt-alpha particle travel through silicon?",
       "corrected": "How far will a 8-megai-electron-volt-alpha particle travel through silicon?"
     },
     {
       "id": "rng-0473",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "So, roughly how far would a 180-megaphone volt per nucleon sulfur-32 ion make it into aluminum oxide?",
       "corrected": "So, roughly how far would a 180-megaphone volt per nucleon sulfur-32 ion make it into aluminum oxide?"
     },
     {
       "id": "rng-0474",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a 20-megawatt electron volt per nucleon oxygen, 16 ion travel through polystyrene?",
       "corrected": "How far will a 20-megawatt electron volt per nucleon oxygen, 16 ion travel through polystyrene?"
     },
     {
       "id": "rng-0475",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the range of 250 megailectron volt per nucleon calcium-40 ions in soft tissue.",
       "corrected": "Determine the range of 250 megailectron volt per nucleon calcium-40 ions in soft tissue."
     },
     {
       "id": "rng-0476",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Before coming to rest, how far does a 50-MV deuteron get through skin?",
       "corrected": "Before coming to rest, how far does a 50-MV deuteron get through skin?"
     },
     {
       "id": "rng-0478",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of a 10-megapolt Triton in aluminum?",
       "corrected": "What is the CSDA range of a 10-megapolt Triton in aluminum?"
     },
     {
       "id": "rng-0479",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Find the CSDA range for 120 mega-electron volt protons in Teflon.",
       "corrected": "Find the CSDA range for 120 mega-electron volt protons in Teflon."
     },
     {
       "id": "rng-0480",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How deep does a 90-megapelectron-volt proton penetrate into graphite?",
       "corrected": "How deep does a 90-megapelectron-volt proton penetrate into graphite?"
     },
     {
       "id": "rng-0482",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "Compare the CSDA range of xenon 132 ions in muscle tissue at 500 kiloelectron volt, 50 megalectron volt per nucleon, and 200 megalectron volt per nucleon.",
       "corrected": "Compare the CSDA range of xenon 132 ions in muscle tissue at 500 kiloelectron volt, 50 megalectron volt per nucleon, and 200 megalectron volt per nucleon."
     },
     {
       "id": "rng-0484",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "How far will a argon-40 ion travel through Pyrex glass at 100 Mv per nucleon, 350 Mv per nucleon, and 300 Mv per nucleon?",
       "corrected": "How far will a argon-40 ion travel through Pyrex glass at 100 Mv per nucleon, 350 Mv per nucleon, and 300 Mv per nucleon?"
     },
     {
       "id": "rng-0486",
-      "missed": [
-        "number"
-      ],
+      "missed": ["number"],
       "raw": "Compare the CSDA range of Krypton 84 ions in Pyrex glass at 180 MeV per nucleon, 300 in ABV per nucleon, and 250 MeV per nucleon.",
       "corrected": "Compare the CSDA range of Krypton 84 ions in Pyrex glass at 180 MeV per nucleon, 300 in ABV per nucleon, and 250 MeV per nucleon."
     },
     {
       "id": "rng-0487",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "What is the range of carbon-12 ions in polyethylene at 500 kV, 400 MAV per nucleon, and 400 MAV per nucleon?",
       "corrected": "What is the range of carbon-12 ions in polyethylene at 500 kV, 400 MAV per nucleon, and 400 MAV per nucleon?"
     },
     {
       "id": "rng-0488",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "Compare the CSDA range of protons and silicon at 200 Mv, 70 Mv and 150 Mv.",
       "corrected": "Compare the CSDA range of protons and silicon at 200 Mv, 70 Mv and 150 Mv."
     },
     {
       "id": "rng-0489",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a calcium-40 ion travel through sodium iodide at 200 MeV per nucleon and 400 kiloelectron volt?",
       "corrected": "How far will a calcium-40 ion travel through sodium iodide at 200 MeV per nucleon and 400 kiloelectron volt?"
     },
     {
       "id": "rng-0491",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "Compare the CSDA range of protons and silicon dioxide at 70 Mv, 300 Mv, and 300 Mv.",
       "corrected": "Compare the CSDA range of protons and silicon dioxide at 70 Mv, 300 Mv, and 300 Mv."
     },
     {
       "id": "rng-0492",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the CSDA range of protons and silicon dioxide at 1.5 giga-electron volt and 80 MeV.",
       "corrected": "Compare the CSDA range of protons and silicon dioxide at 1.5 giga-electron volt and 80 MeV."
     },
     {
       "id": "rng-0493",
-      "missed": [
-        "number",
-        "unit",
-        "unit"
-      ],
+      "missed": ["number", "unit", "unit"],
       "raw": "How far will a lead 208 ion travel through polystyrene at 18 MV per nucleon, 250 keV and a 100 MV per nucleon?",
       "corrected": "How far will a lead 208 ion travel through polystyrene at 18 MV per nucleon, 250 keV and a 100 MV per nucleon?"
     },
     {
       "id": "rng-0494",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "How far will a proton travel through polystyrene at 50 megalektron volt, 220 megalektron volt, and 500 kilo-electron volt?",
       "corrected": "How far will a proton travel through polystyrene at 50 megalektron volt, 220 megalektron volt, and 500 kilo-electron volt?"
     },
     {
       "id": "rng-0495",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "What is the range of nitrogen 14 ions in Pyrex glass at 250 MAV per nucleon, 200 MAV per nucleon, and 350 MAV per nucleon?",
       "corrected": "What is the range of nitrogen 14 ions in Pyrex glass at 250 MAV per nucleon, 200 MAV per nucleon, and 350 MAV per nucleon?"
     },
     {
       "id": "rng-0498",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "How far will a uranium-238 ion travel through brain at 60 Mv per nucleon and 300 Mv per nucleon?",
       "corrected": "How far will a uranium-238 ion travel through brain at 60 Mv per nucleon and 300 Mv per nucleon?"
     },
     {
       "id": "rng-0500",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How far will a proton travel through polyethylene at 2 gizelectron volt and 60 meV?",
       "corrected": "How far will a proton travel through polyethylene at 2 gizelectron volt and 60 MeV?"
     },
     {
       "id": "rng-0501",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "How far will a proton travel through Mylar at 100 MAV, 500 kV and 150 MAV?",
       "corrected": "How far will a proton travel through Mylar at 100 MAV, 500 kV and 150 MAV?"
     },
     {
       "id": "rng-0502",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "How far will a proton travel through air at 70 MV, 20 MV and 300 MV?",
       "corrected": "How far will a proton travel through air at 70 MV, 20 MV and 300 MV?"
     },
     {
       "id": "rng-0503",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "Compare the CSDA range of protons in cortical bone at 300 megalektron volt and 70 megalektron volt.",
       "corrected": "Compare the CSDA range of protons in cortical bone at 300 megalektron volt and 70 megalektron volt."
     },
     {
       "id": "rng-0506",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "How far will a phosphorus-31 ion travel through Mylar at 30 megoelectron volt per nucleon and 100 megoelectron volt per nucleon?",
       "corrected": "How far will a phosphorus-31 ion travel through Mylar at 30 megoelectron volt per nucleon and 100 megoelectron volt per nucleon?"
     },
     {
       "id": "rng-0508",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the CSDA range of protons and polystyrene at 220 MeV and 500 kiloelectron volt.",
       "corrected": "Compare the CSDA range of protons and polystyrene at 220 MeV and 500 kiloelectron volt."
     },
     {
       "id": "rng-0510",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "What is the range of protons in water at 500 kiloelectron volt, 300 kiloelectron volt, and 10 MeV?",
       "corrected": "What is the range of protons in water at 500 kiloelectron volt, 300 kiloelectron volt, and 10 MeV?"
     },
     {
       "id": "rng-0511",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "Compare the CSDA range of protons in cesium iodide at 180 MV, 10 MV, and 220 MV.",
       "corrected": "Compare the CSDA range of protons in cesium iodide at 180 MV, 10 MV, and 220 MV."
     },
     {
       "id": "rng-0512",
-      "missed": [
-        "material"
-      ],
+      "missed": ["material"],
       "raw": "Compare the CSDA range of protons and silicone at 20 MeV and 300 MeV.",
       "corrected": "Compare the CSDA range of protons and silicone at 20 MeV and 300 MeV."
     },
     {
       "id": "rng-0513",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "What is the range of protons in a 150-tissue equivalent plastic at 250 Mv and 10 Mv?",
       "corrected": "What is the range of protons in a 150-tissue equivalent plastic at 250 Mv and 10 Mv?"
     },
     {
       "id": "rng-0514",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "Compare the CSDA range of protons and gold at 500 kiloelectron volt, 250 megaelectron volt, and 100 megaelectron volt.",
       "corrected": "Compare the CSDA range of protons and gold at 500 kiloelectron volt, 250 megaelectron volt, and 100 megaelectron volt."
     },
     {
       "id": "rng-0515",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "What is the range of protons and gold at 900 keV, 300 megaelectron volt, and 200 megaelectron volt?",
       "corrected": "What is the range of protons and gold at 900 keV, 300 megaelectron volt, and 200 megaelectron volt?"
     },
     {
       "id": "rng-0516",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "Compare the CSDA range of protons in silicon dioxide at 250 MV and 60 MV.",
       "corrected": "Compare the CSDA range of protons in silicon dioxide at 250 MV and 60 MV."
     },
     {
       "id": "rng-0517",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "What is the range of protons in polystyrene at 1 giga-electron volt, 150 megawatt volt, and 60 megawatt volt?",
       "corrected": "What is the range of protons in polystyrene at 1 giga-electron volt, 150 megawatt volt, and 60 megawatt volt?"
     },
     {
       "id": "rng-0518",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "What is the range of protons in polystyrene at 100 mega-electron volt and 120 mega-electron volt?",
       "corrected": "What is the range of protons in polystyrene at 100 mega-electron volt and 120 mega-electron volt?"
     },
     {
       "id": "rng-0519",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "How far will a uranium-238 ion travel through boron carbide at 50 Mv per nucleon, 200 Mv per nucleon, and 250 Mv per nucleon?",
       "corrected": "How far will a uranium-238 ion travel through boron carbide at 50 Mv per nucleon, 200 Mv per nucleon, and 250 Mv per nucleon?"
     },
     {
       "id": "rng-0520",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "What is the range of magnesium 24 ions in Kapton at 400 MAV per nucleon, 40 MAV per nucleon, and 150 MAV per nucleon?",
       "corrected": "What is the range of magnesium 24 ions in Kapton at 400 MAV per nucleon, 40 MAV per nucleon, and 150 MAV per nucleon?"
     },
     {
       "id": "rng-0521",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "How far will a iron-56 ion travel through air at 50 MAV per nucleon, 20 MAV per nucleon, and 50 MAV per nucleon?",
       "corrected": "How far will a iron-56 ion travel through air at 50 MAV per nucleon, 20 MAV per nucleon, and 50 MAV per nucleon?"
     },
     {
       "id": "rng-0523",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the range of protons in aluminum oxide at 180 MeV, 60 MeV, and 1.5 gizia-electron volt?",
       "corrected": "What is the range of protons in aluminum oxide at 180 MeV, 60 MeV, and 1.5 gizia-electron volt?"
     },
     {
       "id": "rng-0524",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "Compare the CSDA range of protons and skin at 70 MV, 90 MV and 60 MV.",
       "corrected": "Compare the CSDA range of protons and skin at 70 MV, 90 MV and 60 MV."
     },
     {
       "id": "rng-0525",
-      "missed": [
-        "material",
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["material", "unit", "unit", "unit"],
       "raw": "How far will a proton travel through long at 50 megelectron volt, 220 megelectron volt, and 180 megelectron volt?",
       "corrected": "How far will a proton travel through long at 50 megelectron volt, 220 megelectron volt, and 180 megelectron volt?"
     },
     {
       "id": "rng-0527",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "Compare the CSDA range of protons and soft tissue at 90 MV and 90 MV.",
       "corrected": "Compare the CSDA range of protons and soft tissue at 90 MV and 90 MV."
     },
     {
       "id": "rng-0528",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the CSDA range of calcium-40 ions in soft tissue at 180 Mv per N and 100 keV.",
       "corrected": "Compare the CSDA range of calcium-40 ions in soft tissue at 180 Mv per N and 100 keV."
     },
     {
       "id": "rng-0529",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "How far will a proton travel through aluminum at 300 mega electron volt, 40 mega electron volt, and 220 mega electron volt?",
       "corrected": "How far will a proton travel through aluminum at 300 mega electron volt, 40 mega electron volt, and 220 mega electron volt?"
     },
     {
       "id": "rng-0530",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "How far will a proton travel through Kapton at dead to a brought that? An 100 megalitron volt and 180 megalitron volt?",
       "corrected": "How far will a proton travel through Kapton at dead to a brought that? An 100 megalitron volt and 180 megalitron volt?"
     },
     {
       "id": "rng-0531",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "How far will a beryllium-9 ion travel through compact bone at 100 MV per nucleon, 40 MV per nucleon, and 30 MV per nucleon?",
       "corrected": "How far will a beryllium-9 ion travel through compact bone at 100 MV per nucleon, 40 MV per nucleon, and 30 MV per nucleon?"
     },
     {
       "id": "rng-0532",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "How far will a proton travel through polyethylene at 350 Mv, 10 Mv, and 70 Mv?",
       "corrected": "How far will a proton travel through polyethylene at 350 Mv, 10 Mv, and 70 Mv?"
     },
     {
       "id": "rng-0535",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "What is the range of protons in soft tissue at 120 MV and 80 MV?",
       "corrected": "What is the range of protons in soft tissue at 120 MV and 80 MV?"
     },
     {
       "id": "rng-0537",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "How far will a xenon-132 ion travel through boron at 80 MV per nucleon and 30 MV per nucleon?",
       "corrected": "How far will a xenon-132 ion travel through boron at 80 MV per nucleon and 30 MV per nucleon?"
     },
     {
       "id": "rng-0539",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "How far will a gold 197 ion travel through Mylar at 40 Mv per nucleon and 150 Mv per nucleon?",
       "corrected": "How far will a gold 197 ion travel through Mylar at 40 Mv per nucleon and 150 Mv per nucleon?"
     },
     {
       "id": "rng-0541",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "Compare the CSDA range of protons in polyethylene at 250 MV, 40 MV, and 2 GeV.",
       "corrected": "Compare the CSDA range of protons in polyethylene at 250 MV, 40 MV, and 2 GeV."
     },
     {
       "id": "rng-0542",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "What is the range of protons and silicon at 70 MV, 1 GeV, and 350 MV?",
       "corrected": "What is the range of protons and silicon at 70 MV, 1 GeV, and 350 MV?"
     },
     {
       "id": "rng-0545",
-      "missed": [
-        "number"
-      ],
+      "missed": ["number"],
       "raw": "Compare the CSDA range of protons and graphite at 100 MeV, 80 MeV, and 80 MeV.",
       "corrected": "Compare the CSDA range of protons and graphite at 100 MeV, 80 MeV, and 80 MeV."
     },
     {
       "id": "rng-0546",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "Compare the CSDA range of lithium-7 ions in polyethylene at 350 kilo electron volt, 20 Mv per nucleon, and 80 Mv per nucleon.",
       "corrected": "Compare the CSDA range of lithium-7 ions in polyethylene at 350 kilo electron volt, 20 Mv per nucleon, and 80 Mv per nucleon."
     },
     {
       "id": "rng-0548",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "How far will a fluorine-19 ion travel through skin at 200 MV per nucleon and 350 MV per nucleon?",
       "corrected": "How far will a fluorine-19 ion travel through skin at 200 MV per nucleon and 350 MV per nucleon?"
     },
     {
       "id": "rng-0549",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "What is the range of protons and aluminum oxide at 3 Giga-lactron volt, 220 Yamifee and 2 Giga-lactron volt?",
       "corrected": "What is the range of protons and aluminum oxide at 3 Giga-lactron volt, 220 Yamifee and 2 Giga-lactron volt?"
     },
     {
       "id": "rng-0550",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "Compare the CSDA range of protons and lung at 80 MAV, 100 MAV, and 100 MAV.",
       "corrected": "Compare the CSDA range of protons and lung at 80 MAV, 100 MAV, and 100 MAV."
     },
     {
       "id": "rng-0551",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "Compare the CSDA range of protons in polyethylene at 80 MV, 200 MV, and 200 MV.",
       "corrected": "Compare the CSDA range of protons in polyethylene at 80 MV, 200 MV, and 200 MV."
     },
     {
       "id": "rng-0552",
-      "missed": [
-        "number",
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["number", "unit", "unit", "unit"],
       "raw": "Compare the CSDA range of protons in polycarbonate 20MV, 20MV, and 220MV.",
       "corrected": "Compare the CSDA range of protons in polycarbonate 20MV, 20MV, and 220MV."
     },
     {
       "id": "rng-0553",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "What is the range of Krypton 84 ions in boron carbide at 350 MV per nucleon and 300 MV per nucleon?",
       "corrected": "What is the range of Krypton 84 ions in boron carbide at 350 MV per nucleon and 300 MV per nucleon?"
     },
     {
       "id": "rng-0554",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "What is the range of beryllium-9 ions in PMMA at 350 kilo-electron volt, 180 mega-electron volt per nucleon, and 400 mega-electron volt per nucleon?",
       "corrected": "What is the range of beryllium-9 ions in PMMA at 350 kilo-electron volt, 180 mega-electron volt per nucleon, and 400 mega-electron volt per nucleon?"
     },
     {
       "id": "rng-0555",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "What is the range of protons and aluminum at 4 giga-electron volt, 80 mega-electron volt, and 60 mega-electron volt?",
       "corrected": "What is the range of protons and aluminum at 4 giga-electron volt, 80 mega-electron volt, and 60 mega-electron volt?"
     },
     {
       "id": "rng-0556",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "How far will a krypton-84 ion travel through brain at 300 megilektron volt per nucleon and 30 megilektron volt per nucleon?",
       "corrected": "How far will a krypton-84 ion travel through brain at 300 megilektron volt per nucleon and 30 megilektron volt per nucleon?"
     },
     {
       "id": "rng-0557",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "What is the range of protons in cortical bone at 10 MV, 50 MV and 90 MV?",
       "corrected": "What is the range of protons in cortical bone at 10 MV, 50 MV and 90 MV?"
     },
     {
       "id": "rng-0559",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "Compare the CSDA range of protons in gold at 80 MV and 10 MV",
       "corrected": "Compare the CSDA range of protons in gold at 80 MV and 10 MV"
     },
     {
       "id": "rng-0562",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the range of a 250-megai electron volt, proton and gold, blood and sodium iodide.",
       "corrected": "Compare the range of a 250-megai electron volt, proton and gold, blood and sodium iodide."
     },
     {
       "id": "rng-0564",
-      "missed": [
-        "material",
-        "unit"
-      ],
+      "missed": ["material", "unit"],
       "raw": "Compare the range of a 250-megatelectron volt per nucleon carbon-13 ion in police diurene, brain, and adipose tissue.",
       "corrected": "Compare the range of a 250-megatelectron volt per nucleon carbon-13 ion in police diurene, brain, and adipose tissue."
     },
     {
       "id": "rng-0565",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of 350 Mv per nucleon uranium, 238 ions in compact bone and PMMA?",
       "corrected": "What is the CSDA range of 350 Mv per nucleon uranium, 238 ions in compact bone and PMMA?"
     },
     {
       "id": "rng-0568",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of 80 Mv protons in Kapton, Teflon, and air?",
       "corrected": "What is the CSDA range of 80 Mv protons in Kapton, Teflon, and air?"
     },
     {
       "id": "rng-0570",
-      "missed": [
-        "material",
-        "unit"
-      ],
+      "missed": ["material", "unit"],
       "raw": "What is the CSDA range of 200 kiloletron volt fluorine, 19 ions and 8 bits of funny 150 tissue equivalent plastic, sodium iodide, and lithium fluoride?",
       "corrected": "What is the CSDA range of 200 kiloletron volt fluorine, 19 ions and 8 bits of funny 150 tissue equivalent plastic, sodium iodide, and lithium fluoride?"
     },
     {
       "id": "rng-0571",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "Compare the range of an 80 MeV per nucleon-crypton-84 ion in soft tissue and boron oxide.",
       "corrected": "Compare the range of an 80 MeV per nucleon-crypton-84 ion in soft tissue and boron oxide."
     },
     {
       "id": "rng-0572",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the CSDA range of 150 mega-electron volt protons in A150 tissue equivalent plastic and muscle tissue?",
       "corrected": "What is the CSDA range of 150 mega-electron volt protons in A150 tissue equivalent plastic and muscle tissue?"
     },
     {
       "id": "rng-0573",
-      "missed": [
-        "material",
-        "unit"
-      ],
+      "missed": ["material", "unit"],
       "raw": "What is the CSDA range of 300 megailectron volt protons in captain, PMMA and boron?",
       "corrected": "What is the CSDA range of 300 megailectron volt protons in captain, PMMA and boron?"
     },
     {
       "id": "rng-0575",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the range of a 120 mega-electron volt per nucleon uranium 238 ion in skin, cortical bone, and silicon.",
       "corrected": "Compare the range of a 120 mega-electron volt per nucleon uranium 238 ion in skin, cortical bone, and silicon."
     },
     {
       "id": "rng-0576",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "What is the CSDA range of 300 MV per nucleon led 208 ions in Mylar and concrete?",
       "corrected": "What is the CSDA range of 300 MV per nucleon led 208 ions in Mylar and concrete?"
     },
     {
       "id": "rng-0577",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the range of a 2-giga electron volt proton in silicon and air",
       "corrected": "Compare the range of a 2-giga electron volt proton in silicon and air"
     },
     {
       "id": "rng-0578",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the range of a 50 kilo electron volt oxygen, 16 ion in lithium fluoride, Mylar, and concrete.",
       "corrected": "Compare the range of a 50 kilo electron volt oxygen, 16 ion in lithium fluoride, Mylar, and concrete."
     },
     {
       "id": "rng-0581",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "between a 30-megaelectron volt per nucleon gold-197 ion and a 30-megaelectron volt per nucleon neon-20 ion, which will travel farther in boron oxide?",
       "corrected": "between a 30-megaelectron volt per nucleon gold-197 ion and a 30-megaelectron volt per nucleon neon-20 ion, which will travel farther in boron oxide?"
     },
     {
       "id": "rng-0585",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the range of a 50 kilo electron volt calcium-40 ion and a 50 kilo electron volt lithium-7 ion in concrete.",
       "corrected": "Compare the range of a 50 kilo electron volt calcium-40 ion and a 50 kilo electron volt lithium-7 ion in concrete."
     },
     {
       "id": "rng-0586",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the range of an 80-megawatt electron volt per nucleon calcium-40 ion and an 80-megawatt electron volt per nucleon proton in boron.",
       "corrected": "Compare the range of an 80-megawatt electron volt per nucleon calcium-40 ion and an 80-megawatt electron volt per nucleon proton in boron."
     },
     {
       "id": "rng-0588",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "Compare the range of a 40 MeV per nucleon, so for 32 ion, and a 40 MeV per nucleon chlorine, 35 ion in brain.",
       "corrected": "Compare the range of a 40 MeV per nucleon, so for 32 ion, and a 40 MeV per nucleon chlorine, 35 ion in brain."
     },
     {
       "id": "rng-0589",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the range of a 180-megalactron volt per nucleon, carbon 112 ion and a handy megalactron volt per nucleon, sulfur 32 ion in polycarbonate.",
       "corrected": "Compare the range of a 180-megalactron volt per nucleon, carbon 112 ion and a handy megalactron volt per nucleon, sulfur 32 ion in polycarbonate."
     },
     {
       "id": "rng-0590",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the range of a 250 MAV per nucleon fluorine 19 ion and a 250 MAV per nucleon oxygen 16 ion in polycarbonate.",
       "corrected": "Compare the range of a 250 MAV per nucleon fluorine 19 ion and a 250 MAV per nucleon oxygen 16 ion in polycarbonate."
     },
     {
       "id": "rng-0591",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the range of a 100 megelectron volt per nucleon nitrogen, 14 ion, and a 100 megelectron volt per nucleon deuteron and skin.",
       "corrected": "Compare the range of a 100 megelectron volt per nucleon nitrogen, 14 ion, and a 100 megelectron volt per nucleon deuteron and skin."
     },
     {
       "id": "rng-0592",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the range of a 350-megaplectron volt per nucleon chlorine 35 ion and a 350-megaplectron volt per nucleon deuteron in boron.",
       "corrected": "Compare the range of a 350-megaplectron volt per nucleon chlorine 35 ion and a 350-megaplectron volt per nucleon deuteron in boron."
     },
     {
       "id": "rng-0593",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "between a 200 kilo electron volt argon-40 ion and a 200 kilo electron volt krypton-84 ion, which will travel farther in skin?",
       "corrected": "between a 200 kilo electron volt argon-40 ion and a 200 kilo electron volt krypton-84 ion, which will travel farther in skin?"
     },
     {
       "id": "rng-0594",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "Compare the range of a 40 MeV per nucleon-led 208 ion and a 40 MeV per nucleon magnesium 24 ion in aluminum.",
       "corrected": "Compare the range of a 40 MeV per nucleon-led 208 ion and a 40 MeV per nucleon magnesium 24 ion in aluminum."
     },
     {
       "id": "rng-0595",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "between a 300 MAV per nucleon silicon 28 ion and a 300 MAV per nucleon oxygen 16 ion, which will travel farther in PMMA.",
       "corrected": "between a 300 MAV per nucleon silicon 28 ion and a 300 MAV per nucleon oxygen 16 ion, which will travel farther in PMMA."
     },
     {
       "id": "rng-0597",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "between 150 Mv per nucleon silicon, 28 ion, and a 150 Mv per nucleon xenon 132 ion, which will travel farther in air?",
       "corrected": "between 150 Mv per nucleon silicon, 28 ion, and a 150 Mv per nucleon xenon 132 ion, which will travel farther in air?"
     },
     {
       "id": "rng-0599",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the range of a 180-megapelectron volt per nucleon magnesium-24 ion and a 180-megapelectron volt per nucleon lithium-7 ion in PMMA.",
       "corrected": "Compare the range of a 180-megapelectron volt per nucleon magnesium-24 ion and a 180-megapelectron volt per nucleon lithium-7 ion in PMMA."
     },
     {
       "id": "invrng-0004",
-      "missed": [
-        "material"
-      ],
+      "missed": ["material"],
       "raw": "What energy gives a 8 centimeter range in captain for protons?",
       "corrected": "What energy gives a 8 cm range in captain for protons?"
     },
     {
       "id": "invrng-0010",
-      "missed": [
-        "number"
-      ],
+      "missed": ["number"],
       "raw": "for a six centimeter range in cortical bone. What energy do boron 11 ions need?",
       "corrected": "for a six cm range in cortical bone. What energy do boron 11 ions need?"
     },
     {
       "id": "invrng-0012",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "What energy gives a 15mm range in blood for Treetons?",
       "corrected": "What energy gives a 15mm range in blood for Treetons?"
     },
     {
       "id": "invrng-0021",
-      "missed": [
-        "quantity"
-      ],
+      "missed": ["quantity"],
       "raw": "LUT energy gives a 3 cm range in polystyrene for krypton 84 ions.",
       "corrected": "LUT energy gives a 3 cm range in polystyrene for krypton 84 ions."
     },
     {
       "id": "invrng-0022",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "How energetic must a BRGON 40 ion be for a 50mm range in concrete?",
       "corrected": "How energetic must a BRGON 40 ion be for a 50mm range in concrete?"
     },
     {
       "id": "invrng-0061",
-      "missed": [
-        "quantity"
-      ],
+      "missed": ["quantity"],
       "raw": "AOE must a lithium-7 ion B for a 4 centimeter range in PMMA.",
       "corrected": "AOE must a lithium-7 ion B for a 4 cm range in PMMA."
     },
     {
       "id": "invrng-0066",
-      "missed": [
-        "number"
-      ],
+      "missed": ["number"],
       "raw": "For a six centimeter range in PMMA, what energy do deuteron's need?",
       "corrected": "For a six cm range in PMMA, what energy do deuteron's need?"
     },
     {
       "id": "invrng-0097",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "For a 5-illimeter range in adipose tissue, what energy do protons need?",
       "corrected": "For a 5-illimeter range in adipose tissue, what energy do protons need?"
     },
     {
       "id": "invrng-0132",
-      "missed": [
-        "quantity"
-      ],
+      "missed": ["quantity"],
       "raw": "1 energy gives a 1 centimeter range in Teflon for deuteron.",
       "corrected": "1 energy gives a 1 cm range in Teflon for deuteron."
     },
     {
       "id": "invrng-0152",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What energy do deuteron's need for a 5-inimeter range in silicon?",
       "corrected": "What energy do deuteron's need for a 5-inimeter range in silicon?"
     },
     {
       "id": "invrng-0160",
-      "missed": [
-        "number",
-        "unit"
-      ],
+      "missed": ["number", "unit"],
       "raw": "What energy do protons need for a biscentimeter range and a 150 tissue equivalent plastic?",
       "corrected": "What energy do protons need for a biscentimeter range and a 150 tissue equivalent plastic?"
     },
     {
       "id": "invrng-0163",
-      "missed": [
-        "number"
-      ],
+      "missed": ["number"],
       "raw": "How energetic must a helium-3 ion be for a heat-seen centimeter range in air?",
       "corrected": "How energetic must a helium-3 ion be for a heat-seen cm range in air?"
     },
     {
       "id": "invrng-0192",
-      "missed": [
-        "quantity"
-      ],
+      "missed": ["quantity"],
       "raw": "But energy do uranium 238 ions need for a 6 centimeter range in water?",
       "corrected": "But energy do uranium 238 ions need for a 6 cm range in water?"
     },
     {
       "id": "invrng-0209",
-      "missed": [
-        "quantity"
-      ],
+      "missed": ["quantity"],
       "raw": "Bitch energy does a proton need for a 5mm range in polyethylene, aluminum oxide and compact bone.",
       "corrected": "Bitch energy does a proton need for a 5mm range in polyethylene, aluminum oxide and compact bone."
     },
     {
       "id": "invrng-0218",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "Which energy does an ion-56 ion need for a 25 centimeter range in lithium fluoride, cortical bone, and adipose tissue?",
       "corrected": "Which energy does an ion-56 ion need for a 25 cm range in lithium fluoride, cortical bone, and adipose tissue?"
     },
     {
       "id": "invrng-0220",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "What energy do Golden-19-7 ions need for an 18 centimeter range in boron, brain, and Kapton?",
       "corrected": "What energy do Golden-19-7 ions need for an 18 cm range in boron, brain, and Kapton?"
     },
     {
       "id": "invrng-0222",
-      "missed": [
-        "particle"
-      ],
+      "missed": ["particle"],
       "raw": "Which energy does a laid 208 ion need for a 6 centimeter range in Teflon skin and adipose tissue?",
       "corrected": "Which energy does a laid 208 ion need for a 6 cm range in Teflon skin and adipose tissue?"
     },
     {
       "id": "invrng-0227",
-      "missed": [
-        "material"
-      ],
+      "missed": ["material"],
       "raw": "What energy do protons need for a 25-centimeter range in 8,150 tissue equivalent plastic and water?",
       "corrected": "What energy do protons need for a 25-cm range in 8,150 tissue equivalent plastic and water?"
     },
     {
       "id": "invrng-0238",
-      "missed": [
-        "number"
-      ],
+      "missed": ["number"],
       "raw": "What energy do protons need for a 1018 centimeter range in soft tissue? What about calcium-40 ions?",
       "corrected": "What energy do protons need for a 1018 cm range in soft tissue? What about calcium-40 ions?"
     },
     {
       "id": "sp-0001",
-      "missed": [
-        "number",
-        "unit"
-      ],
+      "missed": ["number", "unit"],
       "raw": "Report the electronic stopping power of a ADMEV triton in silicon dioxide.",
       "corrected": "Report the electronic stopping power of a ADMEV triton in silicon dioxide."
     },
     {
       "id": "sp-0004",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "At what rate does a 120-megaproton shed energy and air?",
       "corrected": "At what rate does a 120-megaproton shed energy and air?"
     },
     {
       "id": "sp-0006",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Give me the let of a 100-megat's electron volt triton in silicon dioxide.",
       "corrected": "Give me the let of a 100-megat's electron volt triton in silicon dioxide."
     },
     {
       "id": "sp-0007",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the linear energy transfer of 50-megaphone volt, helium-3 ions and cortical bone?",
       "corrected": "What is the linear energy transfer of 50-megaphone volt, helium-3 ions and cortical bone?"
     },
     {
       "id": "sp-0008",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the mass stopping power of 2 mega-electron volt deuterons in boron.",
       "corrected": "Determine the mass stopping power of 2 mega-electron volt deuterons in boron."
     },
     {
       "id": "sp-0009",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How much energy does a 10-megaelectron volt, helium-3 ion, lose per centimeter in air?",
       "corrected": "How much energy does a 10-megaelectron volt, helium-3 ion, lose per cm in air?"
     },
     {
       "id": "sp-0010",
-      "missed": [
-        "particle",
-        "material",
-        "unit"
-      ],
+      "missed": ["particle", "material", "unit"],
       "raw": "Report the let for a 180-megaphone volt per nucleon-led 208-ion in a 1-bipi tissue equivalent plastic.",
       "corrected": "Report the let for a 180-megaphone volt per nucleon-led 208-ion in a 1-bipi tissue equivalent plastic."
     },
     {
       "id": "sp-0011",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Quick question, what's the stopping power of a 60mF eα particle in graphite?",
       "corrected": "Quick question, what's the stopping power of a 60mF eα particle in graphite?"
     },
     {
       "id": "sp-0012",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the stopping power of 150 mega-electron-volt protons in polycarbonate?",
       "corrected": "What's the stopping power of 150 mega-electron-volt protons in polycarbonate?"
     },
     {
       "id": "sp-0013",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Give me the let of a 5-EV-alpha particle in silicon dioxide.",
       "corrected": "Give me the let of a 5-EV-alpha particle in silicon dioxide."
     },
     {
       "id": "sp-0014",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the linear energy transfer for 20MV protons in graphite.",
       "corrected": "Determine the linear energy transfer for 20MV protons in graphite."
     },
     {
       "id": "sp-0016",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How much energy does a 10-megaelectron-volt deuteron lose per centimeter in polystyrene?",
       "corrected": "How much energy does a 10-megaelectron-volt deuteron lose per cm in polystyrene?"
     },
     {
       "id": "sp-0017",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the let of a 15-megapelectron-volt alpha particle in blood?",
       "corrected": "What's the let of a 15-megapelectron-volt alpha particle in blood?"
     },
     {
       "id": "sp-0020",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the mass stopping power of 250 megaelectron volt protons in skin.",
       "corrected": "Determine the mass stopping power of 250 megaelectron volt protons in skin."
     },
     {
       "id": "sp-0021",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the mass-stopping power of 50 megilektron volt per nucleon chlorine 35 ions in lung",
       "corrected": "Determine the mass-stopping power of 50 megilektron volt per nucleon chlorine 35 ions in lung"
     },
     {
       "id": "sp-0022",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Report the electronic stopping power of a 250-megapelectron volt per nucleon xenon 132 ion in Pyrex glass.",
       "corrected": "Report the electronic stopping power of a 250-megapelectron volt per nucleon xenon 132 ion in Pyrex glass."
     },
     {
       "id": "sp-0024",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Quick question, what's the stopping power of a 10-megaproton in PMMA?",
       "corrected": "Quick question, what's the stopping power of a 10-megaproton in PMMA?"
     },
     {
       "id": "sp-0027",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "What is the stopping power of a 50-megatelectron volt per nucleon-magnetium-24 ion in Pyrex glass?",
       "corrected": "What is the stopping power of a 50-megatelectron volt per nucleon-magnetium-24 ion in Pyrex glass?"
     },
     {
       "id": "sp-0028",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the LET of a 50 MAE-Phe helium-3 ion in sodium iodide?",
       "corrected": "What's the LET of a 50 MAE-Phe helium-3 ion in sodium iodide?"
     },
     {
       "id": "sp-0029",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick question, what's the stopping power of a 10-megaphone volt triton in Kapton?",
       "corrected": "Quick question, what's the stopping power of a 10-megaphone volt triton in Kapton?"
     },
     {
       "id": "sp-0031",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the let of a 250 MIV per nucleon krypton-84 ion in muscle tissue?",
       "corrected": "What's the let of a 250 MIV per nucleon krypton-84 ion in muscle tissue?"
     },
     {
       "id": "sp-0032",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "What is the linear energy transfer of 400 MAV per nucleon led to 108 ions in Teflon?",
       "corrected": "What is the linear energy transfer of 400 MAV per nucleon led to 108 ions in Teflon?"
     },
     {
       "id": "sp-0033",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Report the LET for a 60-megalectron volt deuteron in lithium fluoride.",
       "corrected": "Report the LET for a 60-megalectron volt deuteron in lithium fluoride."
     },
     {
       "id": "sp-0034",
-      "missed": [
-        "quantity",
-        "unit"
-      ],
+      "missed": ["quantity", "unit"],
       "raw": "dDx for a 250 MIV per nucleon phosphorus, 31 ion and polycarbonate",
       "corrected": "dDx for a 250 MIV per nucleon phosphorus, 31 ion and polycarbonate"
     },
     {
       "id": "sp-0035",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the linear energy transfer for 40 MAV, helium-3 ions in Kapton.",
       "corrected": "Determine the linear energy transfer for 40 MAV, helium-3 ions in Kapton."
     },
     {
       "id": "sp-0045",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Report the electronic stopping power of a 60-megaproton in polystyrene.",
       "corrected": "Report the electronic stopping power of a 60-megaproton in polystyrene."
     },
     {
       "id": "sp-0046",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the stopping power of 60 MeAp helium-3 ions in cesium iodide?",
       "corrected": "What's the stopping power of 60 MeAp helium-3 ions in cesium iodide?"
     },
     {
       "id": "sp-0047",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the let of a 60-megawatt electron-volt alpha particle in Mylar?",
       "corrected": "What is the let of a 60-megawatt electron-volt alpha particle in Mylar?"
     },
     {
       "id": "sp-0048",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the stopping power of 300 kiloelectron volt protons in polystyrene?",
       "corrected": "What's the stopping power of 300 kiloelectron volt protons in polystyrene?"
     },
     {
       "id": "sp-0049",
-      "missed": [
-        "quantity"
-      ],
+      "missed": ["quantity"],
       "raw": "dDx for a 30 MeV Triton in concrete.",
       "corrected": "dDx for a 30 MeV Triton in concrete."
     },
     {
       "id": "sp-0050",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick question, what's the stopping power of a 50-megaelectron volt triton and polycarbonate?",
       "corrected": "Quick question, what's the stopping power of a 50-megaelectron volt triton and polycarbonate?"
     },
     {
       "id": "sp-0051",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the LET of a 60-megapelectron volt per nucleon oxygen-16 ion in water?",
       "corrected": "What's the LET of a 60-megapelectron volt per nucleon oxygen-16 ion in water?"
     },
     {
       "id": "sp-0052",
-      "missed": [
-        "quantity",
-        "unit"
-      ],
+      "missed": ["quantity", "unit"],
       "raw": "dX for a 90-megapelectron-volt proton in soft tissue.",
       "corrected": "dX for a 90-megapelectron-volt proton in soft tissue."
     },
     {
       "id": "sp-0053",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the let of a 180-megawatt electron volt proton in lung?",
       "corrected": "What's the let of a 180-megawatt electron volt proton in lung?"
     },
     {
       "id": "sp-0054",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the stopping power of 90MV protons in soft tissue?",
       "corrected": "What's the stopping power of 90MV protons in soft tissue?"
     },
     {
       "id": "sp-0056",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the let of a 15-megapelectron volt triton and polyethylene?",
       "corrected": "What's the let of a 15-megapelectron volt triton and polyethylene?"
     },
     {
       "id": "sp-0059",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the mass stopping power of 20 megarelectron volt alpha particles in water.",
       "corrected": "Determine the mass stopping power of 20 megarelectron volt alpha particles in water."
     },
     {
       "id": "sp-0060",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick question, what's the linear energy transfer of a 90-megawatt electron volt proton and silicon dioxide?",
       "corrected": "Quick question, what's the linear energy transfer of a 90-megawatt electron volt proton and silicon dioxide?"
     },
     {
       "id": "sp-0062",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Give me the let of a 40-feB per nucleon uranium, 238 ion and gold.",
       "corrected": "Give me the let of a 40-feB per nucleon uranium, 238 ion and gold."
     },
     {
       "id": "sp-0063",
-      "missed": [
-        "quantity",
-        "particle"
-      ],
+      "missed": ["quantity", "particle"],
       "raw": "dDx for a 15 MeV-3 ion in aluminum oxide.",
       "corrected": "dDx for a 15 MeV-3 ion in aluminum oxide."
     },
     {
       "id": "sp-0064",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the linear energy transfer for 50-megawatt electron-volt alpha particles in silicon dioxide.",
       "corrected": "Determine the linear energy transfer for 50-megawatt electron-volt alpha particles in silicon dioxide."
     },
     {
       "id": "sp-0065",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "What is the linear energy transfer of 50-megaparticles and boron?",
       "corrected": "What is the linear energy transfer of 50-megaparticles and boron?"
     },
     {
       "id": "sp-0066",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick question, what's the linear energy transfer of a 350 MAV per nucleon krypton 84 ion in compact bone?",
       "corrected": "Quick question, what's the linear energy transfer of a 350 MAV per nucleon krypton 84 ion in compact bone?"
     },
     {
       "id": "sp-0068",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How much energy does a 60-megawatt electron volt per nucleon gold 197 ion lose per centimeter in Kapton?",
       "corrected": "How much energy does a 60-megawatt electron volt per nucleon gold 197 ion lose per cm in Kapton?"
     },
     {
       "id": "sp-0069",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "dE-dx for a 30 MAV per nucleon nitrogen, 14 ion and skin.",
       "corrected": "dE/dx for a 30 MAV per nucleon nitrogen, 14 ion and skin."
     },
     {
       "id": "sp-0070",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Quick question. What's the stopping power of a 30-megaphone volt helium-3 ion in silicon dioxide?",
       "corrected": "Quick question. What's the stopping power of a 30-megaphone volt helium-3 ion in silicon dioxide?"
     },
     {
       "id": "sp-0071",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How much energy does a 50-megawatt electron volt per nucleon magnesium-24 ion lose per centimeter in cortical bone?",
       "corrected": "How much energy does a 50-megawatt electron volt per nucleon magnesium-24 ion lose per cm in cortical bone?"
     },
     {
       "id": "sp-0072",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "At what rate does the 80-megaproton-volt-proton-shed-energy in silicon?",
       "corrected": "At what rate does the 80-megaproton-volt-proton-shed-energy in silicon?"
     },
     {
       "id": "sp-0073",
-      "missed": [
-        "number",
-        "unit"
-      ],
+      "missed": ["number", "unit"],
       "raw": "Wig question, what's the linear energy transfer of an ADMEV alpha particle in A150 tissue equivalent plastic?",
       "corrected": "Wig question, what's the linear energy transfer of an ADMEV alpha particle in A150 tissue equivalent plastic?"
     },
     {
       "id": "sp-0074",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Determine the mass stopping power of 40 megelectron volt per nucleon ion, 56 ions in adipose tissue.",
       "corrected": "Determine the mass stopping power of 40 megelectron volt per nucleon ion, 56 ions in adipose tissue."
     },
     {
       "id": "sp-0075",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the linear energy transfer for 40 MV per nucleon lead, 208 ions in adipose tissue.",
       "corrected": "Determine the linear energy transfer for 40 MV per nucleon lead, 208 ions in adipose tissue."
     },
     {
       "id": "sp-0078",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the let of an 80-megapelectron volt per nucleon sulfur-32 ion in soft tissue?",
       "corrected": "What's the let of an 80-megapelectron volt per nucleon sulfur-32 ion in soft tissue?"
     },
     {
       "id": "sp-0079",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the stopping power of an 80-megawatt electron volt alpha particle in cortical bone?",
       "corrected": "What is the stopping power of an 80-megawatt electron volt alpha particle in cortical bone?"
     },
     {
       "id": "sp-0081",
-      "missed": [
-        "quantity"
-      ],
+      "missed": ["quantity"],
       "raw": "What's the lead of 80 MeV per nucleon Krypton 84 ion and boron?",
       "corrected": "What's the lead of 80 MeV per nucleon Krypton 84 ion and boron?"
     },
     {
       "id": "sp-0084",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the let of a 350-kilo-electron-volt-iron-56 ion and lithium fluoride?",
       "corrected": "What's the let of a 350-kilo-electron-volt-iron-56 ion and lithium fluoride?"
     },
     {
       "id": "sp-0085",
-      "missed": [
-        "quantity",
-        "unit"
-      ],
+      "missed": ["quantity", "unit"],
       "raw": "What's the lead of an 80 megselectron volt helium-3 ion in PMMA?",
       "corrected": "What's the lead of an 80 megselectron volt helium-3 ion in PMMA?"
     },
     {
       "id": "sp-0086",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Report the electronic stopping power of a 120 mV per nucleon argon 40 ion in gold.",
       "corrected": "Report the electronic stopping power of a 120 mV per nucleon argon 40 ion in gold."
     },
     {
       "id": "sp-0087",
-      "missed": [
-        "quantity",
-        "unit"
-      ],
+      "missed": ["quantity", "unit"],
       "raw": "What's the lead of a 5neV alpha particle in compact bone?",
       "corrected": "What's the lead of a 5neV alpha particle in compact bone?"
     },
     {
       "id": "sp-0090",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the LET of a 120 megilektron volt per nucleon nitrogen, 14 ion and adipose tissue?",
       "corrected": "What is the LET of a 120 megilektron volt per nucleon nitrogen, 14 ion and adipose tissue?"
     },
     {
       "id": "sp-0093",
-      "missed": [
-        "quantity",
-        "unit"
-      ],
+      "missed": ["quantity", "unit"],
       "raw": "What's the lead of a 50-megawatt electron volt per nucleon, argon, 40 ion, and boron oxide?",
       "corrected": "What's the lead of a 50-megawatt electron volt per nucleon, argon, 40 ion, and boron oxide?"
     },
     {
       "id": "sp-0095",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Determine the mass stopping power of 150 Mv per nucleon's sulfur, 32 ions in aluminum oxide.",
       "corrected": "Determine the mass stopping power of 150 Mv per nucleon's sulfur, 32 ions in aluminum oxide."
     },
     {
       "id": "sp-0097",
-      "missed": [
-        "quantity",
-        "unit"
-      ],
+      "missed": ["quantity", "unit"],
       "raw": "What's the lead of a 250-megelectron volt per nucleon iron-56 ion in polyethylene?",
       "corrected": "What's the lead of a 250-megelectron volt per nucleon iron-56 ion in polyethylene?"
     },
     {
       "id": "sp-0098",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "How much energy does a 2 gigaelectron volt proton lose per centimeter in polyethylene?",
       "corrected": "How much energy does a 2 gigaelectron volt proton lose per cm in polyethylene?"
     },
     {
       "id": "sp-0099",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the stopping power of an 80-megalactron-volt-alpha particle in polyethylene?",
       "corrected": "What is the stopping power of an 80-megalactron-volt-alpha particle in polyethylene?"
     },
     {
       "id": "sp-0100",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "At what rate does a 25-megaphone volt helium-3 ion shed energy in lithium fluoride?",
       "corrected": "At what rate does a 25-megaphone volt helium-3 ion shed energy in lithium fluoride?"
     },
     {
       "id": "sp-0101",
-      "missed": [
-        "quantity"
-      ],
+      "missed": ["quantity"],
       "raw": "What's the lead of a 300 MeV proton in lithium fluoride?",
       "corrected": "What's the lead of a 300 MeV proton in lithium fluoride?"
     },
     {
       "id": "sp-0103",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What's the let of a 60-meg-electron volt, deuteron and skin?",
       "corrected": "What's the let of a 60-meg-electron volt, deuteron and skin?"
     },
     {
       "id": "sp-0104",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Report the electronic stopping power of a 80-megapolt per nucleon beryllium-9 ion in blood.",
       "corrected": "Report the electronic stopping power of a 80-megapolt per nucleon beryllium-9 ion in blood."
     },
     {
       "id": "sp-0106",
-      "missed": [
-        "quantity",
-        "material",
-        "unit"
-      ],
+      "missed": ["quantity", "material", "unit"],
       "raw": "Give me the lead of a 300-MIV proton and A100-MVIDD tissue equivalent plastic.",
       "corrected": "Give me the lead of a 300-MIV proton and A100-MVIDD tissue equivalent plastic."
     },
     {
       "id": "sp-0107",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Report the electronic stopping power of a 90-megaproton in A150 tissue equivalent plastic.",
       "corrected": "Report the electronic stopping power of a 90-megaproton in A150 tissue equivalent plastic."
     },
     {
       "id": "sp-0108",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Report the electronic stopping power of a 300 kilo electron volt proton in blood.",
       "corrected": "Report the electronic stopping power of a 300 kilo electron volt proton in blood."
     },
     {
       "id": "sp-0109",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "At what rate does a 350-megai electron-volt proton shed energy and skin?",
       "corrected": "At what rate does a 350-megai electron-volt proton shed energy and skin?"
     },
     {
       "id": "sp-0110",
-      "missed": [
-        "particle",
-        "unit"
-      ],
+      "missed": ["particle", "unit"],
       "raw": "Report the LET for a 20-mevihelium-3 ion and sodium iodide.",
       "corrected": "Report the LET for a 20-mevihelium-3 ion and sodium iodide."
     },
     {
       "id": "sp-0111",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the linear energy transfer of 10 mega-electron-volt alpha particles in gold?",
       "corrected": "What is the linear energy transfer of 10 mega-electron-volt alpha particles in gold?"
     },
     {
       "id": "sp-0112",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Report the electronic stopping power of a 300-megapolt per nucleon boron 11 ion in boron oxide.",
       "corrected": "Report the electronic stopping power of a 300-megapolt per nucleon boron 11 ion in boron oxide."
     },
     {
       "id": "sp-0113",
-      "missed": [
-        "quantity"
-      ],
+      "missed": ["quantity"],
       "raw": "dEhe for a 180 MeV per nucleon uranium 238 ion and muscle tissue.",
       "corrected": "dEhe for a 180 MeV per nucleon uranium 238 ion and muscle tissue."
     },
     {
       "id": "sp-0115",
-      "missed": [
-        "quantity",
-        "unit"
-      ],
+      "missed": ["quantity", "unit"],
       "raw": "What is the LAT of a 50-Mega-electron-volt-triton in silicon?",
       "corrected": "What is the LAT of a 50-Mega-electron-volt-triton in silicon?"
     },
     {
       "id": "sp-0116",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "What is the linear energy transfer of 80 megaelectron volt per nucleon argon, 40 ions and blood?",
       "corrected": "What is the linear energy transfer of 80 megaelectron volt per nucleon argon, 40 ions and blood?"
     },
     {
       "id": "sp-0118",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Report the electronic stopping power of a 120-megawatt electron volt per nucleon-calcium-40 ion in Mylar.",
       "corrected": "Report the electronic stopping power of a 120-megawatt electron volt per nucleon-calcium-40 ion in Mylar."
     },
     {
       "id": "sp-0120",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Give me the let of a 70-melt proton and aluminum oxide.",
       "corrected": "Give me the let of a 70-melt proton and aluminum oxide."
     },
     {
       "id": "sp-0121",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "Compare the linear energy transfer of carbon-13 ions in cortical bone at 50 Mv per nucleon, 250 Mv per nucleon, and 80 Mv per nucleon.",
       "corrected": "Compare the linear energy transfer of carbon-13 ions in cortical bone at 50 Mv per nucleon, 250 Mv per nucleon, and 80 Mv per nucleon."
     },
     {
       "id": "sp-0124",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "Compare the linear energy transfer of protons and aluminum oxide at 90 MV, 900 keV, and 300 MV.",
       "corrected": "Compare the linear energy transfer of protons and aluminum oxide at 90 MV, 900 keV, and 300 MV."
     },
     {
       "id": "sp-0125",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "Compare the linear energy transfer of sulfur-32 ions in blood at 350 Mv per nucleon, 80 Mv per nucleon, and 300 Mv per nucleon.",
       "corrected": "Compare the linear energy transfer of sulfur-32 ions in blood at 350 Mv per nucleon, 80 Mv per nucleon, and 300 Mv per nucleon."
     },
     {
       "id": "sp-0126",
-      "missed": [
-        "material"
-      ],
+      "missed": ["material"],
       "raw": "Compare the mass stopping power of protons in captain at 20 MeV and 100 MeV.",
       "corrected": "Compare the mass stopping power of protons in captain at 20 MeV and 100 MeV."
     },
     {
       "id": "sp-0127",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "What is the stopping power of protons and silicon dioxide at 120 Mb electron volt, 900 keV, and 3GV?",
       "corrected": "What is the stopping power of protons and silicon dioxide at 120 Mb electron volt, 900 keV, and 3GV?"
     },
     {
       "id": "sp-0128",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "Compare the mass stopping power of protons and polycarbonate at 2 GeV, 250 MV and 50 MV.",
       "corrected": "Compare the mass stopping power of protons and polycarbonate at 2 GeV, 250 MV and 50 MV."
     },
     {
       "id": "sp-0129",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "Compare the mass stopping power of protons in polyethylene at 30 Mv and 70 Mv.",
       "corrected": "Compare the mass stopping power of protons in polyethylene at 30 Mv and 70 Mv."
     },
     {
       "id": "sp-0131",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "What is the let of protons and lung at 100 mega electron volt and 10 mega electron volt?",
       "corrected": "What is the let of protons and lung at 100 mega electron volt and 10 mega electron volt?"
     },
     {
       "id": "sp-0133",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "Compare the linear energy transfer of beryllium-9 ions in silicon at 150 MV per nucleon and 80 MV per nucleon",
       "corrected": "Compare the linear energy transfer of beryllium-9 ions in silicon at 150 MV per nucleon and 80 MV per nucleon"
     },
     {
       "id": "sp-0134",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "What is the stopping power of protons and cortical bone at 100 MAV and 60 MAV?",
       "corrected": "What is the stopping power of protons and cortical bone at 100 MAV and 60 MAV?"
     },
     {
       "id": "sp-0135",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "What is the stopping power of boron-11 ions in soft tissue at 100 kiloelectron volt, 200 megilelectron volt per nucleon, and 120 megilelectron volt per nucleon?",
       "corrected": "What is the stopping power of boron-11 ions in soft tissue at 100 kiloelectron volt, 200 megilelectron volt per nucleon, and 120 megilelectron volt per nucleon?"
     },
     {
       "id": "sp-0136",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "What is the stopping power of protons in gold at 200 megilektron volt, 50 megilektron volt, and 300 megilektron volt?",
       "corrected": "What is the stopping power of protons in gold at 200 megilektron volt, 50 megilektron volt, and 300 megilektron volt?"
     },
     {
       "id": "sp-0137",
-      "missed": [
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit"],
       "raw": "What is the let of protons and Teflon at 3 giga-electron volts and 180 mega-electron volts?",
       "corrected": "What is the let of protons and Teflon at 3 giga-electron volts and 180 mega-electron volts?"
     },
     {
       "id": "sp-0139",
-      "missed": [
-        "quantity",
-        "unit",
-        "unit"
-      ],
+      "missed": ["quantity", "unit", "unit"],
       "raw": "What is the lead of argon-40 ions in adipose tissue at 20 Mv per nucleon and 350 Mv per nucleon?",
       "corrected": "What is the lead of argon-40 ions in adipose tissue at 20 Mv per nucleon and 350 Mv per nucleon?"
     },
     {
       "id": "sp-0140",
-      "missed": [
-        "unit",
-        "unit",
-        "unit"
-      ],
+      "missed": ["unit", "unit", "unit"],
       "raw": "What is the stopping power of protons in compact bone at 350 megaelectron volt, 250 megaelectron volt, and 220 negai electron volt?",
       "corrected": "What is the stopping power of protons in compact bone at 350 megaelectron volt, 250 megaelectron volt, and 220 negai electron volt?"
     },
     {
       "id": "sp-0142",
-      "missed": [
-        "number",
-        "unit"
-      ],
+      "missed": ["number", "unit"],
       "raw": "Compare the stopping power of the ADMEV proton and cortical bone, Pyrex glass and air.",
       "corrected": "Compare the stopping power of the ADMEV proton and cortical bone, Pyrex glass and air."
     },
     {
       "id": "sp-0143",
-      "missed": [
-        "quantity",
-        "unit"
-      ],
+      "missed": ["quantity", "unit"],
       "raw": "Compare the LED of a 400-megailectron volt per nucleon neon-20 ion in silicon, boron oxide and boron carbide.",
       "corrected": "Compare the LED of a 400-megailectron volt per nucleon neon-20 ion in silicon, boron oxide and boron carbide."
     },
     {
       "id": "sp-0144",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the LET of a 120-megai electron volt proton in compact bone water and Kapton.",
       "corrected": "Compare the LET of a 120-megai electron volt proton in compact bone water and Kapton."
     },
     {
       "id": "sp-0145",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the stopping power of a 300 MAV per nucleon krypton 84 ion in sodium iodide and A150 tissue equivalent plastic.",
       "corrected": "Compare the stopping power of a 300 MAV per nucleon krypton 84 ion in sodium iodide and A150 tissue equivalent plastic."
     },
     {
       "id": "sp-0146",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "compare the stopping power of a 250-megapartic electron volt per nucleon calcium-40 ion and a 250-megapartic electron volt per nucleon alpha particle in skin.",
       "corrected": "compare the stopping power of a 250-megapartic electron volt per nucleon calcium-40 ion and a 250-megapartic electron volt per nucleon alpha particle in skin."
     },
     {
       "id": "sp-0147",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the stopping power of a 250 MeFe per nucleon phosphorus 31 ion and a 250 MeFe per nucleon carbon 13 ion in boron oxide.",
       "corrected": "Compare the stopping power of a 250 MeFe per nucleon phosphorus 31 ion and a 250 MeFe per nucleon carbon 13 ion in boron oxide."
     },
     {
       "id": "sp-0148",
-      "missed": [
-        "unit"
-      ],
+      "missed": ["unit"],
       "raw": "Compare the let of a 100-megapelectron volt per nucleon boron 11 ion and a 100-megapelectron volt per nucleon silicon 28 ion and polystyrene.",
       "corrected": "Compare the let of a 100-megapelectron volt per nucleon boron 11 ion and a 100-megapelectron volt per nucleon silicon 28 ion and polystyrene."
     }
