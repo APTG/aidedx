@@ -51,8 +51,7 @@ const PARTICLE_WORDS =
 // `spellOutNumbers()` converts a surviving number word to digits later, same as it already does
 // today for a clean "twenty MeV".
 const NUMBER_WORD_ALT = NUMBER_WORDS.map(([word]) => word).join("|");
-const NUMBER_PREFIX_SRC =
-  `(?:\\d+(?:\\.\\d+)?|(?:${NUMBER_WORD_ALT})(?:[\\s-]+(?:and\\s+)?(?:${NUMBER_WORD_ALT}))*)`;
+const NUMBER_PREFIX_SRC = `(?:\\d+(?:\\.\\d+)?|(?:${NUMBER_WORD_ALT})(?:[\\s-]+(?:and\\s+)?(?:${NUMBER_WORD_ALT}))*)`;
 
 export const EN_RULES: readonly CorrectionRule[] = [
   // --- from asr-correct-ext.mjs ---

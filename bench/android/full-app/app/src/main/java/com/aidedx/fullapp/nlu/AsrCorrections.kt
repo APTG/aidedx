@@ -36,7 +36,7 @@ object AsrCorrections {
         AsrCorrectionRule(
             "free-as-three",
             Regex("\\bfree (mev|kev|gev)\\b", RegexOption.IGNORE_CASE),
-            "3 $1",
+            "3 \$1",
         ),
         AsrCorrectionRule(
             "glued-unit-before-particle",
@@ -45,17 +45,17 @@ object AsrCorrections {
                     "($PARTICLE_WORDS)\\b",
                 RegexOption.IGNORE_CASE,
             ),
-            "$1 MeV $2",
+            "\$1 MeV \$2",
         ),
         AsrCorrectionRule(
             "bare-mev-mishearing",
             Regex("(\\d+(?:\\.\\d+)?)\\s*m[e]?v\\b", RegexOption.IGNORE_CASE),
-            "$1 MeV",
+            "\$1 MeV",
         ),
         AsrCorrectionRule(
             "kev-mishearing",
             Regex("(\\d+(?:\\.\\d+)?)\\s*k\\s*[e]?v\\b", RegexOption.IGNORE_CASE),
-            "$1 keV",
+            "\$1 keV",
         ),
         AsrCorrectionRule(
             "atmev",
@@ -72,7 +72,7 @@ object AsrCorrections {
                 "(\\d+(?:\\.\\d+)?)\\s*(?:em|m)[\\s.,-]*(?:ee|e)[\\s.,-]*(?:vee|v)\\b",
                 RegexOption.IGNORE_CASE,
             ),
-            "$1 MeV",
+            "\$1 MeV",
         ),
         AsrCorrectionRule(
             "kev-letter-spelled",
@@ -80,7 +80,7 @@ object AsrCorrections {
                 "(\\d+(?:\\.\\d+)?)\\s*(?:kay|k)[\\s.,-]*(?:ee|e)[\\s.,-]*(?:vee|v)\\b",
                 RegexOption.IGNORE_CASE,
             ),
-            "$1 keV",
+            "\$1 keV",
         ),
         AsrCorrectionRule(
             "gev-letter-spelled",
@@ -88,7 +88,7 @@ object AsrCorrections {
                 "(\\d+(?:\\.\\d+)?)\\s*(?:gee|jee|g)[\\s.,-]*(?:ee|e)[\\s.,-]*(?:vee|v)\\b",
                 RegexOption.IGNORE_CASE,
             ),
-            "$1 GeV",
+            "\$1 GeV",
         ),
 
         // --- per-nucleon phonetic variants (ENERGY_RE supports MeV/nucleon, MeV/nucl, MeV/u) ---
@@ -131,7 +131,7 @@ object AsrCorrections {
         AsrCorrectionRule(
             "tamiya-per-nucleon",
             Regex("(\\d+(?:\\.\\d+)?)\\s+tamiya\\s+per\\s+nucleon", RegexOption.IGNORE_CASE),
-            "$1 MeV per nucleon",
+            "\$1 MeV per nucleon",
         ),
 
         // --- particle-name phonetic variants — no fuzzy particle fallback in this port, so a
