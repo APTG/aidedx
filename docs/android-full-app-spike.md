@@ -10,7 +10,7 @@ _Updated 2026-07-29 for #143 — the follow-up issue filed from this doc's own �
 all three of the matcher gaps this doc originally listed as out of scope (indirect idioms, advanced
 stopping-power synonyms, explicit isotope notation); §4.1's numbers below are the post-#143
 measurement. #143 also added the 15s recording auto-stop cap and Approach A's load-once-call-many
-API — both now device-verified on the same Pixel 7a (over wifi adb, `30.30.30.19:5555`, after the
+API — both now device-verified on the same Pixel 7a (over wifi adb, after the
 original USB session disconnected): the auto-stop fires at ~15.05s consistently (confirmed via
 `dumpsys audio`'s own recording-activity timestamps across two independent recordings), and the
 warm wasm3 API measures 0.218 ms/call vs. the cold path's 10.098 ms/call — see "On-device

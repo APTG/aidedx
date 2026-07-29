@@ -39,6 +39,7 @@
  *                                        scope, which was the persistent-runtime API itself).
  */
 #include <jni.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -162,41 +163,50 @@ Java_com_aidedx_fullapp_compute_LibdedxWasmBridge_nativeSmokeTest(JNIEnv *env, j
  * caller-owned message) on failure. Frees any partially-constructed environment/runtime itself. */
 static int initContext(const uint8_t *bytes, uint32_t len, DedxWasmContext **outCtx,
                         char *errBuf, size_t errBufSize) {
-  IM3Environment m3env = m3_NewEnvironment();
+  IM3Environment m3env = NULL;
+  IM3Runtime runtime = NULL;
+  DedxWasmContext *ctx = NULL;
+  IM3Module module;
+  M3Result result;
+
+  m3env = m3_NewEnvironment();
   if (!m3env) {
     snprintf(errBuf, errBufSize, "m3_NewEnvironment failed");
-    return -1;
+    goto cleanup;
   }
-  IM3Runtime runtime = m3_NewRuntime(m3env, WASM3_STACK_SIZE, NULL);
+  runtime = m3_NewRuntime(m3env, WASM3_STACK_SIZE, NULL);
   if (!runtime) {
     snprintf(errBuf, errBufSize, "m3_NewRuntime failed");
-    return -1;
+    goto cleanup;
   }
-  IM3Module module;
-  M3Result result = m3_ParseModule(m3env, &module, bytes, len);
+  result = m3_ParseModule(m3env, &module, bytes, len);
   if (result) {
     snprintf(errBuf, errBufSize, "m3_ParseModule: %s", result);
-    return -1;
+    goto cleanup;
   }
   result = m3_LoadModule(runtime, module);
   if (result) {
     snprintf(errBuf, errBufSize, "m3_LoadModule: %s", result);
-    return -1;
+    goto cleanup;
   }
   result = m3_LinkRawFunction(module, "wasi_snapshot_preview1", "fd_write", "i(iiii)",
                                &fd_write_stub);
   if (result && result != m3Err_functionLookupFailed) {
     snprintf(errBuf, errBufSize, "link fd_write: %s", result);
-    return -1;
+    goto cleanup;
   }
   result = m3_LinkRawFunction(module, "env", "emscripten_resize_heap", "i(i)",
                                &emscripten_resize_heap_stub);
   if (result && result != m3Err_functionLookupFailed) {
     snprintf(errBuf, errBufSize, "link emscripten_resize_heap: %s", result);
-    return -1;
+    goto cleanup;
   }
 
-  DedxWasmContext *ctx = calloc(1, sizeof(DedxWasmContext));
+  ctx = calloc(1, sizeof(DedxWasmContext));
+  if (!ctx) {
+    snprintf(errBuf, errBufSize, "calloc(DedxWasmContext) failed");
+    goto cleanup;
+  }
   ctx->env = m3env;
   ctx->runtime = runtime;
 
@@ -206,11 +216,17 @@ static int initContext(const uint8_t *bytes, uint32_t len, DedxWasmContext **out
       m3_FindFunction(&ctx->csdaRangeTableFn, runtime, "dedx_get_csda_range_table")) {
     snprintf(errBuf, errBufSize, "m3_FindFunction: one or more exports missing");
     free(ctx);
-    return -1;
+    goto cleanup;
   }
 
   *outCtx = ctx;
   return 0;
+
+cleanup:
+  /* Mirrors nativeRelease()'s teardown: runtime and env are freed independently of each other. */
+  if (runtime) m3_FreeRuntime(runtime);
+  if (m3env) m3_FreeEnvironment(m3env);
+  return -1;
 }
 
 JNIEXPORT jlong JNICALL
@@ -262,6 +278,11 @@ Java_com_aidedx_fullapp_compute_LibdedxWasmBridge_nativeStoppingPower(JNIEnv *en
   }
 
   uint8_t *mem = m3_GetMemory(ctx->runtime, NULL, 0);
+  if (!mem) {
+    wasmFree(ctx, energiesPtr);
+    wasmFree(ctx, stpsPtr);
+    return (jfloat)(0.0 / 0.0);
+  }
   float energy = energyMevPerNucl;
   memcpy(mem + energiesPtr, &energy, sizeof(float));
 
@@ -301,6 +322,11 @@ Java_com_aidedx_fullapp_compute_LibdedxWasmBridge_nativeCsdaRange(JNIEnv *env, j
   }
 
   uint8_t *mem = m3_GetMemory(ctx->runtime, NULL, 0);
+  if (!mem) {
+    wasmFree(ctx, energiesPtr);
+    wasmFree(ctx, csdaPtr);
+    return (jdouble)(0.0 / 0.0);
+  }
   float energy = energyMevPerNucl;
   memcpy(mem + energiesPtr, &energy, sizeof(float));
 
