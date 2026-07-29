@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toolbar
 import com.aidedx.fullapp.download.ModelDownloadManager
 import com.aidedx.fullapp.download.ParakeetModel
 
@@ -28,6 +29,8 @@ class ModelManagerActivity : Activity() {
         setContentView(R.layout.model_manager)
 
         downloadManager = ModelDownloadManager(filesDir)
+
+        findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
 
         entryNameText = findViewById(R.id.entryNameText)
         entrySizeText = findViewById(R.id.entrySizeText)

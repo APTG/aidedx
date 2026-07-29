@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toolbar
 import com.aidedx.fullapp.asr.ParakeetTranscriber
 import com.aidedx.fullapp.audio.AudioRecorder
 import com.aidedx.fullapp.compute.AnswerFormatter
@@ -24,6 +25,7 @@ import com.aidedx.fullapp.nlu.AliasTables
 import com.aidedx.fullapp.nlu.KotlinMatcher
 import com.aidedx.fullapp.nlu.MatchedIntent
 import com.aidedx.fullapp.nlu.Quantity
+import androidx.core.content.ContextCompat
 import java.io.File
 
 /**
@@ -54,10 +56,10 @@ class MainActivity : Activity() {
     private lateinit var cancelButton: Button
     private lateinit var statusText: TextView
     private lateinit var recordButton: Button
+    private lateinit var recordProgressBar: ProgressBar
     private lateinit var transcriptText: TextView
     private lateinit var intentText: TextView
     private lateinit var resultText: TextView
-    private lateinit var manageButton: Button
     private lateinit var wasmButton: Button
     private lateinit var wasmResultText: TextView
 
@@ -67,6 +69,17 @@ class MainActivity : Activity() {
 
         downloadManager = ModelDownloadManager(filesDir)
         aliases = AliasTables.load(assets)
+
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.inflateMenu(R.menu.main_menu)
+        toolbar.setOnMenuItemClickListener { item ->
+            if (item.itemId == R.id.action_manage_downloads) {
+                startActivity(Intent(this, ModelManagerActivity::class.java))
+                true
+            } else {
+                false
+            }
+        }
 
         downloadPromptPanel = findViewById(R.id.downloadPromptPanel)
         downloadProgressPanel = findViewById(R.id.downloadProgressPanel)
@@ -78,10 +91,10 @@ class MainActivity : Activity() {
         cancelButton = findViewById(R.id.cancelButton)
         statusText = findViewById(R.id.statusText)
         recordButton = findViewById(R.id.recordButton)
+        recordProgressBar = findViewById(R.id.recordProgressBar)
         transcriptText = findViewById(R.id.transcriptText)
         intentText = findViewById(R.id.intentText)
         resultText = findViewById(R.id.resultText)
-        manageButton = findViewById(R.id.manageButton)
         wasmButton = findViewById(R.id.wasmSmokeTestButton)
         wasmResultText = findViewById(R.id.wasmSmokeTestResult)
 
@@ -91,9 +104,6 @@ class MainActivity : Activity() {
 
         downloadButton.setOnClickListener { startDownload() }
         cancelButton.setOnClickListener { downloadManager.cancel() }
-        manageButton.setOnClickListener {
-            startActivity(Intent(this, ModelManagerActivity::class.java))
-        }
         recordButton.setOnClickListener { onRecordTapped() }
         wasmButton.setOnClickListener { runLatencyBenchmark() }
 
@@ -136,7 +146,7 @@ class MainActivity : Activity() {
             runOnUiThread {
                 transcriber = loaded
                 statusText.text = "Model ready"
-                recordButton.isEnabled = true
+                setRecordButtonIdle()
             }
         }.start()
     }
@@ -191,7 +201,7 @@ class MainActivity : Activity() {
                 return
             }
             recorder = AudioRecorder().also { it.start() }
-            recordButton.text = "Tap to stop"
+            setRecordButtonRecording()
             transcriptText.text = ""
             intentText.text = ""
             resultText.text = ""
@@ -204,12 +214,36 @@ class MainActivity : Activity() {
             autoStopHandler.postDelayed(autoStopRunnable, MAX_RECORDING_MS)
         } else {
             autoStopHandler.removeCallbacks(autoStopRunnable)
-            recordButton.isEnabled = false
-            recordButton.text = "Processing…"
+            setRecordButtonTranscribing()
             val samples = currentRecorder.stop()
             recorder = null
             processRecordingInBackground(samples)
         }
+    }
+
+    /** issue #144 — mirrors MicButton.svelte's idle/recording/transcribing visual states
+     * (background shape + text color + label + progress indicator), not just functional state. */
+    private fun setRecordButtonIdle() {
+        recordButton.isEnabled = true
+        recordButton.setBackgroundResource(R.drawable.bg_button_outline)
+        recordButton.setTextColor(ContextCompat.getColor(this, R.color.foreground))
+        recordButton.text = "🎤  Tap to record"
+        recordProgressBar.visibility = View.GONE
+    }
+
+    private fun setRecordButtonRecording() {
+        recordButton.setBackgroundResource(R.drawable.bg_button_danger)
+        recordButton.setTextColor(ContextCompat.getColor(this, R.color.danger_foreground))
+        recordButton.text = "⏹  Tap to stop"
+        recordProgressBar.visibility = View.GONE
+    }
+
+    private fun setRecordButtonTranscribing() {
+        recordButton.isEnabled = false
+        recordButton.setBackgroundResource(R.drawable.bg_button_muted)
+        recordButton.setTextColor(ContextCompat.getColor(this, R.color.muted_foreground))
+        recordButton.text = "Processing…"
+        recordProgressBar.visibility = View.VISIBLE
     }
 
     private fun processRecordingInBackground(samples: ShortArray) {
@@ -248,8 +282,7 @@ class MainActivity : Activity() {
                 transcriptText.text = transcript
                 intentText.text = intentLine
                 resultText.text = resultLine
-                recordButton.isEnabled = true
-                recordButton.text = "Tap to record"
+                setRecordButtonIdle()
             }
         }.start()
     }

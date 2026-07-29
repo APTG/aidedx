@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- issue #144 — "Manage downloads" moves from a full-width button competing with the primary
+     record action (per the issue's own suggestion) into the toolbar overflow, the native Android
+     affordance for a secondary, infrequent action; the web app has no equivalent since it's a
+     single-page app with no comparable "management" screen to link to. -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_manage_downloads"
+        android:title="Manage downloads"
+        android:showAsAction="never" />
+</menu>

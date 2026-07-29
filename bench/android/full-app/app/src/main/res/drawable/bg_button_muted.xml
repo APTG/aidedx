@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- issue #144 — rounded-md muted button (web MicButton.svelte's transcribing state: bg-muted,
+     no border). Used for the record button while its disabled/processing during transcription. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/muted" />
+    <corners android:radius="6dp" />
+</shape>

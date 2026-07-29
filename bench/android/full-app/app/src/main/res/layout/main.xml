@@ -1,136 +1,243 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+  issue #144 — reskinned to read as the same family as the web app (src/routes/+layout.svelte's
+  bordered header/footer shell, src/app.css's OKLCH palette + rounded-lg/md shape language,
+  MicButton.svelte's idle/recording/transcribing states). Functional structure (panel IDs,
+  visibility toggling) is unchanged from #136/#142 — MainActivity.kt drives the same view tree.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <!-- header: bordered-bottom bar, bold app name + compact model-status line — the Android
+         equivalent of +layout.svelte's header + SystemStatusHeader.svelte, per issue #144's own
+         call for "what (if anything) is the Android equivalent" of that status line. -->
+    <android.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/AppToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
+
+            <TextView
+                style="@style/ToolbarTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="aidedx" />
+
+            <TextView
+                android:id="@+id/statusText"
+                style="@style/MutedHintText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </android.widget.Toolbar>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <!-- issue #136 goal 1 — nothing below is fetched until "Download" is tapped. -->
+            <LinearLayout
+                android:id="@+id/downloadPromptPanel"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card"
+                android:padding="14dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/modelInfoText"
+                    style="@style/BodyText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="12dp" />
+
+                <Button
+                    android:id="@+id/downloadButton"
+                    style="@style/Button.Accent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Download" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/downloadProgressPanel"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card"
+                android:padding="14dp"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="@style/AppProgressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100" />
+
+                <TextView
+                    android:id="@+id/progressText"
+                    style="@style/MutedHintText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="12dp" />
+
+                <Button
+                    android:id="@+id/cancelButton"
+                    style="@style/Button.Outline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cancel" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/readyPanel"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <!-- mic/record button — idle (Button.Outline) / recording (Button.Danger) /
+                     transcribing (Button.Muted + progress bar) states swapped in MainActivity,
+                     mirroring MicButton.svelte's three visual states. -->
+                <Button
+                    android:id="@+id/recordButton"
+                    style="@style/Button.Outline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🎤  Tap to record"
+                    android:enabled="false" />
+
+                <ProgressBar
+                    android:id="@+id/recordProgressBar"
+                    style="@style/AppProgressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:indeterminate="true"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_card"
+                    android:padding="14dp">
+
+                    <TextView
+                        style="@style/SectionLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Transcript" />
+                    <TextView
+                        android:id="@+id/transcriptText"
+                        style="@style/BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="2dp" />
+
+                    <TextView
+                        style="@style/SectionLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="12dp"
+                        android:text="Matched intent" />
+                    <TextView
+                        android:id="@+id/intentText"
+                        style="@style/BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="2dp" />
+
+                    <TextView
+                        style="@style/SectionLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="12dp"
+                        android:text="Result" />
+                    <TextView
+                        android:id="@+id/resultText"
+                        style="@style/BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="2dp" />
+                </LinearLayout>
+
+                <!-- dev-only latency benchmark (issue #136/#143 goal 3 spike tooling, not a
+                     product feature) — kept visually de-emphasized and separated from the result
+                     card above instead of implying it's part of the same output. -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/border"
+                        android:layout_marginBottom="12dp" />
+
+                    <Button
+                        android:id="@+id/wasmSmokeTestButton"
+                        style="@style/Button.Outline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Benchmark Approach A vs B latency" />
+                    <TextView
+                        android:id="@+id/wasmSmokeTestResult"
+                        style="@style/MutedHintText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border" />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:background="@color/card"
+        android:padding="14dp">
 
-        <!-- issue #136 goal 1 — nothing below is fetched until "Download" is tapped. -->
-        <LinearLayout
-            android:id="@+id/downloadPromptPanel"
-            android:orientation="vertical"
+        <TextView
+            style="@style/FooterTagline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/modelInfoText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:paddingBottom="12dp" />
-
-            <Button
-                android:id="@+id/downloadButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Download" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/downloadProgressPanel"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="100" />
-
-            <TextView
-                android:id="@+id/progressText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:paddingBottom="12dp" />
-
-            <Button
-                android:id="@+id/cancelButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cancel" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/readyPanel"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/statusText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="12dp" />
-
-            <Button
-                android:id="@+id/recordButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tap to record"
-                android:enabled="false" />
-
-            <TextView
-                android:id="@+id/transcriptLabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="16dp"
-                android:text="Transcript"
-                android:textStyle="bold" />
-            <TextView
-                android:id="@+id/transcriptText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/intentLabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="12dp"
-                android:text="Matched intent"
-                android:textStyle="bold" />
-            <TextView
-                android:id="@+id/intentText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/resultLabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="12dp"
-                android:text="Result"
-                android:textStyle="bold" />
-            <TextView
-                android:id="@+id/resultText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:id="@+id/manageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Manage downloads" />
-
-            <Button
-                android:id="@+id/wasmSmokeTestButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Benchmark Approach A vs B latency" />
-            <TextView
-                android:id="@+id/wasmSmokeTestResult"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+            android:text="aidedx — AI-assisted range and stopping-power queries · runs on-device" />
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

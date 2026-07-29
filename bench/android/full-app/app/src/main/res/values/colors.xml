@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  issue #144 — sRGB translation of src/app.css's OKLCH light-mode tokens (computed via the
+  standard OKLab->linear-sRGB matrices, not guessed/eyeballed). Keep names 1:1 with the CSS custom
+  properties so this file stays a mechanical re-derivation if app.css's palette ever changes.
+-->
+<resources>
+    <color name="background">#FFFFFF</color>
+    <color name="foreground">#0A0A0A</color>
+    <color name="card">#FFFFFF</color>
+    <color name="card_foreground">#0A0A0A</color>
+    <color name="muted">#F5F5F5</color>
+    <color name="muted_foreground">#525252</color>
+    <color name="primary">#171717</color>
+    <color name="primary_foreground">#FAFAFA</color>
+    <color name="border">#E5E5E5</color>
+    <color name="input">#E5E5E5</color>
+    <color name="accent">#2D6FCD</color>
+    <color name="accent_foreground">#FAFAFA</color>
+    <color name="success">#007834</color>
+    <color name="warning">#A86D00</color>
+    <color name="danger">#C53637</color>
+    <color name="danger_foreground">#FAFAFA</color>
+
+    <!-- static/favicon.svg's mark color — a fixed brand color, not a light/dark theme token, so
+         intentionally not re-declared in values-night/colors.xml. -->
+    <color name="ic_launcher_background">#111111</color>
+</resources>

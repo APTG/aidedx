@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  issue #144 — sRGB translation of src/app.css's `.dark` OKLCH tokens. border/input stay as
+  alpha-white (ARGB8 #1AFFFFFF / #26FFFFFF) rather than flattened opaque grays, matching the CSS
+  source's `oklch(1 0 0 / 10%)` / `/ 15%` alpha convention exactly instead of an eyeballed solid.
+-->
+<resources>
+    <color name="background">#0A0A0A</color>
+    <color name="foreground">#FAFAFA</color>
+    <color name="card">#171717</color>
+    <color name="card_foreground">#FAFAFA</color>
+    <color name="muted">#262626</color>
+    <color name="muted_foreground">#A1A1A1</color>
+    <color name="primary">#E5E5E5</color>
+    <color name="primary_foreground">#171717</color>
+    <color name="border">#1AFFFFFF</color>
+    <color name="input">#26FFFFFF</color>
+    <color name="accent">#659FF4</color>
+    <color name="accent_foreground">#0A0A0A</color>
+    <color name="success">#5BBD74</color>
+    <color name="warning">#E6AC3D</color>
+    <color name="danger">#F2716A</color>
+    <color name="danger_foreground">#0A0A0A</color>
+</resources>

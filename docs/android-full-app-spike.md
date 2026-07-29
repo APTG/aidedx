@@ -16,6 +16,11 @@ original USB session disconnected): the auto-stop fires at ~15.05s consistently 
 warm wasm3 API measures 0.218 ms/call vs. the cold path's 10.098 ms/call — see "On-device
 verification" and §3.3 for the full numbers._
 
+_Updated 2026-07-29 for #144 — a visual-only reskin to match the deployed web app's palette,
+shape/spacing language, and mic-button states (§6), **device-verified** on the same Pixel 7a: real
+build (`./gradlew assembleDebug`, Kotlin included), both Activities walked in light and dark mode,
+all three record-button states, and the launcher icon — see §6.7._
+
 ## TL;DR
 
 - **`bench/android/full-app` builds clean** (`./gradlew assembleDebug`) and **runs clean on real
@@ -320,6 +325,120 @@ rather than a canonicalized name, same as `render.ts`.
 `MainActivity`'s ready panel shows all three pipeline stages side by side — transcript, matched
 intent (quantity, resolved particle/material ids, energy), and the formatted result — specifically
 so a tester can tell _which stage_ produced a wrong answer, per the issue's own framing.
+
+## 6. Look & feel reskin (issue #144)
+
+Issue #144 asked for "strong visual family resemblance" to the deployed web app
+(aptg.github.io/aidedx), read directly from `src/app.css`/`+layout.svelte`/`MicButton.svelte`/
+`ModelDownloadBanner.svelte` rather than guessed, and called out several judgment calls explicitly
+("either is fine, but pick one deliberately"). Decisions below, in the order the issue raises them.
+
+### 6.1 Color palette — computed, not eyeballed
+
+`src/app.css`'s tokens are OKLCH. Android color resources need sRGB hex. Rather than picking
+"close enough" hex values by eye, `--background`/`--accent`/`--danger`/etc. were run through the
+standard OKLab→linear-sRGB matrices (Björn Ottosson's published coefficients) plus sRGB gamma
+encoding, in a one-off Python script — the same numeric path a browser uses to render
+`oklch(0.55 0.16 258)`. Light tokens landed in `app/src/main/res/values/colors.xml`, `.dark`
+tokens in `values-night/colors.xml`, both keeping the CSS custom-property names 1:1 so either file
+is a mechanical re-derivation if `app.css`'s palette ever changes. The two `oklch(1 0 0 / N%)`
+alpha borders (dark-mode `border`/`input`) stay alpha-white ARGB8 hex (`#1AFFFFFF`/`#26FFFFFF`)
+rather than flattened to an opaque gray, matching the CSS source's actual alpha-compositing
+semantics instead of an approximation of it.
+
+### 6.2 Theming: framework Theme.Material + values-night, not AppCompat/MaterialComponents
+
+The issue left this open ("decide... rather than mixing conventions ad hoc"). `MainActivity`/
+`ModelManagerActivity` extend plain `android.app.Activity` and use framework `android.widget.*`
+views throughout — a deliberate choice from #136 itself ("no Fragments/Compose/coroutines/
+ViewModel... matches every other bench/android app's convention"). Adopting the AndroidX Material
+Components _library_ would mean either switching those Activities to `AppCompatActivity` (a bigger
+architecture change than a reskin should make) or fighting theme attributes that only half-apply
+to a plain Activity. Instead: a hand-rolled `AppTheme` extending the platform's own
+`Theme.Material.Light.NoActionBar` (dark: `Theme.Material.NoActionBar`), with color/shape overrides
+via `values`/`values-night` resource qualifiers. Android's day/night resource-qualifier resolution
+is a framework mechanism, not an AppCompat one — since Android 10's system-wide dark theme, `values-
+night/` is honored automatically based on system preference with zero `AppCompatDelegate`
+involvement, which is exactly the "follows system `prefers-color-scheme`" behavior the web app has.
+`minSdk 26` (already the project floor) supports this cleanly.
+
+### 6.3 Shape/spacing/typography
+
+`--radius-lg` (0.5rem) → 8dp corner radius for cards/panels (`drawable/bg_card.xml`,
+`bg_panel_muted.xml`); `--radius-md` → 6dp for buttons (`bg_button_outline/accent/danger/muted.xml`),
+both as thin (1dp) bordered shapes matching the web's `border-input`/`border-border` convention,
+with `<ripple>` touch feedback masked to the same rounded shape rather than a stock square ripple.
+Type scale follows the web app's restraint: bold reserved for the toolbar title and button labels
+(`ToolbarTitle`, `SectionLabel`, `Button.*` styles), 11–11.5sp for hint/status text
+(`MutedHintText`, mirroring `text-[11.5px]`), 14sp for body copy. Emoji glyphs (🎤/⏹) carry over
+directly, same as the web app's icon-free convention.
+
+### 6.4 Mic/record button states
+
+`MainActivity`'s `setRecordButtonIdle()`/`Recording()`/`Transcribing()` swap the record button's
+background drawable, text color, and label to mirror `MicButton.svelte`'s three states exactly:
+idle = outline/`bg-card` (`bg_button_outline`), recording = solid danger (`bg_button_danger`),
+transcribing = muted (`bg_button_muted`) plus a visible accent-on-muted progress bar
+(`drawable/progress_accent.xml`, matching the web's `h-1 rounded-full bg-muted` track). The
+Android pipeline has no fractional transcribe-progress signal (sherpa-onnx's `OfflineRecognizer` is
+a single blocking whole-clip call, not token-streamed like the web app's browser-side model), so
+the progress bar runs indeterminate rather than fabricating a fake percentage — an intentional,
+narrower translation of the web state, not a missing feature.
+
+### 6.5 Header/footer and "Manage downloads" placement
+
+Both Activities get a bordered-bottom `Toolbar` (bold "aidedx" title on `MainActivity`, matching
+`+layout.svelte`'s header) and `MainActivity` carries a compact status line (`statusText`, "Model
+ready"/"Loading recognizer…") next to the title — the Android answer to the issue's own question
+about `SystemStatusHeader.svelte`'s equivalent, moved out of the results panel and into the header
+so it's visible regardless of pipeline stage, same as the web app. A bordered-top footer with a
+centered muted tagline mirrors `+layout.svelte`'s footer text. Per the issue's own suggestion,
+"Manage downloads" moved off the main button stack (where it competed visually with the primary
+record action) into the toolbar overflow menu (`menu/main_menu.xml`) — the native Android
+affordance for a secondary, infrequent action, with no equivalent needed on the web side since
+that app has no comparable management screen to link to.
+
+### 6.6 Launcher icon
+
+`static/favicon.svg` (black rounded square, white bold-monospace "dE") doesn't port directly:
+its `<text>` element relies on the browser's generic `monospace` font family, which has no SVG→
+Android translation. Rasterized a `dE` glyph in DejaVu Sans Mono Bold (a stock Linux monospace,
+visually close to what browsers actually resolve `font-family: monospace` to) via Pillow at each
+mipmap density, as the adaptive-icon foreground layer; the background is the same flat `#111111`
+as a plain `@color` resource rather than a duplicated drawable. `minSdk 26` means adaptive icons
+(`mipmap-anydpi-v26/ic_launcher.xml`) are always available — no legacy square-icon fallback needed.
+
+### 6.7 Verification
+
+**Device-verified**, both build and visual. The sandbox this reskin was written in has JRE-only
+Java installs (`openjdk-17-jre`/`openjdk-21-jre`, no `javac`) — a pre-existing environment gap
+unrelated to this change, the same one that would've blocked compiling #136/#142's own Kotlin
+locally. Worked around it by downloading a portable Temurin 21 JDK (no root needed) and pointing
+`JAVA_HOME` at it for `./gradlew assembleDebug`, which then built clean, `compileDebugKotlin`
+included — not just the AAPT2 resource-only check an earlier draft of this section settled for.
+Installed the resulting APK on the same Pixel 7a used for #136/#143 (reachable over wifi adb) and
+walked the actual UI:
+
+- `MainActivity` in light mode: bordered header with the "Model ready" status line, rounded
+  outline mic button, card-wrapped Transcript/Matched intent/Result section, de-emphasized
+  benchmark button below a divider, bordered footer tagline — matches §6.5/§6.3 as designed.
+- All three record-button states fired for real: idle (outline) → tap → recording (solid danger
+  red, "⏹ Tap to stop") → tap → transcribing (muted background, "Processing…", visible
+  accent-on-muted progress bar) → back to idle once the (empty, silent) test clip resolved to "No
+  speech detected — try again" — confirming the state machine, not just the drawables in
+  isolation.
+- Toolbar overflow → "Manage downloads" opens `ModelManagerActivity` with the hand-rolled back
+  arrow (§6.5's `ic_back.xml`) and the same card styling; back navigation returns cleanly to
+  `MainActivity`.
+- Toggling the device to dark mode (`adb shell cmd uimode night yes`) repaints both Activities via
+  `values-night` with zero app-side code — near-black background, off-white text, alpha-white
+  borders visible on cards — confirming the "follows system preference, no AppCompat" call in
+  §6.2 actually holds on real hardware, not just in theory.
+- The adaptive launcher icon renders correctly in the app drawer: black rounded square, white "dE"
+  in DejaVu Sans Mono Bold, matching `static/favicon.svg`'s mark.
+
+No visual or functional regressions found. This section originally shipped as "not verified this
+session" pending a real device; superseded by the above once one was available.
 
 ## On-device verification (Pixel 7a, USB adb)
 
