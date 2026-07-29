@@ -32,11 +32,27 @@
  * than reproducing it forward.
  */
 import type { CorrectionRule } from "./core.ts";
+import { NUMBER_WORDS } from "../../intent/lang/en.ts";
 
 // Particles that follow an energy value — used to detect MeV→mm/ml/etc. acoustic confusion.
 const PARTICLE_WORDS =
   "proton|protons|deuteron|deuterons|alpha|alphas|carbon|neon|oxygen|helium|" +
   "lithium|nitrogen|argon|iron|ion|ions";
+
+// A number written as digits ("20", "3.6") or spelled out as words ("twenty", "one hundred and
+// eighty") — the mev/kev/gev-mishearing rules below all originally required a literal digit
+// immediately before the unit, but `spellOutNumbers()` (matcher.ts) only runs *inside* the
+// matcher, well after this correction layer sees the text. A model with no ASR inverse-text-
+// normalization (e.g. the on-device Android matcher's sherpa-onnx/Parakeet-v3, issue #147:
+// "twenty Me V" produced a silent "No match") speaks both the number *and* the unit as words,
+// so the digit-only prefix let the number-word case slip through every rule below untouched.
+// Widening the prefix to also accept a spelled-out run fixes it without needing to know the
+// number's value here — `$1` just echoes whichever form was present, and the matcher's own
+// `spellOutNumbers()` converts a surviving number word to digits later, same as it already does
+// today for a clean "twenty MeV".
+const NUMBER_WORD_ALT = NUMBER_WORDS.map(([word]) => word).join("|");
+const NUMBER_PREFIX_SRC =
+  `(?:\\d+(?:\\.\\d+)?|(?:${NUMBER_WORD_ALT})(?:[\\s-]+(?:and\\s+)?(?:${NUMBER_WORD_ALT}))*)`;
 
 export const EN_RULES: readonly CorrectionRule[] = [
   // --- from asr-correct-ext.mjs ---
@@ -49,13 +65,21 @@ export const EN_RULES: readonly CorrectionRule[] = [
   {
     label: "glued-unit-before-particle",
     pattern: new RegExp(
-      `(\\d+(?:\\.\\d+)?)\\s*(?:mm|ml|mv|ma|mb|mhz|mev)\\s*[,.]?\\s+(?:a\\s+)?(${PARTICLE_WORDS})\\b`,
+      `(${NUMBER_PREFIX_SRC})\\s*(?:mm|ml|mv|ma|mb|mhz|mev)\\s*[,.]?\\s+(?:a\\s+)?(${PARTICLE_WORDS})\\b`,
       "gi",
     ),
     replacement: "$1 MeV $2",
   },
-  { label: "bare-mev-mishearing", pattern: /(\d+(?:\.\d+)?)\s*m[e]?v\b/gi, replacement: "$1 MeV" },
-  { label: "kev-mishearing", pattern: /(\d+(?:\.\d+)?)\s*k\s*[e]?v\b/gi, replacement: "$1 keV" },
+  {
+    label: "bare-mev-mishearing",
+    pattern: new RegExp(`(${NUMBER_PREFIX_SRC})\\s*m[e]?v\\b`, "gi"),
+    replacement: "$1 MeV",
+  },
+  {
+    label: "kev-mishearing",
+    pattern: new RegExp(`(${NUMBER_PREFIX_SRC})\\s*k\\s*[e]?v\\b`, "gi"),
+    replacement: "$1 keV",
+  },
   { label: "atmev", pattern: /\batmev\b/gi, replacement: "80 MeV" },
   // Letter-spelled energy units (issue #118 §1/§4: Whisper normalizes a *spoken-expanded*
   // "megaelectronvolt" back to "MeV" on its own, but a *letter-spelled* "em-ee-vee" sometimes
@@ -69,17 +93,26 @@ export const EN_RULES: readonly CorrectionRule[] = [
   // hyphens, and Whisper's occasional stray punctuation between spelled-out letters alike.
   {
     label: "mev-letter-spelled",
-    pattern: /(\d+(?:\.\d+)?)\s*(?:em|m)[\s.,-]*(?:ee|e)[\s.,-]*(?:vee|v)\b/gi,
+    pattern: new RegExp(
+      `(${NUMBER_PREFIX_SRC})\\s*(?:em|m)[\\s.,-]*(?:ee|e)[\\s.,-]*(?:vee|v)\\b`,
+      "gi",
+    ),
     replacement: "$1 MeV",
   },
   {
     label: "kev-letter-spelled",
-    pattern: /(\d+(?:\.\d+)?)\s*(?:kay|k)[\s.,-]*(?:ee|e)[\s.,-]*(?:vee|v)\b/gi,
+    pattern: new RegExp(
+      `(${NUMBER_PREFIX_SRC})\\s*(?:kay|k)[\\s.,-]*(?:ee|e)[\\s.,-]*(?:vee|v)\\b`,
+      "gi",
+    ),
     replacement: "$1 keV",
   },
   {
     label: "gev-letter-spelled",
-    pattern: /(\d+(?:\.\d+)?)\s*(?:gee|jee|g)[\s.,-]*(?:ee|e)[\s.,-]*(?:vee|v)\b/gi,
+    pattern: new RegExp(
+      `(${NUMBER_PREFIX_SRC})\\s*(?:gee|jee|g)[\\s.,-]*(?:ee|e)[\\s.,-]*(?:vee|v)\\b`,
+      "gi",
+    ),
     replacement: "$1 GeV",
   },
   {
@@ -175,7 +208,7 @@ export const EN_RULES: readonly CorrectionRule[] = [
   },
   {
     label: "tamiya-per-nucleon",
-    pattern: /(\d+(?:\.\d+)?)\s+tamiya\s+per\s+nucleon/gi,
+    pattern: new RegExp(`(${NUMBER_PREFIX_SRC})\\s+tamiya\\s+per\\s+nucleon`, "gi"),
     replacement: "$1 MeV per nucleon",
   },
   { label: "astar-spacing", pattern: /\ba\s*[-\s]?star\b/gi, replacement: "ASTAR" },
