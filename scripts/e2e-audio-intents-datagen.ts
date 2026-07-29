@@ -142,6 +142,10 @@ for (const file of files) {
   console.log(
     `\n=== E2E (datagen, ${lang}) ${data.modelId} [${data.dtype}] corrector=${correctorLabel} ===`,
   );
+  if (n === 0) {
+    console.log(`no ${lang} records with a matching sentence-set entry in ${file} — skipping`);
+    continue;
+  }
   console.log(
     `audio→intent slot-match: raw ${slotOkRaw}/${n} (${((100 * slotOkRaw) / n).toFixed(0)}%)  corrected ${slotOkCor}/${n} (${((100 * slotOkCor) / n).toFixed(0)}%)`,
   );

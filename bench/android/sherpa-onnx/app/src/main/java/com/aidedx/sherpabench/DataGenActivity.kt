@@ -418,10 +418,12 @@ class DataGenActivity : Activity() {
                 val pRecs = parakeetRecords.getOrPut(lang) { mutableListOf() }
                 val wRecs = whisperRecords.getOrPut(lang) { mutableListOf() }
                 take.optJSONObject("parakeet")?.let {
-                    pRecs.add(resultRecordJson(id, it.optString("raw", ""), it.optDouble("secs", 0.0), null))
+                    val raw = it.optString("raw", "")
+                    pRecs.add(resultRecordJson(id, raw, it.optDouble("secs", 0.0), errorFromRaw(raw)))
                 }
                 take.optJSONObject("whisper")?.let {
-                    wRecs.add(resultRecordJson(id, it.optString("raw", ""), it.optDouble("secs", 0.0), null))
+                    val raw = it.optString("raw", "")
+                    wRecs.add(resultRecordJson(id, raw, it.optDouble("secs", 0.0), errorFromRaw(raw)))
                 }
             }
         } catch (e: Exception) {
@@ -491,18 +493,19 @@ class DataGenActivity : Activity() {
         thread.start()
     }
 
-    /** Sets `recording = false` and waits for the reader thread's in-flight `read()` call to
-     * return and see it (its last iteration) BEFORE calling `stop()`/`release()` — calling
-     * those while the reader thread might still be mid-`read()` on the same `AudioRecord` is
-     * a real crash risk (`IllegalStateException` on a released object), not hypothetical, so
-     * this is ordered deliberately rather than torn down immediately. Runs on the main thread
-     * (called directly from the Record/Stop button's click listener) — the wait is bounded by
-     * one buffer's read latency (typically well under 100ms), an acceptable tap-to-stop pause. */
+    /** Sets `recording = false`, then `stop()`s the `AudioRecord` to unblock the reader
+     * thread's in-flight `read()` call, then `join()`s (unbounded — waiting for a real thread
+     * exit, not guessing at a timeout) BEFORE `release()`. Releasing while the reader thread
+     * might still be mid-`read()` on the same `AudioRecord` is a real crash risk
+     * (`IllegalStateException` on a released object), not hypothetical, so this is ordered
+     * deliberately rather than torn down immediately. Runs on the main thread (called directly
+     * from the Record/Stop button's click listener) — the wait is bounded by one buffer's read
+     * latency (typically well under 100ms), an acceptable tap-to-stop pause. */
     private fun stopRecordingInternal(): ShortArray {
         recording = false
-        readerThread?.join(500)
-        readerThread = null
         audioRecord?.stop()
+        readerThread?.join()
+        readerThread = null
         audioRecord?.release()
         audioRecord = null
         return synchronized(recordedSamples) { recordedSamples.toShortArray() }
@@ -661,9 +664,9 @@ class DataGenActivity : Activity() {
             takeJson(card, wavFile.name, take, pHits, wHits),
         )
         parakeetRecords.getOrPut(card.lang) { mutableListOf() }
-            .add(resultRecordJson(card.baseId, take.parakeetRaw, take.parakeetSecs, null))
+            .add(resultRecordJson(card.baseId, take.parakeetRaw, take.parakeetSecs, errorFromRaw(take.parakeetRaw)))
         whisperRecords.getOrPut(card.lang) { mutableListOf() }
-            .add(resultRecordJson(card.baseId, take.whisperRaw, take.whisperSecs, null))
+            .add(resultRecordJson(card.baseId, take.whisperRaw, take.whisperSecs, errorFromRaw(take.whisperRaw)))
         committedCardIds.add(card.cardId)
 
         writeSessionAndResults()
@@ -713,6 +716,13 @@ class DataGenActivity : Activity() {
     // org.json is only used for *reading* the input sentence deck above.
     // -------------------------------------------------------------------------------------
     private fun jsonStr(s: String): String = "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+
+    /** `raw` transcripts use an `"ERROR: <message>"` sentinel (set in `transcribeAndShow`) to
+     * carry a transcription failure through `Take`, which has no separate error field. Recover
+     * it here so `resultRecordJson`'s structured `error` field is populated consistently,
+     * whether the take was just recorded or reloaded from a resumed `session.json`. */
+    private fun errorFromRaw(raw: String): String? =
+        if (raw.startsWith("ERROR: ")) raw.removePrefix("ERROR: ") else null
 
     private fun resultRecordJson(id: String, raw: String, secs: Double, error: String?): String =
         "{\"speaker\": ${jsonStr(speaker)}, \"id\": ${jsonStr(id)}, \"raw\": ${jsonStr(raw)}, " +
