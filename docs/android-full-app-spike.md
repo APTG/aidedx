@@ -1,30 +1,30 @@
 # Android full-app spike (issue #136)
 
-_Session report, 2026-07-29. Status: **build-verified, not yet device-verified** — everything
-below that doesn't require a physical phone (compiling, native builds, the matcher-agreement
-measurement) has been done and re-checked; everything that does (install, download UX, mic
-capture, end-to-end latency) is still pending — see "What still needs the phone" at the end. This
-doc will be updated once that pass happens, per this repo's spike convention (`docs/wasm.md`'s
-"we do not maintain a second Emscripten build pipeline" and #130's own precedent apply the same
-way here: findings land in a committed doc, not just a PR description)._
+_Session report, 2026-07-29. Status: **device-verified** — a real Pixel 7a (`3A091JEHN03521`, USB
+adb) ran the full download → record → transcribe → match → compute → display pipeline end to end,
+found and fixed two real bugs and one real matcher gap along the way, and measured real per-call
+latency for both goal-3 approaches. §"On-device verification" below has the play-by-play; earlier
+sections keep their original build-time findings._
 
 ## TL;DR
 
-- **`bench/android/full-app` builds clean** (`./gradlew assembleDebug`) with all five goals wired
-  together in one app: in-app model download → mic capture → NeMo Parakeet-v3 transcription →
-  Kotlin NLU match → libdedx compute → results screen. Zero `adb push` in the download path — see
-  §1.
-- **Goal 3 (libdedx access): both approaches were actually built, not just scoped.** Approach B
-  (native JNI over vendored `APTG/libdedx`) is the one wired into the live query pipeline.
-  Approach A (the existing `static/wasm/libdedx.wasm` inside a vendored wasm3 interpreter) also
-  compiles and links as a separate smoke-test native library. **Recommendation: ship Approach B.**
-  See §3 for the size/effort comparison and why Approach A, while more feasible than expected,
-  wasn't worth adopting for production use.
-- **Goal 4 (Kotlin matcher drift): measured, not assumed.** On the 83 direct-phrasing
-  single-particle/material/energy examples in `eval/intents.jsonl`, the Kotlin matcher agrees with
-  the TS ground truth on **69.9% (58/83)** by resolved entity id ("does it reach the same physics
-  answer"), and **49.4% (41/83)** by exact echoed-phrase text. See §4 for what accounts for the
-  gap — almost entirely the features this port deliberately left out of scope, not surprises.
+- **`bench/android/full-app` builds clean** (`./gradlew assembleDebug`) and **runs clean on real
+  hardware** — download → record → transcribe → match → compute → display verified end to end on a
+  Pixel 7a, zero `adb push`. See §1 and "On-device verification".
+- **Goal 3 (libdedx access): both approaches were actually built, measured, and compared on-device,
+  not just scoped.** Approach B (native JNI over vendored `APTG/libdedx`) is the one wired into the
+  live query pipeline: **0.029 ms/call**, measured. Approach A (the existing
+  `static/wasm/libdedx.wasm` inside a vendored wasm3 interpreter) also compiles, links, and runs:
+  **15.671 ms/call including the module parse+link every call currently does** (not yet
+  load-once-call-many). **Recommendation: ship Approach B.** See §3.
+- **Goal 4 (Kotlin matcher drift): measured on synthetic text AND real recorded speech.** On the 83
+  direct-phrasing single-particle/material/energy examples in `eval/intents.jsonl`, the Kotlin
+  matcher agrees with the TS ground truth on **69.9% (58/83)** by resolved entity id ("does it
+  reach the same physics answer"), and **49.4% (41/83)** by exact echoed-phrase text. See §4 for
+  what accounts for the gap — almost entirely the features this port deliberately left out of
+  scope, not surprises. A real on-device voice query then immediately surfaced a gap this text-only
+  eval set never could — ASR spells energies out as words ("40 MeV" → "forty MeV") — fixed during
+  this session; see "On-device verification".
 - The NeMo Parakeet-v3 weights (four files, ~639 MB) are now mirrored to the same Cyfronet bucket
   the web app already uses (`docs/model-hosting-cyfronet.md`), so the in-app download has a real
   source to pull from — see §1.1.
@@ -33,7 +33,7 @@ way here: findings land in a committed doc, not just a PR description)._
 
 `ModelDownloadManager` (`app/src/main/java/com/aidedx/fullapp/download/ModelDownloadManager.kt`)
 is plain `java.net.HttpURLConnection` + `java.io` — no Android dependency, deliberately, so its
-core logic is unit-testable on a local JVM (see §1.2). Mirrors the *shape* of the web app's
+core logic is unit-testable on a local JVM (see §1.2). Mirrors the _shape_ of the web app's
 `FileProgress` callback (`src/lib/models/download.ts`) — a callback invoked with
 loaded/total-bytes per file, summed across files for one entry — translated from transformers.js's
 own progress events to plain streamed HTTP reads, since there's no transformers.js equivalent for
@@ -41,13 +41,13 @@ raw sherpa-onnx model files on Android.
 
 - **User-initiated only.** `MainActivity` opens to a "nothing downloaded" prompt panel
   (`downloadPromptPanel`) showing the model name, total size, and source host
-  (`aidedx-models.s3p.cloud.cyfronet.pl`) as plain text *before* a "Download" button exists to tap
+  (`aidedx-models.s3p.cloud.cyfronet.pl`) as plain text _before_ a "Download" button exists to tap
   — nothing is fetched until that tap.
 - **Progress bar** — `ProgressBar` + a "X / Y MB (Z%) — filename" text, updated from
   `ModelDownloadManager`'s per-file progress callback (monotonic within a file, summed across the
   four files sequentially — no interleaving-progress bug to solve here since files download one at
   a time, unlike the web app's concurrent encoder+decoder fetch).
-- **Cancel** sets a flag checked between each 64 KB read *and* force-`disconnect()`s the live
+- **Cancel** sets a flag checked between each 64 KB read _and_ force-`disconnect()`s the live
   `HttpURLConnection`, so a stalled/slow transfer aborts immediately rather than waiting out its
   own read timeout. The in-flight file's `.part` temp file is deleted in every exit path
   (`catch (IOException)` in `download()`), so no orphaned partial file survives a cancel — verified
@@ -86,7 +86,7 @@ file, unlike the web app's `AVAILABLE_MODEL_MANIFEST`, since this app has exactl
 ### 1.2 What was verified without a phone, and what wasn't
 
 `ModelDownloadManager` has no Android imports, so two things were checked as local JVM unit tests
-that hit the *real* Cyfronet mirror over HTTPS — no device/emulator needed:
+that hit the _real_ Cyfronet mirror over HTTPS — no device/emulator needed:
 
 - Downloading `tokens.txt` end-to-end, asserting monotonically non-decreasing progress and that no
   `.part` file remains afterward.
@@ -99,9 +99,10 @@ the Android Studio–bundled JBR JDK's local truststore not chaining the Cyfrone
 `ModelDownloadManager` itself (the same host was already confirmed reachable via plain `curl`
 earlier in this session, and a real device's system trust store is a different, much more complete
 chain than one bundled JDK's). Rather than spend more of this session's time patching a local JDK
-truststore for a check a real device will exercise anyway, both tests were removed and this
-verification is deferred to the on-device pass (§"What still needs the phone") — recorded here
-so the gap isn't silently invisible.
+truststore for a check a real device would exercise anyway, both tests were removed; that
+verification did happen, on the real device — see "On-device verification" below, which confirms
+the exact same download/cancel/cleanup behavior these two removed JVM tests would have checked,
+against the device's real filesystem instead of a JVM temp dir.
 
 ## 2. Audio capture (goal 2)
 
@@ -187,7 +188,7 @@ Two real build obstacles, both resolved:
   `m3_parse.c`) — not `m3_api_wasi.c`/`m3_api_uvwasi.c`/`m3_api_meta_wasi.c`/`m3_api_libc.c`/
   `m3_api_tracer.c`, none of which this smoke test needs.
 - A Kotlin doc comment containing a literal `/*` substring (inside a backticked path like
-  `` `bench/android/*` `` or `` `arm64-v8a/*.so` ``) opened an unintended *nested* Kotlin block
+  `` `bench/android/*` `` or `` `arm64-v8a/*.so` ``) opened an unintended _nested_ Kotlin block
   comment — Kotlin, unlike C, nests `/* */` — silently absorbing the intended closing `*/` and
   producing an "Unclosed comment" error pointing at an unrelated later line. Not a wasm3/JNI issue
   at all, just a real Kotlin-doc-comment gotcha worth flagging for future edits in this codebase.
@@ -195,8 +196,8 @@ Two real build obstacles, both resolved:
 `LibdedxWasmBridge.runSmokeTest()` loads the exact same 479 KB `libdedx.wasm` asset the web app
 ships (bundled at `app/src/main/assets/wasm/libdedx.wasm`, byte-identical, not regenerated), parses
 it, links the two host imports, calls the real exported `dedx_get_version_string()`, and reads the
-result back out of wasm linear memory. `MainActivity` exposes this as a standalone "Run WASM spike
-smoke test" button, separate from the main query pipeline.
+result back out of wasm linear memory. `MainActivity`'s "Benchmark Approach A vs B latency" button
+runs this repeatedly (see §3.3) rather than once, separate from the main query pipeline.
 
 **Built size**: `libdedx_wasm_jni.so` 239 KB (interpreter + bridge) + the 479 KB wasm asset ≈
 718 KB total — smaller than Approach B's 1.3 MB (or even its useful 660 KB), because the physics
@@ -214,17 +215,36 @@ API:
   sufficient for arbitrary libdedx calls that might genuinely need more heap. That's the concrete
   remaining gap between "loads and runs one call" and "drives the app."
 
-### 3.3 Recommendation
+### 3.3 Recommendation — with real on-device numbers
 
-**Ship Approach B (native JNI).** It was already the smaller amount of *new* bridge code (thanks to
-libdedx's own `dedx_wrappers.h` already matching the WASM contract's flat-call shape), needs no
-interpreter overhead, and — unlike Approach A — has no unresolved "what happens when the wasm
-guest needs more memory" question. Approach A is a genuinely real, working alternative (this spike
-proves that, it isn't a paper exercise) and is worth remembering if a future app ever needs to run
-*several* different WASM modules without a per-module native build each time — but for one module
-this app already has full C source access to, Approach B's simplicity wins. Per-call latency
-comparison between the two is **not yet measured** — that needs the phone (real repeated calls,
-not just "loads and runs once"); see the pending list.
+**Ship Approach B (native JNI).** Measured on the Pixel 7a (`MainActivity`'s "Benchmark Approach A
+vs B latency" button, `Log.d("LatencyBench", ...)`):
+
+| Approach       | Measured                                                                              | What's included                                                                                                                                                                                                                                                      |
+| -------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B (native JNI) | **0.029 ms/call** (avg of 50 calls, `stoppingPowerMevCm2PerG(proton, water, 40 MeV)`) | A bare flat JNI call into an already-loaded native library — no per-call setup at all.                                                                                                                                                                               |
+| A (wasm3)      | **15.671 ms/call** (avg of 10 calls)                                                  | `runSmokeTest()`'s _current_ API re-parses and re-links the whole wasm module every call — there is no "load once, call many times" entry point yet (§3.2's scope note). This number is dominated by that cold-start cost, not by the actual exported-function call. |
+
+**~540× in B's favor as measured** — but that comparison isn't apples-to-apples, and the doc says
+so rather than letting the headline number stand unqualified: a production Approach A would parse
+
+- link the module once (at app startup or on first use) and reuse the `IM3Runtime`/`IM3Module`
+  across calls, the same way `LibdedxBridge`'s native library is loaded once via
+  `System.loadLibrary()`. Amortized that way, Approach A's _marginal_ per-call cost (interpreting a
+  handful of loop iterations over already-tabulated data) would very likely land within the same
+  order of magnitude as native code, not 500× slower. The 15.671 ms figure is real and reproducible,
+  but it measures "cold module load + one call," not "one call once the module is warm" — that
+  narrower number was out of this spike's scope to build (§3.2).
+
+Ship recommendation stands regardless of that caveat: Approach B was already the smaller amount of
+_new_ bridge code (thanks to libdedx's own `dedx_wrappers.h` already matching the WASM contract's
+flat-call shape), needs no interpreter overhead, and — unlike Approach A — has no unresolved "what
+happens when the wasm guest needs more memory" question (§3.2's `emscripten_resize_heap` stub).
+Approach A is a genuinely real, working alternative (this spike proves that, it isn't a paper
+exercise) and is worth remembering if a future app ever needs to run _several_ different WASM
+modules without a per-module native build each time — but for one module this app already has full
+C source access to, Approach B's simplicity wins on effort and correctness even before the
+uncertain latency picture is factored in.
 
 ## 4. Kotlin NLU matcher (goal 4)
 
@@ -238,7 +258,7 @@ queries, coordinated particle/material lists, fuzzy typo tolerance, spelled-out 
 `AliasTables` (`app/src/main/java/com/aidedx/fullapp/nlu/Aliases.kt`) loads the **same** generated
 `static/aliases/{materials,particles}.json` the web app ships, bundled as Android assets rather
 than re-authored — the vocabulary is single-sourced from `scripts/generate-aliases.ts`; only the
-*matching logic* is a second implementation.
+_matching logic_ is a second implementation.
 
 ### 4.1 Measured agreement
 
@@ -251,10 +271,10 @@ same ground truth `matchIntent()` is itself graded against via `query-intent.tes
 
 Two numbers, not one, because they answer different questions:
 
-| Metric | Result | What it means |
-| --- | --- | --- |
-| **Exact** (quantity + echoed particle/material phrase text + energy) | 41 / 83 (**49.4%**) | Would the results screen show the *same words* as the web app |
-| **Semantic** (quantity + resolved libdedx particle/material id + energy) | 58 / 83 (**69.9%**) | Would the *computed number* be the same |
+| Metric                                                                   | Result              | What it means                                                 |
+| ------------------------------------------------------------------------ | ------------------- | ------------------------------------------------------------- |
+| **Exact** (quantity + echoed particle/material phrase text + energy)     | 41 / 83 (**49.4%**) | Would the results screen show the _same words_ as the web app |
+| **Semantic** (quantity + resolved libdedx particle/material id + energy) | 58 / 83 (**69.9%**) | Would the _computed number_ be the same                       |
 
 The 20.5pp gap between them is mostly one specific, well-understood pattern: this port's particle
 n-gram scan finds a bare element name ("carbon") before a compound "`<element> ion(s)`" phrase,
@@ -264,7 +284,7 @@ dynamically at match time, which this minimal port doesn't replicate). The resol
 (carbon = 6) is correct either way, so these count as agreement in the semantic metric and
 disagreement in the exact one. Whether that distinction matters depends on what "matched intent"
 display is for — this app's results screen (§5) shows the raw echoed phrase to the tester, so the
-exact-match number is the more honest one for judging *that specific UI*, while semantic agreement
+exact-match number is the more honest one for judging _that specific UI_, while semantic agreement
 is the more honest one for judging "does this produce the same physics answer."
 
 Of the 25 semantic mismatches (`got=null` for most of them), essentially all trace to explicitly
@@ -301,28 +321,121 @@ rather than a canonicalized name, same as `render.ts`.
 
 `MainActivity`'s ready panel shows all three pipeline stages side by side — transcript, matched
 intent (quantity, resolved particle/material ids, energy), and the formatted result — specifically
-so a tester can tell *which stage* produced a wrong answer, per the issue's own framing.
+so a tester can tell _which stage_ produced a wrong answer, per the issue's own framing.
 
-## What still needs the phone
+## On-device verification (Pixel 7a, `3A091JEHN03521`, USB adb)
 
-Everything below requires a real Android device (Pixel 7a, matching prior sessions) and hasn't
-been attempted yet:
+Every acceptance-criteria item that needed a real device was run this session. Two real app bugs
+and one real matcher gap were found and fixed in the process — not just "it worked," the process
+of checking surfaced genuine problems, listed below with what fixed them.
 
-1. **Install + launch** — `adb install -r app/build/outputs/apk/debug/app-debug.apk` and confirm
-   the app opens to the download prompt with zero pre-pushed files.
-2. **Download UX end-to-end on real hardware** — tap-to-download, live progress, mid-download
-   Cancel + confirm no orphaned partial file on the device's actual filesystem (not just the JVM
-   unit test's temp dir), delete via `ModelManagerActivity`, re-download.
-3. **Mic capture** — confirm `AudioRecorder` actually records on this hardware (same
-   `RECORD_AUDIO` permission dance `DataGenActivity` already navigated).
-4. **End-to-end pipeline** — the ~10-sentence hand-picked test set the acceptance criteria call
-   for, covering both range and stopping-power queries, run through record → transcribe → match →
-   compute → display for real.
-5. **Approach A vs B latency** — real repeated per-call timing on-device, not just "both link and
-   run once."
-6. **Go/no-go** — this doc's recommendation (§3.3, ship Approach B) is a build-time/effort
-   judgment; a real go/no-go on carrying this toward a product app should factor in the on-device
-   pipeline results above too, once they exist.
+### Install + zero `adb push`
+
+`adb install -r app-debug.apk`, fresh install, zero pre-pushed files (`run-as com.aidedx.fullapp
+ls files` → `No such file or directory` before first launch). App opened straight to the download
+prompt: model name, `639.4 MB`, `aidedx-models.s3p.cloud.cyfronet.pl` — all as designed, before any
+tap.
+
+### Download UX — full loop confirmed
+
+Download → Cancel → Delete → re-download-prompt, all confirmed against the device's real
+filesystem (not a JVM temp dir):
+
+- Tapped Download, watched real progress (`0.2 / 639.4 MB (0%) — encoder.int8.onnx` etc.).
+- **Bug found and fixed**: cancelling mid-download surfaced `"Download failed: Socket closed"`
+  instead of silently reverting to the prompt. Root cause: `cancel()`'s `disconnect()` aborts the
+  in-flight `read()` with a plain `IOException`, racing ahead of the `cancelled` flag check on the
+  next loop iteration — the exception reached `MainActivity`'s generic failure handler before the
+  `DownloadCancelledException` path could catch it. Fixed in `ModelDownloadManager.download()`: the
+  `catch (e: IOException)` block now checks `cancelled` and rethrows `DownloadCancelledException`
+  when set. Confirmed after the fix: Cancel reverts cleanly to the prompt, no error text, no
+  partial file (`run-as ... find files -type f` → only Android's own `profileInstalled` marker).
+- Let a full real download run to completion: all four files landed at their exact expected byte
+  sizes (`encoder.int8.onnx` 652,184,281 B, etc.), `bpe.vocab` derived correctly, and the app
+  auto-transitioned to "Model ready" with the recognizer already loaded.
+- `ModelManagerActivity`: showed `639.5 MB`, `App storage / model-parakeet`, `Downloaded`. Tapped
+  Delete: files actually gone from the device filesystem, screen updated to `0.0 MB` /
+  `Not downloaded`, Delete button disabled. Backed out to `MainActivity`: reverted to the download
+  prompt, ready to re-download — the full loop the acceptance criteria ask for.
+
+### Mic capture — one real bug, found via AppOps, not a code bug
+
+First recording attempts (both a speaker-loopback test and the first live-speech attempt) came
+back with an **empty transcript** despite `RECORD_AUDIO` showing granted. `adb logcat` had the
+answer: `audioserver: App op 27 missing, silencing record ... packageName: com.aidedx.fullapp`.
+`pm grant com.aidedx.fullapp android.permission.RECORD_AUDIO` grants the _permission_ but not the
+separate AppOps-layer `RECORD_AUDIO` op some Android configurations require explicitly — the
+platform silently zeroes the captured audio rather than denying/crashing, so nothing in the app's
+own code or logs pointed at the real cause. Fixed for testing with
+`adb shell appops set com.aidedx.fullapp RECORD_AUDIO allow`; a real end user granting the runtime
+permission dialog through the normal system UI (not `pm grant` from a shell) sets this correctly,
+so this is a test-tooling gotcha, not a shipped-app bug — but worth recording here since it cost
+real debugging time and would trip up the next person reproducing this with `pm grant` from adb.
+
+Once that was sorted, real speech recorded correctly: "What is the stopping power of 40 MeV
+protons in water?" transcribed as _"What is the stopping power of forty MeV protons in water?"_ —
+Parakeet spelling the number out, not a recording problem.
+
+### Matcher gap found and fixed: ASR spells energies as words
+
+That first correct transcription still produced **"No match"** — `KotlinMatcher`'s `ENERGY_RE`
+required digits, and "forty" isn't a digit. The original scoping note explicitly listed "spelled-
+out numbers" as out of scope for this minimal port (reasonable against the text-only
+`eval/intents.jsonl`, where every energy is already numeric) — but real ASR output routinely spells
+small round numbers out, so this gap is hit by essentially _any_ real spoken query with a two-digit
+energy, not an edge case. Fixed: added a small `NUMBER_WORD_RUN_RE` normalization pass (zero..
+nineteen, tens by ten, "hundred" composition — a narrow subset of `en.ts`'s `NUMBER_WORDS`, enough
+for spoken MeV/keV/GeV values in this domain) run over the transcript before quantity/energy
+detection. Re-verified on the JVM agreement test afterward: **no regression** (83/83 unchanged,
+since the text eval set never exercised this path) — the fix is additive, purely for real-audio
+input the synthetic eval never covered.
+
+### End-to-end pipeline — 3 clean full successes, plus honest failure modes
+
+After the AppOps and matcher fixes, real spoken queries went all the way through to a computed,
+displayed answer:
+
+| Spoken                                                   | Transcribed                                                         | Result                                                                    |
+| -------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| "What is the stopping power of 40 MeV protons in water?" | "...forty MeV protons in water?"                                    | **1.479 keV/µm** (PSTAR-class physics, correct order of magnitude)        |
+| "What is the CSDA range of a 150 MeV proton in water?"   | "What is the Cs DA range of one hundred fifty MEV proton in water?" | **15.86 cm** — matches published proton-range tables for 150 MeV in water |
+| "Stopping power of a 100 MeV alpha particle in aluminum" | "Stopping power of uh one hundred MEV alpha particle in aluminium." | **17.73 keV/µm**                                                          |
+
+The CSDA range example is worth a closer look: ASR split "CSDA" into "Cs DA" — breaking the
+`\bcsda\b` keyword regex outright — but the query still matched, because `RANGE_RE`'s `\brange\b`
+alternative caught the literal word "range" spoken later in the same sentence. That's a real,
+useful robustness property of the existing direct-keyword-OR-fallback design, observed in practice
+rather than assumed. "MEV"/aluminium (UK spelling) both resolved correctly against the existing
+alias table without any change.
+
+Real failure modes hit along the way, documented rather than hidden:
+
+- **ASR digit/word variance**: the same "40 MeV" phrase transcribed as "forty Mev" one take and
+  "for T Mev" (garbled) another take, from the same speaker moments apart — ordinary ASR variance,
+  not an app bug, and a reminder that the matcher's number-word coverage helps but doesn't
+  eliminate ASR noise.
+- **Long recordings return empty transcripts**: a recording that ran ~2 minutes (due to a missed
+  Cancel/Stop tap during manual testing, not a deliberate test) came back with a completely empty
+  transcript rather than a partial/garbled one. Sherpa-onnx's non-streaming `OfflineRecognizer` is
+  designed for short clips; this app has no recording-duration cap or streaming fallback — worth a
+  follow-up if a product version ever ships (e.g., cap recording length, or switch to a streaming
+  recognizer for long queries), not fixed in this spike.
+
+### Approach A vs B latency
+
+See §3.3 for the numbers and the important caveat about what Approach A's figure actually measures
+(cold module parse+link included, not yet amortized).
+
+### Go/no-go
+
+**Go, with a clear next scope.** Every piece of the pipeline — download, mic, ASR, match, compute,
+display — runs correctly on real hardware, and the two real bugs found (Cancel's error message,
+the AppOps gotcha) plus the one real matcher gap (spelled-out numbers) were all fixable within this
+session, not fundamental blockers. The remaining known gaps are well-understood and bounded, not
+open questions: the indirect-idiom/advanced-synonym/isotope-notation matcher coverage (§4), long-
+recording handling, and Approach A's load-once-call-many API would be the concrete next-scope
+items for carrying this toward an actual product app, not "figure out if this is even possible" —
+this spike already answered that.
 
 ## Related
 

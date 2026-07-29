@@ -91,7 +91,7 @@ class MainActivity : Activity() {
             startActivity(Intent(this, ModelManagerActivity::class.java))
         }
         recordButton.setOnClickListener { onRecordTapped() }
-        wasmButton.setOnClickListener { runWasmSmokeTest() }
+        wasmButton.setOnClickListener { runLatencyBenchmark() }
 
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_RECORD_AUDIO)
@@ -250,15 +250,35 @@ class MainActivity : Activity() {
 
     // ---- goal 3A spike ----
 
-    private fun runWasmSmokeTest() {
-        wasmResultText.text = "Running…"
+    /**
+     * issue #136 goal 3 — real per-call latency for the findings doc, not a guess. Approach B
+     * (`LibdedxBridge`) is a bare flat JNI call into an already-loaded native library — no
+     * per-call setup. Approach A's *current* smoke-test API (`LibdedxWasmBridge.runSmokeTest`)
+     * re-parses and re-links the whole wasm module on every call (there is no "load once, call
+     * many times" entry point yet — see `docs/android-full-app-spike.md` §3.2's scope note), so
+     * its measured number necessarily includes that cold-start cost; a production Approach A
+     * implementation amortizing the parse/link once across calls would look different. Logged via
+     * `Log.d` (grep logcat for "LatencyBench") rather than surfaced in the UI — a one-off spike
+     * measurement, not a feature.
+     */
+    private fun runLatencyBenchmark() {
         Thread {
-            val result = try {
-                LibdedxWasmBridge.runSmokeTest(assets)
-            } catch (e: Exception) {
-                "FAIL: ${e.message}"
+            val bWarmup = LibdedxBridge.stoppingPowerMevCm2PerG(1, 276, 40f)
+            val bStart = System.nanoTime()
+            repeat(50) { LibdedxBridge.stoppingPowerMevCm2PerG(1, 276, 40f) }
+            val bAvgMs = (System.nanoTime() - bStart) / 50 / 1_000_000.0
+            android.util.Log.d("LatencyBench", "Approach B (JNI) warmup=$bWarmup avg=${bAvgMs}ms over 50 calls")
+
+            val aRuns = 10
+            val aStart = System.nanoTime()
+            repeat(aRuns) { LibdedxWasmBridge.runSmokeTest(assets) }
+            val aAvgMs = (System.nanoTime() - aStart) / aRuns / 1_000_000.0
+            android.util.Log.d("LatencyBench", "Approach A (wasm3, incl. parse+link) avg=${aAvgMs}ms over $aRuns calls")
+
+            runOnUiThread {
+                wasmResultText.text = "B (JNI): ${"%.3f".format(bAvgMs)} ms/call | " +
+                    "A (wasm3, incl. parse+link): ${"%.3f".format(aAvgMs)} ms/call"
             }
-            runOnUiThread { wasmResultText.text = result }
         }.start()
     }
 

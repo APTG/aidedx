@@ -142,6 +142,12 @@ class ModelDownloadManager(private val filesDir: File) {
                 }
             } catch (e: IOException) {
                 partial.delete()
+                // A cancel-triggered disconnect() aborts the in-flight read() with a plain
+                // IOException ("Socket closed"), racing ahead of the `cancelled` flag check on
+                // the next loop iteration — surface it as a real cancellation, not a mislabeled
+                // "Download failed: Socket closed" (confirmed on-device: without this check, a
+                // deliberate Cancel tap showed exactly that misleading error text).
+                if (cancelled) throw DownloadCancelledException()
                 throw e
             } finally {
                 connection.disconnect()

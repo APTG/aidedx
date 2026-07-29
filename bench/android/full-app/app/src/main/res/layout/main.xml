@@ -126,7 +126,7 @@
                 android:id="@+id/wasmSmokeTestButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Run WASM spike smoke test (goal 3A)" />
+                android:text="Benchmark Approach A vs B latency" />
             <TextView
                 android:id="@+id/wasmSmokeTestResult"
                 android:layout_width="match_parent"
