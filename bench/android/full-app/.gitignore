@@ -1,0 +1,9 @@
+.gradle/
+build/
+local.properties
+*.apk
+app/src/main/jniLibs/
+app/src/main/assets/models/
+app/.cxx/
+vendor/libdedx/
+vendor/wasm3/
