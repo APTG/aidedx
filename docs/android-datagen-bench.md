@@ -1,13 +1,50 @@
 # Android benchmark data generator (issue #130)
 
-Status: **Part 1 (sentence set) done.** **Part 2 (the `DataGenActivity` app) is written and
-compiles** (`./gradlew assembleDebug` succeeds, manifest confirmed via `aapt dump xmltree`) but
-**has not been run on a real device yet** — this session had no working `adb` (see "Known
-limitation" below). **Part 3 (PC-side import/scoring) is written and smoke-tested** with a
-synthetic session (see "Part 3" below) — the scripts are proven correct on fabricated data, but
-have never scored a single real transcript. **Part 4 (findings) is not started** — there is no
-recording session to draw findings from yet. This doc will grow a "Results" section once a
-real recording session exists.
+Status: **Part 1 (sentence set) done.** **Part 2 (the `DataGenActivity` app) is written,
+compiles, and is now verified on real hardware** (Pixel 7a, over `adb connect` on the same
+wifi network — see "Verified on real hardware" below) — the two biggest unverified risks
+(dual eager model load fitting in RAM, real-mic transcription accuracy) both hold up. **Part 3
+(PC-side import/scoring) is written and smoke-tested** with a synthetic session (see "Part 3"
+below) — the scripts are proven correct on fabricated data, but a real full session hasn't been
+imported/scored yet (only a single throwaway test clip exists so far, recorded under a
+`tmp-test` speaker id specifically so it won't collide with the eventual real session). **Part 4
+(findings) is not started** — there is no full recording session to draw findings from yet.
+This doc will grow a "Results" section once one exists.
+
+## Verified on real hardware (2026-07-29, Pixel 7a)
+
+Ran the exact "Reproducing" steps below against a Pixel 7a connected over wifi
+(`adb connect <phone-ip>:5555`, phone and dev machine on the same LAN — no USB needed). Both
+items the "Known limitation" section below used to flag as unverified now check out:
+
+- **Dual eager model load does not OOM.** Parakeet-v3 int8 loaded in 3.7s, Whisper-small int8
+  loaded in 2.2s immediately after, both held in memory simultaneously, on an 8 GB device — the
+  documented per-clip load/release fallback was never needed.
+- **Real-mic transcription is accurate.** First real clip recorded (`dg-01-en`, "What is the
+  CSDA range of a 150 MeV proton in water?"): both models transcribed it correctly (Parakeet in
+  0.69s, Whisper in 2.52s; only a dropped "a" article, no slot-relevant difference), and the
+  on-device slot check passed particle/material/energy on both models. WAV file writes and the
+  resumable `session.json`/`results-*.json` contract all behave as designed — confirmed by
+  killing and relaunching the activity mid-session (renaming the speaker id from `km` to
+  `tmp-test` in between) and seeing it correctly resume at "1 already committed, 99 remaining."
+
+Not yet done: a full 100-card (50×EN+PL) session — recording is inherently a human-in-the-loop
+task (reading each prompt aloud), so it happens over multiple sessions rather than in one sitting.
+
+### Recording without a computer, once the app is installed
+
+`DataGenActivity` is deliberately not the launcher activity (`BenchActivity` keeps that, so
+issue #120/#122's published numbers stay reproducible from the same icon) but it is
+`android:exported="true"`, so a generic "activity launcher" app can start it directly without
+`adb`:
+
+1. Install **Activity Launcher** (Peter Kalauskas) from the Play Store.
+2. Find **SherpaBench** → **DataGenActivity** in its activity list.
+3. Add string extras: `speaker` (pick a name), `lang` = `both`, `hotwords_file` =
+   `hotwords-v3.txt`.
+4. Save as a home-screen shortcut. Tapping it resumes from `session.json` — safe to record in
+   short batches across many sessions, on the phone alone, no PC needed after the initial
+   install/push.
 
 ## What `DataGenActivity` does
 
@@ -27,13 +64,13 @@ per-language `results-{parakeet,whisper}-<lang>.json` in the existing
 Full field-by-field intent-extra and output-format reference: the doc comment at the top of
 `bench/android/sherpa-onnx/app/src/main/java/com/aidedx/sherpabench/DataGenActivity.kt`.
 
-## Known limitation: not verified on real hardware this session
+## Known limitation (historical — resolved, see "Verified on real hardware" above)
 
-This session's sandbox has Android SDK platform-tools installed but `adb`'s local
-client/server protocol fails (`protocol fault: Connection reset by peer`) even after
+An earlier session's sandbox had Android SDK platform-tools installed but `adb`'s local
+client/server protocol failed (`protocol fault: Connection reset by peer`) even after
 `kill-server`/`start-server` and with the sandbox disabled for the command — most likely a
 container-level restriction on raw local socket traffic, not something fixable from inside
-this session. Consequently:
+that session. At the time:
 
 - **Verified**: `./gradlew assembleDebug` succeeds (a portable JDK 21 had to be fetched
   user-locally too — no system JDK, no sudo — see below); the built APK's manifest has both
@@ -44,9 +81,8 @@ this session. Consequently:
   discussion) actually holds up without an OOM kill, real transcription output, WAV file
   correctness when played back, timing.
 
-**Next step, on a machine with working `adb`**: run the reproducing steps below, and if
-anything breaks, it breaks in exactly the areas listed as unverified above — check there
-first.
+A later session had a phone reachable over `adb connect <phone-ip>:5555` on the same wifi
+network — see "Verified on real hardware" above for what that resolved.
 
 ## Part 3 — PC-side import and scoring
 
@@ -136,7 +172,9 @@ cd -
 adb push ../../../eval/datagen-sentences.json /data/local/tmp/sb/datagen-sentences.json
 adb push .hf-cache/csukuangfj/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8 /data/local/tmp/sb/model-parakeet
 adb push .hf-cache/csukuangfj/sherpa-onnx-whisper-small /data/local/tmp/sb/model-whisper
-adb push <hotwords-v3.txt> /data/local/tmp/sb/hotwords-v3.txt   # see docs/nemo-parakeet-comparison.md §4.3
+adb push ../../../eval/hotwords-v3.txt /data/local/tmp/sb/hotwords-v3.txt   # committed file — same
+                                                                             # v3 list docs/nemo-parakeet-comparison.md
+                                                                             # §4.3 derived, no need to re-derive it
 
 adb shell run-as com.aidedx.sherpabench sh -c '
   mkdir -p files &&
