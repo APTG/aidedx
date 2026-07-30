@@ -118,6 +118,21 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(Number.isFinite(req(p.csdaRange))).toBe(true);
   });
 
+  it("issue #151: 5 TeV proton in water reports a clean out-of-range error, not a silent MeV answer", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "csdaRange",
+        particles: [{ match: "protons" }],
+        materials: [{ match: "water" }],
+        energies: [{ value: 5, unit: "TeV" }],
+      }),
+      service,
+    );
+    const s = req(result.series[0]);
+    expect(s.error).toMatch(/outside the valid range/);
+    expect(s.points).toHaveLength(0);
+  });
+
   it("§7.2: compare stopping power of neon ions in water and air at 100 MeV/nucl", () => {
     const result = computeIntent(
       intent({
@@ -389,6 +404,11 @@ describe("energyToMeVPerNucl", () => {
     expect(
       energyToMeVPerNucl({ value: 240, unit: "keV", perNucleonAssumed: false }, 12, 12),
     ).toBeCloseTo(0.02, 6);
+  });
+  it("converts TeV total to MeV/nucl (issue #151)", () => {
+    expect(
+      energyToMeVPerNucl({ value: 0.000012, unit: "TeV", perNucleonAssumed: false }, 12, 12),
+    ).toBeCloseTo(1, 6);
   });
 });
 

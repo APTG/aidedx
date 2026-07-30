@@ -35,7 +35,7 @@ export type Quantity = (typeof QUANTITIES)[number];
 export const COMPARE_DIMS = ["none", "material", "particle", "program", "energy"] as const;
 export type CompareDim = (typeof COMPARE_DIMS)[number];
 
-export const ENERGY_UNITS = ["MeV", "keV", "GeV", "MeV/nucl", "MeV/u"] as const;
+export const ENERGY_UNITS = ["MeV", "keV", "GeV", "TeV", "MeV/nucl", "MeV/u"] as const;
 export type EnergyUnit = (typeof ENERGY_UNITS)[number];
 
 // ---------------------------------------------------------------------------

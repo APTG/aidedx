@@ -314,6 +314,7 @@ export function energyToMeVPerNucl(
       let mev = energy.value;
       if (energy.unit === "keV") mev = energy.value / 1000;
       else if (energy.unit === "GeV") mev = energy.value * 1000;
+      else if (energy.unit === "TeV") mev = energy.value * 1_000_000;
       // "MeV" and anything else fall through as already-MeV.
       return energy.perNucleonAssumed === true ? mev : mev / a;
     }

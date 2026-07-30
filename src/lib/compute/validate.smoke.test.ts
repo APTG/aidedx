@@ -237,6 +237,20 @@ describe("validateIntent — energy within the tabulated grid (unit-suspect firs
     expect(v.issues[0]?.suggestion).toBe("Did you mean 0.001 GeV?");
   });
 
+  it("includes TeV in the magnitude-family suggestion (issue #151)", () => {
+    const v = validateIntent(
+      intent({
+        particles: [{ match: "proton" }],
+        materials: [{ match: "water" }],
+        // 0.000001 TeV = 1 MeV, well inside the grid; the bare MeV reading is far out of range.
+        energies: [{ value: 0.000001, unit: "MeV" }],
+      }),
+      service,
+    );
+    expect(v.plausible).toBe(false);
+    expect(v.issues[0]?.suggestion).toBe("Did you mean 0.000001 TeV?");
+  });
+
   it("passes an energy within the grid", () => {
     const v = validateIntent(
       intent({

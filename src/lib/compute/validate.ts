@@ -60,13 +60,13 @@ function isPlausibleIsotope(atomicNumber: number, massNumber: number): boolean {
 }
 
 /** Magnitude-prefix units eligible for the "wrong unit, not wrong number" reframing below. */
-const ENERGY_UNIT_MAGNITUDE_FAMILY = ["keV", "MeV", "GeV"] as const;
+const ENERGY_UNIT_MAGNITUDE_FAMILY = ["keV", "MeV", "GeV", "TeV"] as const;
 
 /**
  * When `energy` falls outside [min, max] MeV/nucl, check whether reading its raw number in a
- * different magnitude unit (keV/MeV/GeV) would land inside the grid instead — issue #29's
+ * different magnitude unit (keV/MeV/GeV/TeV) would land inside the grid instead — issue #29's
  * "unit-suspect first" ask: a misheard magnitude prefix is far likelier than a genuinely
- * out-of-range number. Restricted to the three absolute units; "MeV/nucl"/"MeV/u" are already an
+ * out-of-range number. Restricted to the absolute units; "MeV/nucl"/"MeV/u" are already an
  * explicit per-nucleon reading from the parser, not a plausible ASR magnitude confusion.
  */
 function suggestAlternateUnit(

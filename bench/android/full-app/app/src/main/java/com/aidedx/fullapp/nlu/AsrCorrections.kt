@@ -57,6 +57,24 @@ object AsrCorrections {
             Regex("(\\d+(?:\\.\\d+)?)\\s*k\\s*[e]?v\\b", RegexOption.IGNORE_CASE),
             "\$1 keV",
         ),
+        // issue #151 — mirrors src/lib/asr/correct/en.ts's "tev-mishearing": must run before
+        // ENERGY_RE ever sees a bare mis-cased "tev", and (unlike the web app, which has a fuzzy
+        // edit-distance fallback that can silently rewrite "TeV" to "MeV") this port has no such
+        // fallback, so without this rule a spoken TeV energy just fails to parse at all rather
+        // than being silently miscorrected — still worth an explicit rule for the same coverage
+        // as the web app.
+        AsrCorrectionRule(
+            "tev-mishearing",
+            Regex("(\\d+(?:\\.\\d+)?)\\s*t\\s*[e]?v\\b", RegexOption.IGNORE_CASE),
+            "\$1 TeV",
+        ),
+        // GeV was missing its own optional-`e` bare-unit rule the way keV/MeV already had one —
+        // found alongside the TeV fix (issue #151), same class of gap as en.ts's "gev-mishearing".
+        AsrCorrectionRule(
+            "gev-mishearing",
+            Regex("(\\d+(?:\\.\\d+)?)\\s*g\\s*[e]?v\\b", RegexOption.IGNORE_CASE),
+            "\$1 GeV",
+        ),
         AsrCorrectionRule(
             "atmev",
             Regex("\\batmev\\b", RegexOption.IGNORE_CASE),
@@ -89,6 +107,52 @@ object AsrCorrections {
                 RegexOption.IGNORE_CASE,
             ),
             "\$1 GeV",
+        ),
+        AsrCorrectionRule(
+            "tev-letter-spelled",
+            Regex(
+                "(\\d+(?:\\.\\d+)?)\\s*(?:tee|t)[\\s.,-]*(?:ee|e)[\\s.,-]*(?:vee|v)\\b",
+                RegexOption.IGNORE_CASE,
+            ),
+            "\$1 TeV",
+        ),
+
+        // Spoken-EXPANDED (not letter-spelled) energy-unit readings — "500 kiloelectronvolt", "1
+        // gigaelectronvolt" — mirrors en.ts's kev/mev/gev/tev-expanded rules (issue #151). A real,
+        // confirmed-common rendering (docs/android-datagen-bench.md §4.2: 0/10 hit rate in real
+        // audio for this rendering) that ENERGY_RE alone can never resolve, since it only ever
+        // matches the literal abbreviation tokens.
+        AsrCorrectionRule(
+            "kev-expanded",
+            Regex(
+                "(\\d+(?:\\.\\d+)?)\\s*kilo[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
+                RegexOption.IGNORE_CASE,
+            ),
+            "\$1 keV",
+        ),
+        AsrCorrectionRule(
+            "mev-expanded",
+            Regex(
+                "(\\d+(?:\\.\\d+)?)\\s*mega[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
+                RegexOption.IGNORE_CASE,
+            ),
+            "\$1 MeV",
+        ),
+        AsrCorrectionRule(
+            "gev-expanded",
+            Regex(
+                "(\\d+(?:\\.\\d+)?)\\s*giga[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
+                RegexOption.IGNORE_CASE,
+            ),
+            "\$1 GeV",
+        ),
+        AsrCorrectionRule(
+            "tev-expanded",
+            Regex(
+                "(\\d+(?:\\.\\d+)?)\\s*tera[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
+                RegexOption.IGNORE_CASE,
+            ),
+            "\$1 TeV",
         ),
 
         // --- per-nucleon phonetic variants (ENERGY_RE supports MeV/nucleon, MeV/nucl, MeV/u) ---
