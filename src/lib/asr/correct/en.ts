@@ -51,7 +51,19 @@ const PARTICLE_WORDS =
 // `spellOutNumbers()` converts a surviving number word to digits later, same as it already does
 // today for a clean "twenty MeV".
 const NUMBER_WORD_ALT = NUMBER_WORDS.map(([word]) => word).join("|");
-const NUMBER_PREFIX_SRC = `(?:\\d+(?:\\.\\d+)?|(?:${NUMBER_WORD_ALT})(?:[\\s-]+(?:and\\s+)?(?:${NUMBER_WORD_ALT}))*)`;
+// issue #153 — the plain word-run above stops at "hundred" (not itself a NUMBER_WORDS entry), so
+// a spelled-out hundred-compound like "five hundred kilo electronvolt" (a real Parakeet-v3
+// transcript, docs/android-datagen-bench.md §4.7 — Parakeet has no ASR inverse-text-
+// normalization, so it spells every number out, "hundred" included) never matched any rule
+// below, unlike an equivalent Whisper transcript that already contained plain digits. Mirrors
+// `composeHundreds()`'s own grammar in matcher.ts (`<1-9 word> hundred (and)? <optional 1-99
+// remainder>`) rather than inventing a new one, so the value `matchIntent()` eventually derives
+// stays consistent with what this prefix recognizes as a number.
+const ONES_WORD_ALT = NUMBER_WORDS.filter(([, d]) => Number(d) >= 1 && Number(d) <= 9)
+  .map(([word]) => word)
+  .join("|");
+const HUNDRED_RUN_SRC = `(?:${ONES_WORD_ALT})\\s+hundred(?:\\s+(?:and\\s+)?(?:${NUMBER_WORD_ALT}))?`;
+const NUMBER_PREFIX_SRC = `(?:\\d+(?:\\.\\d+)?|${HUNDRED_RUN_SRC}|(?:${NUMBER_WORD_ALT})(?:[\\s-]+(?:and\\s+)?(?:${NUMBER_WORD_ALT}))*)`;
 
 export const EN_RULES: readonly CorrectionRule[] = [
   // --- from asr-correct-ext.mjs ---

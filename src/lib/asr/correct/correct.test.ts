@@ -134,6 +134,43 @@ describe("correctTranscript — spoken-expanded energy-unit readings (issue #151
   });
 });
 
+describe("correctTranscript — spelled-out hundred-compounds before a unit (issue #153)", () => {
+  // NUMBER_PREFIX_SRC previously stopped at a bare number word ("five"), so a spelled-out
+  // "hundred" compound directly before a unit-mishearing or expanded-reading rule never matched
+  // at all — real Parakeet-v3 transcripts (no ASR inverse-text-normalization, so every number
+  // comes out as words, "hundred" included), docs/android-datagen-bench.md §4.7 dg-04/dg-11/dg-43.
+  it("recognizes an expanded-reading unit after a bare 'X hundred'", () => {
+    expect(correctText("uh five hundred kilo electronovolt proton in water")).toBe(
+      "uh five hundred keV proton in water",
+    );
+    expect(correctText("a one hundred mega electronovolt proton in water")).toBe(
+      "a one hundred MeV proton in water",
+    );
+  });
+
+  it("recognizes an expanded-reading unit after 'X hundred' with an 'of'-filler and per-nucleon suffix", () => {
+    expect(
+      correctText("a three hundred mega electron o volt per nucleon carbon ion in water"),
+    ).toBe("a three hundred MeV per nucleon carbon ion in water");
+  });
+
+  it("recognizes 'X hundred and Y' before a unit", () => {
+    expect(correctText("three hundred and fifty kev protons in bone")).toBe(
+      "three hundred and fifty keV protons in bone",
+    );
+  });
+
+  it("also widens the plain bare-unit mishearing rules, not just the expanded-reading ones", () => {
+    expect(correctText("one hundred kev protons in water")).toBe(
+      "one hundred keV protons in water",
+    );
+  });
+
+  it("still leaves an unrelated 'hundred' phrase alone", () => {
+    expect(correctText("a hundred years from now")).toBe("a hundred years from now");
+  });
+});
+
 describe("correctTranscript — per-nucleon phonetic variants", () => {
   it("normalizes the napelion/nutlion/nukleon family to 'per nucleon'", () => {
     expect(correctText("per napelion energy loss")).toBe("per nucleon energy loss");
