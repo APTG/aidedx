@@ -268,6 +268,50 @@ Answers #122 §7's Polish open question (isotope-number handling is the concrete
 §4.3 above) and gives #127 (Polish on-device validation) real numbers to validate against instead
 of TTS-only data.
 
+### 4.7 TeV / expanded-unit-reading fix (#151) — real before/after numbers on this same session
+
+#151 shipped two fixes to `src/lib/asr/correct/en.ts` (and their Android `AsrCorrections.kt`
+mirror): `TeV` support (closing a silent TeV→MeV fuzzy-miscorrection bug — not exercised by this
+session, since no TeV prompts exist in `eval/datagen-sentences.json`) and `kev/mev/gev/tev-expanded`
+rules recognizing spoken-out unit readings ("500 kiloelectronvolt") that no rule anywhere
+previously mapped back to an abbreviation — exactly §4.2's 0/10 finding above. No new recording
+was needed to check the real-world effect: the raw ASR transcripts from this same `lgpixel`
+session are already committed under `eval/results/datagen-lgpixel-2026-07-30/`, so re-running
+`scripts/e2e-audio-intents-datagen.ts` (which applies the real, shipped `correctTranscript()` +
+`matchIntent()`) against those saved transcripts — once on `main` (pre-fix) and once on the fix
+branch — isolates the fix's effect precisely, with no ASR variance between runs to control for.
+
+| Pipeline                      | EN before → after        | PL before → after |
+| ----------------------------- | ------------------------ | ----------------- |
+| Parakeet-v3, on-device        | 82% → **84%** (41→42/50) | 6% (unchanged)    |
+| Whisper-small, on-device      | 64% → **74%** (32→37/50) | 32% (unchanged)   |
+| Whisper-small, desktop+prompt | 76% → **84%** (38→42/50) | 52% (unchanged)   |
+| whisper.cpp, on-device        | 72% → **80%** (36→40/50) | 36% (unchanged)   |
+
+Per-clip diffing (before-failing vs. after-failing id sets, both branches run against the
+identical saved transcripts) confirms this is a clean, targeted fix: **zero regressions** on any
+pipeline/language, and **every single newly-passing clip is one of §4.2's five expanded-reading
+ids** (`dg-04`, `dg-11`, `dg-22`, `dg-43`, `dg-44`) — nothing else moved. Polish is completely
+unchanged on every pipeline, as expected: `en.ts`'s rules only ever apply to English text (no
+`pl.ts` corrector exists yet — #151's own flagged, larger follow-up gap), so a Polish transcript
+is untouched by this fix regardless of whether it contains an expanded-reading unit.
+
+**A residual gap this run surfaces, specific to Parakeet:** 4 of Parakeet-EN's 8 remaining
+failures (`dg-04`, `dg-11`, `dg-43`, `dg-44` — all `energies`-tagged) are expanded-reading clips
+that the #151 fix does _not_ resolve, because Parakeet (the only pipeline here with no ASR
+inverse-text-normalization — it spells every number out as words, never digits) transcribes them
+as e.g. `"uh five hundred kilo electronovolt proton..."` rather than `"500 kilo..."`. The new
+`kev/mev/gev/tev-expanded` rules require a number immediately before the unit phrase
+(`NUMBER_PREFIX_SRC`), and `NUMBER_PREFIX_SRC` only recognizes single spelled-out number words
+(`one`..`ninety`) — it has no notion of a `hundred` compound like "five hundred", unlike the
+_matcher's_ own `composeHundreds()` (`matcher.ts`), which already parses exactly this shape
+("two hundred and forty" → `240`) but runs downstream of `correctTranscript()`, too late to help
+these rules recognize the unit phrase in the first place. Every equivalent Whisper transcript for
+these same 4 underlying prompts already contained plain digits ("500 kilo...", not "five
+hundred..."), which is why Whisper/whisper.cpp picked up the full 4-clip gain while Parakeet only
+picked up 1 (`dg-22`, whose number was a bare "one"). Filed as #153 with a suggested rule change
+rather than fixed inline here, since it's a distinct, scoped gap from #151's two fixes above.
+
 ## Reproducing
 
 ```bash

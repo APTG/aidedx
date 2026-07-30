@@ -82,7 +82,7 @@ object KotlinMatcher {
     }
 
     private val ENERGY_RE = Regex(
-        "(\\d+(?:\\.\\d+)?)\\s*(MeV/nucleon|MeV/nucl|MeV/u|MeV per nucleon|MeV|keV|GeV)\\b",
+        "(\\d+(?:\\.\\d+)?)\\s*(MeV/nucleon|MeV/nucl|MeV/u|MeV per nucleon|MeV|keV|GeV|TeV)\\b",
         RegexOption.IGNORE_CASE,
     )
 
@@ -147,6 +147,7 @@ object KotlinMatcher {
             lower.contains("nucleon") || lower == "mev/nucl" || lower == "mev/u" -> "MeV/nucl" to true
             lower == "kev" -> "keV" to false
             lower == "gev" -> "GeV" to false
+            lower == "tev" -> "TeV" to false
             else -> "MeV" to false
         }
     }

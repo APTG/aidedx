@@ -55,6 +55,61 @@ class AsrCorrectionsTest {
     }
 
     @Test
+    fun `fixes a bare glued TeV mishearing (issue 151)`() {
+        // Unlike the web app (which has a fuzzy edit-distance fallback that can silently rewrite
+        // "TeV" to "MeV"), this port has no such fallback — but without this explicit rule a
+        // spoken TeV energy would still fail to parse at all, so the rule is ported for the same
+        // coverage as en.ts.
+        assertEquals("5 TeV protons in water", AsrCorrections.correct("5 TeV protons in water"))
+        assertEquals("5 TeV protons in water", AsrCorrections.correct("5 T EV protons in water"))
+    }
+
+    @Test
+    fun `fixes a letter-spelled TeV (issue 151)`() {
+        assertEquals("5 TeV protons in water", AsrCorrections.correct("5 T-E-V protons in water"))
+        assertEquals(
+            "5 TeV protons in water",
+            AsrCorrections.correct("5 tee e vee protons in water"),
+        )
+    }
+
+    @Test
+    fun `recognizes spoken-expanded kilo mega giga tera electronvolt readings (issue 151)`() {
+        assertEquals(
+            "500 keV protons in water",
+            AsrCorrections.correct("500 kiloelectronvolt protons in water"),
+        )
+        assertEquals(
+            "1 MeV protons in water",
+            AsrCorrections.correct("1 megaelectronvolt protons in water"),
+        )
+        assertEquals(
+            "300 GeV protons in water",
+            AsrCorrections.correct("300 gigaelectronvolt protons in water"),
+        )
+        assertEquals(
+            "5 TeV protons in water",
+            AsrCorrections.correct("5 teraelectronvolt protons in water"),
+        )
+        assertEquals(
+            "1 GeV proton in water",
+            AsrCorrections.correct("1 giga electron of volt proton in water"),
+        )
+    }
+
+    @Test
+    fun `end-to-end KotlinMatcher resolves a TeV query (issue 151)`() {
+        val aliases = AliasTables.fromJson(
+            repoRoot().resolve("static/aliases/materials.json").readText(),
+            repoRoot().resolve("static/aliases/particles.json").readText(),
+        )
+        val match = KotlinMatcher.match("Range of a 5 TeV proton in water.", aliases)
+        assertEquals(Quantity.CSDA_RANGE, match?.quantity)
+        assertEquals(5.0, match?.energy?.value)
+        assertEquals("TeV", match?.energy?.unit)
+    }
+
+    @Test
     fun `fixes glued mm slash ml before a particle word to MeV`() {
         assertEquals(
             "how far will a 60 MeV proton go",

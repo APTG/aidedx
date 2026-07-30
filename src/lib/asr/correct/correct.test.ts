@@ -66,6 +66,14 @@ describe("correctTranscript — number/unit mishearings", () => {
     expect(correctText("1G EV protons")).toBe("1 GeV protons");
   });
 
+  it("fixes a bare glued TeV mishearing without falling into the MeV fuzzy pass (issue #151)", () => {
+    // Before this rule existed, applyPhoneticPass's edit-distance lookup found "TeV" is
+    // distance-1 from "MeV" in LEXICON and silently rewrote it — a silent 10^6 unit error with
+    // no error surfaced. This explicit rule must claim "TeV" before the fuzzy pass ever runs.
+    expect(correctText("5 TeV protons in water")).toBe("5 TeV protons in water");
+    expect(correctText("5 T EV protons in water")).toBe("5 TeV protons in water");
+  });
+
   it("fixes the hyphenated length target and word-form cm/mm", () => {
     expect(correctText("10-cm range")).toBe("10 cm range");
     expect(correctText("5 centimeters range")).toBe("5 cm range");
@@ -93,6 +101,11 @@ describe("correctTranscript — letter-spelled energy units (issue #118)", () =>
     expect(correctText("the target is 100 km wide")).toBe("the target is 100 km wide");
   });
 
+  it("fixes a letter-spelled TeV (issue #151)", () => {
+    expect(correctText("5 T-E-V protons in water")).toBe("5 TeV protons in water");
+    expect(correctText("5 tee e vee protons in water")).toBe("5 TeV protons in water");
+  });
+
   it("fixes a letter-spelled unit after a spelled-out number (issue #147)", () => {
     // sherpa-onnx/Parakeet-v3 (no ASR inverse-text-normalization) spoke both "twenty" and
     // "MeV" as words, splitting the unit into "Me V" — every rule above originally required a
@@ -104,6 +117,20 @@ describe("correctTranscript — letter-spelled energy units (issue #118)", () =>
     expect(correctText("Stopping power of twenty Me V proton in silicon.")).toBe(
       "Stopping power of twenty MeV proton in silicon.",
     );
+  });
+});
+
+describe("correctTranscript — spoken-expanded energy-unit readings (issue #151)", () => {
+  it("recognizes 'kilo/mega/giga/tera electronvolt' readings even on perfectly clean text", () => {
+    expect(correctText("500 kiloelectronvolt protons in water")).toBe("500 keV protons in water");
+    expect(correctText("1 megaelectronvolt protons in water")).toBe("1 MeV protons in water");
+    expect(correctText("300 gigaelectronvolt protons in water")).toBe("300 GeV protons in water");
+    expect(correctText("5 teraelectronvolt protons in water")).toBe("5 TeV protons in water");
+  });
+
+  it("handles the spaced/'of'-filler variants seen in real transcripts (dg-22)", () => {
+    expect(correctText("1 giga electron of volt proton in water")).toBe("1 GeV proton in water");
+    expect(correctText("300 mega electron volt proton in water")).toBe("300 MeV proton in water");
   });
 });
 

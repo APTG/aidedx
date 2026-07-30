@@ -79,6 +79,23 @@ export const EN_RULES: readonly CorrectionRule[] = [
     pattern: new RegExp(`(${NUMBER_PREFIX_SRC})\\s*k\\s*[e]?v\\b`, "gi"),
     replacement: "$1 keV",
   },
+  // Runs BEFORE the phonetic fuzzy pass ever sees "TeV" — without an explicit rule here,
+  // `applyPhoneticPass`'s edit-distance lookup finds "TeV" is distance-1 from both "MeV" and
+  // "keV" in LEXICON and silently rewrites it to one of them (issue #151: a real user saying "5
+  // TeV proton" got a silent, confidently-wrong 5 MeV answer — a factor-of-10^6 error with no
+  // error surfaced).
+  {
+    label: "tev-mishearing",
+    pattern: new RegExp(`(${NUMBER_PREFIX_SRC})\\s*t\\s*[e]?v\\b`, "gi"),
+    replacement: "$1 TeV",
+  },
+  // GeV was missing its own optional-`e` bare-unit rule the way keV/MeV already had one — found
+  // alongside the TeV fix (issue #151), same class of gap.
+  {
+    label: "gev-mishearing",
+    pattern: new RegExp(`(${NUMBER_PREFIX_SRC})\\s*g\\s*[e]?v\\b`, "gi"),
+    replacement: "$1 GeV",
+  },
   { label: "atmev", pattern: /\batmev\b/gi, replacement: "80 MeV" },
   // Letter-spelled energy units (issue #118 §1/§4: Whisper normalizes a *spoken-expanded*
   // "megaelectronvolt" back to "MeV" on its own, but a *letter-spelled* "em-ee-vee" sometimes
@@ -113,6 +130,53 @@ export const EN_RULES: readonly CorrectionRule[] = [
       "gi",
     ),
     replacement: "$1 GeV",
+  },
+  {
+    label: "tev-letter-spelled",
+    pattern: new RegExp(
+      `(${NUMBER_PREFIX_SRC})\\s*(?:tee|t)[\\s.,-]*(?:ee|e)[\\s.,-]*(?:vee|v)\\b`,
+      "gi",
+    ),
+    replacement: "$1 TeV",
+  },
+  // Spoken-EXPANDED (not letter-spelled) energy-unit readings — "500 kiloelectronvolt", "1
+  // gigaelectronvolt" — a real, confirmed-common rendering real speakers produce (issue #151,
+  // docs/android-datagen-bench.md §4.2: 0/10 hit rate on this rendering in real audio). Verified
+  // directly: even a *perfectly clean* transcription of this rendering fails to resolve an
+  // energy slot today — this is a coverage gap independent of ASR accuracy, not a mishearing to
+  // correct. Matches the "of"/"a" filler Whisper sometimes inserts ("giga electron of volt",
+  // real transcript, dg-22) and both one-word-glued and three-word-spaced renderings.
+  {
+    label: "kev-expanded",
+    pattern: new RegExp(
+      `(${NUMBER_PREFIX_SRC})\\s*kilo[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      "gi",
+    ),
+    replacement: "$1 keV",
+  },
+  {
+    label: "mev-expanded",
+    pattern: new RegExp(
+      `(${NUMBER_PREFIX_SRC})\\s*mega[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      "gi",
+    ),
+    replacement: "$1 MeV",
+  },
+  {
+    label: "gev-expanded",
+    pattern: new RegExp(
+      `(${NUMBER_PREFIX_SRC})\\s*giga[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      "gi",
+    ),
+    replacement: "$1 GeV",
+  },
+  {
+    label: "tev-expanded",
+    pattern: new RegExp(
+      `(${NUMBER_PREFIX_SRC})\\s*tera[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      "gi",
+    ),
+    replacement: "$1 TeV",
   },
   {
     label: "per-nucleon-phonetic",
@@ -241,6 +305,7 @@ export const LEXICON: readonly LexiconEntry[] = [
   { slot: "unit", canonical: "MeV" },
   { slot: "unit", canonical: "keV" },
   { slot: "unit", canonical: "GeV" },
+  { slot: "unit", canonical: "TeV" },
   { slot: "quantity", canonical: "stopping power" },
   { slot: "quantity", canonical: "range" },
   { slot: "quantity", canonical: "dE/dx" },

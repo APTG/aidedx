@@ -293,6 +293,7 @@ class MainActivity : Activity() {
         val totalMev = when (matched.energy.unit) {
             "keV" -> matched.energy.value / 1000.0
             "GeV" -> matched.energy.value * 1000.0
+            "TeV" -> matched.energy.value * 1_000_000.0
             else -> matched.energy.value
         }
         // massNumber is 0 for particles libdedx doesn't treat as nucleon-composed (e.g. the

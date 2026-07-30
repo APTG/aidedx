@@ -107,6 +107,19 @@ describe("energy + unit parsing", () => {
     });
   });
 
+  it("recognizes TeV (issue #151)", () => {
+    expect(matchQueryIntent("Range of a 5 TeV proton in water.").energies[0]).toEqual({
+      value: 5,
+      unit: "TeV",
+    });
+  });
+
+  it("converts a per-nucleon TeV value to MeV/nucl", () => {
+    expect(
+      matchQueryIntent("Range of carbon ions in water at 0.001 TeV per nucleon.").energies[0],
+    ).toEqual({ value: 1000, unit: "MeV/nucl", perNucleonAssumed: true });
+  });
+
   it("records an explicit per-nucleon reading", () => {
     expect(matchQueryIntent("Range of carbon ions in water at 290 MeV/u.").energies[0]).toEqual({
       value: 290,

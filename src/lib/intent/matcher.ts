@@ -252,6 +252,7 @@ function toEnergyUnit(base: string, pack: LangPack, perNuclSuffix?: string): Ene
   const b = base.toLowerCase();
   if (b === "kev") return "keV";
   if (b === "gev") return "GeV";
+  if (b === "tev") return "TeV";
   return "MeV";
 }
 
@@ -272,7 +273,14 @@ function toEnergyValueUnit(
   const unit = toEnergyUnit(base, pack, suffix);
   if (suffix === undefined) return { value: rawValue, unit };
   const b = base.toLowerCase();
-  const value = b === "kev" ? rawValue / 1000 : b === "gev" ? rawValue * 1000 : rawValue;
+  const value =
+    b === "kev"
+      ? rawValue / 1000
+      : b === "gev"
+        ? rawValue * 1000
+        : b === "tev"
+          ? rawValue * 1_000_000
+          : rawValue;
   return { value: round(value), unit };
 }
 
@@ -350,13 +358,13 @@ function energyRegexesFor(pack: LangPack): EnergyRegexes {
   // [\s-]* (not \s*) between the number and unit — issue #26: a written "10-MeV proton"
   // hyphenates the compound adjective, which \s* alone doesn't match.
   const energyRe = new RegExp(
-    `(\\d+(?:\\.\\d+)?)[\\s-]*(gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
+    `(\\d+(?:\\.\\d+)?)[\\s-]*(tev|gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
     "gi",
   );
   // A coordinated list of values sharing one trailing unit: "100 and 200 MeV",
   // "50, 100, and 150 MeV", "100 and 400 MeV per nucleon".
   const energyListRe = new RegExp(
-    `((?:\\d+(?:\\.\\d+)?${pack.LIST_SEP_SRC})+\\d+(?:\\.\\d+)?)[\\s-]*(gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
+    `((?:\\d+(?:\\.\\d+)?${pack.LIST_SEP_SRC})+\\d+(?:\\.\\d+)?)[\\s-]*(tev|gev|mev|kev)\\b${pack.PER_NUCL_SUFFIX_SRC}`,
     "gi",
   );
 
@@ -418,6 +426,7 @@ function extractEnergies(text: string, pack: LangPack): RawEnergy[] {
 function toMeV(value: number, unit: EnergyUnit): number {
   if (unit === "keV") return value / 1000;
   if (unit === "GeV") return value * 1000;
+  if (unit === "TeV") return value * 1_000_000;
   return value; // MeV, MeV/nucl, MeV/u
 }
 

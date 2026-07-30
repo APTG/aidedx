@@ -69,6 +69,12 @@ const ENERGY_UNIT_TO_DEDXWEB: Record<EnergyUnit, { anchor: DedxWebEnergyAnchor; 
     MeV: { anchor: "MeV" },
     keV: { anchor: "MeV", suffix: "keV" },
     GeV: { anchor: "MeV", suffix: "GeV" },
+    // UNVERIFIED against the actual dedx_web calculator's accepted `:unit` suffix list — added
+    // to satisfy this Record's exhaustiveness check for the new TeV unit (issue #151). TeV
+    // energies are also astronomically outside every libdedx program's valid range
+    // (compute.smoke.test.ts: PSTAR tops out at 10 GeV/nucl), so this link should rarely if
+    // ever actually fire for TeV in practice.
+    TeV: { anchor: "MeV", suffix: "TeV" },
     "MeV/nucl": { anchor: "MeV/nucl" },
     "MeV/u": { anchor: "MeV/u" },
   };
