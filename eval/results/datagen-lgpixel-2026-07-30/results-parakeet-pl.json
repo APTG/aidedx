@@ -4,55 +4,355 @@
   "withPrompt": false,
   "loadS": 2.616487387,
   "records": [
-    {"speaker": "lgpixel", "id": "dg-01", "raw": "Jaki jest zasięg CSDA protonu energii sto pięćdziesięciu M w wodzie?", "secs": 0.738193238, "error": null},
-    {"speaker": "lgpixel", "id": "dg-02", "raw": "Jaki jest zasięg protonu energii stłum w w kości korowej?", "secs": 0.527067546, "error": null},
-    {"speaker": "lgpixel", "id": "dg-03", "raw": "Jak daleko doleci protoną energii dwustu pięćdziesięciu m w Pym a.", "secs": 0.633225382, "error": null},
-    {"speaker": "lgpixel", "id": "dg-04", "raw": "Jaki jest zasięg protonu energii pięciu setk kilo elektronovoltów w wodzie?", "secs": 0.626684652, "error": null},
-    {"speaker": "lgpixel", "id": "dg-05", "raw": "Jaki jest zasięg deuteronu energii sześćdziesięciu Mef w krzemie?", "secs": 0.561509563, "error": null},
-    {"speaker": "lgpixel", "id": "dg-06", "raw": "Jak głęboko wniknie trytonu energii czterdziestu m w Pm a.", "secs": 0.583224284, "error": null},
-    {"speaker": "lgpixel", "id": "dg-07", "raw": "Jak daleko doleci cząstka alfa w energii dwudziestu mef, w powietrzu?", "secs": 0.587145427, "error": null},
-    {"speaker": "lgpixel", "id": "dg-08", "raw": "Jak głęboko wniknie Janhew trzy o energii trzydziestu m w graficie.", "secs": 0.652788982, "error": null},
-    {"speaker": "lgpixel", "id": "dg-09", "raw": "Jaki jest zasięg jonulitu o energii pięćdziesięciu metr na nucleon w poli węglanie?", "secs": 0.646617229, "error": null},
-    {"speaker": "lgpixel", "id": "dg-10", "raw": "Jaki jest zasięgion uboru energii z tumew na nucleon w polietylenie?", "secs": 0.569430013, "error": null},
-    {"speaker": "lgpixel", "id": "dg-11", "raw": "Jaki jest zasięgiono węgla o energii 300 mega elektronowoltów na nucleon w wodzie?", "secs": 0.702306641, "error": null},
-    {"speaker": "lgpixel", "id": "dg-12", "raw": "Jak daleko doleci on azotu o energii 1 osiemdziesięć M na nucleon w kości korowej?", "secs": 0.701146037, "error": null},
-    {"speaker": "lgpixel", "id": "dg-13", "raw": "Jaki jest zasięg CSDA i o nucleanu energii dwusto pięćdziesięciu Mew na nucleon w PmA?", "secs": 0.744194255, "error": null},
-    {"speaker": "lgpixel", "id": "dg-14", "raw": "Jak głęboko wniknie Joney neonu energii czterystu m na nucleon w wodzie?", "secs": 0.614474691, "error": null},
-    {"speaker": "lgpixel", "id": "dg-15", "raw": "Jakie jest zasięgiono magnezu o energii 150 mef na nucleon w plastiku tkankopodobnym A150?", "secs": 0.820130778, "error": null},
-    {"speaker": "lgpixel", "id": "dg-16", "raw": "Jaki jest zasięg ją ukrzemu o energii trzy stu m na nucleon w dwutlenku krzemu?", "secs": 0.641583862, "error": null},
-    {"speaker": "lgpixel", "id": "dg-17", "raw": "Jak daleko doleci on argonu o energii trzy sto pięćdziesięciu M na nucleon w wodzie?", "secs": 0.623112305, "error": null},
-    {"speaker": "lgpixel", "id": "dg-18", "raw": "Jaki jest zasięg on wapnia o energii dwustumów na nucleon w tkance tłuszczowej?", "secs": 0.673026978, "error": null},
-    {"speaker": "lgpixel", "id": "dg-19", "raw": "Jak głęboko wniknie ją tytanu o energii sześciu set m na nukleonu w wodzie?", "secs": 0.617366984, "error": null},
-    {"speaker": "lgpixel", "id": "dg-20", "raw": "Jaki jest zasięg CSDA jonu Żelaza o energii sześciu sent mf na nukleon w aluminium?", "secs": 0.658087281, "error": null},
-    {"speaker": "lgpixel", "id": "dg-21", "raw": "Jaki jest zasięg jonu miedzi o energii pięciu set mf na nukleon w Wołowiu?", "secs": 0.596723918, "error": null},
-    {"speaker": "lgpixel", "id": "dg-22", "raw": "Jak daleko doleci proton o energii jeden gigaelektronov w wodę?", "secs": 0.598418091, "error": null},
-    {"speaker": "lgpixel", "id": "dg-23", "raw": "Jaki jest zasięg protonów w wodzie dla energii stu Mew, stu pięćdziesięciu Mef i dwustum Mew?", "secs": 0.678168864, "error": null},
-    {"speaker": "lgpixel", "id": "dg-24", "raw": "Jaki jest zasięg joną węgla, w wodzie da energii 200 mf na nukleon, 300 m na nukleon i 400 m na nukleon.", "secs": 0.858275838, "error": null},
-    {"speaker": "lgpixel", "id": "dg-25", "raw": "Jaki jest zasięg cząstki alfa w powietrzu dla energii pięciu m, dziesięciu m i dwudziestu m?", "secs": 0.749734986, "error": null},
-    {"speaker": "lgpixel", "id": "dg-26", "raw": "Porównaj zasięg protonu o energii 150 mew w wodzie, PMMA i kości korowej.", "secs": 0.638444052, "error": null},
-    {"speaker": "lgpixel", "id": "dg-27", "raw": "Porównaj zasięg jonu tlenu o energii 300 m na nucleon w wod i aluminium.", "secs": 0.578995158, "error": null},
-    {"speaker": "lgpixel", "id": "dg-28", "raw": "Porównaj zasięg protonu, energii z tłumek w wodzie i tkance tłuszowej.", "secs": 0.570458659, "error": null},
-    {"speaker": "lgpixel", "id": "dg-29", "raw": "Co wniknie głębiej w wodzie przy dwustu mef na nucleon, jon węgla, czy jona neonu?", "secs": 0.601592529, "error": null},
-    {"speaker": "lgpixel", "id": "dg-30", "raw": "Cawniknie głębiej w wodzie przy sześćdziesięciu mew: proton czy deuteron.", "secs": 0.518072185, "error": null},
-    {"speaker": "lgpixel", "id": "dg-31", "raw": "Jaką energię musi mieć proton, żeby jego zasięg w wodzie wynosił dwadzieścia centimetrów?", "secs": 0.594576741, "error": null},
-    {"speaker": "lgpixel", "id": "dg-32", "raw": "Ile energii potrzebuje proton na zasięg piętnastu cymetrów w wodzie?", "secs": 0.611034343, "error": null},
-    {"speaker": "lgpixel", "id": "dg-33", "raw": "Jaką energię musi mieć proton, żeby jego zasięg w PMMA wynosił pięć cymetrów?", "secs": 0.623279785, "error": null},
-    {"speaker": "lgpixel", "id": "dg-34", "raw": "Ile energii potrzebuje jon węgla czternaście na zasięg dziesięciu centymetrów w wodzie?", "secs": 0.660584554, "error": null},
-    {"speaker": "lgpixel", "id": "dg-35", "raw": "Jaką energię musi mieć cząstka alfa, żeby jej zasięg w tkance mięśniowej wynosił 30 mm?", "secs": 0.699452026, "error": null},
-    {"speaker": "lgpixel", "id": "dg-36", "raw": "Ile energii potrzebuje ją żelaza na zasięg trzy centimetry w wodzie?", "secs": 0.579516846, "error": null},
-    {"speaker": "lgpixel", "id": "dg-37", "raw": "Jaką energię musi mieć ją tlenu, żeby jego zasięg w wodzie wynosił dwanaście cymetrów?", "secs": 0.634440552, "error": null},
-    {"speaker": "lgpixel", "id": "dg-38", "raw": "Ile energii potrzebuje proton na zasięg dziewięć centymetrów w kości korowej?", "secs": 0.608591634, "error": null},
-    {"speaker": "lgpixel", "id": "dg-39", "raw": "Jaką energię musi mieć on wapnie, żeby jego zasięg w Pmm a wynosił pięć centymetrów?", "secs": 0.674935181, "error": null},
-    {"speaker": "lgpixel", "id": "dg-40", "raw": "Jaką energię musi mieć proton, aby uzyskać zasięg dziesięciu centimetrów w wodzie i PMMA?", "secs": 0.636124675, "error": null},
-    {"speaker": "lgpixel", "id": "dg-41", "raw": "Jaką energię musi mieć proton, aby uzyskać zasięg piętnaście centimetrów w wodzie, kości korowej i tkance tłuszczowej?", "secs": 0.773493368, "error": null},
-    {"speaker": "lgpixel", "id": "dg-42", "raw": "Jaką energię potrzebuje proton na zasięg 15 cm w wodę, a jon węgla?", "secs": 0.702590495, "error": null},
-    {"speaker": "lgpixel", "id": "dg-43", "raw": "Jaki jest LET protonu o energii 100 mega elektronowoltów w wodzie?", "secs": 0.592626465, "error": null},
-    {"speaker": "lgpixel", "id": "dg-44", "raw": "Jaka jest zdolność hamowania jonu węgla o energii dwusto mega elektronowoltów na nucleon w wodzie?", "secs": 0.681147054, "error": null},
-    {"speaker": "lgpixel", "id": "dg-45", "raw": "Jaki jest LET protonu energii 10 metr w aluminium?", "secs": 0.426319214, "error": null},
-    {"speaker": "lgpixel", "id": "dg-46", "raw": "Jaki jest LET deuteronu o energii czterdziestu mew w powietrzu?", "secs": 0.555354208, "error": null},
-    {"speaker": "lgpixel", "id": "dg-47", "raw": "Jaki jest LET cząstki Alfa o energii pięciu m w krzemie?", "secs": 0.520419841, "error": null},
-    {"speaker": "lgpixel", "id": "dg-48", "raw": "Porównaj LE protonu energii sto pięćdziesięciu m w wodzie, Pym a i kości korowej.", "secs": 0.671326619, "error": null},
-    {"speaker": "lgpixel", "id": "dg-49", "raw": "Porównaj let protonów w wodzie przy pięćdziesięciu m, 100 m i 150 m", "secs": 0.692920859, "error": null},
-    {"speaker": "lgpixel", "id": "dg-50", "raw": "Porównaj let protonu i jonowęgla w wodzie przez stół mew.", "secs": 0.48781128, "error": null}
+    {
+      "speaker": "lgpixel",
+      "id": "dg-01",
+      "raw": "Jaki jest zasięg CSDA protonu energii sto pięćdziesięciu M w wodzie?",
+      "secs": 0.738193238,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-02",
+      "raw": "Jaki jest zasięg protonu energii stłum w w kości korowej?",
+      "secs": 0.527067546,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-03",
+      "raw": "Jak daleko doleci protoną energii dwustu pięćdziesięciu m w Pym a.",
+      "secs": 0.633225382,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-04",
+      "raw": "Jaki jest zasięg protonu energii pięciu setk kilo elektronovoltów w wodzie?",
+      "secs": 0.626684652,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-05",
+      "raw": "Jaki jest zasięg deuteronu energii sześćdziesięciu Mef w krzemie?",
+      "secs": 0.561509563,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-06",
+      "raw": "Jak głęboko wniknie trytonu energii czterdziestu m w Pm a.",
+      "secs": 0.583224284,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-07",
+      "raw": "Jak daleko doleci cząstka alfa w energii dwudziestu mef, w powietrzu?",
+      "secs": 0.587145427,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-08",
+      "raw": "Jak głęboko wniknie Janhew trzy o energii trzydziestu m w graficie.",
+      "secs": 0.652788982,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-09",
+      "raw": "Jaki jest zasięg jonulitu o energii pięćdziesięciu metr na nucleon w poli węglanie?",
+      "secs": 0.646617229,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-10",
+      "raw": "Jaki jest zasięgion uboru energii z tumew na nucleon w polietylenie?",
+      "secs": 0.569430013,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-11",
+      "raw": "Jaki jest zasięgiono węgla o energii 300 mega elektronowoltów na nucleon w wodzie?",
+      "secs": 0.702306641,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-12",
+      "raw": "Jak daleko doleci on azotu o energii 1 osiemdziesięć M na nucleon w kości korowej?",
+      "secs": 0.701146037,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-13",
+      "raw": "Jaki jest zasięg CSDA i o nucleanu energii dwusto pięćdziesięciu Mew na nucleon w PmA?",
+      "secs": 0.744194255,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-14",
+      "raw": "Jak głęboko wniknie Joney neonu energii czterystu m na nucleon w wodzie?",
+      "secs": 0.614474691,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-15",
+      "raw": "Jakie jest zasięgiono magnezu o energii 150 mef na nucleon w plastiku tkankopodobnym A150?",
+      "secs": 0.820130778,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-16",
+      "raw": "Jaki jest zasięg ją ukrzemu o energii trzy stu m na nucleon w dwutlenku krzemu?",
+      "secs": 0.641583862,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-17",
+      "raw": "Jak daleko doleci on argonu o energii trzy sto pięćdziesięciu M na nucleon w wodzie?",
+      "secs": 0.623112305,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-18",
+      "raw": "Jaki jest zasięg on wapnia o energii dwustumów na nucleon w tkance tłuszczowej?",
+      "secs": 0.673026978,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-19",
+      "raw": "Jak głęboko wniknie ją tytanu o energii sześciu set m na nukleonu w wodzie?",
+      "secs": 0.617366984,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-20",
+      "raw": "Jaki jest zasięg CSDA jonu Żelaza o energii sześciu sent mf na nukleon w aluminium?",
+      "secs": 0.658087281,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-21",
+      "raw": "Jaki jest zasięg jonu miedzi o energii pięciu set mf na nukleon w Wołowiu?",
+      "secs": 0.596723918,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-22",
+      "raw": "Jak daleko doleci proton o energii jeden gigaelektronov w wodę?",
+      "secs": 0.598418091,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-23",
+      "raw": "Jaki jest zasięg protonów w wodzie dla energii stu Mew, stu pięćdziesięciu Mef i dwustum Mew?",
+      "secs": 0.678168864,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-24",
+      "raw": "Jaki jest zasięg joną węgla, w wodzie da energii 200 mf na nukleon, 300 m na nukleon i 400 m na nukleon.",
+      "secs": 0.858275838,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-25",
+      "raw": "Jaki jest zasięg cząstki alfa w powietrzu dla energii pięciu m, dziesięciu m i dwudziestu m?",
+      "secs": 0.749734986,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-26",
+      "raw": "Porównaj zasięg protonu o energii 150 mew w wodzie, PMMA i kości korowej.",
+      "secs": 0.638444052,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-27",
+      "raw": "Porównaj zasięg jonu tlenu o energii 300 m na nucleon w wod i aluminium.",
+      "secs": 0.578995158,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-28",
+      "raw": "Porównaj zasięg protonu, energii z tłumek w wodzie i tkance tłuszowej.",
+      "secs": 0.570458659,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-29",
+      "raw": "Co wniknie głębiej w wodzie przy dwustu mef na nucleon, jon węgla, czy jona neonu?",
+      "secs": 0.601592529,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-30",
+      "raw": "Cawniknie głębiej w wodzie przy sześćdziesięciu mew: proton czy deuteron.",
+      "secs": 0.518072185,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-31",
+      "raw": "Jaką energię musi mieć proton, żeby jego zasięg w wodzie wynosił dwadzieścia centimetrów?",
+      "secs": 0.594576741,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-32",
+      "raw": "Ile energii potrzebuje proton na zasięg piętnastu cymetrów w wodzie?",
+      "secs": 0.611034343,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-33",
+      "raw": "Jaką energię musi mieć proton, żeby jego zasięg w PMMA wynosił pięć cymetrów?",
+      "secs": 0.623279785,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-34",
+      "raw": "Ile energii potrzebuje jon węgla czternaście na zasięg dziesięciu centymetrów w wodzie?",
+      "secs": 0.660584554,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-35",
+      "raw": "Jaką energię musi mieć cząstka alfa, żeby jej zasięg w tkance mięśniowej wynosił 30 mm?",
+      "secs": 0.699452026,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-36",
+      "raw": "Ile energii potrzebuje ją żelaza na zasięg trzy centimetry w wodzie?",
+      "secs": 0.579516846,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-37",
+      "raw": "Jaką energię musi mieć ją tlenu, żeby jego zasięg w wodzie wynosił dwanaście cymetrów?",
+      "secs": 0.634440552,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-38",
+      "raw": "Ile energii potrzebuje proton na zasięg dziewięć centymetrów w kości korowej?",
+      "secs": 0.608591634,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-39",
+      "raw": "Jaką energię musi mieć on wapnie, żeby jego zasięg w Pmm a wynosił pięć centymetrów?",
+      "secs": 0.674935181,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-40",
+      "raw": "Jaką energię musi mieć proton, aby uzyskać zasięg dziesięciu centimetrów w wodzie i PMMA?",
+      "secs": 0.636124675,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-41",
+      "raw": "Jaką energię musi mieć proton, aby uzyskać zasięg piętnaście centimetrów w wodzie, kości korowej i tkance tłuszczowej?",
+      "secs": 0.773493368,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-42",
+      "raw": "Jaką energię potrzebuje proton na zasięg 15 cm w wodę, a jon węgla?",
+      "secs": 0.702590495,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-43",
+      "raw": "Jaki jest LET protonu o energii 100 mega elektronowoltów w wodzie?",
+      "secs": 0.592626465,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-44",
+      "raw": "Jaka jest zdolność hamowania jonu węgla o energii dwusto mega elektronowoltów na nucleon w wodzie?",
+      "secs": 0.681147054,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-45",
+      "raw": "Jaki jest LET protonu energii 10 metr w aluminium?",
+      "secs": 0.426319214,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-46",
+      "raw": "Jaki jest LET deuteronu o energii czterdziestu mew w powietrzu?",
+      "secs": 0.555354208,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-47",
+      "raw": "Jaki jest LET cząstki Alfa o energii pięciu m w krzemie?",
+      "secs": 0.520419841,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-48",
+      "raw": "Porównaj LE protonu energii sto pięćdziesięciu m w wodzie, Pym a i kości korowej.",
+      "secs": 0.671326619,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-49",
+      "raw": "Porównaj let protonów w wodzie przy pięćdziesięciu m, 100 m i 150 m",
+      "secs": 0.692920859,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-50",
+      "raw": "Porównaj let protonu i jonowęgla w wodzie przez stół mew.",
+      "secs": 0.48781128,
+      "error": null
+    }
   ]
 }
