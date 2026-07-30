@@ -1,0 +1,2102 @@
+[
+  {
+    "id": "dg-01",
+    "lang": "en",
+    "display": "What is the see-ess-dee-ay range of a 150 MeV proton in water?",
+    "canonical": "What is the CSDA range of a 150 MeV proton in water?",
+    "wav": "dg-01-en.wav",
+    "parakeet": {
+      "raw": "What is the CSDA range of one hundred fifty MeV proton in the water?",
+      "secs": 0.712717367,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the CSDA range of 150 MeV proton in water?",
+      "secs": 2.447216025,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-01",
+    "lang": "pl",
+    "display": "Jaki jest zasięg CSDA protonu o energii 150 MeV w wodzie?",
+    "canonical": "Jaki jest zasięg CSDA protonu o energii 150 MeV w wodzie?",
+    "wav": "dg-01-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg CSDA protonu energii sto pięćdziesięciu M w wodzie?",
+      "secs": 0.738193238,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak jest zasięg Csda protonu energii 150 MeV w wodzie?",
+      "secs": 2.860928672,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-02",
+    "lang": "en",
+    "display": "What is the range of a 100 MeV proton in cortical bone?",
+    "canonical": "What is the range of a 100 MeV proton in cortical bone?",
+    "wav": "dg-02-en.wav",
+    "parakeet": {
+      "raw": "What is the range of 100 MeV proton in a cortical bone?",
+      "secs": 0.624914591,
+      "particle": true,
+      "material": true,
+      "energy": true
+    },
+    "whisper": {
+      "raw": "What is the range of 100 MeV proton in cortical bone?",
+      "secs": 2.412466147,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-02",
+    "lang": "pl",
+    "display": "Jaki jest zasięg protonu o energii 100 MeV w kości korowej?",
+    "canonical": "Jaki jest zasięg protonu o energii 100 MeV w kości korowej?",
+    "wav": "dg-02-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg protonu energii stłum w w kości korowej?",
+      "secs": 0.527067546,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest zasięg protonu energistu MEV w kości korowej?",
+      "secs": 2.78540674,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-03",
+    "lang": "en",
+    "display": "How far will a 250 MeV proton travel through PMMA?",
+    "canonical": "How far will a 250 MeV proton travel through PMMA?",
+    "wav": "dg-03-en.wav",
+    "parakeet": {
+      "raw": "How far will uh two hundred fifty MeV proton travel through PMMA?",
+      "secs": 0.680652303,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How far will 250 MeV Proton travel through PMMA?",
+      "secs": 2.280451498,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-03",
+    "lang": "pl",
+    "display": "Jak daleko doleci proton o energii 250 MeV w PMMA?",
+    "canonical": "Jak daleko doleci proton o energii 250 MeV w PMMA?",
+    "wav": "dg-03-pl.wav",
+    "parakeet": {
+      "raw": "Jak daleko doleci protoną energii dwustu pięćdziesięciu m w Pym a.",
+      "secs": 0.633225382,
+      "particle": false,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak daleko doleci proton a energii 250 mev w PMMA?",
+      "secs": 2.602329103,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-04",
+    "lang": "en",
+    "display": "What is the range of a 500 kiloelectronvolt proton in water?",
+    "canonical": "What is the range of a 500 keV proton in water?",
+    "wav": "dg-04-en.wav",
+    "parakeet": {
+      "raw": "What is the range of uh five hundred kilo electronovolt proton in water?",
+      "secs": 0.603190755,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of 500 kilo electron-a-volt proton in water?",
+      "secs": 2.497173504,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-04",
+    "lang": "pl",
+    "display": "Jaki jest zasięg protonu o energii 500 kiloelektronowoltów w wodzie?",
+    "canonical": "Jaki jest zasięg protonu o energii 500 keV w wodzie?",
+    "wav": "dg-04-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg protonu energii pięciu setk kilo elektronovoltów w wodzie?",
+      "secs": 0.626684652,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest zasięg protonu energii 500 kV w wodzie?",
+      "secs": 2.610354982,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-05",
+    "lang": "en",
+    "display": "What is the range of a 60 MeV deuteron in silicon?",
+    "canonical": "What is the range of a 60 MeV deuteron in silicon?",
+    "wav": "dg-05-en.wav",
+    "parakeet": {
+      "raw": "What is the range of a sixty MeV deuteron in silicon?",
+      "secs": 0.622924398,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of a 60 MeV dual-terron in silicon?",
+      "secs": 2.521064861,
+      "particle": false,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-05",
+    "lang": "pl",
+    "display": "Jaki jest zasięg deuteronu o energii 60 MeV w krzemie?",
+    "canonical": "Jaki jest zasięg deuteronu o energii 60 MeV w krzemie?",
+    "wav": "dg-05-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg deuteronu energii sześćdziesięciu Mef w krzemie?",
+      "secs": 0.561509563,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak jest zasięg deuteronu energii 60 MeF w krzemie?",
+      "secs": 2.732109987,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-06",
+    "lang": "en",
+    "display": "How deep does a 40 MeV triton penetrate into PMMA?",
+    "canonical": "How deep does a 40 MeV triton penetrate into PMMA?",
+    "wav": "dg-06-en.wav",
+    "parakeet": {
+      "raw": "How deep does a forty MeV treeton penetrate into PMMA?",
+      "secs": 0.753546021,
+      "particle": false,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How deep does a 40 MeV 3 ton penetrate into PMMA?",
+      "secs": 2.579391237,
+      "particle": false,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-06",
+    "lang": "pl",
+    "display": "Jak głęboko wniknie tryton o energii 40 MeV w PMMA?",
+    "canonical": "Jak głęboko wniknie tryton o energii 40 MeV w PMMA?",
+    "wav": "dg-06-pl.wav",
+    "parakeet": {
+      "raw": "Jak głęboko wniknie trytonu energii czterdziestu m w Pm a.",
+      "secs": 0.583224284,
+      "particle": true,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak głęboko wniknie 3 ton energii 40 mew w PMMA.",
+      "secs": 2.894460694,
+      "particle": false,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-07",
+    "lang": "en",
+    "display": "How far will a 20 MeV alpha particle travel through air?",
+    "canonical": "How far will a 20 MeV alpha particle travel through air?",
+    "wav": "dg-07-en.wav",
+    "parakeet": {
+      "raw": "How far will a twenty MeV alpha particle travel through air?",
+      "secs": 0.533991618,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How far will a 20 MeV alpha particle travel through air?",
+      "secs": 2.211154013,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-07",
+    "lang": "pl",
+    "display": "Jak daleko doleci cząstka alfa o energii 20 MeV w powietrzu?",
+    "canonical": "Jak daleko doleci cząstka alfa o energii 20 MeV w powietrzu?",
+    "wav": "dg-07-pl.wav",
+    "parakeet": {
+      "raw": "Jak daleko doleci cząstka alfa w energii dwudziestu mef, w powietrzu?",
+      "secs": 0.587145427,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak daleko doleci cząstka alfa energii 20 mew w powietrzu?",
+      "secs": 3.054073529,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-08",
+    "lang": "en",
+    "display": "How deep does a 30 MeV helium-3 ion penetrate into graphite?",
+    "canonical": "How deep does a 30 MeV helium-3 ion penetrate into graphite?",
+    "wav": "dg-08-en.wav",
+    "parakeet": {
+      "raw": "How deep does uh thirty MeV helium three ion penetrate into graphite?",
+      "secs": 0.836735433,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How deep does 30 MeV Helium-3 ion penetrate into graphite?",
+      "secs": 2.825491172,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-08",
+    "lang": "pl",
+    "display": "Jak głęboko wniknie jon helu-3 o energii 30 MeV w graficie?",
+    "canonical": "Jak głęboko wniknie jon helu-3 o energii 30 MeV w graficie?",
+    "wav": "dg-08-pl.wav",
+    "parakeet": {
+      "raw": "Jak głęboko wniknie Janhew trzy o energii trzydziestu m w graficie.",
+      "secs": 0.652788982,
+      "particle": false,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jakie głęboko wniknie jon hellu 3 o energii 30 umf w graficie.",
+      "secs": 3.105142946,
+      "particle": false,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-09",
+    "lang": "en",
+    "display": "What is the range of a 50 MeV per nucleon lithium ion in polycarbonate?",
+    "canonical": "What is the range of a 50 MeV per nucleon lithium ion in polycarbonate?",
+    "wav": "dg-09-en.wav",
+    "parakeet": {
+      "raw": "What is the range of a fifty MeV per nucleon lithium ion in polycarbonate?",
+      "secs": 0.708310099,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of a 50 MeV per nucleon lithium ion in polycarbonate?",
+      "secs": 2.787466472,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-09",
+    "lang": "pl",
+    "display": "Jaki jest zasięg jonu litu o energii 50 MeV na nukleon w poliwęglanie?",
+    "canonical": "Jaki jest zasięg jonu litu o energii 50 MeV na nukleon w poliwęglanie?",
+    "wav": "dg-09-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg jonulitu o energii pięćdziesięciu metr na nucleon w poli węglanie?",
+      "secs": 0.646617229,
+      "particle": false,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest zasięg jonu litu o energii 50-mefna nuklaonu w poli węglanie?",
+      "secs": 3.789721275,
+      "particle": true,
+      "material": false,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-10",
+    "lang": "en",
+    "display": "What is the range of a 100 MeV per nucleon boron ion in polyethylene?",
+    "canonical": "What is the range of a 100 MeV per nucleon boron ion in polyethylene?",
+    "wav": "dg-10-en.wav",
+    "parakeet": {
+      "raw": "What is the range of a one hundred MeV per nucleon bone ion in polyethylene?",
+      "secs": 0.659243938,
+      "particle": false,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of 100 MeV per nucleon boron ion in polyethylene?",
+      "secs": 2.771424766,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-10",
+    "lang": "pl",
+    "display": "Jaki jest zasięg jonu boru o energii 100 MeV na nukleon w polietylenie?",
+    "canonical": "Jaki jest zasięg jonu boru o energii 100 MeV na nukleon w polietylenie?",
+    "wav": "dg-10-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięgion uboru energii z tumew na nucleon w polietylenie?",
+      "secs": 0.569430013,
+      "particle": false,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak jest zasięgionu boru energii stumef 9-nucleon w polie Tylenie?",
+      "secs": 3.308387249,
+      "particle": true,
+      "material": false,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-11",
+    "lang": "en",
+    "display": "What is the range of a 300 megaelectronvolt per nucleon carbon ion in water?",
+    "canonical": "What is the range of a 300 MeV per nucleon carbon ion in water?",
+    "wav": "dg-11-en.wav",
+    "parakeet": {
+      "raw": "What is the range of a three hundred mega electron o volt per nucleon carbon ion in water?",
+      "secs": 0.680003052,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of a 300 mega electron volt per nucleon carbon ion in water?",
+      "secs": 2.707234946,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-11",
+    "lang": "pl",
+    "display": "Jaki jest zasięg jonu węgla o energii 300 megaelektronowoltów na nukleon w wodzie?",
+    "canonical": "Jaki jest zasięg jonu węgla o energii 300 MeV na nukleon w wodzie?",
+    "wav": "dg-11-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięgiono węgla o energii 300 mega elektronowoltów na nucleon w wodzie?",
+      "secs": 0.702306641,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak jest zasięgion węgla energii 300 mega elektronowoltów na nuklon w wodzie?",
+      "secs": 3.54120512,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-12",
+    "lang": "en",
+    "display": "How far will a 180 MeV per nucleon nitrogen ion travel through cortical bone?",
+    "canonical": "How far will a 180 MeV per nucleon nitrogen ion travel through cortical bone?",
+    "wav": "dg-12-en.wav",
+    "parakeet": {
+      "raw": "How far will a one hundred eighty MeV per nucleon nitrogen ion travel through cortical bone?",
+      "secs": 0.766259319,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How far with 180 MeV per nocturne nitrogen iron travel through cortical bone?",
+      "secs": 2.922578086,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-12",
+    "lang": "pl",
+    "display": "Jak daleko doleci jon azotu o energii 180 MeV na nukleon w kości korowej?",
+    "canonical": "Jak daleko doleci jon azotu o energii 180 MeV na nukleon w kości korowej?",
+    "wav": "dg-12-pl.wav",
+    "parakeet": {
+      "raw": "Jak daleko doleci on azotu o energii 1 osiemdziesięć M na nucleon w kości korowej?",
+      "secs": 0.701146037,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak daleko doleci jon azotu o energii 180-mf na nuklon w kości korowej?",
+      "secs": 3.55082886,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-13",
+    "lang": "en",
+    "display": "What is the see-ess-dee-ay range of a 250 MeV per nucleon oxygen ion in PMMA?",
+    "canonical": "What is the CSDA range of a 250 MeV per nucleon oxygen ion in PMMA?",
+    "wav": "dg-13-en.wav",
+    "parakeet": {
+      "raw": "What is the CSDA range of a two hundred fifty MeV per nucleon oxygen ion in PMMA.",
+      "secs": 0.864992269,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the CSDA range of 250 MeV per Nucleon Oxygen ion in PMMA?",
+      "secs": 3.262813438,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-13",
+    "lang": "pl",
+    "display": "Jaki jest zasięg CSDA jonu tlenu o energii 250 MeV na nukleon w PMMA?",
+    "canonical": "Jaki jest zasięg CSDA jonu tlenu o energii 250 MeV na nukleon w PMMA?",
+    "wav": "dg-13-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg CSDA i o nucleanu energii dwusto pięćdziesięciu Mew na nucleon w PmA?",
+      "secs": 0.744194255,
+      "particle": false,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest zasięg CSD A i o mu klenu energii 250 mef na nukron w PMMA?",
+      "secs": 3.695825645,
+      "particle": false,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-14",
+    "lang": "en",
+    "display": "How deep does a 400 MeV per nucleon neon ion penetrate into water?",
+    "canonical": "How deep does a 400 MeV per nucleon neon ion penetrate into water?",
+    "wav": "dg-14-en.wav",
+    "parakeet": {
+      "raw": "How deep does uh four hundred MeV per nucleon neon ion penetrate into water?",
+      "secs": 0.736164552,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How deep does a 400 MeV per nucleon neon ion penetrate into water?",
+      "secs": 2.61363729,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-14",
+    "lang": "pl",
+    "display": "Jak głęboko wniknie jon neonu o energii 400 MeV na nukleon w wodzie?",
+    "canonical": "Jak głęboko wniknie jon neonu o energii 400 MeV na nukleon w wodzie?",
+    "wav": "dg-14-pl.wav",
+    "parakeet": {
+      "raw": "Jak głęboko wniknie Joney neonu energii czterystu m na nucleon w wodzie?",
+      "secs": 0.614474691,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak głęboko wnikniejony neonu energii 400 mef na nukleon w wodzie.",
+      "secs": 3.320629681,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-15",
+    "lang": "en",
+    "display": "What is the range of a 150 MeV per nucleon magnesium ion in A-150 tissue-equivalent plastic?",
+    "canonical": "What is the range of a 150 MeV per nucleon magnesium ion in A-150 tissue-equivalent plastic?",
+    "wav": "dg-15-en.wav",
+    "parakeet": {
+      "raw": "What is the range of one hundred fifty MeV per nucleon magnesium ion in a one hundred fifty tissue equivalent plastic?",
+      "secs": 1.030234823,
+      "particle": true,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of 150 MeV per nucleon magnesium ion in a 150 tissue equivalent plastic?",
+      "secs": 3.265673708,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-15",
+    "lang": "pl",
+    "display": "Jaki jest zasięg jonu magnezu o energii 150 MeV na nukleon w plastiku tkankopodobnym A-150?",
+    "canonical": "Jaki jest zasięg jonu magnezu o energii 150 MeV na nukleon w plastiku tkankopodobnym A-150?",
+    "wav": "dg-15-pl.wav",
+    "parakeet": {
+      "raw": "Jakie jest zasięgiono magnezu o energii 150 mef na nucleon w plastiku tkankopodobnym A150?",
+      "secs": 0.820130778,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jakie jest zasięg jonu magnezu o energii 150 MF na nukleon w plastiku tkankopodobnym A150?",
+      "secs": 4.368649701,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-16",
+    "lang": "en",
+    "display": "What is the range of a 300 MeV per nucleon silicon ion in silicon dioxide?",
+    "canonical": "What is the range of a 300 MeV per nucleon silicon ion in silicon dioxide?",
+    "wav": "dg-16-en.wav",
+    "parakeet": {
+      "raw": "What is the range of uh three hundred MeV per nucleon silicon ion in silicon dioxide?",
+      "secs": 0.780276612,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of 300 MeV per nucleon silicone ion in silicone dioxide?",
+      "secs": 2.746807904,
+      "particle": false,
+      "material": false,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-16",
+    "lang": "pl",
+    "display": "Jaki jest zasięg jonu krzemu o energii 300 MeV na nukleon w dwutlenku krzemu?",
+    "canonical": "Jaki jest zasięg jonu krzemu o energii 300 MeV na nukleon w dwutlenku krzemu?",
+    "wav": "dg-16-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg ją ukrzemu o energii trzy stu m na nucleon w dwutlenku krzemu?",
+      "secs": 0.641583862,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest zasięgionu krzemu o energii 300 MeF na nuklon w dwutlenku krzemu?",
+      "secs": 3.673723268,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-17",
+    "lang": "en",
+    "display": "How far will a 350 MeV per nucleon argon ion travel through water?",
+    "canonical": "How far will a 350 MeV per nucleon argon ion travel through water?",
+    "wav": "dg-17-en.wav",
+    "parakeet": {
+      "raw": "How far will a three hundred fifty MeV per nucleon argon ion travel through water?",
+      "secs": 0.677193523,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How far will a 350mm per nucleon argan iron travel through water?",
+      "secs": 2.483717286,
+      "particle": false,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-17",
+    "lang": "pl",
+    "display": "Jak daleko doleci jon argonu o energii 350 MeV na nukleon w wodzie?",
+    "canonical": "Jak daleko doleci jon argonu o energii 350 MeV na nukleon w wodzie?",
+    "wav": "dg-17-pl.wav",
+    "parakeet": {
+      "raw": "Jak daleko doleci on argonu o energii trzy sto pięćdziesięciu M na nucleon w wodzie?",
+      "secs": 0.623112305,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak daleko doleci jon Argonu o energii 350 mef na nukleon w wodzie?",
+      "secs": 3.243307334,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-18",
+    "lang": "en",
+    "display": "What is the range of a 200 MeV per nucleon calcium ion in adipose tissue?",
+    "canonical": "What is the range of a 200 MeV per nucleon calcium ion in adipose tissue?",
+    "wav": "dg-18-en.wav",
+    "parakeet": {
+      "raw": "What is the range of a two hundred MeV per nucleon calcium ion in adipose tissue?",
+      "secs": 0.718202271,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of 200 MeV per nucleon calcium ion in a deposed tissue?",
+      "secs": 2.816085532,
+      "particle": true,
+      "material": false,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-18",
+    "lang": "pl",
+    "display": "Jaki jest zasięg jonu wapnia o energii 200 MeV na nukleon w tkance tłuszczowej?",
+    "canonical": "Jaki jest zasięg jonu wapnia o energii 200 MeV na nukleon w tkance tłuszczowej?",
+    "wav": "dg-18-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg on wapnia o energii dwustumów na nucleon w tkance tłuszczowej?",
+      "secs": 0.673026978,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest zasięg jonu wapnia o energii 200 mew na nukleon w tkancet uszczowej?",
+      "secs": 3.819989219,
+      "particle": true,
+      "material": false,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-19",
+    "lang": "en",
+    "display": "How deep does a 600 MeV per nucleon titanium ion penetrate into water?",
+    "canonical": "How deep does a 600 MeV per nucleon titanium ion penetrate into water?",
+    "wav": "dg-19-en.wav",
+    "parakeet": {
+      "raw": "How deep does a six hundred MeV per nucleon titanium ion penetrate into water?",
+      "secs": 0.665671427,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How deep does a 600 MeV per nucleon titanium ion penetrate into water?",
+      "secs": 2.538882041,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-19",
+    "lang": "pl",
+    "display": "Jak głęboko wniknie jon tytanu o energii 600 MeV na nukleon w wodzie?",
+    "canonical": "Jak głęboko wniknie jon tytanu o energii 600 MeV na nukleon w wodzie?",
+    "wav": "dg-19-pl.wav",
+    "parakeet": {
+      "raw": "Jak głęboko wniknie ją tytanu o energii sześciu set m na nukleonu w wodzie?",
+      "secs": 0.617366984,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak głęboko wniknie jąd tytanu energię 600 mef na nuklonu w wodzie.",
+      "secs": 3.348378338,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-20",
+    "lang": "en",
+    "display": "What is the see-ess-dee-ay range of a 600 MeV per nucleon iron ion in aluminum?",
+    "canonical": "What is the CSDA range of a 600 MeV per nucleon iron ion in aluminum?",
+    "wav": "dg-20-en.wav",
+    "parakeet": {
+      "raw": "What is the CSDA range of a six hundred MeV per nucleon iron ion in aluminium?",
+      "secs": 0.772122355,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the CSDA range of a 600 MeV per Nucleon Iron-Ion in Aluminum?",
+      "secs": 3.428810507,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-20",
+    "lang": "pl",
+    "display": "Jaki jest zasięg CSDA jonu żelaza o energii 600 MeV na nukleon w aluminium?",
+    "canonical": "Jaki jest zasięg CSDA jonu żelaza o energii 600 MeV na nukleon w aluminium?",
+    "wav": "dg-20-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg CSDA jonu Żelaza o energii sześciu sent mf na nukleon w aluminium?",
+      "secs": 0.658087281,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest zasięg CSDA i on żelaza o energii 607F na nukleon w aluminium?",
+      "secs": 3.485411379,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-21",
+    "lang": "en",
+    "display": "What is the range of a 500 MeV per nucleon copper ion in lead?",
+    "canonical": "What is the range of a 500 MeV per nucleon copper ion in lead?",
+    "wav": "dg-21-en.wav",
+    "parakeet": {
+      "raw": "What is the range of uh five hundred MeV per nucleon copper ion in LET?",
+      "secs": 0.68126705,
+      "particle": true,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of 500 MeV per Nucleon Copper Ion in lead?",
+      "secs": 2.767106406,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-21",
+    "lang": "pl",
+    "display": "Jaki jest zasięg jonu miedzi o energii 500 MeV na nukleon w ołowiu?",
+    "canonical": "Jaki jest zasięg jonu miedzi o energii 500 MeV na nukleon w ołowiu?",
+    "wav": "dg-21-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg jonu miedzi o energii pięciu set mf na nukleon w Wołowiu?",
+      "secs": 0.596723918,
+      "particle": true,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest zasięg jonu miedzi o energii 500 mev na nukleon wołowiu?",
+      "secs": 3.462684776,
+      "particle": true,
+      "material": false,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-22",
+    "lang": "en",
+    "display": "How far will a 1 gigaelectronvolt proton travel through water?",
+    "canonical": "How far will a 1 GeV proton travel through water?",
+    "wav": "dg-22-en.wav",
+    "parakeet": {
+      "raw": "How far will a one giga electron o volt proton travel through water?",
+      "secs": 0.559156291,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How far will 1 giga electron of volt proton travel through water?",
+      "secs": 2.254110189,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-22",
+    "lang": "pl",
+    "display": "Jak daleko doleci proton o energii 1 gigaelektronowolt w wodzie?",
+    "canonical": "Jak daleko doleci proton o energii 1 GeV w wodzie?",
+    "wav": "dg-22-pl.wav",
+    "parakeet": {
+      "raw": "Jak daleko doleci proton o energii jeden gigaelektronov w wodę?",
+      "secs": 0.598418091,
+      "particle": true,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak daleko doleci proton energii 1 GV w wodzie?",
+      "secs": 2.393750286,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-23",
+    "lang": "en",
+    "display": "What is the range of protons in water at 100 MeV, 150 MeV, and 200 MeV?",
+    "canonical": "What is the range of protons in water at 100 MeV, 150 MeV, and 200 MeV?",
+    "wav": "dg-23-en.wav",
+    "parakeet": {
+      "raw": "What is the range of protons in water at one hundred MeV, one hundred fifty MeV and two hundred MeV?",
+      "secs": 0.835276002,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of protons in water at 100 MeV, 150 MeV and 200 MeV?",
+      "secs": 3.246557823,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-23",
+    "lang": "pl",
+    "display": "Jaki jest zasięg protonu w wodzie dla energii 100 MeV, 150 MeV i 200 MeV?",
+    "canonical": "Jaki jest zasięg protonu w wodzie dla energii 100 MeV, 150 MeV i 200 MeV?",
+    "wav": "dg-23-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg protonów w wodzie dla energii stu Mew, stu pięćdziesięciu Mef i dwustum Mew?",
+      "secs": 0.678168864,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest zasięg protonu w wodzie dla energii 100 mew, 150 mew i 200 mew?",
+      "secs": 3.370819419,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-24",
+    "lang": "en",
+    "display": "What is the range of carbon ions in water at 200 MeV per nucleon, 300 MeV per nucleon, and 400 MeV per nucleon?",
+    "canonical": "What is the range of carbon ions in water at 200 MeV per nucleon, 300 MeV per nucleon, and 400 MeV per nucleon?",
+    "wav": "dg-24-en.wav",
+    "parakeet": {
+      "raw": "What is the range of carbon ions in water at two hundred MeV per nucleon, three hundred MeV per nucleon, and four hundred MeV per nucleon?",
+      "secs": 0.903743246,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of carbon ions in water at 200 MeV per nucleon, 300 MeV per nucleon and 400 MeV per nucleon?",
+      "secs": 4.209898032,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-24",
+    "lang": "pl",
+    "display": "Jaki jest zasięg jonu węgla w wodzie dla energii 200 MeV na nukleon, 300 MeV na nukleon i 400 MeV na nukleon?",
+    "canonical": "Jaki jest zasięg jonu węgla w wodzie dla energii 200 MeV na nukleon, 300 MeV na nukleon i 400 MeV na nukleon?",
+    "wav": "dg-24-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg joną węgla, w wodzie da energii 200 mf na nukleon, 300 m na nukleon i 400 m na nukleon.",
+      "secs": 0.858275838,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest zasięg jonu węgla w wodzie dla energii 200 MF na nukleon, 300 MF na nukleon i 400 MF na nukleon?",
+      "secs": 5.414664676,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-25",
+    "lang": "en",
+    "display": "What is the range of alpha particles in air at 5 MeV, 10 MeV, and 20 MeV?",
+    "canonical": "What is the range of alpha particles in air at 5 MeV, 10 MeV, and 20 MeV?",
+    "wav": "dg-25-en.wav",
+    "parakeet": {
+      "raw": "What is the range of alpha particles in air at five MeV, ten MeV and twenty MeV?",
+      "secs": 0.674498251,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the range of alpha particles in air at 5 MeV, 10 MeV and 20 MeV?",
+      "secs": 3.102219688,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-25",
+    "lang": "pl",
+    "display": "Jaki jest zasięg cząstki alfa w powietrzu dla energii 5 MeV, 10 MeV i 20 MeV?",
+    "canonical": "Jaki jest zasięg cząstki alfa w powietrzu dla energii 5 MeV, 10 MeV i 20 MeV?",
+    "wav": "dg-25-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest zasięg cząstki alfa w powietrzu dla energii pięciu m, dziesięciu m i dwudziestu m?",
+      "secs": 0.749734986,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak jest zasięg cząstki alfa w powietrzu dla energii 5 mew, 10 mew i 20 mew?",
+      "secs": 3.992949383,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-26",
+    "lang": "en",
+    "display": "Compare the range of a 150 MeV proton in water, PMMA, and cortical bone.",
+    "canonical": "Compare the range of a 150 MeV proton in water, PMMA, and cortical bone.",
+    "wav": "dg-26-en.wav",
+    "parakeet": {
+      "raw": "Compare the range of a 150 MeV proton in water, PMMA, and cortical bone.",
+      "secs": 0.747623251,
+      "particle": true,
+      "material": true,
+      "energy": true
+    },
+    "whisper": {
+      "raw": "Compare the range of 150 MEV proton in water, PMMA and cortical bone.",
+      "secs": 2.795333131,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-26",
+    "lang": "pl",
+    "display": "Porównaj zasięg protonu o energii 150 MeV w wodzie, PMMA i kości korowej.",
+    "canonical": "Porównaj zasięg protonu o energii 150 MeV w wodzie, PMMA i kości korowej.",
+    "wav": "dg-26-pl.wav",
+    "parakeet": {
+      "raw": "Porównaj zasięg protonu o energii 150 mew w wodzie, PMMA i kości korowej.",
+      "secs": 0.638444052,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Porównaj zasięg protonu o energistu 50-tume w wodzie PMMA i kości korowej.",
+      "secs": 3.468501182,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-27",
+    "lang": "en",
+    "display": "Compare the range of a 300 MeV per nucleon oxygen ion in water and aluminum.",
+    "canonical": "Compare the range of a 300 MeV per nucleon oxygen ion in water and aluminum.",
+    "wav": "dg-27-en.wav",
+    "parakeet": {
+      "raw": "Compare the range of three hundred MeV per nucleon oxygen ion in water and aluminum.",
+      "secs": 0.620298828,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Compare the range of 300 MeV per N oxygen ion in water and aluminum.",
+      "secs": 2.48056889,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-27",
+    "lang": "pl",
+    "display": "Porównaj zasięg jonu tlenu o energii 300 MeV na nukleon w wodzie i aluminium.",
+    "canonical": "Porównaj zasięg jonu tlenu o energii 300 MeV na nukleon w wodzie i aluminium.",
+    "wav": "dg-27-pl.wav",
+    "parakeet": {
+      "raw": "Porównaj zasięg jonu tlenu o energii 300 m na nucleon w wod i aluminium.",
+      "secs": 0.578995158,
+      "particle": true,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Porówna i zasiękionu tlenu energii 300 MF na nukleon w wodzie i aluminium.",
+      "secs": 3.493457196,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-28",
+    "lang": "en",
+    "display": "Compare the range of a 100 MeV proton in water and adipose tissue.",
+    "canonical": "Compare the range of a 100 MeV proton in water and adipose tissue.",
+    "wav": "dg-28-en.wav",
+    "parakeet": {
+      "raw": "Compare the range of a one hundred MeV proton in water and a depose tissue.",
+      "secs": 0.573408733,
+      "particle": true,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Compare the range of a 100 ml proton in water and a dipostissue.",
+      "secs": 2.458669394,
+      "particle": true,
+      "material": false,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-28",
+    "lang": "pl",
+    "display": "Porównaj zasięg protonu o energii 100 MeV w wodzie i tkance tłuszczowej.",
+    "canonical": "Porównaj zasięg protonu o energii 100 MeV w wodzie i tkance tłuszczowej.",
+    "wav": "dg-28-pl.wav",
+    "parakeet": {
+      "raw": "Porównaj zasięg protonu, energii z tłumek w wodzie i tkance tłuszowej.",
+      "secs": 0.570458659,
+      "particle": true,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Porównaj zasięg protonu energii stume w wodzie itkancetuszczowej.",
+      "secs": 2.964999106,
+      "particle": true,
+      "material": false,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-29",
+    "lang": "en",
+    "display": "Compare the range of a carbon ion and a neon ion in water, both at 200 MeV per nucleon.",
+    "canonical": "Compare the range of a carbon ion and a neon ion in water, both at 200 MeV per nucleon.",
+    "wav": "dg-29-en.wav",
+    "parakeet": {
+      "raw": "Compare the range of a carbon ion and a neon ion in water both at two hundred MeV per nucleon.",
+      "secs": 0.673871908,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Compare the range of a carbon ion and a neon ion in water both at 200 MeV per nucleon.",
+      "secs": 3.080248171,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-29",
+    "lang": "pl",
+    "display": "Co wniknie głębiej w wodzie przy 200 MeV na nukleon: jon węgla czy jon neonu?",
+    "canonical": "Co wniknie głębiej w wodzie przy 200 MeV na nukleon: jon węgla czy jon neonu?",
+    "wav": "dg-29-pl.wav",
+    "parakeet": {
+      "raw": "Co wniknie głębiej w wodzie przy dwustu mef na nucleon, jon węgla, czy jona neonu?",
+      "secs": 0.601592529,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Co wniknie głębiej w wodzie przy 200 mf na nukleon i on węgla czy on naonu?",
+      "secs": 3.856026043,
+      "particle": false,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-30",
+    "lang": "en",
+    "display": "Compare the range of a proton and a deuteron in water, both at 60 MeV.",
+    "canonical": "Compare the range of a proton and a deuteron in water, both at 60 MeV.",
+    "wav": "dg-30-en.wav",
+    "parakeet": {
+      "raw": "Compare the range of a proton and a deuterons in water both at sixty MeV.",
+      "secs": 0.573772054,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Compare the range of a proton and a deuterine in water both at 60 MeV.",
+      "secs": 2.699630047,
+      "particle": false,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-30",
+    "lang": "pl",
+    "display": "Co wniknie głębiej w wodzie przy 60 MeV: proton czy deuteron?",
+    "canonical": "Co wniknie głębiej w wodzie przy 60 MeV: proton czy deuteron?",
+    "wav": "dg-30-pl.wav",
+    "parakeet": {
+      "raw": "Cawniknie głębiej w wodzie przy sześćdziesięciu mew: proton czy deuteron.",
+      "secs": 0.518072185,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Cawnik nie głębi w wodzie przy 60 m, proton czy deuteron.",
+      "secs": 2.675974855,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-31",
+    "lang": "en",
+    "display": "What energy gives a 20 centimeter range in water for protons?",
+    "canonical": "What energy gives a 20 cm range in water for protons?",
+    "wav": "dg-31-en.wav",
+    "parakeet": {
+      "raw": "What energy gives a twenty centimeters range in water for protons.",
+      "secs": 0.54344515,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What energy gives a 20 centimeter range in water for protons?",
+      "secs": 2.032931316,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-31",
+    "lang": "pl",
+    "display": "Jaką energię musi mieć proton, żeby jego zasięg w wodzie wynosił 20 centymetrów?",
+    "canonical": "Jaką energię musi mieć proton, żeby jego zasięg w wodzie wynosił 20 cm?",
+    "wav": "dg-31-pl.wav",
+    "parakeet": {
+      "raw": "Jaką energię musi mieć proton, żeby jego zasięg w wodzie wynosił dwadzieścia centimetrów?",
+      "secs": 0.594576741,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaką energię musi mieć proton, żeby jego zasięg w wodzie wynosił 20 cm?",
+      "secs": 2.94203353,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-32",
+    "lang": "en",
+    "display": "How energetic must a proton be for a 15 centimeter range in water?",
+    "canonical": "How energetic must a proton be for a 15 cm range in water?",
+    "wav": "dg-32-en.wav",
+    "parakeet": {
+      "raw": "How energetic must a proton be for a fifteen centimeters range in water?",
+      "secs": 0.562223511,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How energetic must a proton be for a 15 centimeter range in water?",
+      "secs": 2.255688152,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-32",
+    "lang": "pl",
+    "display": "Ile energii potrzebuje proton na zasięg 15 centymetrów w wodzie?",
+    "canonical": "Ile energii potrzebuje proton na zasięg 15 cm w wodzie?",
+    "wav": "dg-32-pl.wav",
+    "parakeet": {
+      "raw": "Ile energii potrzebuje proton na zasięg piętnastu cymetrów w wodzie?",
+      "secs": 0.611034343,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Ile energii potrzebuję proton na zasięg 15 cm w wodzie?",
+      "secs": 2.668257895,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-33",
+    "lang": "en",
+    "display": "What energy gives a 5 centimeter range in PMMA for protons?",
+    "canonical": "What energy gives a 5 cm range in PMMA for protons?",
+    "wav": "dg-33-en.wav",
+    "parakeet": {
+      "raw": "What energy gives a five centimeters range in PMMA for protons.",
+      "secs": 0.58895988,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What energy gives a 5 centimeter range in PMMA for protons?",
+      "secs": 2.176248862,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-33",
+    "lang": "pl",
+    "display": "Jaką energię musi mieć proton, żeby jego zasięg w PMMA wynosił 5 centymetrów?",
+    "canonical": "Jaką energię musi mieć proton, żeby jego zasięg w PMMA wynosił 5 cm?",
+    "wav": "dg-33-pl.wav",
+    "parakeet": {
+      "raw": "Jaką energię musi mieć proton, żeby jego zasięg w PMMA wynosił pięć cymetrów?",
+      "secs": 0.623279785,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaką energię musi mieć proton, żeby jego zasięg w PMMA wynosił 5 centymetrów?",
+      "secs": 3.245205853,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-34",
+    "lang": "en",
+    "display": "How energetic must a carbon-14 ion be for a 10 centimeter range in water?",
+    "canonical": "How energetic must a carbon-14 ion be for a 10 cm range in water?",
+    "wav": "dg-34-en.wav",
+    "parakeet": {
+      "raw": "How energetic must a carbon fourteen ion be for a ten centimeters range in water?",
+      "secs": 0.728801107,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How energetic must a carbon-14 ion be for a 10 centimeter range in water?",
+      "secs": 2.639259198,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-34",
+    "lang": "pl",
+    "display": "Ile energii potrzebuje jon węgla-14 na zasięg 10 centymetrów w wodzie?",
+    "canonical": "Ile energii potrzebuje jon węgla-14 na zasięg 10 cm w wodzie?",
+    "wav": "dg-34-pl.wav",
+    "parakeet": {
+      "raw": "Ile energii potrzebuje jon węgla czternaście na zasięg dziesięciu centymetrów w wodzie?",
+      "secs": 0.660584554,
+      "particle": false,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Ida energii potrzebuje ją węgla 14 na zasięg 10 cm w wodzie.",
+      "secs": 3.091279095,
+      "particle": false,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-35",
+    "lang": "en",
+    "display": "What energy gives a 30 millimeter range in muscle tissue for alpha particles?",
+    "canonical": "What energy gives a 30 mm range in muscle tissue for alpha particles?",
+    "wav": "dg-35-en.wav",
+    "parakeet": {
+      "raw": "What energy gives a thirty millimeter range in muscle tissue for alpha particles.",
+      "secs": 0.70945988,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What energy gives a 30 mm range in muscle tissue for alpha particles?",
+      "secs": 2.350136191,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-35",
+    "lang": "pl",
+    "display": "Jaką energię musi mieć cząstka alfa, żeby jej zasięg w tkance mięśniowej wynosił 30 milimetrów?",
+    "canonical": "Jaką energię musi mieć cząstka alfa, żeby jej zasięg w tkance mięśniowej wynosił 30 mm?",
+    "wav": "dg-35-pl.wav",
+    "parakeet": {
+      "raw": "Jaką energię musi mieć cząstka alfa, żeby jej zasięg w tkance mięśniowej wynosił 30 mm?",
+      "secs": 0.699452026,
+      "particle": true,
+      "material": true,
+      "energy": true
+    },
+    "whisper": {
+      "raw": "Jaką energię musi mieć cząstka alfa, żeby jej zasięg w kance mięśniowej wynosił 30 mm?",
+      "secs": 4.082436566,
+      "particle": true,
+      "material": false,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-36",
+    "lang": "en",
+    "display": "How energetic must an iron ion be for a 3 centimeter range in water?",
+    "canonical": "How energetic must an iron ion be for a 3 cm range in water?",
+    "wav": "dg-36-en.wav",
+    "parakeet": {
+      "raw": "How energetic must an iron ion be for a three centimeters range in water.",
+      "secs": 0.619870647,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How energetic must an iron be for a 3 centimeter range in water?",
+      "secs": 2.331189332,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-36",
+    "lang": "pl",
+    "display": "Ile energii potrzebuje jon żelaza na zasięg 3 centymetry w wodzie?",
+    "canonical": "Ile energii potrzebuje jon żelaza na zasięg 3 cm w wodzie?",
+    "wav": "dg-36-pl.wav",
+    "parakeet": {
+      "raw": "Ile energii potrzebuje ją żelaza na zasięg trzy centimetry w wodzie?",
+      "secs": 0.579516846,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Ida energii potrzebuje ją żelaza na zasięg 3 cm w wodzie.",
+      "secs": 2.84919039,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-37",
+    "lang": "en",
+    "display": "What energy gives a 12 centimeter range in water for oxygen ions?",
+    "canonical": "What energy gives a 12 cm range in water for oxygen ions?",
+    "wav": "dg-37-en.wav",
+    "parakeet": {
+      "raw": "What energy gives a twelve centimeters range in water for oxygen ions.",
+      "secs": 0.592974407,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What energy gives 12 centimeter range in water for oxygen ions?",
+      "secs": 2.121600262,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-37",
+    "lang": "pl",
+    "display": "Jaką energię musi mieć jon tlenu, żeby jego zasięg w wodzie wynosił 12 centymetrów?",
+    "canonical": "Jaką energię musi mieć jon tlenu, żeby jego zasięg w wodzie wynosił 12 cm?",
+    "wav": "dg-37-pl.wav",
+    "parakeet": {
+      "raw": "Jaką energię musi mieć ją tlenu, żeby jego zasięg w wodzie wynosił dwanaście cymetrów?",
+      "secs": 0.634440552,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaką energię musi mieć on tlenu, żeby jego zasięg w wodzie wynosił 12 cm?",
+      "secs": 3.292672324,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-38",
+    "lang": "en",
+    "display": "How energetic must a proton be for a 9 centimeter range in cortical bone?",
+    "canonical": "How energetic must a proton be for a 9 cm range in cortical bone?",
+    "wav": "dg-38-en.wav",
+    "parakeet": {
+      "raw": "How energetic must a proton be for a nine centimeters range in cortical bone?",
+      "secs": 0.651072714,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "How energetic must a proton be for a 9 centimeter range in cortical bone?",
+      "secs": 2.562425741,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-38",
+    "lang": "pl",
+    "display": "Ile energii potrzebuje proton na zasięg 9 centymetrów w kości korowej?",
+    "canonical": "Ile energii potrzebuje proton na zasięg 9 cm w kości korowej?",
+    "wav": "dg-38-pl.wav",
+    "parakeet": {
+      "raw": "Ile energii potrzebuje proton na zasięg dziewięć centymetrów w kości korowej?",
+      "secs": 0.608591634,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Ile energii potrzebuje proton na zasięg 9 cm w kości korowej?",
+      "secs": 2.845394126,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-39",
+    "lang": "en",
+    "display": "What energy gives a 5 centimeter range in PMMA for calcium ions?",
+    "canonical": "What energy gives a 5 cm range in PMMA for calcium ions?",
+    "wav": "dg-39-en.wav",
+    "parakeet": {
+      "raw": "What energy gives a five centimeters range in PMMA for calcium ions.",
+      "secs": 0.589256063,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What energy gives a 5 centimeter range in PMMA for calcium ions?",
+      "secs": 2.247022299,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-39",
+    "lang": "pl",
+    "display": "Jaką energię musi mieć jon wapnia, żeby jego zasięg w PMMA wynosił 5 centymetrów?",
+    "canonical": "Jaką energię musi mieć jon wapnia, żeby jego zasięg w PMMA wynosił 5 cm?",
+    "wav": "dg-39-pl.wav",
+    "parakeet": {
+      "raw": "Jaką energię musi mieć on wapnie, żeby jego zasięg w Pmm a wynosił pięć centymetrów?",
+      "secs": 0.674935181,
+      "particle": false,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaką energię musi mieć on wapnie, żeby jego zasięg w PMMA wynosił 5 centymetrów?",
+      "secs": 3.472113893,
+      "particle": false,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-40",
+    "lang": "en",
+    "display": "What energy do protons need for a 10 centimeter range in water and PMMA?",
+    "canonical": "What energy do protons need for a 10 cm range in water and PMMA?",
+    "wav": "dg-40-en.wav",
+    "parakeet": {
+      "raw": "What energy do protons need for a ten centimeters range in water and PMMA?",
+      "secs": 0.614878744,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What energy do protons need for a 10 centimeter range in water and PMMA?",
+      "secs": 2.451282716,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-40",
+    "lang": "pl",
+    "display": "Jaką energię musi mieć proton, aby uzyskać zasięg 10 centymetrów w wodzie i PMMA?",
+    "canonical": "Jaką energię musi mieć proton, aby uzyskać zasięg 10 cm w wodzie i PMMA?",
+    "wav": "dg-40-pl.wav",
+    "parakeet": {
+      "raw": "Jaką energię musi mieć proton, aby uzyskać zasięg dziesięciu centimetrów w wodzie i PMMA?",
+      "secs": 0.636124675,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaką energię musi mieć proton aby uzyskać zasięg 10 cm w wodzie IPMMA?",
+      "secs": 3.106646079,
+      "particle": true,
+      "material": false,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-41",
+    "lang": "en",
+    "display": "What energy do protons need for a 15 centimeter range in water, cortical bone, and adipose tissue?",
+    "canonical": "What energy do protons need for a 15 cm range in water, cortical bone, and adipose tissue?",
+    "wav": "dg-41-en.wav",
+    "parakeet": {
+      "raw": "What energy do protons need for a fifteen centimeters range in water, cortical bone, and adipose tissue?",
+      "secs": 0.795219239,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What energy do protons need for a 15 centimeter range in water, cortical bone and adipose tissue?",
+      "secs": 3.176964031,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-41",
+    "lang": "pl",
+    "display": "Jaką energię musi mieć proton, aby uzyskać zasięg 15 centymetrów w wodzie, kości korowej i tkance tłuszczowej?",
+    "canonical": "Jaką energię musi mieć proton, aby uzyskać zasięg 15 cm w wodzie, kości korowej i tkance tłuszczowej?",
+    "wav": "dg-41-pl.wav",
+    "parakeet": {
+      "raw": "Jaką energię musi mieć proton, aby uzyskać zasięg piętnaście centimetrów w wodzie, kości korowej i tkance tłuszczowej?",
+      "secs": 0.773493368,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaką energię musi mieć proton aby uzyskać zasięg 15 cm w wodzie kości korowej i tkance tłuszczowej?",
+      "secs": 4.204106203,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-42",
+    "lang": "en",
+    "display": "What energy do protons need for a 15 centimeter range in water? What about carbon ions?",
+    "canonical": "What energy do protons need for a 15 cm range in water? What about carbon ions?",
+    "wav": "dg-42-en.wav",
+    "parakeet": {
+      "raw": "What energy do protons need for a fifteen centimeters range in water? What about carbon ions?",
+      "secs": 0.70830538,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What energy do protons need for a 15 centimeter range in water? What about carbon ions?",
+      "secs": 2.673673097,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-42",
+    "lang": "pl",
+    "display": "Jaką energię potrzebuje proton na zasięg 15 centymetrów w wodzie? A jon węgla?",
+    "canonical": "Jaką energię potrzebuje proton na zasięg 15 cm w wodzie? A jon węgla?",
+    "wav": "dg-42-pl.wav",
+    "parakeet": {
+      "raw": "Jaką energię potrzebuje proton na zasięg 15 cm w wodę, a jon węgla?",
+      "secs": 0.702590495,
+      "particle": true,
+      "material": false,
+      "energy": true
+    },
+    "whisper": {
+      "raw": "Jaką energię potrzebuje proton ma zasięg 15 cm w wodzie, ion węgla?",
+      "secs": 3.123807455,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-43",
+    "lang": "en",
+    "display": "What is the el-ee-tee of a 100 megaelectronvolt proton in water?",
+    "canonical": "What is the LET of a 100 MeV proton in water?",
+    "wav": "dg-43-en.wav",
+    "parakeet": {
+      "raw": "What is the LET of a one hundred mega electronovolt proton in water?",
+      "secs": 0.685069703,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the LET of a 100 mega electron-volt proton in water?",
+      "secs": 2.466660971,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-43",
+    "lang": "pl",
+    "display": "Jaki jest LET protonu o energii 100 megaelektronowoltów w wodzie?",
+    "canonical": "Jaki jest LET protonu o energii 100 MeV w wodzie?",
+    "wav": "dg-43-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest LET protonu o energii 100 mega elektronowoltów w wodzie?",
+      "secs": 0.592626465,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest let protonu o energii 100 Mv w wodzie?",
+      "secs": 2.349067588,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-44",
+    "lang": "en",
+    "display": "What is the stopping power of a 200 megaelectronvolt per nucleon carbon ion in water?",
+    "canonical": "What is the stopping power of a 200 MeV per nucleon carbon ion in water?",
+    "wav": "dg-44-en.wav",
+    "parakeet": {
+      "raw": "What is the stopping power of a two hundred mega elektronovolt per nucleon carbon ion in water?",
+      "secs": 0.669741048,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the stopping power of a 200 megaelectron volt per nucleon carbon ion in water?",
+      "secs": 2.78515141,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-44",
+    "lang": "pl",
+    "display": "Jaka jest zdolność hamowania jonu węgla o energii 200 megaelektronowoltów na nukleon w wodzie?",
+    "canonical": "Jaka jest zdolność hamowania jonu węgla o energii 200 MeV na nukleon w wodzie?",
+    "wav": "dg-44-pl.wav",
+    "parakeet": {
+      "raw": "Jaka jest zdolność hamowania jonu węgla o energii dwusto mega elektronowoltów na nucleon w wodzie?",
+      "secs": 0.681147054,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaka jest stolność hamowania ją węgla o energii 200 mega elektronowoltów na nukrown w wodzie?",
+      "secs": 3.950439618,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-45",
+    "lang": "en",
+    "display": "What is the el-ee-tee of a 10 MeV proton in aluminum?",
+    "canonical": "What is the LET of a 10 MeV proton in aluminum?",
+    "wav": "dg-45-en.wav",
+    "parakeet": {
+      "raw": "What is the LET of a 10 MeV proton in aluminium?",
+      "secs": 0.501399008,
+      "particle": true,
+      "material": true,
+      "energy": true
+    },
+    "whisper": {
+      "raw": "What is the LED of 10 MeV proton in aluminum?",
+      "secs": 1.968953329,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-45",
+    "lang": "pl",
+    "display": "Jaki jest LET protonu o energii 10 MeV w aluminium?",
+    "canonical": "Jaki jest LET protonu o energii 10 MeV w aluminium?",
+    "wav": "dg-45-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest LET protonu energii 10 metr w aluminium?",
+      "secs": 0.426319214,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak jest led protonu energii 10 MeF w aluminium?",
+      "secs": 1.983734661,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-46",
+    "lang": "en",
+    "display": "What is the el-ee-tee of a 40 MeV deuteron in air?",
+    "canonical": "What is the LET of a 40 MeV deuteron in air?",
+    "wav": "dg-46-en.wav",
+    "parakeet": {
+      "raw": "What is the LET of a 40 MeV deuteron in air?",
+      "secs": 0.552015056,
+      "particle": true,
+      "material": true,
+      "energy": true
+    },
+    "whisper": {
+      "raw": "What is the LET of a 40 MeV dewateron in air?",
+      "secs": 2.35142444,
+      "particle": false,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-46",
+    "lang": "pl",
+    "display": "Jaki jest LET deuteronu o energii 40 MeV w powietrzu?",
+    "canonical": "Jaki jest LET deuteronu o energii 40 MeV w powietrzu?",
+    "wav": "dg-46-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest LET deuteronu o energii czterdziestu mew w powietrzu?",
+      "secs": 0.555354208,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jak jest let deuteronu o energii 40 MF w powietrzu?",
+      "secs": 2.549552288,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-47",
+    "lang": "en",
+    "display": "What is the el-ee-tee of a 5 MeV alpha particle in silicon?",
+    "canonical": "What is the LET of a 5 MeV alpha particle in silicon?",
+    "wav": "dg-47-en.wav",
+    "parakeet": {
+      "raw": "What is the LET of a 5 MeV alpha particle in silicon?",
+      "secs": 0.553397746,
+      "particle": true,
+      "material": true,
+      "energy": true
+    },
+    "whisper": {
+      "raw": "What is the eddy of a 5 MeV alpha particle in silicon?",
+      "secs": 2.229977337,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-47",
+    "lang": "pl",
+    "display": "Jaki jest LET cząstki alfa o energii 5 MeV w krzemie?",
+    "canonical": "Jaki jest LET cząstki alfa o energii 5 MeV w krzemie?",
+    "wav": "dg-47-pl.wav",
+    "parakeet": {
+      "raw": "Jaki jest LET cząstki Alfa o energii pięciu m w krzemie?",
+      "secs": 0.520419841,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Jaki jest let cząstki alfa o energii 5 mef w krzemie?",
+      "secs": 2.675259197,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-48",
+    "lang": "en",
+    "display": "Compare the el-ee-tee of a 150 MeV proton in water, PMMA, and cortical bone.",
+    "canonical": "Compare the LET of a 150 MeV proton in water, PMMA, and cortical bone.",
+    "wav": "dg-48-en.wav",
+    "parakeet": {
+      "raw": "Compare the LET of a one hundred fifty MeV proton in water, PMMA and cortical bone.",
+      "secs": 0.666816732,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Compare the Edity of a 150 MeV Proton in water, PMMA and cortical bone.",
+      "secs": 2.880126874,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-48",
+    "lang": "pl",
+    "display": "Porównaj LET protonu o energii 150 MeV w wodzie, PMMA i kości korowej.",
+    "canonical": "Porównaj LET protonu o energii 150 MeV w wodzie, PMMA i kości korowej.",
+    "wav": "dg-48-pl.wav",
+    "parakeet": {
+      "raw": "Porównaj LE protonu energii sto pięćdziesięciu m w wodzie, Pym a i kości korowej.",
+      "secs": 0.671326619,
+      "particle": true,
+      "material": false,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Porównaj let protonu energii 150 mW w wodzie PMMA i kości korowej.",
+      "secs": 3.12978414,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-49",
+    "lang": "en",
+    "display": "What is the el-ee-tee of protons in water at 50 MeV, 100 MeV, and 150 MeV?",
+    "canonical": "What is the LET of protons in water at 50 MeV, 100 MeV, and 150 MeV?",
+    "wav": "dg-49-en.wav",
+    "parakeet": {
+      "raw": "What is the LET of protons in water at fifty MeV, one hundred MeV and one hundred fifty MeV?",
+      "secs": 0.770886272,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "What is the LET of protons in water at 50 MeV, 100 MeV and 150 MeV?",
+      "secs": 3.131948122,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-49",
+    "lang": "pl",
+    "display": "Porównaj LET protonu w wodzie przy 50 MeV, 100 MeV i 150 MeV.",
+    "canonical": "Porównaj LET protonu w wodzie przy 50 MeV, 100 MeV i 150 MeV.",
+    "wav": "dg-49-pl.wav",
+    "parakeet": {
+      "raw": "Porównaj let protonów w wodzie przy pięćdziesięciu m, 100 m i 150 m",
+      "secs": 0.692920859,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Porównaj let protonu w wodzie przy 50 MF, 100 MF i 150 MF.",
+      "secs": 3.064521567,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  },
+  {
+    "id": "dg-50",
+    "lang": "en",
+    "display": "Compare the el-ee-tee of a proton and a carbon ion in water, both at 100 MeV.",
+    "canonical": "Compare the LET of a proton and a carbon ion in water, both at 100 MeV.",
+    "wav": "dg-50-en.wav",
+    "parakeet": {
+      "raw": "Compare the LET of a proton and a carbon ion in water, both at one hundred MeV.",
+      "secs": 0.685937663,
+      "particle": true,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Compare the LED of the proton and a carbon ion in water both at 100 MeV.",
+      "secs": 2.69949341,
+      "particle": true,
+      "material": true,
+      "energy": true
+    }
+  },
+  {
+    "id": "dg-50",
+    "lang": "pl",
+    "display": "Porównaj LET protonu i jonu węgla w wodzie przy 100 MeV.",
+    "canonical": "Porównaj LET protonu i jonu węgla w wodzie przy 100 MeV.",
+    "wav": "dg-50-pl.wav",
+    "parakeet": {
+      "raw": "Porównaj let protonu i jonowęgla w wodzie przez stół mew.",
+      "secs": 0.48781128,
+      "particle": false,
+      "material": true,
+      "energy": false
+    },
+    "whisper": {
+      "raw": "Porównaj led protonu ionu węgla w wodzie przez tu mew.",
+      "secs": 2.771132651,
+      "particle": true,
+      "material": true,
+      "energy": false
+    }
+  }
+]
