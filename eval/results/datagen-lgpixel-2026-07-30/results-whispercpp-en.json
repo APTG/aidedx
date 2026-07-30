@@ -1,0 +1,360 @@
+{
+  "modelId": "whisper.cpp-ggml-small-q8_0",
+  "dtype": "device",
+  "withPrompt": false,
+  "promptVariant": "none",
+  "numThreads": 4,
+  "loadS": 4.331118451,
+  "records": [
+    {
+      "speaker": "lgpixel",
+      "id": "dg-01",
+      "raw": "What is the CSDA range of 150 MeV proton in water?",
+      "secs": 21.835080821,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-02",
+      "raw": "What is the range of 100 MeV proton in cortical bone?",
+      "secs": 25.056163668,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-03",
+      "raw": "How far will 250 MeV Proton travel through PMMA?",
+      "secs": 21.732391286,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-04",
+      "raw": "What is the range of 500 kilo electron-a-word proton in water?",
+      "secs": 22.029014944,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-05",
+      "raw": "What is the range of a 60mm deuteron in silicon?",
+      "secs": 19.160202768,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-06",
+      "raw": "How deep does a 40 MeV 3 ton penetrate into PMMA?",
+      "secs": 20.859630015,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-07",
+      "raw": "How far will a 20 MeV alpha particle travel through air?",
+      "secs": 21.903307912,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-08",
+      "raw": "How deep does 30 MeV Helium 3 ion penetrate into graphite?",
+      "secs": 21.151457734,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-09",
+      "raw": "What is the range of a 50 MeV per nucleon lithium ion in polycarbonate?",
+      "secs": 21.438490489,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-10",
+      "raw": "What is the range of 100 MeV per nucleon boron ion in polyethylene?",
+      "secs": 21.901258474,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-11",
+      "raw": "What is the range of a 300 mega electron volt per nucleon carbon ion in water?",
+      "secs": 24.705919446,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-12",
+      "raw": "How far with 180 MeV per nocturne nitrogen ion travel through cortical bone?",
+      "secs": 20.07581666,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-13",
+      "raw": "What is the CSDA range of 250 MEV per nucleon oxygen ion in PMMA?",
+      "secs": 22.906906994,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-14",
+      "raw": "How deep does a 400 MeV per nucleon neon ion penetrate into water?",
+      "secs": 34.113641456,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-15",
+      "raw": "What is the range of 150 MeV per nucleon magnesium ion in A150 tissue equivalent plastic?",
+      "secs": 21.636880341,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-16",
+      "raw": "What is the range of 300 MeV per nucleon silicone ion in silicone dioxide?",
+      "secs": 20.938522553,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-17",
+      "raw": "How far will a 350mm per Nucleon Argon iron travel through water?",
+      "secs": 10.955700892,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-18",
+      "raw": "What is the range of 200 MeV per nucleon calcium ion in adipose tissue?",
+      "secs": 2.674503501,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-19",
+      "raw": "How deep does a 600 ml per nucleon titanium ion penetrate into water?",
+      "secs": 2.691079184,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-20",
+      "raw": "What is the CSDA range of a 600 MeV per Nucleon iron ion in aluminum?",
+      "secs": 2.776771811,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-21",
+      "raw": "What is the range of 500 MeV per nucleon copper ion in lead?",
+      "secs": 2.719978476,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-22",
+      "raw": "How far will 1 giga electron volt proton travel through water?",
+      "secs": 2.698874106,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-23",
+      "raw": "What is the range of protons in water at 100 MeV, 150 MeV and 200 MeV?",
+      "secs": 2.844207195,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-24",
+      "raw": "What is the range of carbon ions in water at 200 MeV per nucleon, 300 MeV per nucleon and 400 MeV per nucleon?",
+      "secs": 3.285978355,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-25",
+      "raw": "What is the range of alpha particles in air at 5 MeV, 10 MeV and 20 MeV?",
+      "secs": 3.072742555,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-26",
+      "raw": "Compared the range of 150 MeV proton in water, PMMA and cortical bone.",
+      "secs": 3.021349489,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-27",
+      "raw": "Compare the range of 300 MeV per nucleon oxygen ion in water and aluminum.",
+      "secs": 3.129575034,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-28",
+      "raw": "Compare the range of a 100 ml proton in water and a dipost tissue.",
+      "secs": 3.166024375,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-29",
+      "raw": "Compare the range of a carbon ion and a neon ion in water both at 200 MeV per nucleon.",
+      "secs": 3.313584759,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-30",
+      "raw": "Compare the range of a proton and a deuterine in water both at 60 MeV.",
+      "secs": 3.196075115,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-31",
+      "raw": "What energy gives a 20 centimeter range in water for protons?",
+      "secs": 3.278989178,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-32",
+      "raw": "How energetic must a proton be for a 15 centimeter range in water?",
+      "secs": 18.869234588,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-33",
+      "raw": "What energy gives a 5 centimeter range in PMMA for protons?",
+      "secs": 2.376191326,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-34",
+      "raw": "How energetic must a carbon-14 ion be for a 10 centimeter range in water?",
+      "secs": 2.563413942,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-35",
+      "raw": "What energy gives a 30 millimeter range in muscle tissue for alpha particles?",
+      "secs": 2.593172201,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-36",
+      "raw": "How energetic must an iron be for a 3 centimeter range in water?",
+      "secs": 2.653760987,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-37",
+      "raw": "What energy gives 12 centimeter range in water for oxygen ions?",
+      "secs": 2.625518922,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-38",
+      "raw": "How energetic must a proton be for a 9 centimeter range in cortical bone?",
+      "secs": 2.67025875,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-39",
+      "raw": "What energy gives a 5 centimeter range in PMMA for calcium ions?",
+      "secs": 2.672759116,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-40",
+      "raw": "What energy do protons need for a 10 centimeter range in water and PMMA?",
+      "secs": 3.062916831,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-41",
+      "raw": "What energy do protons need for a 15 centimeter range in water, cortical bone and adipose tissue?",
+      "secs": 3.074513999,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-42",
+      "raw": "What energy do protons need for a 15 centimeter range in water? What about carbon ions?",
+      "secs": 3.042394939,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-43",
+      "raw": "What is the LED of a 100 mega electron volt proton in water?",
+      "secs": 3.069018719,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-44",
+      "raw": "What is the stopping power of a 200 mega electron volt per nucleon carbon ion in water?",
+      "secs": 3.271694867,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-45",
+      "raw": "What is the edity of 10 ml proton in aluminum?",
+      "secs": 3.196157716,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-46",
+      "raw": "What is the LET of a 40 MeV Deuterron in air?",
+      "secs": 3.19814437,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-47",
+      "raw": "What is the edity of a 5 MeV alpha particle in silicon?",
+      "secs": 3.437691408,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-48",
+      "raw": "Compare the LEDT of a 150mm proton in water, PMMA and cortical bone.",
+      "secs": 3.710918459,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-49",
+      "raw": "What is the LET of protons in water at 50 MeV, 100 MeV and 150 MeV?",
+      "secs": 3.654418174,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-50",
+      "raw": "Compare the LED of the proton and a carbon ion in water both at 100 MeV.",
+      "secs": 3.546269329,
+      "error": null
+    }
+  ]
+}

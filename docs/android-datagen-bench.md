@@ -1,11 +1,12 @@
 # Android benchmark data generator (issue #130)
 
-Status: **Parts 1–3 done.** **Part 4 (findings) is mostly done** — a real 100-prompt (50×EN+PL)
-session (speaker `lgpixel`, #149) has been recorded, imported, and scored across three ASR
-pipelines (on-device Parakeet-v3, on-device Whisper-small, desktop Whisper-small+prompt); see
-"Part 4 — Results" below. **whisper.cpp on-device is the one leg not yet run** — the phone went
-unreachable over wifi adb mid-session; re-run once it's reachable again (steps in "Part 4 —
-Results" §4.4).
+Status: **Parts 1–4 done.** A real 100-prompt (50×EN+PL) session (speaker `lgpixel`, #149) has
+been recorded, imported, and scored across all four ASR pipelines this project tracks: on-device
+Parakeet-v3, on-device Whisper-small (sherpa-onnx), desktop Whisper-small+prompt, and on-device
+whisper.cpp — see "Part 4 — Results" below. The whisper.cpp leg surfaced and fixed a real bug in
+the bench harness itself (§4.4a): the JNI bridge hardcoded English decoding regardless of the
+clip's actual language, silently mangling every Polish clip into English-shaped text instead of a
+real transcript.
 
 ## Verified on real hardware (2026-07-29, Pixel 7a)
 
@@ -145,23 +146,26 @@ needed.
 
 Audio→intent slot-match (`scripts/e2e-audio-intents-datagen.ts`, corrected, n=50 per cell):
 
-| Pipeline                                               | EN                                           | PL              |
-| ------------------------------------------------------ | -------------------------------------------- | --------------- |
-| Parakeet-v3 int8, on-device (Pixel 7a, no prompt)      | **82%** (41/50)                              | 6% (3/50)       |
-| Whisper-small int8, on-device (Pixel 7a, no prompt)    | 64% (32/50)                                  | 32% (16/50)     |
-| Whisper-small q8, desktop CPU (Node, +`DOMAIN_PROMPT`) | 76% (38/50)                                  | **52%** (26/50) |
-| whisper.cpp ggml-small-q8_0, on-device (Pixel 7a)      | not yet run — phone unreachable this session |                 |
+| Pipeline                                               | EN              | PL              |
+| ------------------------------------------------------ | --------------- | --------------- |
+| Parakeet-v3 int8, on-device (Pixel 7a, no prompt)      | **82%** (41/50) | 6% (3/50)       |
+| Whisper-small int8, on-device (Pixel 7a, no prompt)    | 64% (32/50)     | 32% (16/50)     |
+| Whisper-small q8, desktop CPU (Node, +`DOMAIN_PROMPT`) | 76% (38/50)     | **52%** (26/50) |
+| whisper.cpp ggml-small-q8_0, on-device (Pixel 7a)      | 72% (36/50)     | 36% (18/50)     |
 
 **Parakeet vs. Whisper is not a single winner — it depends on language.** Parakeet-v3 is the
 clear best English pipeline (82%, no prompt needed) but is close to unusable on Polish (6%):
 inspecting its raw Polish transcripts shows it isn't failing gracefully, it's mostly
 _transliterating_ Polish speech into garbled English-shaped tokens ("zasięgion", "nucleon" for
 "nukleon"), consistent with a model that was never meaningfully multilingual-tuned for this
-domain despite loading a shared checkpoint for both languages. Whisper-small is the more
-balanced choice — weaker than Parakeet on English, but the only one of the two usable on Polish,
-and desktop Whisper+prompt is a further ~20-point jump over the on-device (unprompted) Whisper on
-both languages, isolating the domain-prompt's contribution independent of the on-device/desktop
-runtime split.
+domain despite loading a shared checkpoint for both languages. Every Whisper variant (sherpa-onnx
+on-device, whisper.cpp on-device, desktop) is the more balanced choice — weaker than Parakeet on
+English, but the only family usable on Polish at all, and desktop Whisper+prompt is a further
+~16-20 point jump over both unprompted on-device Whisper runtimes on both languages, isolating the
+domain-prompt's contribution independent of the on-device/desktop runtime split. whisper.cpp and
+sherpa-onnx land within a few points of each other on both languages — consistent with both
+wrapping the same underlying whisper-small checkpoint (`docs/android-asr-runtime-bench.md` §5.4
+already found this for the fixed 30×3-speaker set; it holds here too).
 
 ### 4.2 Abbreviated vs. expanded energy rendering (n=5, directional only)
 
@@ -218,29 +222,43 @@ needed more broadly, and the dominant real-audio failure mode (§4.2) is the uni
 dropped/garbled, which no LEXICON- or regex-based post-ASR fix can recover — the token isn't in
 the transcript to correct.**
 
+### 4.4a A real bug found running whisper.cpp on Polish audio: hardcoded English decoding
+
+The first whisper.cpp run against `lgpixel`'s Polish clips scored **0% raw / 2% corrected** —
+wildly out of line with every other Polish number in §4.1 (6–52%). Raw transcripts showed why:
+real Polish audio came back as English-shaped text — `"Jaki jest zasięg CSDA protonu..."` (actual
+Polish, correctly read aloud) transcribed as `"What is the range of C-SDA proton of 150 MF in
+water?"` — not garbled Polish, coherent (if wrong) **English**. Root cause, found in
+`bench/android/whispercpp/app/src/main/jni/whisper/jni.c`: `params.language` was hardcoded to
+`"en"` regardless of which clip was being transcribed, forcing whisper.cpp's language token
+regardless of the actual spoken language. This bug predates this session — every prior use of
+`BenchActivity` only ever benchmarked the fixed English-only `km`/`lg`/`mn` set
+(`docs/android-asr-runtime-bench.md`), so it never had a Polish clip to expose this on.
+
+**Fixed** (this session): threaded an explicit `language` parameter through the full call chain —
+`BenchActivity.java` (derives `"pl"` from clip ids ending in `-pl`, `"en"` otherwise, matching
+`scripts/import-datagen-session.sh`'s id convention) → `WhisperContext.transcribeData()`'s new
+4-arg overload (3-arg overload kept, now defaulting to `"en"` for source compatibility) →
+`WhisperLib.fullTranscribe()`'s native declaration → `jni.c`'s `params.language`. Rebuilt
+(`./gradlew assembleDebug`), reinstalled, re-ran the 50 Polish clips only (English clips are
+unaffected by this bug, since `"en"` was already the correct forced language for them — not
+re-run). Result: **0% → 36%** (raw 8% → corrected 42% clip-level; 8% → 36% audio→intent,
+§4.1's table) — now a real, sensible number in line with the other Polish scores, not an
+artifact.
+
 ### 4.5 Caveats (carried over from #130, reaffirmed)
 
 - **Phone mic ≠ Brio USB mic** — not directly comparable to `eval/audio/{km,lg,mn}` numbers.
 - **Single speaker.** Every number above is one person's voice; treat as anecdote until a second
   speaker's session exists.
-- **whisper.cpp on-device not yet run** — the phone (wifi adb, 30.30.30.19) went unreachable
-  mid-session and reconnecting needs the device awake/screen on. To finish this leg once the
-  phone is reachable:
-  ```
-  adb connect <phone-ip>:5555
-  adb push eval/audio/lgpixel /data/local/tmp/wc/audio-lgpixel
-  adb shell run-as com.aidedx.whispercppbench sh -c \
-    'cp -r /data/local/tmp/wc/audio-lgpixel files/audio/lgpixel'
-  adb shell am start -n com.aidedx.whispercppbench/.BenchActivity --ez autorun true \
-    -e model_file ggml-small-q8_0.bin -e out_name results-lgpixel.json -e model_id whisper.cpp-ggml-small-q8_0
-  adb shell run-as com.aidedx.whispercppbench cat files/results-lgpixel.json \
-    > eval/results/datagen-lgpixel-2026-07-30/results-whispercpp-en.json
-  node scripts/e2e-audio-intents-datagen.ts en eval/results/datagen-lgpixel-2026-07-30/results-whispercpp-en.json
-  ```
-  (the `whispercpp` bench app, `bench/android/whispercpp/`, is file-based off
-  `filesDir/audio/<speaker>/<id>.wav` — see `docs/android-asr-runtime-bench.md` §5.3 for the full
-  build/model-push steps; the APK from that doc's build already includes `ggml-small-q8_0.bin`
-  support, only the model binary + audio need pushing fresh for a new speaker id).
+- **The phone dropping off wifi adb mid-run is a recurring hazard**, not a one-off — it happened
+  twice in this session (once losing the connection entirely, once losing foreground focus and
+  freezing the benchmark's background thread — Android suspends CPU work for backgrounded apps).
+  Recovering from the second case: `adb shell input keyevent KEYCODE_WAKEUP`,
+  `adb shell wm dismiss-keyguard`, then `adb shell am start -n <package>/.<Activity>` on the
+  _same_ already-running activity resumes it in place ("its current task has been brought to the
+  front") rather than restarting the benchmark from scratch — this bench has no per-clip
+  resumability, so restarting from scratch would have re-transcribed everything already done.
 - **Latency numbers throughout are not benchmark-grade** — live mic + UI + arbitrary thermal
   state, same caveat #130 always carried.
 

@@ -129,12 +129,19 @@ public class BenchActivity extends Activity {
             Arrays.sort(wavs);
             for (File wav : wavs) {
                 String id = wav.getName().substring(0, wav.getName().length() - 4);
+                // Was always forced to "en" natively (jni.c) regardless of the clip's actual
+                // language - see WhisperContext.transcribeData's 4-arg overload doc comment.
+                // The datagen id convention (scripts/import-datagen-session.sh) suffixes every
+                // clip id with its language ("dg-01-en"/"dg-01-pl"); any id without that suffix
+                // (the pre-existing fixed km/lg/mn 30-clip set) is English-only, so "en" stays
+                // the correct default there.
+                String clipLang = id.endsWith("-pl") ? "pl" : "en";
                 long t0 = System.nanoTime();
                 String raw = "";
                 String error = null;
                 try {
                     float[] samples = readWavAsFloats(wav);
-                    raw = ctx.transcribeData(samples, numThreads, prompt).trim();
+                    raw = ctx.transcribeData(samples, numThreads, prompt, clipLang).trim();
                 } catch (Exception e) {
                     error = String.valueOf(e.getMessage());
                 }
