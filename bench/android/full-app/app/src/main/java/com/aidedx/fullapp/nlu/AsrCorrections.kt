@@ -121,11 +121,15 @@ object AsrCorrections {
         // gigaelectronvolt" — mirrors en.ts's kev/mev/gev/tev-expanded rules (issue #151). A real,
         // confirmed-common rendering (docs/android-datagen-bench.md §4.2: 0/10 hit rate in real
         // audio for this rendering) that ENERGY_RE alone can never resolve, since it only ever
-        // matches the literal abbreviation tokens.
+        // matches the literal abbreviation tokens. `(?:electron|elektron)` (not a bare "electron"
+        // literal) — a real on-device Parakeet-v3 EN transcript (dg-44, docs/android-datagen-bench.md
+        // §4.7) came back "elektronovolt", the `k` spelling bleeding in from Parakeet's
+        // multilingual model even on an English utterance — this app uses the same on-device
+        // Parakeet-v3 model, so it can hit the same artifact.
         AsrCorrectionRule(
             "kev-expanded",
             Regex(
-                "(\\d+(?:\\.\\d+)?)\\s*kilo[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
+                "(\\d+(?:\\.\\d+)?)\\s*kilo[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
                 RegexOption.IGNORE_CASE,
             ),
             "\$1 keV",
@@ -133,7 +137,7 @@ object AsrCorrections {
         AsrCorrectionRule(
             "mev-expanded",
             Regex(
-                "(\\d+(?:\\.\\d+)?)\\s*mega[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
+                "(\\d+(?:\\.\\d+)?)\\s*mega[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
                 RegexOption.IGNORE_CASE,
             ),
             "\$1 MeV",
@@ -141,7 +145,7 @@ object AsrCorrections {
         AsrCorrectionRule(
             "gev-expanded",
             Regex(
-                "(\\d+(?:\\.\\d+)?)\\s*giga[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
+                "(\\d+(?:\\.\\d+)?)\\s*giga[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
                 RegexOption.IGNORE_CASE,
             ),
             "\$1 GeV",
@@ -149,7 +153,7 @@ object AsrCorrections {
         AsrCorrectionRule(
             "tev-expanded",
             Regex(
-                "(\\d+(?:\\.\\d+)?)\\s*tera[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
+                "(\\d+(?:\\.\\d+)?)\\s*tera[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b",
                 RegexOption.IGNORE_CASE,
             ),
             "\$1 TeV",

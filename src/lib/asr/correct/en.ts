@@ -158,10 +158,14 @@ export const EN_RULES: readonly CorrectionRule[] = [
   // energy slot today — this is a coverage gap independent of ASR accuracy, not a mishearing to
   // correct. Matches the "of"/"a" filler Whisper sometimes inserts ("giga electron of volt",
   // real transcript, dg-22) and both one-word-glued and three-word-spaced renderings.
+  // `(?:electron|elektron)` (not a bare "electron" literal) — a real Parakeet-v3 EN transcript
+  // (dg-44, docs/android-datagen-bench.md §4.7) came back "two hundred mega elektronovolt", the
+  // `k` spelling bleeding in from Parakeet's multilingual model (that spelling is correct Polish
+  // for "electron"), even though the utterance itself was English.
   {
     label: "kev-expanded",
     pattern: new RegExp(
-      `(${NUMBER_PREFIX_SRC})\\s*kilo[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      `(${NUMBER_PREFIX_SRC})\\s*kilo[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
       "gi",
     ),
     replacement: "$1 keV",
@@ -169,7 +173,7 @@ export const EN_RULES: readonly CorrectionRule[] = [
   {
     label: "mev-expanded",
     pattern: new RegExp(
-      `(${NUMBER_PREFIX_SRC})\\s*mega[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      `(${NUMBER_PREFIX_SRC})\\s*mega[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
       "gi",
     ),
     replacement: "$1 MeV",
@@ -177,7 +181,7 @@ export const EN_RULES: readonly CorrectionRule[] = [
   {
     label: "gev-expanded",
     pattern: new RegExp(
-      `(${NUMBER_PREFIX_SRC})\\s*giga[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      `(${NUMBER_PREFIX_SRC})\\s*giga[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
       "gi",
     ),
     replacement: "$1 GeV",
@@ -185,7 +189,7 @@ export const EN_RULES: readonly CorrectionRule[] = [
   {
     label: "tev-expanded",
     pattern: new RegExp(
-      `(${NUMBER_PREFIX_SRC})\\s*tera[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      `(${NUMBER_PREFIX_SRC})\\s*tera[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
       "gi",
     ),
     replacement: "$1 TeV",

@@ -98,6 +98,21 @@ class AsrCorrectionsTest {
     }
 
     @Test
+    fun `accepts the elektron spelling variant (real Parakeet-v3 transcript, dg-44)`() {
+        // Parakeet-v3's multilingual model bled the correct-Polish "elektron" spelling into an
+        // otherwise-English utterance — docs/android-datagen-bench.md §4.7. This app uses the
+        // same on-device Parakeet-v3 model, so it can hit the same artifact.
+        assertEquals(
+            "200 MeV per nucleon carbon ion in water",
+            AsrCorrections.correct("200 mega elektronovolt per nucleon carbon ion in water"),
+        )
+        assertEquals(
+            "500 keV proton in water",
+            AsrCorrections.correct("500 kilo elektronovolt proton in water"),
+        )
+    }
+
+    @Test
     fun `end-to-end KotlinMatcher resolves a TeV query (issue 151)`() {
         val aliases = AliasTables.fromJson(
             repoRoot().resolve("static/aliases/materials.json").readText(),

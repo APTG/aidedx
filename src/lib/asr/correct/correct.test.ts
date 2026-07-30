@@ -132,6 +132,15 @@ describe("correctTranscript — spoken-expanded energy-unit readings (issue #151
     expect(correctText("1 giga electron of volt proton in water")).toBe("1 GeV proton in water");
     expect(correctText("300 mega electron volt proton in water")).toBe("300 MeV proton in water");
   });
+
+  it("accepts the 'elektron' spelling variant (real Parakeet-v3 transcript, dg-44)", () => {
+    // Parakeet-v3's multilingual model bled the correct-Polish "elektron" spelling into an
+    // otherwise-English utterance — docs/android-datagen-bench.md §4.7.
+    expect(correctText("200 mega elektronovolt per nucleon carbon ion in water")).toBe(
+      "200 MeV per nucleon carbon ion in water",
+    );
+    expect(correctText("500 kilo elektronovolt proton in water")).toBe("500 keV proton in water");
+  });
 });
 
 describe("correctTranscript — spelled-out hundred-compounds before a unit (issue #153)", () => {
