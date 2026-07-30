@@ -64,9 +64,8 @@ immediately, before the model even finished reloading. Zero `FATAL EXCEPTION`s a
 session's logcat.
 
 Build note: this machine has no system-wide JDK (`javac` is missing from the installed `apt`
-JRE-only packages) — `./gradlew assembleDebug` needs
-`JAVA_HOME=/home/grzanka/Applications/android-studio/jbr` (Android Studio's bundled JBR), now
-documented in `CLAUDE.md`._
+JRE-only packages) — `./gradlew assembleDebug` needs `JAVA_HOME` pointed at Android Studio's
+bundled JBR (`<android-studio-install-dir>/jbr`) instead, now documented in `CLAUDE.md`._
 
 ## TL;DR
 

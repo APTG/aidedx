@@ -277,6 +277,11 @@ class MainActivity : Activity() {
 
     private fun startDownload() {
         downloadPanel = DownloadPanel.DOWNLOADING
+        // A retry after a prior failure must not carry that failure's message forward — left
+        // uncleared, it would reappear later on any unrelated return to the PROMPT panel (e.g.
+        // this download succeeds, then the model is deleted via ModelManagerActivity) even though
+        // that state has nothing to do with the old failure.
+        downloadErrorLine = null
         downloadPct = 0
         downloadProgressLine = "Starting…"
         restoreUiState()
@@ -305,7 +310,10 @@ class MainActivity : Activity() {
                 downloadManager.delete(ParakeetModel.ENTRY)
                 runOnUiThread {
                     downloadPanel = DownloadPanel.PROMPT
-                    downloadErrorLine = e.message
+                    // e.message can be null (some exception types carry none) — restoreUiState()
+                    // treats a null downloadErrorLine as "no error", which would silently drop the
+                    // failure notice entirely instead of just losing detail.
+                    downloadErrorLine = e.message ?: e.toString()
                     restoreUiState()
                 }
             }

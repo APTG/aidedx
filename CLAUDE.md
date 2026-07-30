@@ -62,8 +62,10 @@ covered via manual dispatch and PRs targeting `main`.
 - Building locally (`./gradlew assembleDebug`) needs a full JDK (`javac`), not just a JRE. This
   machine has no system-wide JDK installed (`apt`'s `openjdk-17-jre`/`openjdk-21-jre` are JRE-only —
   `javac` is absent from both), and installing one needs interactive `sudo`. **Use Android Studio's
-  bundled JBR instead** — it's already a full JDK, already on disk, and needs no install:
-  `JAVA_HOME=/home/grzanka/Applications/android-studio/jbr ./gradlew assembleDebug`.
+  bundled JBR instead** — it's already a full JDK, already on disk, and needs no install: it lives
+  under wherever Android Studio is installed, typically `<android-studio-install-dir>/jbr` (e.g.
+  `~/Applications/android-studio/jbr` on Linux, `.../Android Studio.app/Contents/jbr` on macOS):
+  `JAVA_HOME=<path-to-android-studio>/jbr ./gradlew assembleDebug`.
 - Test devices connect over wireless adb; if `adb devices` doesn't list one, reconnect with
   `adb connect <device-ip>:5555` (ask the user for the current IP — it's not fixed).
 
