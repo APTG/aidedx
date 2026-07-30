@@ -178,6 +178,22 @@ describe("correctTranscript — spelled-out hundred-compounds before a unit (iss
   it("still leaves an unrelated 'hundred' phrase alone", () => {
     expect(correctText("a hundred years from now")).toBe("a hundred years from now");
   });
+
+  it("does not treat a number word as a substring inside a longer word before 'hundred' (code review)", () => {
+    // HUNDRED_RUN_SRC originally had no \b word boundaries, so "one" inside "sh[one]" followed
+    // by a literal " hundred" was matched as a phantom "one hundred" — the same class of bug
+    // composeHundreds() in matcher.ts already guards against with its own \b boundaries. Testing
+    // the regex directly (not correctText()'s output) because a later, independent case-fixing
+    // rule (kev-case) would otherwise mask the difference: it converts a bare "kev" regardless
+    // of any number prefix, so the buggy and fixed regex produce the same *final text* here even
+    // though only the fixed one is correctly refusing to match at all.
+    const kevExpanded = EN_RULES.find((r) => r.label === "kev-expanded");
+    if (!kevExpanded) throw new Error("kev-expanded rule missing from EN_RULES");
+    const freshTest = (str: string) =>
+      new RegExp(kevExpanded.pattern.source, kevExpanded.pattern.flags).test(str);
+    expect(freshTest("shone hundred kilo electronovolt proton in water")).toBe(false);
+    expect(freshTest("one hundred kilo electronovolt proton in water")).toBe(true);
+  });
 });
 
 describe("correctTranscript — per-nucleon phonetic variants", () => {

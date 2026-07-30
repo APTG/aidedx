@@ -62,7 +62,7 @@ const NUMBER_WORD_ALT = NUMBER_WORDS.map(([word]) => word).join("|");
 const ONES_WORD_ALT = NUMBER_WORDS.filter(([, d]) => Number(d) >= 1 && Number(d) <= 9)
   .map(([word]) => word)
   .join("|");
-const HUNDRED_RUN_SRC = `(?:${ONES_WORD_ALT})\\s+hundred(?:\\s+(?:and\\s+)?(?:${NUMBER_WORD_ALT}))?`;
+const HUNDRED_RUN_SRC = `\\b(?:${ONES_WORD_ALT})\\s+hundred\\b(?:\\s+(?:and\\s+)?(?:${NUMBER_WORD_ALT})\\b)?`;
 const NUMBER_PREFIX_SRC = `(?:\\d+(?:\\.\\d+)?|${HUNDRED_RUN_SRC}|(?:${NUMBER_WORD_ALT})(?:[\\s-]+(?:and\\s+)?(?:${NUMBER_WORD_ALT}))*)`;
 
 export const EN_RULES: readonly CorrectionRule[] = [
