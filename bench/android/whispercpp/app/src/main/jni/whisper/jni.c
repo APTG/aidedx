@@ -191,8 +191,13 @@ Java_com_whispercpp_java_whisper_WhisperLib_fullTranscribe(
     // `language` defaults to "en" only if the caller passes null, for backward compatibility
     // with any pre-existing call site that doesn't know about per-clip language yet.
     const char *language_chars = "en";
+    jboolean release_language_chars = JNI_FALSE;
     if (language != NULL) {
-        language_chars = (*env)->GetStringUTFChars(env, language, NULL);
+        const char *acquired_language_chars = (*env)->GetStringUTFChars(env, language, NULL);
+        if (acquired_language_chars != NULL) {
+            language_chars = acquired_language_chars;
+            release_language_chars = JNI_TRUE;
+        }
     }
     params.language = language_chars;
     params.n_threads = num_threads;
@@ -225,7 +230,7 @@ Java_com_whispercpp_java_whisper_WhisperLib_fullTranscribe(
     if (prompt_chars != NULL) {
         (*env)->ReleaseStringUTFChars(env, prompt, prompt_chars);
     }
-    if (language != NULL) {
+    if (release_language_chars) {
         (*env)->ReleaseStringUTFChars(env, language, language_chars);
     }
 }

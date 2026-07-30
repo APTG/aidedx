@@ -132,7 +132,7 @@ plumbing (matcher + manifest + slot regexes) works end to end for Polish, not ju
 
 ## Part 4 — Results (real session, speaker `lgpixel`, 2026-07-30)
 
-Session recorded on the Pixel 7a via wifi adb (30.30.30.19), all 100 prompts (50×EN + 50×PL),
+Session recorded on the Pixel 7a via wifi adb, all 100 prompts (50×EN + 50×PL),
 imported with `scripts/import-datagen-session.sh lgpixel` and landed in #149. Single speaker —
 per the caveats below, treat everything here as anecdote, not a statistic, until a second
 speaker exists.
