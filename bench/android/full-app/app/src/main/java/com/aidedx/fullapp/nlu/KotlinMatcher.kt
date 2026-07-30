@@ -138,8 +138,35 @@ object KotlinMatcher {
         return total + current
     }
 
-    private fun normalizeSpelledNumbers(text: String): String =
-        NUMBER_WORD_RUN_RE.replace(text) { wordsToNumber(it.value).toString() }
+    // issue #156 — ASR spells a decimal energy value out fully too ("58.4 MeV" ->
+    // "fifty eight point four MeV"), a gap this port's number-word support never covered (only
+    // whole-number runs were composed; nothing joined a run to a trailing "point <digit>"
+    // fraction). Mirrors matcher.ts's composeDecimals(): the whole-number part is any run
+    // NUMBER_WORD_RUN_RE would compose, each digit after "point" is restricted to a single 0-9
+    // word (decimal digits are read one at a time, not "point sixty"). Must run before
+    // normalizeSpelledNumbers()'s whole-number pass, or that pass would independently convert
+    // "fifty eight" and "four" into separate, unjoined "58" and "4" tokens, silently dropping the
+    // decimal point (matcher.ts's composeDecimals()/composeTensOnes() has the same ordering
+    // requirement, for the same reason).
+    private val DECIMAL_DIGIT_WORDS = ONES_WORDS.filterValues { it in 0..9 }
+    private val DECIMAL_RE = Regex(
+        "\\b((?:$NUMBER_WORD_ALTERNATION)(?:[\\s-]+(?:and\\s+)?(?:$NUMBER_WORD_ALTERNATION))*)" +
+            "\\s+point\\s+((?:(?:${DECIMAL_DIGIT_WORDS.keys.joinToString("|")})\\s*)+)\\b",
+        RegexOption.IGNORE_CASE,
+    )
+
+    private fun normalizeSpelledDecimals(text: String): String =
+        DECIMAL_RE.replace(text) { m ->
+            val whole = wordsToNumber(m.groupValues[1])
+            val digits = m.groupValues[2].trim().split(Regex("\\s+"))
+                .joinToString("") { DECIMAL_DIGIT_WORDS.getValue(it.lowercase()).toString() }
+            "$whole.$digits"
+        }
+
+    private fun normalizeSpelledNumbers(text: String): String {
+        val withDecimals = normalizeSpelledDecimals(text)
+        return NUMBER_WORD_RUN_RE.replace(withDecimals) { wordsToNumber(it.value).toString() }
+    }
 
     private fun normalizeEnergyUnit(raw: String): Pair<String, Boolean> {
         val lower = raw.lowercase()

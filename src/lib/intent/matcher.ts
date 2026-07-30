@@ -118,11 +118,40 @@ function composeHundreds(text: string, pack: LangPack): string {
 }
 
 /**
+ * Compose a bare spelled-out tens+ones compound ("fifty eight" -> "58") into digits, same
+ * length-preserving whole-phrase substitution as `composeHundreds()` (issue #156 — energies
+ * above ninety-nine, like "fifty eight MeV" or "fifty eight point four MeV", left the tens word
+ * stranded: `NUMBER_WORDS` only has single-word entries, so nothing composed "fifty" and "eight"
+ * into one number, and `extractEnergies()`'s single-`\d+` number grammar then picked up only
+ * whichever word ended up adjacent to the unit). Must run before `composeDecimals()` so a
+ * tens+ones compound in front of "point" is already a single digit run by the time that
+ * function's whole-part alternative looks for one.
+ */
+function composeTensOnes(text: string, pack: LangPack): string {
+  const digitOf = new Map(pack.NUMBER_WORDS);
+  const tensAlt = pack.NUMBER_WORDS.filter(([, d]) => Number(d) >= 20 && Number(d) % 10 === 0)
+    .map(([w]) => w)
+    .join("|");
+  const onesAlt = pack.NUMBER_WORDS.filter(([, d]) => Number(d) >= 1 && Number(d) <= 9)
+    .map(([w]) => w)
+    .join("|");
+  if (!tensAlt || !onesAlt) return text;
+  const re = new RegExp(`\\b(${tensAlt})\\s+(${onesAlt})\\b`, "gi");
+  return text.replace(re, (m, tensWord: string, onesWord: string) => {
+    const tens = Number(digitOf.get(tensWord.toLowerCase()));
+    const ones = Number(digitOf.get(onesWord.toLowerCase()));
+    return String(tens + ones).padEnd(m.length);
+  });
+}
+
+/**
  * Compose a spelled-out decimal ("three point six" -> "3.6") into digits, same
  * length-preserving whole-phrase substitution as `composeHundreds()` (issue #122 — some clips
  * spell out "3.6 GeV" as "three point six GeV" instead of giving the digits directly). The
- * whole-number part is any `NUMBER_WORDS` entry (1-99); each digit after "point" is restricted
- * to the 0-9 entries ("point six", not "point sixty" — decimal digits are read one at a time).
+ * whole-number part is any `NUMBER_WORDS` entry (1-99) or, once `composeTensOnes()` has already
+ * run, a composed tens+ones digit run ("58" in "58 point four"); each digit after "point" is
+ * restricted to the 0-9 entries ("point six", not "point sixty" — decimal digits are read one
+ * at a time).
  */
 function composeDecimals(text: string, pack: LangPack): string {
   if (!pack.POINT_WORD) return text;
@@ -132,11 +161,11 @@ function composeDecimals(text: string, pack: LangPack): string {
     .map(([w]) => w)
     .join("|");
   const re = new RegExp(
-    `\\b(${wholeAlt})\\s+${pack.POINT_WORD}\\s+((?:(?:${digitAlt})\\s*)+)`,
+    `\\b(\\d+|${wholeAlt})\\s+${pack.POINT_WORD}\\s+((?:(?:${digitAlt})\\s*)+)`,
     "gi",
   );
   return text.replace(re, (m, wholeWord: string, digitsPart: string) => {
-    const whole = digitOf.get(wholeWord.toLowerCase());
+    const whole = /^\d+$/.test(wholeWord) ? wholeWord : digitOf.get(wholeWord.toLowerCase());
     const digits = digitsPart
       .trim()
       .split(/\s+/)
@@ -155,7 +184,7 @@ function composeDecimals(text: string, pack: LangPack): string {
  * the substituted and original text, with no separate bookkeeping to reconcile them.
  */
 function spellOutNumbers(text: string, pack: LangPack): string {
-  let out = composeDecimals(composeHundreds(text, pack), pack);
+  let out = composeDecimals(composeTensOnes(composeHundreds(text, pack), pack), pack);
   for (const [word, digit] of pack.NUMBER_WORDS) {
     out = out.replace(new RegExp(`\\b${word}\\b`, "gi"), (m) => digit.padEnd(m.length));
   }
