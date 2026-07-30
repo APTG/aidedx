@@ -8,6 +8,10 @@ the bench harness itself (§4.4a): the JNI bridge hardcoded English decoding reg
 clip's actual language, silently mangling every Polish clip into English-shaped text instead of a
 real transcript.
 
+Part 5 (TTS synthesis of this same 50+50 set, for a human-vs-synthetic comparison against the
+`lgpixel` numbers below) is issue #155 — pipeline built, no Athena run yet; see
+`docs/android-datagen-tts-bench.md`.
+
 ## Verified on real hardware (2026-07-29, Pixel 7a)
 
 Ran the exact "Reproducing" steps below against a Pixel 7a connected over wifi
