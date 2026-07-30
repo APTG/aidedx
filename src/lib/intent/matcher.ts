@@ -119,8 +119,8 @@ function composeHundreds(text: string, pack: LangPack): string {
 
 /**
  * Compose a bare spelled-out tens+ones compound ("fifty eight" -> "58") into digits, same
- * length-preserving whole-phrase substitution as `composeHundreds()` (issue #156 — energies
- * above ninety-nine, like "fifty eight MeV" or "fifty eight point four MeV", left the tens word
+ * length-preserving whole-phrase substitution as `composeHundreds()` (issue #156 — a two-word
+ * non-round value like "fifty eight MeV" or "fifty eight point four MeV" left the tens word
  * stranded: `NUMBER_WORDS` only has single-word entries, so nothing composed "fifty" and "eight"
  * into one number, and `extractEnergies()`'s single-`\d+` number grammar then picked up only
  * whichever word ended up adjacent to the unit). Must run before `composeDecimals()` so a
