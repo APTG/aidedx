@@ -171,10 +171,11 @@ export const NUMBER_WORDS: ReadonlyArray<readonly [string, string]> = [
  * (see pl.ts). */
 export const HUNDRED_WORD: string | null = "hundred";
 
-/** Connector word for spelled-out decimals ("three point six" -> 3.6), consumed by
- * `composeDecimals()` in matcher.ts (issue #122 — "3.6 GeV" comes out fully spelled on some
- * clips). Null for a language with no `POINT_WORD` support yet (see pl.ts). */
-export const POINT_WORD: string | null = "point";
+/** Regex-alternation source of connector words for spelled-out decimals ("three point six" ->
+ * 3.6), consumed by `composeDecimals()` in matcher.ts (issue #122 — "3.6 GeV" comes out fully
+ * spelled on some clips; "dot" added for #156 — some ASR/speakers read the decimal point as
+ * "dot" rather than "point"). Null for a language with no `POINT_WORD` support yet (see pl.ts). */
+export const POINT_WORD: string | null = "point|dot";
 
 /** "Stopping power" is the only phrase judged safe for edit-distance typo tolerance (issue
  * #26, "Stoping power") — long and distinctive enough that a fuzzy match is unlikely to

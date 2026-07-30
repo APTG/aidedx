@@ -68,8 +68,10 @@ export interface LangPack {
    */
   HUNDRED_WORD: string | null;
   /**
-   * Connector word for spelled-out decimals ("three point six" -> 3.6), composed with
-   * `NUMBER_WORDS` by `composeDecimals()` (issue #122). Null when unimplemented.
+   * Regex-alternation source (not a single literal word — wrap in `(?:...)` at the use site) of
+   * connector words for spelled-out decimals ("three point six" -> 3.6, "three dot six" -> 3.6),
+   * composed with `NUMBER_WORDS` by `composeDecimals()` (issue #122, "dot" added for #156). Null
+   * when unimplemented.
    */
   POINT_WORD: string | null;
   /**
