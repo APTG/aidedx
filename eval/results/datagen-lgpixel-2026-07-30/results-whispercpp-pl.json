@@ -1,0 +1,360 @@
+{
+  "modelId": "whisper.cpp-ggml-small-q8_0",
+  "dtype": "device",
+  "withPrompt": false,
+  "promptVariant": "none",
+  "numThreads": 4,
+  "loadS": 0.862030518,
+  "records": [
+    {
+      "speaker": "lgpixel",
+      "id": "dg-01",
+      "raw": "Jak jest zasi\u0119g Csda protonu energii 150 mew w wodzie?",
+      "secs": 2.617600221,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-02",
+      "raw": "Jaki jest zasi\u0119g protonu energistu MEV w ko\u015bci korowej?",
+      "secs": 2.559700359,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-03",
+      "raw": "Jak daleko doleci proton energii 250 mev w PMMA?",
+      "secs": 2.573554404,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-04",
+      "raw": "Jaki jest zasi\u0119g protonu energii 500 kV w wodzie?",
+      "secs": 2.638317262,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-05",
+      "raw": "Jak jest zasi\u0119g deuteronu energii 60 MeF w krzemie?",
+      "secs": 2.669981284,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-06",
+      "raw": "Jak g\u0142\u0119boko wniknie tryton o energii 40 mew w PMMA.",
+      "secs": 2.716026612,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-07",
+      "raw": "Jak daleko doleci cz\u0105stka alfa energii 20 mew w powietrzu?",
+      "secs": 2.738345542,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-08",
+      "raw": "Jakie g\u0142\u0119boko wniknie jonhellu 3 o energii 30mm w graficie.",
+      "secs": 2.75468746,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-09",
+      "raw": "Jaki jest zasi\u0119g jonu litu o energii 50 mew na nukleonu w poli w\u0119glanie?",
+      "secs": 2.882008139,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-10",
+      "raw": "Jak jest zasi\u0119gionu baru energii stumef 9 klon w paliwie Tylenie?",
+      "secs": 2.81131124,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-11",
+      "raw": "Jaki jest zasi\u0119gionu w\u0119gla energii 300 mega elektronowolt\u00f3w na nuklon w wodzie?",
+      "secs": 2.882827516,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-12",
+      "raw": "Jak daleko doleci jon azotu o energii 180-mf na nuklon w ko\u015bci korowej?",
+      "secs": 3.112994956,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-13",
+      "raw": "Jaki jest zasi\u0119g CSDA i o mu plenu energii 250 mef na nukron w PMMA?",
+      "secs": 3.234991945,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-14",
+      "raw": "Jak g\u0142\u0119boko wniknie jony neonu energii 400 mef na nukleon w wodzie?",
+      "secs": 3.184222983,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-15",
+      "raw": "Jakie jest zasi\u0119g jonu magnezu o energii 150 MeF na nukleon w plastiku tkankopodobnym A150?",
+      "secs": 3.288588503,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-16",
+      "raw": "Jaki jest zasi\u0119g jonu krzemu o energii 300 mew na nukleon w dwutlenku krzemu?",
+      "secs": 3.26206771,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-17",
+      "raw": "Jak daleko doleci jon Argonu o energii 350 mef na nukleon w wodzie?",
+      "secs": 3.149865439,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-18",
+      "raw": "Jaki jest zasi\u0119gionu wapnia o energii 200 mew na nukleon w tkance t\u0142uszczowej?",
+      "secs": 3.248722211,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-19",
+      "raw": "Jak g\u0142\u0119boko wniknie j\u0105d tytanu energii 600 mew na nuklano w wodzie?",
+      "secs": 3.265025922,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-20",
+      "raw": "Jaki jest zasi\u0119g CSDA i on \u017celaza o energii 607 na nukleon w aluminium?",
+      "secs": 3.250925742,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-21",
+      "raw": "Jakie jest zasi\u0119g jonu miedzi o energii 500 mef na nukleon wo\u0142owiu?",
+      "secs": 3.325399334,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-22",
+      "raw": "Jak daleko doleci proton energii 1 GV w wodzie?",
+      "secs": 3.219482301,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-23",
+      "raw": "Jaki jest zasi\u0119g protonu w wodzie dla energii 100 mew, 150 mew i 200 mew?",
+      "secs": 3.419492149,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-24",
+      "raw": "Jaki jest zasi\u0119g jonu w\u0119gla w wodzie dla energii 200 Mef na Nukleon, 300 Mef na Nukleon i 400 Mef na Nukleon?",
+      "secs": 3.700195599,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-25",
+      "raw": "Jak jest zasi\u0119g cz\u0105stki alfa w powietrzu dla energii 5 mew, 10 mew i 20 mew?",
+      "secs": 3.685639121,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-26",
+      "raw": "Por\u00f3wnaj zasi\u0119g protonu o energii 150-mF w wodzie PMMA i ko\u015bci korowej.",
+      "secs": 3.6949598,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-27",
+      "raw": "Por\u00f3wnaj zasi\u0119k jonu tlenu energii 300 MF na nukleon w wodzie i aluminium.",
+      "secs": 3.845657879,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-28",
+      "raw": "Por\u00f3wnaj zasi\u0119g protonu energii stume w wodzie i tkance t\u0142uszczowej.",
+      "secs": 3.854317466,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-29",
+      "raw": "Ca\u0142wnik nie g\u0142\u0119biej w wodzie przy 200F na nukleon i on w\u0119gla czy on na onu.",
+      "secs": 4.670463747,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-30",
+      "raw": "Cawnik nie g\u0142\u0119bi w wodzie przy 60 m, proton czy deuteron.",
+      "secs": 4.179320274,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-31",
+      "raw": "Jak\u0105 energi\u0119 musi mie\u0107 proton, \u017ceby jego zasi\u0119g w wodzie wynosi\u0142 20 centymetr\u00f3w?",
+      "secs": 3.999264691,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-32",
+      "raw": "Ile energii potrzebuje protonu na zasi\u0119g 15 cm w wodzie?",
+      "secs": 3.90552759,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-33",
+      "raw": "Jak\u0105 energi\u0119 musi mie\u0107 proton, \u017ceby jego zasi\u0119g w PMMA wynosi\u0142 5 centymetr\u00f3w?",
+      "secs": 3.998756106,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-34",
+      "raw": "Ida energii potrzebuje ion w\u0119gla 14cm na zasi\u0119g 10cm w wodzie.",
+      "secs": 3.698898764,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-35",
+      "raw": "Jak\u0105 energi\u0119 musi mie\u0107 cz\u0105stka alfa, \u017ceby jej zasi\u0119g w kance mi\u0119\u015bniowej wynosi\u0142 30 mm?",
+      "secs": 3.773577476,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-36",
+      "raw": "I da energii potrzebuje ion \u017celaza na zasi\u0119g 3 cm w wodzie.",
+      "secs": 3.975655235,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-37",
+      "raw": "Jak\u0105 energi\u0119 musi mie\u0107 on tlenu, \u017ceby jego zasi\u0119g w wodzie wynosi\u0142 12 cm?",
+      "secs": 3.907587608,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-38",
+      "raw": "Ide energii potrzebuje proton na zasi\u0119g 9 cm w ko\u015bci korowej.",
+      "secs": 3.531059124,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-39",
+      "raw": "Jak\u0105 energi\u0119 musi mie\u0107 on wapnie, \u017ceby jego zasi\u0119g w PMMA wynosi\u0142 5 centymetr\u00f3w?",
+      "secs": 3.828749229,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-40",
+      "raw": "Jak\u0105 energi\u0119 musi mie\u0107 proton aby uzyska\u0107 zasi\u0119g 10 cm w wodzie IPMMA?",
+      "secs": 3.974825889,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-41",
+      "raw": "Jak\u0105 energi\u0119 musi mie\u0107 proton aby uzyska\u0107 zasi\u0119g 15 cm w wodzie ko\u015bci korowej i tkance d\u0142u\u017cczowej?",
+      "secs": 4.173475425,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-42",
+      "raw": "Jak\u0105 energi\u0119 potrzebuje proton na zasi\u0119g 15 cm w wodzie, ion w\u0119gla?",
+      "secs": 3.863804933,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-43",
+      "raw": "Jaki jest let protonu o energistu mega elektronowoltu w wodzie?",
+      "secs": 3.793008059,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-44",
+      "raw": "Jaka jest stolno\u015b\u0107 hamowania jemu w\u0119gla o energii 200 mega elektronowolt\u00f3w na nukleon w wodzie?",
+      "secs": 4.017598838,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-45",
+      "raw": "Jak jest lat protonu energii 10 MeF w aluminium?",
+      "secs": 4.149362307,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-46",
+      "raw": "Jak jest let deuteronu o energii 40 mew w powietrzu?",
+      "secs": 4.103254438,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-47",
+      "raw": "Jaki jest let cz\u0105stki alfa o energii 5 mew w krzemie?",
+      "secs": 3.78318152,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-48",
+      "raw": "Por\u00f3wnaj let protonu energii 150 mW w wodzie PMMA i ko\u015bci korowej.",
+      "secs": 3.943153363,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-49",
+      "raw": "Por\u00f3wna ilet protonu w wodzie przy 50 MF, 100 MF i 150 MF.",
+      "secs": 3.991980878,
+      "error": null
+    },
+    {
+      "speaker": "lgpixel",
+      "id": "dg-50",
+      "raw": "Por\u00f3wnaj let protonu ionu w\u0119gla w wodzie przez tu mew.",
+      "secs": 3.837847984,
+      "error": null
+    }
+  ]
+}

@@ -42,8 +42,20 @@ public class WhisperContext {
    * (jni.c) - the domain-prompt biasing lever docs/voice-pipeline-feasibility.md S2.4 found to be
    * the single biggest desktop accuracy lever, and which sherpa-onnx has no equivalent for at all
    * (docs/android-asr-runtime-bench.md S3.4). Pass null/empty for no prompt (matches the prior
-   * unprompted 89% E2E result). */
+   * unprompted 89% E2E result). Defaults language to "en" - see the 4-arg overload below for why
+   * that default exists and when it stops being correct. */
   public String transcribeData(float[] data, int numThreads, String prompt) throws ExecutionException, InterruptedException {
+    return transcribeData(data, numThreads, prompt, "en");
+  }
+
+  /** language selects whisper.cpp's forced decoding language (jni.c's params.language) - was
+   * hardcoded "en" natively regardless of caller, confirmed to silently mangle non-English audio
+   * into English-shaped text instead of a real transcript (issue #134 follow-up,
+   * docs/android-datagen-bench.md: 0% audio->intent match on 50 real Polish clips scored against
+   * that hardcoded default). Pass the real BCP-47-ish code ("en"/"pl") for each clip's actual
+   * spoken language; this class's own 3-arg overload above keeps defaulting to "en" for any
+   * caller that hasn't been updated to pass one explicitly. */
+  public String transcribeData(float[] data, int numThreads, String prompt, String language) throws ExecutionException, InterruptedException {
     return executorService.submit(new Callable<String>() {
       @RequiresApi(api = Build.VERSION_CODES.O)
       @Override
@@ -55,7 +67,7 @@ public class WhisperContext {
 
         StringBuilder result = new StringBuilder();
         synchronized (this) {
-          WhisperLib.fullTranscribe(ptr, numThreads, data, prompt);
+          WhisperLib.fullTranscribe(ptr, numThreads, data, prompt, language);
           int textCount = WhisperLib.getTextSegmentCount(ptr);
           for (int i = 0; i < textCount; i++) {
             String sentence = WhisperLib.getTextSegment(ptr, i);

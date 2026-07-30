@@ -791,6 +791,32 @@ tested there, but was a property of that prompt's wording, not of prompting whis
 — worth remembering as a general lesson for future prompt engineering on this runtime: a prompt
 leak is a reason to reword the prompt, not to abandon prompting.
 
+### 5.10 A third bug found and fixed (2026-07-30): hardcoded English decoding
+
+Every result in §5.1–§5.9 above was measured against the fixed `km`/`lg`/`mn` set, which is
+**English-only** — so none of it exercised the following bug. Running this same bench app against
+real Polish audio (issue #134's `lgpixel` datagen session, `docs/android-datagen-bench.md` §4.4a)
+scored 0% raw / 2% corrected, wildly inconsistent with every other Polish ASR number this project
+has measured (6–52%). Root cause: `jni.c`'s `Java_..._fullTranscribe` hardcoded
+`params.language = "en"` unconditionally — every clip, regardless of its actual spoken language,
+was decoded with whisper.cpp's language token forced to English, producing coherent-looking but
+wrong English text instead of a Polish transcript or a language-detection failure.
+
+**Fixed**: `language` is now threaded as a real parameter through the full call chain
+(`BenchActivity.java` → `WhisperContext.transcribeData()`'s new 4-arg overload → `WhisperLib`'s
+native declaration → `jni.c`'s `params.language`), derived per-clip from the datagen id
+convention (`-pl` suffix → `"pl"`, else `"en"`) so the pre-existing English-only `km`/`lg`/`mn` set
+keeps working unchanged through the 3-arg overload's `"en"` default. Full numbers after the fix:
+`docs/android-datagen-bench.md` §4.1/§4.4a — Polish jumped 2% → 36% corrected on the same 50 clips.
+
+**Not a shared bug**: `bench/android/sherpa-onnx`'s Whisper wrapper (`DataGenActivity`) already
+produces legitimate, non-degenerate Polish output (32% audio→intent, `docs/android-datagen-bench.md`
+§4.1) — it isn't hardcoding a language the way this JNI bridge was. This was specific to
+whisper.cpp's own JNI glue in this repo, not a pattern to assume elsewhere in the bench family —
+but it's still a reminder that a benchmark exercised only on English audio for months (§5.1–§5.9
+above) can hide a completely broken non-English path with no symptom at all until someone actually
+points it at a different language.
+
 ## 6. Battery/thermal readings (unplugged)
 
 All three benchmark apps were re-run back-to-back, phone unplugged (switched to wireless `adb` over

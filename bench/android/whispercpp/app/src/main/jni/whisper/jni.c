@@ -171,7 +171,7 @@ Java_com_whispercpp_java_whisper_WhisperLib_freeContext(
 
 JNIEXPORT void JNICALL
 Java_com_whispercpp_java_whisper_WhisperLib_fullTranscribe(
-        JNIEnv *env, jobject thiz, jlong context_ptr, jint num_threads, jfloatArray audio_data, jstring prompt) {
+        JNIEnv *env, jobject thiz, jlong context_ptr, jint num_threads, jfloatArray audio_data, jstring prompt, jstring language) {
     UNUSED(thiz);
     struct whisper_context *context = (struct whisper_context *) context_ptr;
     jfloat *audio_data_arr = (*env)->GetFloatArrayElements(env, audio_data, NULL);
@@ -184,7 +184,22 @@ Java_com_whispercpp_java_whisper_WhisperLib_fullTranscribe(
     params.print_timestamps = true;
     params.print_special = false;
     params.translate = false;
-    params.language = "en";
+    // Was hardcoded "en" regardless of caller — confirmed by direct measurement (issue #134
+    // follow-up, docs/android-datagen-bench.md) to silently force-decode non-English audio
+    // through the English language token, producing English-shaped hallucinated-looking text
+    // instead of a real transcript or an error (0% audio->intent match on 50 real Polish clips).
+    // `language` defaults to "en" only if the caller passes null, for backward compatibility
+    // with any pre-existing call site that doesn't know about per-clip language yet.
+    const char *language_chars = "en";
+    jboolean release_language_chars = JNI_FALSE;
+    if (language != NULL) {
+        const char *acquired_language_chars = (*env)->GetStringUTFChars(env, language, NULL);
+        if (acquired_language_chars != NULL) {
+            language_chars = acquired_language_chars;
+            release_language_chars = JNI_TRUE;
+        }
+    }
+    params.language = language_chars;
     params.n_threads = num_threads;
     params.offset_ms = 0;
     params.no_context = true;
@@ -214,6 +229,9 @@ Java_com_whispercpp_java_whisper_WhisperLib_fullTranscribe(
     (*env)->ReleaseFloatArrayElements(env, audio_data, audio_data_arr, JNI_ABORT);
     if (prompt_chars != NULL) {
         (*env)->ReleaseStringUTFChars(env, prompt, prompt_chars);
+    }
+    if (release_language_chars) {
+        (*env)->ReleaseStringUTFChars(env, language, language_chars);
     }
 }
 

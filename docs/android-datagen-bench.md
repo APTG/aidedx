@@ -1,15 +1,12 @@
 # Android benchmark data generator (issue #130)
 
-Status: **Part 1 (sentence set) done.** **Part 2 (the `DataGenActivity` app) is written,
-compiles, and is now verified on real hardware** (Pixel 7a, over `adb connect` on the same
-wifi network — see "Verified on real hardware" below) — the two biggest unverified risks
-(dual eager model load fitting in RAM, real-mic transcription accuracy) both hold up. **Part 3
-(PC-side import/scoring) is written and smoke-tested** with a synthetic session (see "Part 3"
-below) — the scripts are proven correct on fabricated data, but a real full session hasn't been
-imported/scored yet (only a single throwaway test clip exists so far, recorded under a
-`tmp-test` speaker id specifically so it won't collide with the eventual real session). **Part 4
-(findings) is not started** — there is no full recording session to draw findings from yet.
-This doc will grow a "Results" section once one exists.
+Status: **Parts 1–4 done.** A real 100-prompt (50×EN+PL) session (speaker `lgpixel`, #149) has
+been recorded, imported, and scored across all four ASR pipelines this project tracks: on-device
+Parakeet-v3, on-device Whisper-small (sherpa-onnx), desktop Whisper-small+prompt, and on-device
+whisper.cpp — see "Part 4 — Results" below. The whisper.cpp leg surfaced and fixed a real bug in
+the bench harness itself (§4.4a): the JNI bridge hardcoded English decoding regardless of the
+clip's actual language, silently mangling every Polish clip into English-shaped text instead of a
+real transcript.
 
 ## Verified on real hardware (2026-07-29, Pixel 7a)
 
@@ -132,6 +129,144 @@ transcript except 4 clips with one material word deleted: both scorers independe
 consistent with "4 single-word deletions across ~50 clips." The Polish side, scored against an
 unperturbed session, reported **50/50** on both scorers with 0.0% WER — confirms the `lang`
 plumbing (matcher + manifest + slot regexes) works end to end for Polish, not just English.
+
+## Part 4 — Results (real session, speaker `lgpixel`, 2026-07-30)
+
+Session recorded on the Pixel 7a via wifi adb, all 100 prompts (50×EN + 50×PL),
+imported with `scripts/import-datagen-session.sh lgpixel` and landed in #149. Single speaker —
+per the caveats below, treat everything here as anecdote, not a statistic, until a second
+speaker exists.
+
+**Repeat-check before scoring:** every WAV verified 4.1s–9.2s (consistent with sentence length,
+no truncation/silence), and no take produced near-garbage transcripts on _both_ on-device models
+simultaneously (the signal of a misread/corrupted take vs. an expected ASR miss). No retakes were
+needed.
+
+### 4.1 Cross-runtime headline numbers
+
+Audio→intent slot-match (`scripts/e2e-audio-intents-datagen.ts`, corrected, n=50 per cell):
+
+| Pipeline                                               | EN              | PL              |
+| ------------------------------------------------------ | --------------- | --------------- |
+| Parakeet-v3 int8, on-device (Pixel 7a, no prompt)      | **82%** (41/50) | 6% (3/50)       |
+| Whisper-small int8, on-device (Pixel 7a, no prompt)    | 64% (32/50)     | 32% (16/50)     |
+| Whisper-small q8, desktop CPU (Node, +`DOMAIN_PROMPT`) | 76% (38/50)     | **52%** (26/50) |
+| whisper.cpp ggml-small-q8_0, on-device (Pixel 7a)      | 72% (36/50)     | 36% (18/50)     |
+
+**Parakeet vs. Whisper is not a single winner — it depends on language.** Parakeet-v3 is the
+clear best English pipeline (82%, no prompt needed) but is close to unusable on Polish (6%):
+inspecting its raw Polish transcripts shows it isn't failing gracefully, it's mostly
+_transliterating_ Polish speech into garbled English-shaped tokens ("zasięgion", "nucleon" for
+"nukleon"), consistent with a model that was never meaningfully multilingual-tuned for this
+domain despite loading a shared checkpoint for both languages. Every Whisper variant (sherpa-onnx
+on-device, whisper.cpp on-device, desktop) is the more balanced choice — weaker than Parakeet on
+English, but the only family usable on Polish at all, and desktop Whisper+prompt is a further
+~16-20 point jump over both unprompted on-device Whisper runtimes on both languages, isolating the
+domain-prompt's contribution independent of the on-device/desktop runtime split. whisper.cpp and
+sherpa-onnx land within a few points of each other on both languages — consistent with both
+wrapping the same underlying whisper-small checkpoint (`docs/android-asr-runtime-bench.md` §5.4
+already found this for the fixed 30×3-speaker set; it holds here too).
+
+### 4.2 Abbreviated vs. expanded energy rendering (n=5, directional only)
+
+The 5 `energyRendering: "expanded"` records (`dg-04`, `dg-11`, `dg-22`, `dg-43`, `dg-44` — the
+only `keV` and `GeV` instances in the set, plus 3 spelled-out `MeV` cases) missed the energy slot
+on **every single on-device run**: 0/10 (5 ids × 2 languages) across both Parakeet and
+Whisper-small, on-device. Sample raw transcripts: "500 kilo electron-a-volt" (`dg-04` EN,
+Whisper), "1 giga electron of volt" (`dg-22` EN, Whisper), "1 GV" (`dg-22` EN, desktop Whisper —
+closer, but still not a unit token any parser recognizes). This is n=5 by design (see
+`eval/RECORDING.datagen.md`), so read the ratio as directional, not a percentage — but the signal
+is unusually clean for that sample size, and it matches `docs/nemo-parakeet-comparison.md` §4.3's
+finding that biasing toward a non-abbreviated energy reading hurts unit-slot accuracy (there,
+90.2% → 66.3%). Real human speakers reading a spelled-out energy unit produce exactly the audio
+that pipeline already knows it handles badly — this is not a synthesized-TTS-only artifact.
+
+### 4.3 Residual #122 failure modes on human audio
+
+- **`GeV` mishearing survives.** The sole `GeV` instance (`dg-22`) is also the sole `keV`
+  instance's sibling in the expanded-energy group above — 0/10 energy-slot hits. Confirms #122's
+  original synthetic-TTS concern reproduces on real human speech, not just TTS artifacts (n=1,
+  noted as such).
+- **"deuteron" is a Whisper-specific miss, not a universal one.** Whisper mis-transcribed
+  "deuteron" in **all 3** English occurrences (`dg-05`/`dg-30`/`dg-46`): "dual-terron",
+  "deuterine", "dewateron". Parakeet got all 3 right, in both languages. Not the "both models
+  struggle equally" pattern the isotope-number and GeV findings show — a genuinely
+  Whisper-specific gap.
+- **"triton" is hard for both models, in both languages at times.** `dg-06` EN: Parakeet →
+  "treeton", Whisper → "3 ton" (both wrong). `dg-06` PL: Parakeet correctly transcribes
+  "trytonu"; Whisper still says "3 ton" (wrong even in Polish). The rarer light-ion names remain
+  a weak spot regardless of model.
+- **Isotope numbers are a Polish-specific failure, not an English one.** `dg-08` (helium-3) and
+  `dg-34` (carbon-14): both models get the particle slot right in **English** ("helium three",
+  "Helium-3", "carbon-14 ion") but **both fail in Polish** ("Janhew trzy", "jon hellu 3" for
+  "jon helu-3"; "węgla czternaście"/"węgla 14" not resolving against "węgla-14"). A clean
+  bilingual asymmetry — isotope numbers aren't inherently hard to hear, but the Polish rendering
+  of them is currently harder for both ASR models than the English one.
+
+### 4.4 Letter-spelled unit forms — already resolved, and this data confirms it wasn't needed here
+
+`docs/unit-pronunciation-asr.md` had already added letter-spelled-unit rules
+(`mev-letter-spelled`/`kev-letter-spelled`/`gev-letter-spelled`) to `EN_RULES` in
+`src/lib/asr/correct/en.ts` (2026-07-26, its Recommendations §2) — not to `LEXICON`, because
+`LEXICON`'s single-token fuzzy pass can't reach a multi-token escape like "M E V" from "MeV".
+That closed the synthesized-TTS letter-spelling escape (`M-E-V`, `docs/unit-pronunciation-asr.md`
+§1's `rng-0573`). This session's real human audio gives a fresh, independent check: searching
+every Parakeet/Whisper raw transcript in `lgpixel`'s `session.json` for a letter-spelled-MeV/keV/GeV
+pattern (`(?:em|m)[\s.,-]*(?:ee|e)[\s.,-]*(?:vee|v)`) finds **zero matches** across all 200
+transcripts (100 clips × 2 models). Consistent with `docs/unit-pronunciation-asr.md` §8's lecture-clip
+finding: on real speech, Whisper-family models either hear the unit token or drop it silently —
+they don't tend to mis-spell it into a letter-by-letter escape the way synthesized "M E V" probe
+audio does. **Conclusion: the letter-spelled corrector rule remains correctly scoped to the
+synthesized-TTS failure mode it was built for; this real-audio session found no new evidence it's
+needed more broadly, and the dominant real-audio failure mode (§4.2) is the unit token being
+dropped/garbled, which no LEXICON- or regex-based post-ASR fix can recover — the token isn't in
+the transcript to correct.**
+
+### 4.4a A real bug found running whisper.cpp on Polish audio: hardcoded English decoding
+
+The first whisper.cpp run against `lgpixel`'s Polish clips scored **0% raw / 2% corrected** —
+wildly out of line with every other Polish number in §4.1 (6–52%). Raw transcripts showed why:
+real Polish audio came back as English-shaped text — `"Jaki jest zasięg CSDA protonu..."` (actual
+Polish, correctly read aloud) transcribed as `"What is the range of C-SDA proton of 150 MF in
+water?"` — not garbled Polish, coherent (if wrong) **English**. Root cause, found in
+`bench/android/whispercpp/app/src/main/jni/whisper/jni.c`: `params.language` was hardcoded to
+`"en"` regardless of which clip was being transcribed, forcing whisper.cpp's language token
+regardless of the actual spoken language. This bug predates this session — every prior use of
+`BenchActivity` only ever benchmarked the fixed English-only `km`/`lg`/`mn` set
+(`docs/android-asr-runtime-bench.md`), so it never had a Polish clip to expose this on.
+
+**Fixed** (this session): threaded an explicit `language` parameter through the full call chain —
+`BenchActivity.java` (derives `"pl"` from clip ids ending in `-pl`, `"en"` otherwise, matching
+`scripts/import-datagen-session.sh`'s id convention) → `WhisperContext.transcribeData()`'s new
+4-arg overload (3-arg overload kept, now defaulting to `"en"` for source compatibility) →
+`WhisperLib.fullTranscribe()`'s native declaration → `jni.c`'s `params.language`. Rebuilt
+(`./gradlew assembleDebug`), reinstalled, re-ran the 50 Polish clips only (English clips are
+unaffected by this bug, since `"en"` was already the correct forced language for them — not
+re-run). Result: **0% → 36%** (raw 8% → corrected 42% clip-level; 8% → 36% audio→intent,
+§4.1's table) — now a real, sensible number in line with the other Polish scores, not an
+artifact.
+
+### 4.5 Caveats (carried over from #130, reaffirmed)
+
+- **Phone mic ≠ Brio USB mic** — not directly comparable to `eval/audio/{km,lg,mn}` numbers.
+- **Single speaker.** Every number above is one person's voice; treat as anecdote until a second
+  speaker's session exists.
+- **The phone dropping off wifi adb mid-run is a recurring hazard**, not a one-off — it happened
+  twice in this session (once losing the connection entirely, once losing foreground focus and
+  freezing the benchmark's background thread — Android suspends CPU work for backgrounded apps).
+  Recovering from the second case: `adb shell input keyevent KEYCODE_WAKEUP`,
+  `adb shell wm dismiss-keyguard`, then `adb shell am start -n <package>/.<Activity>` on the
+  _same_ already-running activity resumes it in place ("its current task has been brought to the
+  front") rather than restarting the benchmark from scratch — this bench has no per-clip
+  resumability, so restarting from scratch would have re-transcribed everything already done.
+- **Latency numbers throughout are not benchmark-grade** — live mic + UI + arbitrary thermal
+  state, same caveat #130 always carried.
+
+### 4.6 Unblocks
+
+Answers #122 §7's Polish open question (isotope-number handling is the concrete residual gap,
+§4.3 above) and gives #127 (Polish on-device validation) real numbers to validate against instead
+of TTS-only data.
 
 ## Reproducing
 
