@@ -37,6 +37,37 @@ header for the full rationale and which `en.ts` rules were deliberately left unp
 "compare", cm/mm inverse-query targets — none of which this port supports). Re-verified on the JVM
 agreement test: **no regression**, still 83/83 (100.0%) semantic agreement._
 
+_Updated 2026-07-30 for #161 — rotation used to destroy/recreate `MainActivity` outright: an
+in-progress recording leaked (`onDestroy()` never called `recorder.stop()`, so `AudioRecorder`'s
+reader thread and the `AudioRecord` itself ran forever with the mic still hot), the ~639 MB
+Parakeet model reloaded from disk on every rotation, and the 15s auto-stop cap + all displayed
+text were silently dropped. Fixed with `android:configChanges` on `MainActivity` (keeps the
+Activity instance — and `transcriber`/`recorder`/every in-flight `Thread` — alive across a
+rotation) plus a tracked-UI-state pattern (`DownloadPanel`/`RecordUiState` enums +
+`restoreUiState()`) that reapplies the exact visual snapshot after `bindViews()` re-inflates the
+view tree, now correctly picking `res/layout-land/main.xml`'s two-column arrangement in landscape.
+`onDestroy()` also now stops the recorder unconditionally (independent bug fix — this leak was
+never actually rotation-specific, just easiest to hit that way), and `onSaveInstanceState`
+restores the last transcript/intent/result text across a real process-death recreation, which
+`configChanges` alone doesn't cover.
+
+**Device-verified** on the same Pixel 7a (wireless adb): "Model ready" persisted unchanged across
+a portrait→landscape rotation (no reload); a recording started in one orientation, rotated
+mid-flight to the other, showed the OS's own mic-in-use indicator the whole time, and the 15s
+auto-stop cap fired at the correct wall-clock offset in both directions — confirmed via two
+independent cycles against `dumpsys audio`'s own `rec update`/`rec stop` event log (0 lingering
+clients). The mic-leak fix was regression-tested directly: starting a recording and immediately
+pressing Back (a real `onDestroy()`, not a config change) now logs a `rec stop` ~1.5s later instead
+of never logging one at all. Process-death restore was tested with a real `am kill` on the
+backgrounded app followed by bringing the task back to front: the last intent line reappeared
+immediately, before the model even finished reloading. Zero `FATAL EXCEPTION`s across the full
+session's logcat.
+
+Build note: this machine has no system-wide JDK (`javac` is missing from the installed `apt`
+JRE-only packages) — `./gradlew assembleDebug` needs
+`JAVA_HOME=/home/grzanka/Applications/android-studio/jbr` (Android Studio's bundled JBR), now
+documented in `CLAUDE.md`._
+
 ## TL;DR
 
 - **`bench/android/full-app` builds clean** (`./gradlew assembleDebug`) and **runs clean on real

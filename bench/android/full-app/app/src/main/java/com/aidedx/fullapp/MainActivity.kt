@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -35,6 +36,19 @@ import java.io.File
  * visibility-toggle shape as `DataGenActivity` (no Fragments/Compose/coroutines/ViewModel —
  * matches every other bench/android app's convention), not a new architecture pattern for
  * this one app.
+ *
+ * issue #161 — this app turned out to be the fastest way to *find* real NLU/ASR failures (talk to
+ * it, notice a wrong answer), which makes it a field-testing tool, not just a benchmark spike —
+ * and a field-testing tool that loses its in-progress recording (and reloads a ~639 MB model) on
+ * every rotation is actively hostile to that use. `AndroidManifest.xml` now declares
+ * `android:configChanges` for `MainActivity` so a rotation no longer destroys/recreates it;
+ * `transcriber`/`recorder`/every in-flight background `Thread` survive unchanged. The system
+ * still discards and re-inflates the view tree on a config change (picking `res/layout-land/`
+ * over `res/layout/` as appropriate), so every value currently shown has to be tracked in a
+ * plain field, not just left on the (now-detached) old views — that's what the
+ * `DownloadPanel`/`RecordUiState` enums and the `*Line` fields below are for, reapplied by
+ * `restoreUiState()` (called from `bindViews()`, called from both `onCreate()` and
+ * `onConfigurationChanged()`).
  */
 class MainActivity : Activity() {
 
@@ -63,12 +77,98 @@ class MainActivity : Activity() {
     private lateinit var wasmButton: Button
     private lateinit var wasmResultText: TextView
 
+    // issue #161 — the persisted UI snapshot `restoreUiState()` reapplies after every
+    // `bindViews()` call (initial creation, and again after every configuration change).
+    private enum class DownloadPanel { PROMPT, DOWNLOADING, READY }
+    private enum class RecordUiState { IDLE, RECORDING, TRANSCRIBING }
+
+    private var downloadPanel = DownloadPanel.PROMPT
+    private var promptInfoLine = ""
+    private var downloadErrorLine: String? = null
+    private var downloadPct = 0
+    private var downloadProgressLine = ""
+
+    private var recordUiState = RecordUiState.IDLE
+    private var modelReady = false
+
+    private var statusLine = ""
+    private var transcriptLine = ""
+    private var intentLine = ""
+    private var resultLine = ""
+    private var wasmResultLine = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main)
 
         downloadManager = ModelDownloadManager(filesDir)
         aliases = AliasTables.load(assets)
+
+        val entry = ParakeetModel.ENTRY
+        promptInfoLine = "${entry.displayName}\n" +
+            "${formatMB(entry.totalSizeBytes)} MB from ${entry.sourceHost}"
+
+        // Belt-and-braces beyond `configChanges` (which only covers a live rotation): a real
+        // process death — backgrounded, memory reclaimed — still fully destroys and recreates
+        // the Activity. `transcriber`/`recorder` can't survive that regardless (not parcelable,
+        // and reloading a live recording mid-flight makes no sense), but the last visible answer
+        // can, so it isn't just gone when the user switches back.
+        savedInstanceState?.let {
+            transcriptLine = it.getString(STATE_TRANSCRIPT, "")
+            intentLine = it.getString(STATE_INTENT, "")
+            resultLine = it.getString(STATE_RESULT, "")
+        }
+
+        bindViews()
+
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_RECORD_AUDIO)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshState()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        autoStopHandler.removeCallbacks(autoStopRunnable)
+        // issue #161 — an in-progress recording used to leak here: `AudioRecorder`'s reader
+        // thread loops on its own `recording` flag, which only `stop()` ever clears, so a
+        // destroy that skipped calling it left the thread — and the `AudioRecord` itself, mic
+        // still hot — running forever. Discarding the returned samples is fine; with the
+        // Activity gone there's no UI left to show them on anyway.
+        recorder?.stop()
+        recorder = null
+        transcriber?.release()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(STATE_TRANSCRIPT, transcriptLine)
+        outState.putString(STATE_INTENT, intentLine)
+        outState.putString(STATE_RESULT, resultLine)
+    }
+
+    /**
+     * issue #161 — `configChanges` in the manifest keeps this Activity instance (and therefore
+     * every field above) alive across a rotation instead of destroying and recreating it; only
+     * this callback fires, and only the view tree needs rebuilding.
+     */
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        bindViews()
+    }
+
+    /**
+     * Finds every view and (re)wires every click listener, then reapplies the tracked UI state.
+     * Called from `onCreate()` and again from `onConfigurationChanged()` — `setContentView()`
+     * always throws away the previous view tree (and re-resolves `R.layout.main` against
+     * whichever of `res/layout/` / `res/layout-land/` matches the current orientation), so this
+     * has to fully re-run rather than being an onCreate-only setup step.
+     */
+    private fun bindViews() {
+        setContentView(R.layout.main)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.inflateMenu(R.menu.main_menu)
@@ -98,54 +198,76 @@ class MainActivity : Activity() {
         wasmButton = findViewById(R.id.wasmSmokeTestButton)
         wasmResultText = findViewById(R.id.wasmSmokeTestResult)
 
-        val entry = ParakeetModel.ENTRY
-        modelInfoText.text = "${entry.displayName}\n" +
-            "${formatMB(entry.totalSizeBytes)} MB from ${entry.sourceHost}"
-
         downloadButton.setOnClickListener { startDownload() }
         cancelButton.setOnClickListener { downloadManager.cancel() }
         recordButton.setOnClickListener { onRecordTapped() }
         wasmButton.setOnClickListener { runLatencyBenchmark() }
 
-        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_RECORD_AUDIO)
+        restoreUiState()
+    }
+
+    /** The counterpart to every `xxxLine = "..."` / `xxxPanel = ...` assignment below: reapplies
+     * every tracked value to the views `bindViews()` just (re)found. */
+    private fun restoreUiState() {
+        when (downloadPanel) {
+            DownloadPanel.PROMPT -> {
+                downloadPromptPanel.visibility = View.VISIBLE
+                downloadProgressPanel.visibility = View.GONE
+                readyPanel.visibility = View.GONE
+                modelInfoText.text = downloadErrorLine?.let { "$promptInfoLine\n\nDownload failed: $it" }
+                    ?: promptInfoLine
+            }
+            DownloadPanel.DOWNLOADING -> {
+                downloadPromptPanel.visibility = View.GONE
+                downloadProgressPanel.visibility = View.VISIBLE
+                readyPanel.visibility = View.GONE
+                progressBar.progress = downloadPct
+                progressText.text = downloadProgressLine
+            }
+            DownloadPanel.READY -> {
+                downloadPromptPanel.visibility = View.GONE
+                downloadProgressPanel.visibility = View.GONE
+                readyPanel.visibility = View.VISIBLE
+            }
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
-        refreshState()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        autoStopHandler.removeCallbacks(autoStopRunnable)
-        transcriber?.release()
+        statusText.text = statusLine
+        when (recordUiState) {
+            RecordUiState.IDLE -> {
+                setRecordButtonIdle()
+                // setRecordButtonIdle() always enables the button (correct for its other two call
+                // sites — model-load-complete, transcription-complete); restoring mid-load (model
+                // requested but not ready yet) must not enable it just because it's visually idle.
+                recordButton.isEnabled = modelReady
+            }
+            RecordUiState.RECORDING -> setRecordButtonRecording()
+            RecordUiState.TRANSCRIBING -> setRecordButtonTranscribing()
+        }
+        transcriptText.text = transcriptLine
+        intentText.text = intentLine
+        resultText.text = resultLine
+        wasmResultText.text = wasmResultLine
     }
 
     private fun refreshState() {
         val entry = ParakeetModel.ENTRY
-        if (downloadManager.isDownloaded(entry)) {
-            downloadPromptPanel.visibility = View.GONE
-            downloadProgressPanel.visibility = View.GONE
-            readyPanel.visibility = View.VISIBLE
-            if (transcriber == null) loadTranscriberInBackground(entry)
-        } else {
-            downloadPromptPanel.visibility = View.VISIBLE
-            downloadProgressPanel.visibility = View.GONE
-            readyPanel.visibility = View.GONE
-        }
+        downloadPanel = if (downloadManager.isDownloaded(entry)) DownloadPanel.READY else DownloadPanel.PROMPT
+        restoreUiState()
+        if (downloadPanel == DownloadPanel.READY && transcriber == null) loadTranscriberInBackground(entry)
     }
 
     private fun loadTranscriberInBackground(entry: ModelEntry) {
-        statusText.text = "Loading recognizer…"
+        statusLine = "Loading recognizer…"
+        statusText.text = statusLine
         recordButton.isEnabled = false
         Thread {
             val modelDir = File(filesDir, entry.destDirName)
             val loaded = ParakeetTranscriber(modelDir)
             runOnUiThread {
                 transcriber = loaded
-                statusText.text = "Model ready"
+                modelReady = true
+                statusLine = "Model ready"
+                statusText.text = statusLine
                 setRecordButtonIdle()
             }
         }.start()
@@ -154,10 +276,10 @@ class MainActivity : Activity() {
     // ---- goal 1: download ----
 
     private fun startDownload() {
-        downloadPromptPanel.visibility = View.GONE
-        downloadProgressPanel.visibility = View.VISIBLE
-        progressBar.progress = 0
-        progressText.text = "Starting…"
+        downloadPanel = DownloadPanel.DOWNLOADING
+        downloadPct = 0
+        downloadProgressLine = "Starting…"
+        restoreUiState()
 
         Thread {
             try {
@@ -168,9 +290,11 @@ class MainActivity : Activity() {
                         } else {
                             0
                         }
-                        progressBar.progress = pct
-                        progressText.text = "${formatMB(progress.loadedBytes)} / " +
+                        downloadPct = pct
+                        downloadProgressLine = "${formatMB(progress.loadedBytes)} / " +
                             "${formatMB(progress.totalBytes)} MB ($pct%) — ${progress.fileName}"
+                        progressBar.progress = downloadPct
+                        progressText.text = downloadProgressLine
                     }
                 }
                 runOnUiThread { refreshState() }
@@ -180,12 +304,9 @@ class MainActivity : Activity() {
             } catch (e: Exception) {
                 downloadManager.delete(ParakeetModel.ENTRY)
                 runOnUiThread {
-                    downloadProgressPanel.visibility = View.GONE
-                    downloadPromptPanel.visibility = View.VISIBLE
-                    val entry = ParakeetModel.ENTRY
-                    modelInfoText.text = "${entry.displayName}\n" +
-                        "${formatMB(entry.totalSizeBytes)} MB from ${entry.sourceHost}\n\n" +
-                        "Download failed: ${e.message}"
+                    downloadPanel = DownloadPanel.PROMPT
+                    downloadErrorLine = e.message
+                    restoreUiState()
                 }
             }
         }.start()
@@ -201,7 +322,11 @@ class MainActivity : Activity() {
                 return
             }
             recorder = AudioRecorder().also { it.start() }
+            recordUiState = RecordUiState.RECORDING
             setRecordButtonRecording()
+            transcriptLine = ""
+            intentLine = ""
+            resultLine = ""
             transcriptText.text = ""
             intentText.text = ""
             resultText.text = ""
@@ -211,9 +336,13 @@ class MainActivity : Activity() {
             // than a partial/garbled one. Auto-stop instead of leaving that failure mode open —
             // this fires `onRecordTapped()` again exactly as if the user had tapped Stop, so it
             // goes through the identical stop -> transcribe -> match -> compute -> display path.
+            // issue #161: this `Handler`/`Runnable` pair is a plain instance field, unaffected by
+            // `configChanges` no longer destroying the Activity on rotation — no re-arming logic
+            // needed, it simply keeps running.
             autoStopHandler.postDelayed(autoStopRunnable, MAX_RECORDING_MS)
         } else {
             autoStopHandler.removeCallbacks(autoStopRunnable)
+            recordUiState = RecordUiState.TRANSCRIBING
             setRecordButtonTranscribing()
             val samples = currentRecorder.stop()
             recorder = null
@@ -256,10 +385,10 @@ class MainActivity : Activity() {
             // match it" instead of both silently reading as the same "No match" — the ambiguity
             // is exactly what made the long-recording empty-transcript failure mode confusing to
             // diagnose on-device (see the auto-stop cap above and docs/android-full-app-spike.md).
-            var intentLine = if (transcript.isBlank()) "No speech detected — try again" else "No match"
-            var resultLine = ""
+            var matchedIntentSummary = if (transcript.isBlank()) "No speech detected — try again" else "No match"
+            var matchedResultText = ""
             if (matched != null) {
-                intentLine = "${matched.quantity} | particle=${matched.particleMatch} " +
+                matchedIntentSummary = "${matched.quantity} | particle=${matched.particleMatch} " +
                     "(id=${matched.particleId}) | material=${matched.materialMatch} " +
                     "(id=${matched.materialId}) | energy=${matched.energy.value} ${matched.energy.unit}"
 
@@ -275,11 +404,15 @@ class MainActivity : Activity() {
                 } else {
                     null
                 }
-                resultLine = AnswerFormatter.format(matched, stp, csda, density)
+                matchedResultText = AnswerFormatter.format(matched, stp, csda, density)
             }
 
             runOnUiThread {
-                transcriptText.text = transcript
+                recordUiState = RecordUiState.IDLE
+                transcriptLine = transcript
+                intentLine = matchedIntentSummary
+                resultLine = matchedResultText
+                transcriptText.text = transcriptLine
                 intentText.text = intentLine
                 resultText.text = resultLine
                 setRecordButtonIdle()
@@ -354,9 +487,10 @@ class MainActivity : Activity() {
             }
 
             runOnUiThread {
-                wasmResultText.text = "B (JNI): ${"%.3f".format(bAvgMs)} ms/call | " +
+                wasmResultLine = "B (JNI): ${"%.3f".format(bAvgMs)} ms/call | " +
                     "A cold (wasm3): ${"%.3f".format(coldAvgMs)} ms/call | " +
                     "A warm (wasm3): ${"%.3f".format(warmAvgMs)} ms/call"
+                wasmResultText.text = wasmResultLine
             }
         }.start()
     }
@@ -372,5 +506,9 @@ class MainActivity : Activity() {
         // without leaving the door open to the multi-minute silent-empty-transcript failure mode
         // #136 hit on-device.
         private const val MAX_RECORDING_MS = 15_000L
+
+        private const val STATE_TRANSCRIPT = "transcript"
+        private const val STATE_INTENT = "intent"
+        private const val STATE_RESULT = "result"
     }
 }
