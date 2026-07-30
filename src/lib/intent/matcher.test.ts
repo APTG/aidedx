@@ -367,6 +367,31 @@ describe("issue #122 — spelled-out tens and hundreds (NeMo Parakeet has no ASR
     expect(intent.energies).toEqual([{ value: 58.4, unit: "MeV" }]);
   });
 
+  it("accepts 'dot' as a decimal connector, same as 'point' (issue #156)", () => {
+    const intent = matchQueryIntent(
+      "What is the range of fifty eight dot four MeV protons in water?",
+    );
+    expect(intent.energies).toEqual([{ value: 58.4, unit: "MeV" }]);
+  });
+
+  it("composes a leading spelled-out decimal with no whole part ('point five' -> 0.5, issue #156)", () => {
+    expect(
+      matchQueryIntent("What is the range of point five MeV protons in water?").energies,
+    ).toEqual([{ value: 0.5, unit: "MeV" }]);
+    expect(
+      matchQueryIntent("What is the range of dot five MeV protons in water?").energies,
+    ).toEqual([{ value: 0.5, unit: "MeV" }]);
+  });
+
+  it("composes a decimal mixing a spelled 'point'/'dot' with a literal digit fraction ('point 5' -> 0.5, issue #156)", () => {
+    expect(matchQueryIntent("What is the range of point 5 MeV protons in water?").energies).toEqual(
+      [{ value: 0.5, unit: "MeV" }],
+    );
+    expect(matchQueryIntent("Stopping power of point 2 MeV protons in water?").energies).toEqual([
+      { value: 0.2, unit: "MeV" },
+    ]);
+  });
+
   it("recognizes a spelled-out length-target unit ('centimeters')", () => {
     const intent = matchQueryIntent(
       "What energy gives a 10 centimeters range in water for protons?",

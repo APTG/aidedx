@@ -62,4 +62,43 @@ class KotlinMatcherTest {
         assertEquals(3.6, result!!.energy.value, 0.0)
         assertEquals("GeV", result.energy.unit)
     }
+
+    @Test
+    fun acceptsDotAsDecimalConnector() {
+        val result = KotlinMatcher.match(
+            "What is the range of fifty eight dot four MeV protons in water?",
+            aliases(),
+        )
+        assertNotNull(result)
+        assertEquals(58.4, result!!.energy.value, 0.0)
+        assertEquals("MeV", result.energy.unit)
+    }
+
+    @Test
+    fun composesLeadingSpelledOutDecimalWithNoWholePart() {
+        val point = KotlinMatcher.match(
+            "What is the range of point five MeV protons in water?",
+            aliases(),
+        )
+        assertNotNull(point)
+        assertEquals(0.5, point!!.energy.value, 0.0)
+
+        val dot = KotlinMatcher.match(
+            "What is the range of dot five MeV protons in water?",
+            aliases(),
+        )
+        assertNotNull(dot)
+        assertEquals(0.5, dot!!.energy.value, 0.0)
+    }
+
+    @Test
+    fun composesDecimalMixingSpelledPointWithLiteralDigitFraction() {
+        val result = KotlinMatcher.match(
+            "What is the range of point 5 MeV protons in water?",
+            aliases(),
+        )
+        assertNotNull(result)
+        assertEquals(0.5, result!!.energy.value, 0.0)
+        assertEquals("MeV", result.energy.unit)
+    }
 }
