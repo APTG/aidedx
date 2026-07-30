@@ -132,6 +132,68 @@ describe("correctTranscript — spoken-expanded energy-unit readings (issue #151
     expect(correctText("1 giga electron of volt proton in water")).toBe("1 GeV proton in water");
     expect(correctText("300 mega electron volt proton in water")).toBe("300 MeV proton in water");
   });
+
+  it("accepts the 'elektron' spelling variant (real Parakeet-v3 transcript, dg-44)", () => {
+    // Parakeet-v3's multilingual model bled the correct-Polish "elektron" spelling into an
+    // otherwise-English utterance — docs/android-datagen-bench.md §4.7.
+    expect(correctText("200 mega elektronovolt per nucleon carbon ion in water")).toBe(
+      "200 MeV per nucleon carbon ion in water",
+    );
+    expect(correctText("500 kilo elektronovolt proton in water")).toBe("500 keV proton in water");
+  });
+});
+
+describe("correctTranscript — spelled-out hundred-compounds before a unit (issue #153)", () => {
+  // NUMBER_PREFIX_SRC previously stopped at a bare number word ("five"), so a spelled-out
+  // "hundred" compound directly before a unit-mishearing or expanded-reading rule never matched
+  // at all — real Parakeet-v3 transcripts (no ASR inverse-text-normalization, so every number
+  // comes out as words, "hundred" included), docs/android-datagen-bench.md §4.7 dg-04/dg-11/dg-43.
+  it("recognizes an expanded-reading unit after a bare 'X hundred'", () => {
+    expect(correctText("uh five hundred kilo electronovolt proton in water")).toBe(
+      "uh five hundred keV proton in water",
+    );
+    expect(correctText("a one hundred mega electronovolt proton in water")).toBe(
+      "a one hundred MeV proton in water",
+    );
+  });
+
+  it("recognizes an expanded-reading unit after 'X hundred' with an 'of'-filler and per-nucleon suffix", () => {
+    expect(
+      correctText("a three hundred mega electron o volt per nucleon carbon ion in water"),
+    ).toBe("a three hundred MeV per nucleon carbon ion in water");
+  });
+
+  it("recognizes 'X hundred and Y' before a unit", () => {
+    expect(correctText("three hundred and fifty kev protons in bone")).toBe(
+      "three hundred and fifty keV protons in bone",
+    );
+  });
+
+  it("also widens the plain bare-unit mishearing rules, not just the expanded-reading ones", () => {
+    expect(correctText("one hundred kev protons in water")).toBe(
+      "one hundred keV protons in water",
+    );
+  });
+
+  it("still leaves an unrelated 'hundred' phrase alone", () => {
+    expect(correctText("a hundred years from now")).toBe("a hundred years from now");
+  });
+
+  it("does not treat a number word as a substring inside a longer word before 'hundred' (code review)", () => {
+    // HUNDRED_RUN_SRC originally had no \b word boundaries, so "one" inside "sh[one]" followed
+    // by a literal " hundred" was matched as a phantom "one hundred" — the same class of bug
+    // composeHundreds() in matcher.ts already guards against with its own \b boundaries. Testing
+    // the regex directly (not correctText()'s output) because a later, independent case-fixing
+    // rule (kev-case) would otherwise mask the difference: it converts a bare "kev" regardless
+    // of any number prefix, so the buggy and fixed regex produce the same *final text* here even
+    // though only the fixed one is correctly refusing to match at all.
+    const kevExpanded = EN_RULES.find((r) => r.label === "kev-expanded");
+    if (!kevExpanded) throw new Error("kev-expanded rule missing from EN_RULES");
+    const freshTest = (str: string) =>
+      new RegExp(kevExpanded.pattern.source, kevExpanded.pattern.flags).test(str);
+    expect(freshTest("shone hundred kilo electronovolt proton in water")).toBe(false);
+    expect(freshTest("one hundred kilo electronovolt proton in water")).toBe(true);
+  });
 });
 
 describe("correctTranscript — per-nucleon phonetic variants", () => {

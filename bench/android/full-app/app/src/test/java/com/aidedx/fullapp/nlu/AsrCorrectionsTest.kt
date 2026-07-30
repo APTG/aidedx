@@ -98,6 +98,21 @@ class AsrCorrectionsTest {
     }
 
     @Test
+    fun `accepts the elektron spelling variant (real Parakeet-v3 transcript, dg-44)`() {
+        // Parakeet-v3's multilingual model bled the correct-Polish "elektron" spelling into an
+        // otherwise-English utterance — docs/android-datagen-bench.md §4.7. This app uses the
+        // same on-device Parakeet-v3 model, so it can hit the same artifact.
+        assertEquals(
+            "200 MeV per nucleon carbon ion in water",
+            AsrCorrections.correct("200 mega elektronovolt per nucleon carbon ion in water"),
+        )
+        assertEquals(
+            "500 keV proton in water",
+            AsrCorrections.correct("500 kilo elektronovolt proton in water"),
+        )
+    }
+
+    @Test
     fun `end-to-end KotlinMatcher resolves a TeV query (issue 151)`() {
         val aliases = AliasTables.fromJson(
             repoRoot().resolve("static/aliases/materials.json").readText(),
@@ -107,6 +122,30 @@ class AsrCorrectionsTest {
         assertEquals(Quantity.CSDA_RANGE, match?.quantity)
         assertEquals(5.0, match?.energy?.value)
         assertEquals("TeV", match?.energy?.unit)
+    }
+
+    @Test
+    fun `already resolves a spelled-out hundred-compound before a unit (issue 153, no port needed)`() {
+        // The web app's en.ts needed a NUMBER_PREFIX_SRC widening for this shape (issue #153):
+        // its correction layer runs *before* the matcher's own number-word conversion, so a
+        // spelled-out "five hundred" never reached any digit-gated rule. This port has the
+        // opposite order — KotlinMatcher.match() runs normalizeSpelledNumbers() (which already
+        // composes "hundred" compounds, see its NUMBER_WORD_ALTERNATION/wordsToNumber) *before*
+        // AsrCorrections.correct() — so by the time the digit-gated kev-expanded rule sees the
+        // text, "five hundred" is already "500". No production Kotlin change needed; this test
+        // just confirms that assumption holds for the exact real Parakeet-v3 transcript shape
+        // (docs/android-datagen-bench.md §4.7, dg-04) that exposed the web-app-side gap.
+        val aliases = AliasTables.fromJson(
+            repoRoot().resolve("static/aliases/materials.json").readText(),
+            repoRoot().resolve("static/aliases/particles.json").readText(),
+        )
+        val match = KotlinMatcher.match(
+            "What is the range of uh five hundred kilo electronovolt proton in water?",
+            aliases,
+        )
+        assertEquals(Quantity.CSDA_RANGE, match?.quantity)
+        assertEquals(500.0, match?.energy?.value)
+        assertEquals("keV", match?.energy?.unit)
     }
 
     @Test

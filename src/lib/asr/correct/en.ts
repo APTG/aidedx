@@ -51,7 +51,19 @@ const PARTICLE_WORDS =
 // `spellOutNumbers()` converts a surviving number word to digits later, same as it already does
 // today for a clean "twenty MeV".
 const NUMBER_WORD_ALT = NUMBER_WORDS.map(([word]) => word).join("|");
-const NUMBER_PREFIX_SRC = `(?:\\d+(?:\\.\\d+)?|(?:${NUMBER_WORD_ALT})(?:[\\s-]+(?:and\\s+)?(?:${NUMBER_WORD_ALT}))*)`;
+// issue #153 — the plain word-run above stops at "hundred" (not itself a NUMBER_WORDS entry), so
+// a spelled-out hundred-compound like "five hundred kilo electronvolt" (a real Parakeet-v3
+// transcript, docs/android-datagen-bench.md §4.7 — Parakeet has no ASR inverse-text-
+// normalization, so it spells every number out, "hundred" included) never matched any rule
+// below, unlike an equivalent Whisper transcript that already contained plain digits. Mirrors
+// `composeHundreds()`'s own grammar in matcher.ts (`<1-9 word> hundred (and)? <optional 1-99
+// remainder>`) rather than inventing a new one, so the value `matchIntent()` eventually derives
+// stays consistent with what this prefix recognizes as a number.
+const ONES_WORD_ALT = NUMBER_WORDS.filter(([, d]) => Number(d) >= 1 && Number(d) <= 9)
+  .map(([word]) => word)
+  .join("|");
+const HUNDRED_RUN_SRC = `\\b(?:${ONES_WORD_ALT})\\s+hundred\\b(?:\\s+(?:and\\s+)?(?:${NUMBER_WORD_ALT})\\b)?`;
+const NUMBER_PREFIX_SRC = `(?:\\d+(?:\\.\\d+)?|${HUNDRED_RUN_SRC}|(?:${NUMBER_WORD_ALT})(?:[\\s-]+(?:and\\s+)?(?:${NUMBER_WORD_ALT}))*)`;
 
 export const EN_RULES: readonly CorrectionRule[] = [
   // --- from asr-correct-ext.mjs ---
@@ -146,10 +158,14 @@ export const EN_RULES: readonly CorrectionRule[] = [
   // energy slot today — this is a coverage gap independent of ASR accuracy, not a mishearing to
   // correct. Matches the "of"/"a" filler Whisper sometimes inserts ("giga electron of volt",
   // real transcript, dg-22) and both one-word-glued and three-word-spaced renderings.
+  // `(?:electron|elektron)` (not a bare "electron" literal) — a real Parakeet-v3 EN transcript
+  // (dg-44, docs/android-datagen-bench.md §4.7) came back "two hundred mega elektronovolt", the
+  // `k` spelling bleeding in from Parakeet's multilingual model (that spelling is correct Polish
+  // for "electron"), even though the utterance itself was English.
   {
     label: "kev-expanded",
     pattern: new RegExp(
-      `(${NUMBER_PREFIX_SRC})\\s*kilo[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      `(${NUMBER_PREFIX_SRC})\\s*kilo[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
       "gi",
     ),
     replacement: "$1 keV",
@@ -157,7 +173,7 @@ export const EN_RULES: readonly CorrectionRule[] = [
   {
     label: "mev-expanded",
     pattern: new RegExp(
-      `(${NUMBER_PREFIX_SRC})\\s*mega[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      `(${NUMBER_PREFIX_SRC})\\s*mega[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
       "gi",
     ),
     replacement: "$1 MeV",
@@ -165,7 +181,7 @@ export const EN_RULES: readonly CorrectionRule[] = [
   {
     label: "gev-expanded",
     pattern: new RegExp(
-      `(${NUMBER_PREFIX_SRC})\\s*giga[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      `(${NUMBER_PREFIX_SRC})\\s*giga[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
       "gi",
     ),
     replacement: "$1 GeV",
@@ -173,7 +189,7 @@ export const EN_RULES: readonly CorrectionRule[] = [
   {
     label: "tev-expanded",
     pattern: new RegExp(
-      `(${NUMBER_PREFIX_SRC})\\s*tera[\\s-]?electron[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
+      `(${NUMBER_PREFIX_SRC})\\s*tera[\\s-]?(?:electron|elektron)[\\s-]?(?:a|of|o)?[\\s-]?volts?\\b`,
       "gi",
     ),
     replacement: "$1 TeV",

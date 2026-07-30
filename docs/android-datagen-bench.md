@@ -312,6 +312,30 @@ hundred..."), which is why Whisper/whisper.cpp picked up the full 4-clip gain wh
 picked up 1 (`dg-22`, whose number was a bare "one"). Filed as #153 with a suggested rule change
 rather than fixed inline here, since it's a distinct, scoped gap from #151's two fixes above.
 
+### 4.8 #153 landed — the residual Parakeet gap is now fully closed
+
+#153 shipped both fixes §4.7 called out: `NUMBER_PREFIX_SRC` now recognizes a spelled-out
+`hundred` compound (mirroring `matcher.ts`'s own `composeHundreds()` grammar, `\b`-bounded per a
+code-review catch), and the four `*-expanded` rules also accept the `elektron` spelling variant
+(`dg-44`'s raw transcript came back "...mega elektronovolt...", Parakeet's multilingual model
+bleeding in the correct-Polish spelling on an English utterance). Same re-scoring method as §4.7 —
+no new recording, just re-running `scripts/e2e-audio-intents-datagen.ts` against the already-saved
+`lgpixel` transcripts, once on `main` (post-#151/pre-#153) and once on the #153 branch:
+
+| Pipeline                      | EN before → after        | Change   |
+| ----------------------------- | ------------------------ | -------- |
+| Parakeet-v3, on-device        | 84% → **92%** (42→46/50) | +4 clips |
+| Whisper-small, on-device      | 74% (unchanged)          | 0        |
+| Whisper-small, desktop+prompt | 84% (unchanged)          | 0        |
+| whisper.cpp, on-device        | 80% (unchanged)          | 0        |
+
+Only Parakeet moved, and per-clip diffing confirms **zero regressions** and **all 4** of the
+previously-failing expanded-reading clips (`dg-04`, `dg-11`, `dg-43`, `dg-44`) now pass — the
+Parakeet-EN gap §4.7 identified is fully closed. The other three pipelines are unaffected, as
+expected: their transcripts of these same 4 prompts already contained plain digits and the
+correct "electron" spelling, so neither #153 fix had anything to change for them. Polish remains
+unaffected on every pipeline (still no `pl.ts` corrector).
+
 ## Reproducing
 
 ```bash
