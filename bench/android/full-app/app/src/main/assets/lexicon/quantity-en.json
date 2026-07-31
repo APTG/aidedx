@@ -1,0 +1,112 @@
+{
+  "stoppingPowerDirectPatterns": [
+    "(?:mass\\s+|electronic\\s+)?stopping power",
+    "de\\s*/\\s*dx",
+    "energy loss",
+    "specific ioni[sz]ation",
+    "bethe[\\s-]bloch",
+    "retarding force",
+    "energy deposition(?:\\s+density)?",
+    "dose per (?:micrometer|micrometre|micron|[uµ]m)"
+  ],
+  "rangeDirectPatterns": [
+    "csda",
+    "range"
+  ],
+  "stoppingPowerSynonymAcronym": "LET",
+  "stoppingPowerSynonymPhrase": "linear energy transfer",
+  "indirectIdioms": [
+    {
+      "source": "\\bhow far\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\bhow deep\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\bhow thick\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\bpenetration depth\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\bpenetrat(?:e|es|ing|ion)\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\bcome to rest\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\bcomes to rest\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\bbefore stopping\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\b(?:will|can|does|do)\\b[^.?!]*\\btravel\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\bshorter distance\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\bgo(?:es)? in\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\bget into\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\bmake it\\b",
+      "quantity": "csdaRange"
+    },
+    {
+      "source": "\\b(?:lose[s]?|lost)\\s+energy\\b",
+      "quantity": "stoppingPower"
+    },
+    {
+      "source": "\\bshed[s]? energy\\b",
+      "quantity": "stoppingPower"
+    },
+    {
+      "source": "\\bslowed down\\b",
+      "quantity": "stoppingPower"
+    },
+    {
+      "source": "\\bat what rate\\b",
+      "quantity": "stoppingPower"
+    },
+    {
+      "source": "\\bhow quickly\\b",
+      "quantity": "stoppingPower"
+    },
+    {
+      "source": "\\b(?:lose[s]?|lost)\\b[^.?!]*\\bper\\s+(?:centimeter|millimeter|cm|mm|unit length)\\b",
+      "quantity": "stoppingPower"
+    },
+    {
+      "source": "\\b(?:per|after)\\s+(?:each\\s+)?(?:centimeter|millimeter|cm|mm|unit length)\\b",
+      "quantity": "stoppingPower"
+    },
+    {
+      "source": "\\benergy\\b[^.?!]*\\bdeposited\\b[^.?!]*\\bper\\s+(?:micrometer|micrometre|micron|[uµ]m)\\b",
+      "quantity": "stoppingPower"
+    }
+  ],
+  "quantityCanonicalTerms": [
+    "stopping power",
+    "range",
+    "dE/dx",
+    "CSDA",
+    "LET",
+    "linear energy transfer"
+  ]
+}

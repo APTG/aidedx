@@ -18,6 +18,9 @@ coverage
 # Generated alias artifacts — owned by scripts/generate-aliases.ts (issue #4)
 static/aliases/
 
+# Generated lexicon artifact — owned by scripts/generate-lexicon.ts (issue #160 §9a)
+static/lexicon/
+
 # Vendored libdedx WASM artifacts — built by emscripten, not hand-maintained (issue #6)
 static/wasm/
 

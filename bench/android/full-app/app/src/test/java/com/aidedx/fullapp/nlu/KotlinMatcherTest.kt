@@ -30,11 +30,17 @@ class KotlinMatcherTest {
         )
     }
 
+    private fun lexicon(): QuantityLexicon {
+        val root = repoRoot()
+        return QuantityLexicon.fromJson(File(root, "static/lexicon/quantity-en.json").readText())
+    }
+
     @Test
     fun composesTensOnesCompound() {
         val result = KotlinMatcher.match(
             "What is the range of fifty eight MeV protons in water?",
             aliases(),
+            lexicon(),
         )
         assertNotNull(result)
         assertEquals(58.0, result!!.energy.value, 0.0)
@@ -46,6 +52,7 @@ class KotlinMatcherTest {
         val result = KotlinMatcher.match(
             "What is the range of fifty eight point four MeV protons in water?",
             aliases(),
+            lexicon(),
         )
         assertNotNull(result)
         assertEquals(58.4, result!!.energy.value, 0.0)
@@ -57,6 +64,7 @@ class KotlinMatcherTest {
         val result = KotlinMatcher.match(
             "What is the range of three point six GeV carbon ions in water?",
             aliases(),
+            lexicon(),
         )
         assertNotNull(result)
         assertEquals(3.6, result!!.energy.value, 0.0)
@@ -68,6 +76,7 @@ class KotlinMatcherTest {
         val result = KotlinMatcher.match(
             "What is the range of fifty eight dot four MeV protons in water?",
             aliases(),
+            lexicon(),
         )
         assertNotNull(result)
         assertEquals(58.4, result!!.energy.value, 0.0)
@@ -79,6 +88,7 @@ class KotlinMatcherTest {
         val point = KotlinMatcher.match(
             "What is the range of point five MeV protons in water?",
             aliases(),
+            lexicon(),
         )
         assertNotNull(point)
         assertEquals(0.5, point!!.energy.value, 0.0)
@@ -86,6 +96,7 @@ class KotlinMatcherTest {
         val dot = KotlinMatcher.match(
             "What is the range of dot five MeV protons in water?",
             aliases(),
+            lexicon(),
         )
         assertNotNull(dot)
         assertEquals(0.5, dot!!.energy.value, 0.0)
@@ -96,6 +107,7 @@ class KotlinMatcherTest {
         val result = KotlinMatcher.match(
             "What is the range of point 5 MeV protons in water?",
             aliases(),
+            lexicon(),
         )
         assertNotNull(result)
         assertEquals(0.5, result!!.energy.value, 0.0)
@@ -105,20 +117,20 @@ class KotlinMatcherTest {
     @Test
     fun `matchWithTrace exposes the corrected text and fired rules, matching match() intent-for-intent`() {
         val text = "What is the range of 20 Me V protons in silicone?"
-        val trace = KotlinMatcher.matchWithTrace(text, aliases())
+        val trace = KotlinMatcher.matchWithTrace(text, aliases(), lexicon())
         assertEquals(text, trace.rawText)
         assertEquals(
             "What is the range of 20 MeV protons in silicon?",
             trace.correctedText,
         )
         assertEquals(listOf("mev-letter-spelled", "silicone-as-silicon"), trace.firedCorrectionRules)
-        assertEquals(KotlinMatcher.match(text, aliases()), trace.intent)
+        assertEquals(KotlinMatcher.match(text, aliases(), lexicon()), trace.intent)
         assertNotNull(trace.intent)
     }
 
     @Test
     fun `matchWithTrace on unmatchable text returns a null intent with the trace still populated`() {
-        val trace = KotlinMatcher.matchWithTrace("asdf qwerty zxcv", aliases())
+        val trace = KotlinMatcher.matchWithTrace("asdf qwerty zxcv", aliases(), lexicon())
         assertEquals(null, trace.intent)
         assertEquals("asdf qwerty zxcv", trace.correctedText)
     }
