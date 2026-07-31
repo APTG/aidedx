@@ -46,50 +46,16 @@ data class MatcherTrace(
 
 object KotlinMatcher {
 
-    // Same direct-keyword vocabulary as en.ts's DIRECT_STOPPING/DIRECT_RANGE + LET synonym check
-    // (mentionsStoppingPowerSynonym) — fuzzy typo-tolerant matching is still out of scope.
-    private val STOPPING_POWER_RE = Regex(
-        "stopping power|de\\s*/\\s*dx|energy loss|specific ioni[sz]ation|bethe[\\s-]bloch|" +
-            "retarding force|energy deposition(?:\\s+density)?|" +
-            "dose per (?:micrometer|micrometre|micron|[uµ]m)|\\blet\\b|linear energy transfer",
-        RegexOption.IGNORE_CASE,
-    )
-    private val RANGE_RE = Regex("\\bcsda\\b|\\brange\\b", RegexOption.IGNORE_CASE)
-
-    // issue #143 — ported from en.ts's INDIRECT_IDIOMS. Only consulted when neither direct regex
-    // above matches (see `detectQuantity()`), same fallback ordering `matcher.ts` uses.
-    private val INDIRECT_IDIOMS: List<Pair<Regex, Quantity>> = listOf(
-        "\\bhow far\\b" to Quantity.CSDA_RANGE,
-        "\\bhow deep\\b" to Quantity.CSDA_RANGE,
-        "\\bhow thick\\b" to Quantity.CSDA_RANGE,
-        "\\bpenetration depth\\b" to Quantity.CSDA_RANGE,
-        "\\bpenetrat(?:e|es|ing|ion)\\b" to Quantity.CSDA_RANGE,
-        "\\bcome(?:s)? to rest\\b" to Quantity.CSDA_RANGE,
-        "\\bbefore stopping\\b" to Quantity.CSDA_RANGE,
-        "\\b(?:will|can|does|do)\\b[^.?!]*\\btravel\\b" to Quantity.CSDA_RANGE,
-        "\\bshorter distance\\b" to Quantity.CSDA_RANGE,
-        "\\bgo(?:es)? in\\b" to Quantity.CSDA_RANGE,
-        "\\bget into\\b" to Quantity.CSDA_RANGE,
-        "\\bmake it\\b" to Quantity.CSDA_RANGE,
-        "\\b(?:lose[s]?|lost)\\s+energy\\b" to Quantity.STOPPING_POWER,
-        "\\bshed[s]? energy\\b" to Quantity.STOPPING_POWER,
-        "\\bslowed down\\b" to Quantity.STOPPING_POWER,
-        "\\bat what rate\\b" to Quantity.STOPPING_POWER,
-        "\\bhow quickly\\b" to Quantity.STOPPING_POWER,
-        ("\\b(?:lose[s]?|lost)\\b[^.?!]*\\bper\\s+(?:centimeter|millimeter|cm|mm|unit length)\\b") to
-            Quantity.STOPPING_POWER,
-        ("\\b(?:per|after)\\s+(?:each\\s+)?(?:centimeter|millimeter|cm|mm|unit length)\\b") to
-            Quantity.STOPPING_POWER,
-        (
-            "\\benergy\\b[^.?!]*\\bdeposited\\b[^.?!]*\\bper\\s+" +
-                "(?:micrometer|micrometre|micron|[uµ]m)\\b"
-            ) to Quantity.STOPPING_POWER,
-    ).map { (pattern, quantity) -> Regex(pattern, RegexOption.IGNORE_CASE) to quantity }
-
-    private fun detectQuantity(text: String): Quantity? = when {
-        STOPPING_POWER_RE.containsMatchIn(text) -> Quantity.STOPPING_POWER
-        RANGE_RE.containsMatchIn(text) -> Quantity.CSDA_RANGE
-        else -> INDIRECT_IDIOMS.firstOrNull { (regex, _) -> regex.containsMatchIn(text) }?.second
+    // issue #160 §9a — the direct-keyword/idiom/LET-synonym vocabulary itself now lives in
+    // QuantityLexicon, loaded from the generated static/lexicon/quantity-en.json (the same
+    // source of truth en.ts's DIRECT_STOPPING/DIRECT_RANGE/INDIRECT_IDIOMS are built from) rather
+    // than being hand-inlined here.
+    private fun detectQuantity(text: String, lexicon: QuantityLexicon): Quantity? = when {
+        lexicon.matchesStoppingPower(text) -> Quantity.STOPPING_POWER
+        lexicon.rangeRe.containsMatchIn(text) -> Quantity.CSDA_RANGE
+        else ->
+            lexicon.indirectIdioms.firstOrNull { (regex, _) -> regex.containsMatchIn(text) }
+                ?.second
     }
 
     private val ENERGY_RE = Regex(
@@ -242,8 +208,8 @@ object KotlinMatcher {
         return null
     }
 
-    fun match(rawText: String, aliases: AliasTables): MatchedIntent? =
-        matchWithTrace(rawText, aliases).intent
+    fun match(rawText: String, aliases: AliasTables, lexicon: QuantityLexicon): MatchedIntent? =
+        matchWithTrace(rawText, aliases, lexicon).intent
 
     /**
      * issue #161 — the same matching pipeline as `match()`, plus the intermediate artifacts a
@@ -252,16 +218,24 @@ object KotlinMatcher {
      * this, so there is exactly one implementation to keep in sync — `KotlinMatcherTest` and
      * `KotlinMatcherAgreementTest` (both call `match()`) exercise this same code path unchanged.
      */
-    fun matchWithTrace(rawText: String, aliases: AliasTables): MatcherTrace {
+    fun matchWithTrace(
+        rawText: String,
+        aliases: AliasTables,
+        lexicon: QuantityLexicon,
+    ): MatcherTrace {
         // issue #147 — number normalization must run before the ASR correction rules, since
         // several of them (letter-spelled units, glued-unit-before-particle) are digit-gated;
         // see AsrCorrections.kt's header for why this ordering is itself part of the fix.
         val (text, firedRules) = AsrCorrections.correctWithTrace(normalizeSpelledNumbers(rawText))
-        return MatcherTrace(rawText, text, firedRules, matchCorrected(text, aliases))
+        return MatcherTrace(rawText, text, firedRules, matchCorrected(text, aliases, lexicon))
     }
 
-    private fun matchCorrected(text: String, aliases: AliasTables): MatchedIntent? {
-        val quantity = detectQuantity(text) ?: return null
+    private fun matchCorrected(
+        text: String,
+        aliases: AliasTables,
+        lexicon: QuantityLexicon,
+    ): MatchedIntent? {
+        val quantity = detectQuantity(text, lexicon) ?: return null
 
         val energyMatch = ENERGY_RE.find(text) ?: return null
         val (unit, perNucleonAssumed) = normalizeEnergyUnit(energyMatch.groupValues[2])

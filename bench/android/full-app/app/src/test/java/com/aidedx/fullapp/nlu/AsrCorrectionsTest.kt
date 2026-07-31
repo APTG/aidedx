@@ -32,13 +32,13 @@ class AsrCorrectionsTest {
             repoRoot().resolve("static/aliases/particles.json").readText(),
         )
 
-        val rangeMatch = KotlinMatcher.match("Range of twenty Me V proton in silicon.", aliases)
+        val rangeMatch = KotlinMatcher.match("Range of twenty Me V proton in silicon.", aliases, lexicon())
         assertEquals(Quantity.CSDA_RANGE, rangeMatch?.quantity)
         assertEquals(20.0, rangeMatch?.energy?.value)
         assertEquals("MeV", rangeMatch?.energy?.unit)
 
         val stoppingPowerMatch =
-            KotlinMatcher.match("Stopping power of twenty Me V proton in silicon.", aliases)
+            KotlinMatcher.match("Stopping power of twenty Me V proton in silicon.", aliases, lexicon())
         assertEquals(Quantity.STOPPING_POWER, stoppingPowerMatch?.quantity)
         assertEquals(20.0, stoppingPowerMatch?.energy?.value)
         assertEquals("MeV", stoppingPowerMatch?.energy?.unit)
@@ -118,7 +118,7 @@ class AsrCorrectionsTest {
             repoRoot().resolve("static/aliases/materials.json").readText(),
             repoRoot().resolve("static/aliases/particles.json").readText(),
         )
-        val match = KotlinMatcher.match("Range of a 5 TeV proton in water.", aliases)
+        val match = KotlinMatcher.match("Range of a 5 TeV proton in water.", aliases, lexicon())
         assertEquals(Quantity.CSDA_RANGE, match?.quantity)
         assertEquals(5.0, match?.energy?.value)
         assertEquals("TeV", match?.energy?.unit)
@@ -142,6 +142,7 @@ class AsrCorrectionsTest {
         val match = KotlinMatcher.match(
             "What is the range of uh five hundred kilo electronovolt proton in water?",
             aliases,
+            lexicon(),
         )
         assertEquals(Quantity.CSDA_RANGE, match?.quantity)
         assertEquals(500.0, match?.energy?.value)
@@ -170,6 +171,7 @@ class AsrCorrectionsTest {
         val match = KotlinMatcher.match(
             "Range of two hundred and forty MeV protons in silicon.",
             aliases,
+            lexicon(),
         )
         assertEquals(240.0, match?.energy?.value)
     }
@@ -218,4 +220,7 @@ class AsrCorrectionsTest {
         }
         return dir
     }
+
+    private fun lexicon(): QuantityLexicon =
+        QuantityLexicon.fromJson(repoRoot().resolve("static/lexicon/quantity-en.json").readText())
 }

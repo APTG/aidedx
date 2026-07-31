@@ -35,6 +35,7 @@ import com.aidedx.fullapp.nlu.KotlinMatcher
 import com.aidedx.fullapp.nlu.MatchedIntent
 import com.aidedx.fullapp.nlu.MatcherTrace
 import com.aidedx.fullapp.nlu.Quantity
+import com.aidedx.fullapp.nlu.QuantityLexicon
 import androidx.core.content.ContextCompat
 import org.json.JSONArray
 import org.json.JSONObject
@@ -70,6 +71,7 @@ class MainActivity : Activity() {
 
     private lateinit var downloadManager: ModelDownloadManager
     private lateinit var aliases: AliasTables
+    private lateinit var quantityLexicon: QuantityLexicon
     private lateinit var capturePrefs: CapturePrefs
     private lateinit var captureWriter: CaptureWriter
 
@@ -140,6 +142,7 @@ class MainActivity : Activity() {
 
         downloadManager = ModelDownloadManager(filesDir)
         aliases = AliasTables.load(assets)
+        quantityLexicon = QuantityLexicon.load(assets)
         capturePrefs = CapturePrefs(this)
         // Constructed once here, not in bindViews() — #162 already made this Activity instance
         // survive rotation, so there's no reason to reopen/reload captures.json on every config
@@ -512,7 +515,7 @@ class MainActivity : Activity() {
                 null
             } else {
                 try {
-                    KotlinMatcher.matchWithTrace(transcript, aliases)
+                    KotlinMatcher.matchWithTrace(transcript, aliases, quantityLexicon)
                 } catch (e: Exception) {
                     failure = CaptureEnvelope.buildFailureBlock("match", e)
                     null

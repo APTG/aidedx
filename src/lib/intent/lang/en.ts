@@ -12,49 +12,24 @@
  * moved verbatim from `matcher.ts`, not rewritten.
  */
 import type { Quantity } from "../query-intent.ts";
+import {
+  DIRECT_STOPPING_SOURCE,
+  DIRECT_RANGE_SOURCE,
+  STOPPING_POWER_ACRONYM_RE,
+  STOPPING_POWER_SYNONYM_PHRASE_RE,
+  buildIndirectIdioms,
+} from "../lexicon/build.ts";
 
 /**
  * Indirect-idiom table: phrasings that imply a quantity without naming it.
  * These are the cases the issue flags as "the LLM's job"; the deterministic
  * matcher leans on this table to claw back the common, formulaic ones.
+ *
+ * Built from the shared source of truth (`../lexicon/quantity-en.ts`, issue #160 §9a) — see that
+ * module for the raw pattern list.
  */
-export const INDIRECT_IDIOMS: ReadonlyArray<{ pattern: RegExp; quantity: Quantity }> = [
-  // csdaRange — "how far / deep / thick … will go / travel / stop / come to rest".
-  { pattern: /\bhow far\b/, quantity: "csdaRange" },
-  { pattern: /\bhow deep\b/, quantity: "csdaRange" },
-  { pattern: /\bhow thick\b/, quantity: "csdaRange" },
-  { pattern: /\bpenetration depth\b/, quantity: "csdaRange" },
-  { pattern: /\bpenetrat(?:e|es|ing|ion)\b/, quantity: "csdaRange" },
-  { pattern: /\bcome to rest\b/, quantity: "csdaRange" },
-  { pattern: /\bcomes to rest\b/, quantity: "csdaRange" },
-  { pattern: /\bbefore stopping\b/, quantity: "csdaRange" },
-  { pattern: /\b(?:will|can|does|do)\b[^.?!]*\btravel\b/, quantity: "csdaRange" },
-  { pattern: /\bshorter distance\b/, quantity: "csdaRange" },
-  { pattern: /\bgo(?:es)? in\b/, quantity: "csdaRange" },
-  { pattern: /\bget into\b/, quantity: "csdaRange" },
-  { pattern: /\bmake it\b/, quantity: "csdaRange" },
-  // stoppingPower — "how quickly / at what rate … loses / sheds / lost energy per length".
-  { pattern: /\b(?:lose[s]?|lost)\s+energy\b/, quantity: "stoppingPower" },
-  { pattern: /\bshed[s]? energy\b/, quantity: "stoppingPower" },
-  { pattern: /\bslowed down\b/, quantity: "stoppingPower" },
-  { pattern: /\bat what rate\b/, quantity: "stoppingPower" },
-  { pattern: /\bhow quickly\b/, quantity: "stoppingPower" },
-  {
-    pattern: /\b(?:lose[s]?|lost)\b[^.?!]*\bper\s+(?:centimeter|millimeter|cm|mm|unit length)\b/,
-    quantity: "stoppingPower",
-  },
-  {
-    pattern: /\b(?:per|after)\s+(?:each\s+)?(?:centimeter|millimeter|cm|mm|unit length)\b/,
-    quantity: "stoppingPower",
-  },
-  // The verb form of the "energy deposition" synonym (issue #26, DIRECT_STOPPING's own noun
-  // form doesn't match this) — "how much energy is deposited per micrometer".
-  {
-    pattern:
-      /\benergy\b[^.?!]*\bdeposited\b[^.?!]*\bper\s+(?:micrometer|micrometre|micron|[uµ]m)\b/,
-    quantity: "stoppingPower",
-  },
-];
+export const INDIRECT_IDIOMS: ReadonlyArray<{ pattern: RegExp; quantity: Quantity }> =
+  buildIndirectIdioms();
 
 /**
  * Direct keyword regex for the stoppingPower / csdaRange quantities (matched against
@@ -64,24 +39,25 @@ export const INDIRECT_IDIOMS: ReadonlyArray<{ pattern: RegExp; quantity: Quantit
  * power is computed from — used metonymically for the quantity itself), retarding force
  * (the force-dimensioned reading of dE/dx), and energy deposition (density) / dose per
  * micrometer (the dosimetry-register phrasings of the same quantity).
+ *
+ * Built from `../lexicon/quantity-en.ts`'s `STOPPING_POWER_DIRECT_PATTERNS` (issue #160 §9a).
  */
-export const DIRECT_STOPPING =
-  /\b(?:mass\s+|electronic\s+)?stopping power\b|\bde\s*\/\s*dx\b|\benergy loss\b|\bspecific ioni[sz]ation\b|\bbethe[\s-]bloch\b|\bretarding force\b|\benergy deposition(?:\s+density)?\b|\bdose per (?:micrometer|micrometre|micron|[uµ]m)\b/i;
-export const DIRECT_RANGE = /\bcsda\b|\brange\b/i;
+export const DIRECT_STOPPING = new RegExp(DIRECT_STOPPING_SOURCE, "i");
+export const DIRECT_RANGE = new RegExp(DIRECT_RANGE_SOURCE, "i");
 
 /**
  * LET (linear energy transfer) is the radiobiology / particle-therapy synonym for
  * (electronic) stopping power — unrestricted LET∞ is operationally equal to the
  * electronic mass stopping power libdedx returns, so it maps to `stoppingPower`.
  *
- * The acronym is matched CASE-SENSITIVELY against the *original* text (`/\bLET\b/`,
- * not the lowercased copy the other detectors use) so the ordinary verb "let"
- * ("let me know…", "Let's…") is never misread as the physics term. The spelled-out
- * form is unambiguous and matched case-insensitively. ASR transcripts that lowercase
- * the acronym are normalized upstream by the domain corrector (issue #28).
+ * The acronym is matched CASE-SENSITIVELY against the *original* text (not the lowercased
+ * copy the other detectors use) so the ordinary verb "let" ("let me know…", "Let's…") is
+ * never misread as the physics term. The spelled-out form is unambiguous and matched
+ * case-insensitively. ASR transcripts that lowercase the acronym are normalized upstream by
+ * the domain corrector (issue #28).
  */
 export function mentionsStoppingPowerSynonym(lower: string, text: string): boolean {
-  return /\bLET\b/.test(text) || /\blinear energy transfer\b/.test(lower);
+  return STOPPING_POWER_ACRONYM_RE.test(text) || STOPPING_POWER_SYNONYM_PHRASE_RE.test(lower);
 }
 
 /**

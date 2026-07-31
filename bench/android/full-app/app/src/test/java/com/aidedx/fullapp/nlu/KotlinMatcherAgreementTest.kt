@@ -33,6 +33,9 @@ class KotlinMatcherAgreementTest {
             File(root, "static/aliases/materials.json").readText(),
             File(root, "static/aliases/particles.json").readText(),
         )
+        val lexicon = QuantityLexicon.fromJson(
+            File(root, "static/lexicon/quantity-en.json").readText(),
+        )
 
         val lines = File(root, "eval/intents.jsonl").readLines()
             .filter { it.isNotBlank() && !it.trim().startsWith("//") && !it.trim().startsWith("#") }
@@ -80,7 +83,7 @@ class KotlinMatcherAgreementTest {
                 ?: isotopeElement?.let { aliases.resolveParticle(it)?.id }
             val expectedMaterialId = aliases.resolveMaterial(expectedMaterialPhrase)?.id
 
-            val actual = KotlinMatcher.match(text, aliases)
+            val actual = KotlinMatcher.match(text, aliases, lexicon)
             val actualQuantity = when (actual?.quantity) {
                 Quantity.STOPPING_POWER -> "stoppingPower"
                 Quantity.CSDA_RANGE -> "csdaRange"

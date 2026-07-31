@@ -53,6 +53,15 @@ jobs:
         continue-on-error: true
         run: pnpm run coverage:intents
 
+      # Reported, non-blocking metric: generated, held-out, text-only NLU generalization corpus
+      # + ASR-corruption fuzz layer (issue #160 §8). Unlike the metric above, this measures
+      # generalization to phrasings not in eval/intents.jsonl — that frozen set currently reads
+      # 100.0%|100.0% on every tag and so can no longer show whether a matcher change is an
+      # improvement or a regression. Deterministic, no WASM/libdedx, runs in well under a second.
+      - name: Text-only NLU generalization benchmark (reported, non-blocking)
+        continue-on-error: true
+        run: pnpm run bench:nlu
+
       # Reported, non-blocking metric: end-to-end audio→intent accuracy (issue #27), re-scored
       # from the committed transcript JSONs in eval/results/asr-2026-07-05/ against the frozen
       # eval/intents.jsonl gold labels. No audio or model needed — deterministic and fast — so

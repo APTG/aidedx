@@ -33,6 +33,7 @@
  */
 import type { CorrectionRule } from "./core.ts";
 import { NUMBER_WORDS } from "../../intent/lang/en.ts";
+import { QUANTITY_CANONICAL_TERMS } from "../../intent/lexicon/quantity-en.ts";
 
 // Particles that follow an energy value — used to detect MeV→mm/ml/etc. acoustic confusion.
 const PARTICLE_WORDS =
@@ -322,12 +323,12 @@ export const LEXICON: readonly LexiconEntry[] = [
   { slot: "unit", canonical: "keV" },
   { slot: "unit", canonical: "GeV" },
   { slot: "unit", canonical: "TeV" },
-  { slot: "quantity", canonical: "stopping power" },
-  { slot: "quantity", canonical: "range" },
-  { slot: "quantity", canonical: "dE/dx" },
-  { slot: "quantity", canonical: "CSDA" },
-  { slot: "quantity", canonical: "LET" },
-  { slot: "quantity", canonical: "linear energy transfer" },
+  // issue #160 §9a — sourced from the same canonical-terms list en.ts's DIRECT_STOPPING/
+  // INDIRECT_IDIOMS are built from (../../intent/lexicon/quantity-en.ts), so a term added there
+  // can't silently omit the phonetic-correction fallback. This list stays coarser than that
+  // module's full synonym vocabulary by design (a closed set of canonical *spellings* for
+  // nearest-neighbor correction, not an exhaustive match regex) — see that module's doc comment.
+  ...QUANTITY_CANONICAL_TERMS.map((canonical) => ({ slot: "quantity" as const, canonical })),
   { slot: "program", canonical: "ASTAR" },
   { slot: "program", canonical: "PSTAR" },
   { slot: "program", canonical: "ESTAR" },

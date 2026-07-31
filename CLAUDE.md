@@ -68,6 +68,9 @@ covered via manual dispatch and PRs targeting `main`.
   `JAVA_HOME=<path-to-android-studio>/jbr ./gradlew assembleDebug`.
 - Test devices connect over wireless adb; if `adb devices` doesn't list one, reconnect with
   `adb connect <device-ip>:5555` (ask the user for the current IP — it's not fixed).
+- **Never commit the device's IP address** anywhere in the repo (code, docs, commit messages, PR
+  descriptions/comments) — it's the user's personal network info, not project config. Use it locally
+  in shell commands only.
 
 ## Common CI failure causes and fixes
 
