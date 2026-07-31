@@ -147,11 +147,35 @@ describe("energy + unit parsing", () => {
     ).toEqual({ value: 1200, unit: "MeV/nucl", perNucleonAssumed: true });
   });
 
-  it("does not flag a bare energy on a named light particle", () => {
-    expect(matchQueryIntent("Range of 10 MeV alpha particles in air?").energies[0]).toEqual({
+  it("does not flag a bare energy on a proton (A=1, total and per-nucleon coincide)", () => {
+    expect(matchQueryIntent("Range of 10 MeV protons in air?").energies[0]).toEqual({
       value: 10,
       unit: "MeV",
     });
+  });
+
+  it("flags a bare energy on a named A>1 particle even without an assumed isotope (issue #163 B7)", () => {
+    // Alpha/deuteron/triton have a *fixed*, not assumed, isotope — `isotopeAssumed` is never set
+    // for them, but compute.ts still divides their bare energy by A, so the same disclosure a
+    // bare "carbon ion" already gets must fire here too, not just when isotopeAssumed is set.
+    const alpha = matchQueryIntent("Range of 20 MeV alpha particles in air?");
+    expect(alpha.energies[0]).toEqual({ value: 20, unit: "MeV", perNucleonAssumed: false });
+    expect(alpha.assumptions).toContain("20 MeV taken as total → 5 MeV/nucl");
+
+    const deuteron = matchQueryIntent("Range of 20 MeV deuterons in water?");
+    expect(deuteron.energies[0]).toEqual({ value: 20, unit: "MeV", perNucleonAssumed: false });
+    expect(deuteron.assumptions).toContain("20 MeV taken as total → 10 MeV/nucl");
+
+    const triton = matchQueryIntent("Range of 20 MeV tritons in water?");
+    expect(triton.energies[0]).toEqual({ value: 20, unit: "MeV", perNucleonAssumed: false });
+    expect(triton.assumptions).toContain("20 MeV taken as total → 6.667 MeV/nucl");
+  });
+
+  it("formats the per-nucleon assumption note to 4 significant figures, not raw 1e-6 precision (issue #163 B7)", () => {
+    // Previously round()'s 1e-6 precision leaked straight into the note text: "33.333333
+    // MeV/nucl" instead of a physicist-readable "33.33 MeV/nucl".
+    const intent = matchQueryIntent("Stopping power of a 400 MeV carbon ion in water.");
+    expect(intent.assumptions).toContain("400 MeV taken as total → 33.33 MeV/nucl");
   });
 
   it("drops a negative energy instead of silently treating it as positive", () => {
@@ -301,9 +325,10 @@ describe("issue #26 — spelled-out numbers", () => {
   });
 
   it("parses 'three MeV' as an energy value", () => {
+    // Also correctly flagged as taken-as-total (issue #163 B7) — alpha is A=4.
     expect(
       matchQueryIntent("Stopping power of three MeV alpha particles in air?").energies,
-    ).toEqual([{ value: 3, unit: "MeV" }]);
+    ).toEqual([{ value: 3, unit: "MeV", perNucleonAssumed: false }]);
   });
 
   it("does not shift spans for unrelated text around the spelled-out number", () => {
@@ -390,6 +415,25 @@ describe("issue #122 — spelled-out tens and hundreds (NeMo Parakeet has no ASR
     expect(matchQueryIntent("Stopping power of point 2 MeV protons in water?").energies).toEqual([
       { value: 0.2, unit: "MeV" },
     ]);
+  });
+
+  it("composes 'X hundred Y-Z' (a tens+ones remainder after hundreds) into digits (issue #163 B4)", () => {
+    // Previously: composeHundreds() ran first and consumed "two hundred thirty" as 200 + a
+    // single-word remainder "thirty" (30), leaving "five" as an orphaned word with no adjacent
+    // tens word left to compose with — extractEnergies()'s number grammar then picked up
+    // whichever bare digit ended up next to "MeV" (5, not 235).
+    expect(
+      matchQueryIntent("Range of a two hundred thirty five MeV proton in water.").energies,
+    ).toEqual([{ value: 235, unit: "MeV" }]);
+    expect(
+      matchQueryIntent("Range of a nine hundred ninety nine MeV proton in water.").energies,
+    ).toEqual([{ value: 999, unit: "MeV" }]);
+  });
+
+  it("still composes 'X hundred and Y-Z' with 'and' before a tens+ones remainder (issue #163 B4)", () => {
+    expect(
+      matchQueryIntent("Range of a one hundred and thirty five MeV proton in water.").energies,
+    ).toEqual([{ value: 135, unit: "MeV" }]);
   });
 
   it("recognizes a spelled-out length-target unit ('centimeters')", () => {
@@ -560,5 +604,57 @@ describe("issue #103 — bughunt regressions", () => {
     const intent = matchQueryIntent("Which energy makes a proton lose 2 MeV per cm in PMMA?");
     expect(intent.quantity).toBe("energyFromStp");
     expect(intent.target).toEqual({ value: 2, unit: "MeV/cm" });
+  });
+});
+
+describe("issue #163 B3 — unresolved (named but unrecognized) particles/materials", () => {
+  it("flags a named particle libdedx has no data for, instead of leaving it silently empty", () => {
+    const { intent, unresolved } = matchIntent("range of muons in water at 100 MeV");
+    expect(intent.particles).toEqual([]);
+    expect(unresolved).toEqual([{ kind: "particle", phrase: "muons" }]);
+  });
+
+  it("flags a second unrecognized particle example ('pions')", () => {
+    const { unresolved } = matchIntent("range of pions in water at 100 MeV");
+    expect(unresolved).toEqual([{ kind: "particle", phrase: "pions" }]);
+  });
+
+  it("flags a named material libdedx has no data for ('stainless steel')", () => {
+    const { intent, unresolved } = matchIntent(
+      "stopping power of 100 MeV protons in stainless steel",
+    );
+    expect(intent.materials).toEqual([]);
+    expect(unresolved).toEqual([{ kind: "material", phrase: "stainless steel" }]);
+  });
+
+  it("flags a single-word unrecognized material ('unobtanium')", () => {
+    const { unresolved } = matchIntent("stopping power of 100 MeV protons in unobtanium");
+    expect(unresolved).toEqual([{ kind: "material", phrase: "unobtanium" }]);
+  });
+
+  it("does not flag anything when both particle and material genuinely aren't mentioned", () => {
+    // "stopping power of a proton" — no material, no energy — must still fall through to
+    // fill-defaults.ts's ordinary "not specified" behavior, not this new path.
+    const { unresolved } = matchIntent("stopping power of a proton");
+    expect(unresolved).toEqual([]);
+  });
+
+  it("does not flag a normal query where the material resolves fine", () => {
+    const { unresolved } = matchIntent("range of protons in water at 100 MeV");
+    expect(unresolved).toEqual([]);
+  });
+
+  it("does not misfire on non-material 'in ...' idioms ('in general', 'in theory')", () => {
+    expect(matchIntent("range of protons in general").unresolved).toEqual([]);
+    expect(matchIntent("stopping power of protons in theory").unresolved).toEqual([]);
+  });
+
+  it("never overrides an already-successful match — unresolved stays empty once particles resolve", () => {
+    // Regression guard: this detector must only ever run when the real scan found nothing.
+    const { intent, unresolved } = matchIntent(
+      "stopping power of 100 MeV protons in stainless steel and water",
+    );
+    expect(intent.materials).toEqual([{ match: "water" }]);
+    expect(unresolved).toEqual([]);
   });
 });

@@ -6,7 +6,7 @@
  * note next to a user-corrected particle would be actively misleading) and
  * sets `confidence: 1` (the user has now confirmed this slot directly).
  */
-import type { EnergyUnit, QueryIntent } from "./query-intent.ts";
+import type { EnergyUnit, QueryIntent, RangeTargetUnit, StpTargetUnit } from "./query-intent.ts";
 
 function withCorrection(intent: QueryIntent, patch: Partial<QueryIntent>): QueryIntent {
   return { ...intent, ...patch, assumptions: [], confidence: 1 };
@@ -34,7 +34,15 @@ export function withEnergy(
   return withCorrection(intent, { energies });
 }
 
-export function withTarget(intent: QueryIntent, value: number, unit: string): QueryIntent {
+// issue #163 B1/B2 — `unit` is the closed set now, not a free string; the one caller
+// (`IntentChips.svelte`'s `commitTarget`, a free-text chip edit) validates the user's typed unit
+// against `RANGE_TARGET_UNITS`/`STP_TARGET_UNITS` before calling this, the same "validate at the
+// system boundary" spot every other free-text chip edit in that component already uses.
+export function withTarget(
+  intent: QueryIntent,
+  value: number,
+  unit: RangeTargetUnit | StpTargetUnit,
+): QueryIntent {
   return withCorrection(intent, { target: { value, unit } });
 }
 

@@ -14,6 +14,7 @@ import { renderAnswer } from "../nlg/render.ts";
 import type { QueryIntent } from "../intent/query-intent.ts";
 import {
   buildDefaultsNotice,
+  buildUnresolvedNotice,
   fillMissingSlots,
   isRecoverableIncomplete,
 } from "../intent/fill-defaults.ts";
@@ -110,6 +111,17 @@ class AnswerStore {
           }
         : match.intent;
     if (intent.confidence < CONFIDENCE_THRESHOLD) {
+      // issue #163 B3 — must be checked *before* isRecoverableIncomplete()/fillMissingSlots()
+      // below: a named-but-unrecognized particle/material ("stainless steel", "muons") also
+      // leaves its slot empty, which fillMissingSlots() can't tell apart from "never mentioned"
+      // and would silently substitute water/proton for, with a banner falsely claiming the user
+      // didn't specify one. No computed answer here — there's nothing to show chips for when the
+      // named entity itself is the problem.
+      if (match.unresolved.length > 0) {
+        this.phase = "unmatched";
+        this.message = buildUnresolvedNotice(match.unresolved);
+        return;
+      }
       if (!isRecoverableIncomplete(match)) {
         this.phase = "unmatched";
         this.message = UNMATCHED_MESSAGE;

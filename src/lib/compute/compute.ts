@@ -18,7 +18,15 @@
  *
  * Every number returned originates in libdedx — never the LLM (issue #1 §4).
  */
-import type { CompareDim, Quantity, QueryIntent } from "../intent/query-intent.ts";
+import {
+  RANGE_TARGET_UNITS,
+  STP_TARGET_UNITS,
+  type CompareDim,
+  type Quantity,
+  type QueryIntent,
+  type RangeTargetUnit,
+  type StpTargetUnit,
+} from "../intent/query-intent.ts";
 import { resolveMaterial, resolveParticle } from "../aliases/lookup.ts";
 import { particleById } from "../aliases/particles.ts";
 import { PROGRAMS, ELECTRON_ID } from "../wasm/libdedx.ts";
@@ -321,38 +329,76 @@ export function energyToMeVPerNucl(
   }
 }
 
-/** Convert an inverse-query range target to g/cm² (the native libdedx unit). */
+function isRangeTargetUnit(unit: string): unit is RangeTargetUnit {
+  return (RANGE_TARGET_UNITS as readonly string[]).includes(unit);
+}
+function isStpTargetUnit(unit: string): unit is StpTargetUnit {
+  return (STP_TARGET_UNITS as readonly string[]).includes(unit);
+}
+
+/**
+ * issue #163 B1 — converts every non-areal `RangeTargetUnit` to centimetres. A plain `Record`
+ * keyed by the closed unit type (same exhaustiveness idiom `nlg/dedx-web-link.ts`'s
+ * `ENERGY_UNIT_TO_DEDXWEB` already uses): TypeScript requires every member of
+ * `Exclude<RangeTargetUnit, "g/cm2">` to have an entry, so a unit added to `RANGE_TARGET_UNITS`
+ * without a conversion here is a compile error. `"um"` is the one this table exists for — its
+ * absence (silently falling through to `"cm"`, a ~200× error) was the original bug.
+ */
+const RANGE_TARGET_UNIT_TO_CM: Record<Exclude<RangeTargetUnit, "g/cm2">, (value: number) => number> =
+  {
+    cm: (v) => v,
+    mm: (v) => v / 10,
+    m: (v) => v * 100,
+    um: (v) => v / 10_000,
+  };
+
+/** Convert an inverse-query range target to g/cm² (the native libdedx unit). Throws
+ * `ComputeError` for a stopping-power unit passed by mistake (`intent.target.unit`'s static type
+ * is the wider `RangeTargetUnit | StpTargetUnit`) or a missing density, rather than guessing. */
 function rangeTargetToGcm2(
-  target: { value: number; unit: string },
+  target: { value: number; unit: RangeTargetUnit | StpTargetUnit },
   density: number | undefined,
 ): number {
-  const unit = target.unit.toLowerCase().replace(/\s+/g, "");
-  if (unit === "g/cm2" || unit === "g/cm²" || unit === "gcm-2") return target.value;
-  // length units need a density to become areal.
-  let cm: number;
-  if (unit === "mm") cm = target.value / 10;
-  else if (unit === "m") cm = target.value * 100;
-  else cm = target.value; // "cm" (default)
+  if (!isRangeTargetUnit(target.unit)) {
+    throw new ComputeError(`"${target.unit}" is a stopping-power unit, not a range unit`);
+  }
+  if (target.unit === "g/cm2") return target.value;
   if (!density || density <= 0) {
     throw new ComputeError(`Need material density to convert range "${target.unit}" to g/cm²`);
   }
-  return cm * density;
+  return RANGE_TARGET_UNIT_TO_CM[target.unit](target.value) * density;
 }
 
-/** Convert an inverse-query stopping-power target to MeV·cm²/g (native unit). */
+/**
+ * issue #163 B2 — converts every non-mass `StpTargetUnit` to MeV·cm²/g, density-dependent, same
+ * exhaustiveness idiom as `RANGE_TARGET_UNIT_TO_CM` above. `"keV/um"`'s factor is
+ * `format.ts`'s `stoppingPowerToKevPerUm()` inverted (`kevPerUm = massStpMevCm2PerG * density *
+ * 0.1`) — its absence (silently falling through to "treat as already MeV·cm²/g") was the original
+ * ~18×-in-water bug, sharper here than B1 because the *forward* direction renders stopping power
+ * in keV/µm (`render.ts`'s `valueText()`), so the app answers in a unit it couldn't read back.
+ */
+const STP_TARGET_UNIT_TO_MASS_UNITS: Record<
+  Exclude<StpTargetUnit, "MeV cm2/g">,
+  (value: number, densityGPerCm3: number) => number
+> = {
+  "MeV/cm": (v, density) => v / density,
+  "keV/um": (v, density) => v / (density * 0.1),
+};
+
+/** Convert an inverse-query stopping-power target to MeV·cm²/g (native unit). Throws
+ * `ComputeError` for a range unit passed by mistake or a missing density. */
 function stpTargetToMassUnits(
-  target: { value: number; unit: string },
+  target: { value: number; unit: RangeTargetUnit | StpTargetUnit },
   density: number | undefined,
 ): number {
-  const unit = target.unit.toLowerCase().replace(/\s+/g, "");
-  if (unit === "mev·cm²/g" || unit === "mevcm2/g" || unit === "mevcm²/g") return target.value;
-  if (unit === "mev/cm") {
-    if (!density || density <= 0) {
-      throw new ComputeError("Need material density to convert MeV/cm to MeV·cm²/g");
-    }
-    return target.value / density;
+  if (!isStpTargetUnit(target.unit)) {
+    throw new ComputeError(`"${target.unit}" is a range unit, not a stopping-power unit`);
   }
-  return target.value; // assume mass stopping power if unitless/unknown
+  if (target.unit === "MeV cm2/g") return target.value;
+  if (!density || density <= 0) {
+    throw new ComputeError(`Need material density to convert "${target.unit}" to MeV·cm²/g`);
+  }
+  return STP_TARGET_UNIT_TO_MASS_UNITS[target.unit](target.value, density);
 }
 
 /**

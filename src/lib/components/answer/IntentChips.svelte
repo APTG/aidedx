@@ -7,7 +7,13 @@
    * is aimed at.
    */
   import { tick } from "svelte";
-  import { ENERGY_UNITS, type EnergyUnit, type QueryIntent } from "$lib/intent/query-intent.ts";
+  import {
+    ENERGY_UNITS,
+    RANGE_TARGET_UNITS,
+    STP_TARGET_UNITS,
+    type EnergyUnit,
+    type QueryIntent,
+  } from "$lib/intent/query-intent.ts";
   import { resolveParticle } from "$lib/aliases/lookup.ts";
   import { particleDisplayLabel } from "$lib/aliases/particles.ts";
   import {
@@ -47,6 +53,15 @@
     energyFromRange: "energy (from range)",
     energyFromStp: "energy (from stopping power)",
   };
+
+  // issue #163 B1/B2 — the target chip's unit field is free text (the user can type anything),
+  // so this is the system boundary where it gets checked against the closed set `withTarget()`
+  // now requires, the same "validate at the boundary" spot every other free-text chip edit below
+  // already uses (a non-finite energy value, an empty unit — both already silently don't commit).
+  const TARGET_UNITS: ReadonlySet<string> = new Set<string>([...RANGE_TARGET_UNITS, ...STP_TARGET_UNITS]);
+  function isTargetUnit(unit: string): unit is (typeof RANGE_TARGET_UNITS)[number] | (typeof STP_TARGET_UNITS)[number] {
+    return TARGET_UNITS.has(unit);
+  }
 
   function particleLabel(match: string): string {
     const resolved = resolveParticle(match);
@@ -180,7 +195,7 @@
     if (
       Number.isFinite(value) &&
       value > 0 &&
-      trimmedUnit &&
+      isTargetUnit(trimmedUnit) &&
       (value !== current?.value || trimmedUnit !== current?.unit)
     ) {
       onEditIntent(withTarget(intent, value, trimmedUnit));

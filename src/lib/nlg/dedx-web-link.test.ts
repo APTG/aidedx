@@ -141,7 +141,7 @@ describe("buildDedxWebCalculatorUrl", () => {
     ["keV/um", "kev-um"],
     ["MeV/cm", "mev-cm"],
     ["MeV cm2/g", "mev-cm2-g"],
-  ])("maps energyFromStp target unit %s to dedx_web token %s", (aidedxUnit, dedxWebToken) => {
+  ] as const)("maps energyFromStp target unit %s to dedx_web token %s", (aidedxUnit, dedxWebToken) => {
     const i = intent({
       quantity: "energyFromStp",
       energies: [],
