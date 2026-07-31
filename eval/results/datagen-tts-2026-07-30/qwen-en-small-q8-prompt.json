@@ -1,0 +1,359 @@
+{
+  "modelId": "onnx-community/whisper-small",
+  "dtype": "q8",
+  "lang": "en",
+  "withPrompt": true,
+  "loadS": 1.834,
+  "records": [
+    {
+      "id": "dg-01",
+      "raw": "What is the CSDA range of a 150 MeV proton in water?",
+      "secs": 3.396,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-02",
+      "raw": "What is the range of a ton in MAV, proton and cortical bone?",
+      "secs": 1.933,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-03",
+      "raw": "How far will a 250 MeV proton travel through PMMA?",
+      "secs": 1.902,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-04",
+      "raw": "What is the range of a 500 kilo electron volt proton in water?",
+      "secs": 1.997,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-05",
+      "raw": "What is the range of a 60 MeV deuteron in silicon?",
+      "secs": 2.159,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-06",
+      "raw": "How deep does a 40 MeV triton penetrate into PMMA?",
+      "secs": 1.927,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-07",
+      "raw": "How far will a 20 MeV alpha particle travel through air?",
+      "secs": 1.656,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-08",
+      "raw": "How deep does a 30 MeV helium-3 ion penetrate into graphite?",
+      "secs": 2.335,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-09",
+      "raw": "What is the range of a 50 MeV per nucleon lithium ion in polycarbonate?",
+      "secs": 2.13,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-10",
+      "raw": "What is the range of a 100 MeV per nucleon boron ion in polyethylene?",
+      "secs": 2.023,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-11",
+      "raw": "What is the range of a 300-megawatt electron volt per nucleon carbon ion in water?",
+      "secs": 2.095,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-12",
+      "raw": "How far will a 180 MeV per nucleon nitrogen ion travel through cortical bone?",
+      "secs": 2.434,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-13",
+      "raw": "What is the CSDA range of a 250 MeV per nucleon oxygen ion in PMMA?",
+      "secs": 2.098,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-14",
+      "raw": "How deep does a 400 MeV per nucleon neon ion penetrate into water?",
+      "secs": 2.509,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-15",
+      "raw": "What is the range of a 150 MiV per nucleon magnesium ion in a 150 tissue equivalent plastic?",
+      "secs": 2.381,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-16",
+      "raw": "What is the range of a 300 MeV per nucleon silicon ion in silicon dioxide?",
+      "secs": 2.107,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-17",
+      "raw": "How far will a 350 MeV per nucleon argon ion travel through water?",
+      "secs": 1.952,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-18",
+      "raw": "What is the range of a 200 MeV per nucleon calcium ion in adipose tissue?",
+      "secs": 2.861,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-19",
+      "raw": "How deep does a 600 MeV per nucleon titanium ion penetrate into water?",
+      "secs": 2.487,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-20",
+      "raw": "What is the CSDA range of a 600 MeV per nucleon iron ion in aluminum?",
+      "secs": 2.122,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-21",
+      "raw": "What is the range of a 500 MeV per nucleon copper ion in LET?",
+      "secs": 2.464,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-22",
+      "raw": "How far will a 1 giga electron volt proton travel through water?",
+      "secs": 2.174,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-23",
+      "raw": "What is the range of protons and water at 100 MeV, 150 MeV, and 200 MeV?",
+      "secs": 2.063,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-24",
+      "raw": "What is the range of carbon ions in water at 200 MeV per nucleon, 300 MeV per nucleon, and 400 MeV per nucleon?",
+      "secs": 2.334,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-25",
+      "raw": "What is the range of alpha particles in air at 5 MeV, 10 MeV, and 20 MeV?",
+      "secs": 2.327,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-26",
+      "raw": "Compare the range of a 150 Mv proton in water, PMMA and cortical bone.",
+      "secs": 2.324,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-27",
+      "raw": "Compare the range of a 300 MAV per nucleon, oxygen, ion, and water and aluminum.",
+      "secs": 2.413,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-28",
+      "raw": "Compare the range of a 100 MeV proton in water and adipose tissue.",
+      "secs": 2.092,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-29",
+      "raw": "Compare the range of a carbon ion and a neon ion in water, both at 200 MeV per nucleon.",
+      "secs": 2.021,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-30",
+      "raw": "Compare the range of a proton and a deuteron in water, both at 60 MeV.",
+      "secs": 2.087,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-31",
+      "raw": "What energy gives a 20 centimeter range in water for protons?",
+      "secs": 2.131,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-32",
+      "raw": "How energetic must a proton be for a 15 centimeter range in water?",
+      "secs": 2.615,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-33",
+      "raw": "What energy gives a 5 centimeter range in PMMA for protons?",
+      "secs": 2.423,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-34",
+      "raw": "How energetic must a carbon-14 ion be for a 10 centimeter range in water?",
+      "secs": 2.78,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-35",
+      "raw": "What energy gives a 30mm range in muscle tissue for alpha particles?",
+      "secs": 2.527,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-36",
+      "raw": "How energetic must an iron ion be for a 3 centimeter range in water?",
+      "secs": 3.15,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-37",
+      "raw": "What energy gives a 12 centimeter range in water for oxygen ions?",
+      "secs": 2.72,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-38",
+      "raw": "How energetic must a proton be for a 9-centimeter range in cortical bone?",
+      "secs": 2.825,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-39",
+      "raw": "What energy gives a 5 centimeter range in PMMA for calcium ions?",
+      "secs": 2.354,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-40",
+      "raw": "What energy do protons need for a 10 centimeter range in water and PMMA?",
+      "secs": 2.413,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-41",
+      "raw": "What energy do protons need for a 15 centimeter range in water, cortical bone, and adipose tissue?",
+      "secs": 2.737,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-42",
+      "raw": "What energy do protons need for a 15 centimeter range in water? What about carbon ions?",
+      "secs": 2.345,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-43",
+      "raw": "What is the let of a 100 megalelectron volt proton in water?",
+      "secs": 2.071,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-44",
+      "raw": "What is the stopping power of a 200 megA electron volt per nucleon, carbon ion and water?",
+      "secs": 3.052,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-45",
+      "raw": "What is the LED of a 10 MeV proton in aluminum?",
+      "secs": 1.982,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-46",
+      "raw": "What is the let of a 40 MeV deuteron in air?",
+      "secs": 1.891,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-47",
+      "raw": "What is the LET of a 5 MeV alpha particle in silicon?",
+      "secs": 2.39,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-48",
+      "raw": "Compare the LET of 150 MeV proton in water, PMMA, and cortical bone.",
+      "secs": 3.026,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-49",
+      "raw": "What is the LET of protons in water at 50 MeV, 100 MeV, and 150 MeV?",
+      "secs": 3.232,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-50",
+      "raw": "Compare the let of a proton and a carbon ion in water both at 100 MeV.",
+      "secs": 2.564,
+      "error": null,
+      "usedPromptFallback": false
+    }
+  ]
+}

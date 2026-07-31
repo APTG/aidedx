@@ -9,6 +9,17 @@
  * directly (confirmed while building issue #130 Part 3 — an earlier doc note claiming it
  * "needs no change" was about Polish-word regex support, not this JSON shape mismatch).
  *
+ * `--field canonical|display` (default `canonical`) selects which text variant becomes `text`:
+ *   - `canonical` (default, unchanged behavior) — the abbreviated reference form, for scoring
+ *     against a real recorded/transcribed session (WER, matcher ground truth).
+ *   - `display` (issue #155) — the human-pronunciation-informed rendering (spelled-out length
+ *     units, the 5/50 expanded-energy sentences, letter-spelled `LET`/`CSDA` in English —
+ *     eval/RECORDING.datagen.md's own rendering table) that #130 Part 1 designed specifically
+ *     to double as TTS input. This is what scripts/tts-qwen-1000.py / tts-piper-1000.py /
+ *     tts-chatterbox-1000-pl.py expect as their `<sentences.json>` argument — those scripts are
+ *     otherwise fully generic over the {id, text, ...} shape, so no separate TTS-generation
+ *     script was needed, just this flattening step pointed at `display` instead of `canonical`.
+ *
  * `multi` is derived from slotTruth shape, not hand-authored: >1 energies -> "energy", >1
  * materials -> "material", >1 particles -> "particle", else null ("single" once
  * asr-score-slots-generic.mjs applies its own `?? "single"` fallback) — gives that script's
@@ -17,17 +28,36 @@
  * Output is NOT committed (gitignored, like scripts/tts-1000-sentences*.json) — regenerate
  * from the single source of truth, eval/datagen-sentences.json, whenever needed.
  *
- * Usage: node scripts/datagen-to-manifest.mjs <en|pl> [outFile]
- *   outFile defaults to eval/datagen-manifest-<lang>.json
+ * Usage: node scripts/datagen-to-manifest.mjs <en|pl> [outFile] [--field canonical|display]
+ *   outFile defaults to eval/datagen-manifest-<lang>.json (canonical) or
+ *   eval/datagen-manifest-tts-<lang>.json (display)
  */
 import { readFileSync, writeFileSync } from "node:fs";
 
-const lang = process.argv[2];
+const rawArgs = process.argv.slice(2);
+const fieldFlagIdx = rawArgs.indexOf("--field");
+const field = fieldFlagIdx >= 0 ? rawArgs[fieldFlagIdx + 1] : "canonical";
+const positional =
+  fieldFlagIdx >= 0
+    ? rawArgs.filter((_, i) => i !== fieldFlagIdx && i !== fieldFlagIdx + 1)
+    : rawArgs;
+const [lang, explicitOutPath] = positional;
+
 if (lang !== "en" && lang !== "pl") {
-  console.error("Usage: node scripts/datagen-to-manifest.mjs <en|pl> [outFile]");
+  console.error(
+    "Usage: node scripts/datagen-to-manifest.mjs <en|pl> [outFile] [--field canonical|display]",
+  );
   process.exit(1);
 }
-const outPath = process.argv[3] ?? `eval/datagen-manifest-${lang}.json`;
+if (field !== "canonical" && field !== "display") {
+  console.error(`--field must be "canonical" or "display", got "${field}"`);
+  process.exit(1);
+}
+const outPath =
+  explicitOutPath ??
+  (field === "display"
+    ? `eval/datagen-manifest-tts-${lang}.json`
+    : `eval/datagen-manifest-${lang}.json`);
 
 const records = JSON.parse(readFileSync("eval/datagen-sentences.json", "utf-8"));
 
@@ -42,7 +72,7 @@ const clips = records.map((r) => {
   const side = r[lang];
   return {
     id: r.id,
-    text: side.canonical,
+    text: side[field],
     quantity: r.quantity,
     multi: multiFor(side.slotTruth),
     slotTruth: side.slotTruth,
@@ -50,4 +80,4 @@ const clips = records.map((r) => {
 });
 
 writeFileSync(outPath, JSON.stringify(clips, null, 2) + "\n");
-console.log(`wrote ${outPath} (${clips.length} clips)`);
+console.log(`wrote ${outPath} (${clips.length} clips, field=${field})`);

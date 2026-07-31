@@ -1,0 +1,36 @@
+
+=== E2E (datagen, pl) onnx-community/whisper-small [q8] corrector=shipped ===
+audio→intent slot-match: raw 6/50 (12%)  corrected 6/50 (12%)
+mean WER vs. canonical (raw transcript): 28.5%
+per speaker (corrected): undefined 6/50
+failures (44):
+  undefined/dg-01 [particles,energies]: jaki jest zasięg, czez daplotonu o energii 5 centamf w wodzie.
+  undefined/dg-02 [energies]: jaki jest zasięg protonu o energii ceta mew kości korowej?
+  undefined/dg-03 [materials,energies]: Jak daleko doleci proton o energii 25 stem FMA?
+  undefined/dg-04 [energies]: Jaki jest zasięg protonu o energii 50 keV w wodzie?
+  undefined/dg-05 [particles,materials,energies]: jaki jest zasięg douteronu o energii szczantem F krzemień?
+  undefined/dg-07 [energies]: i ją daleko doleczyć cząstka alfa o energii 20 m w powietrzu.
+  undefined/dg-08 [particles]: Jeb głęboko wniknie, jon heru-3 dusz, o energii 30 MeV graficie?
+  undefined/dg-09 [particles,energies]: jaki jest zasięgionolitoenergi 50-tymev na nukleon w poliwęglanie.
+  undefined/dg-10 [energies]: Jaki jest zasięg jonu boru o energistame w na nukleon w polietylenie?
+  undefined/dg-11 [energies]: Jaki jest zasięg jonu węgla o energii 3 mega elektronową dotnę nukleon w wodzie?
+  undefined/dg-12 [energies]: Anie Gdaereko doleci jon azotą energii T-33GET-MF na nukleon, w kości korowej.
+  undefined/dg-13 [energies]: Jaki jest zasięg cyzda jonu tlenu o energii 2050 MeV na nukleon w PMMA?
+  undefined/dg-14 [energies]: Jak łęboko wniknie jon neonu o energii 4 samcemev na nukleon w wodzie?
+  undefined/dg-15 [particles,materials,energies]: Jaki jest zasięgionu magnezu o energii 500 jóżtom MeV na nukleon w plastikut kankopodobnym, a pieczęcień twa?
+  undefined/dg-16 [particles,materials,energies]: Jaki jest zasięgionu krzemu energii przez systemę ewną nukleon w wtlanku krzemu?
+  undefined/dg-17 [energies]: Jak daleko doleci jon argonu o energii 4050 MeV na nukleon w wodzie?
+  undefined/dg-18 [materials,energies]: jaki jest doszczę jonu wapniał energii 20 MeV na nukleon w koncert hłuszczowej.
+  undefined/dg-19 [energies]: Jak głęboko wniknie jon tytanu o energii 6-cie St MeV na nukleon w wodzie?
+  undefined/dg-20 [energies]: jaki jest zasięg CSDA jonu żelaza o energii 6.mF na nukleon w aluminium.
+  undefined/dg-21 [compareDim,particles,materials,energies]: Jaki jest zasięg jonu? Miedzi o energii 5 cm na nukleon w ołowiu.
+  undefined/dg-22 [energies]: ja daleko doleci proton o energii EDA, GIGA ELECTRONOVOLT w wodzie
+  undefined/dg-23 [compareDim,energies]: jaki jest zasięg protonu w wodzie dla energii, send ta MeV, się tęciąt MeV i dwusie ta MeV.
+  undefined/dg-24 [compareDim,energies]: jaki jest zasięg jonu węgla w wodzie dla energii dwudziestocomew na nukleon, cztesicomew na nukleon i cztyczomew na nukleon, na nukleon.
+  undefined/dg-25 [materials]: jaki jest zasięg cząstki alfa w pogieczu dla energii 5 MeV, 10 MeV i 20 MeV?
+  undefined/dg-26 [energies]: porównej zasięg protonu o energii 500 czadem MeV w wodzie, PMMA i kości korowej.
+  undefined/dg-27 [particles,materials,energies]: Porówna i zasięgionu tlenu o energii 3D SatMeV na nukleon w wodzie i aluminium.
+  undefined/dg-28 [energies]: poródna i zasięt protonu o energii SatMe w wodzie i tkanka tłuszczowej.
+  undefined/dg-29 [energies]: cowniknie głębiej w wodzie przed 200 sedami e. nukleon, jon węgla czy jon neonu.
+  undefined/dg-31 [target]: jaką energię musi mieć proton, żeby jego zasięg w wodzie wynosił 2 cm?
+  undefined/dg-32 [target]: Ile energii potrzebuje proton na zasięg 5 z tej centymetrów w wodzie?
