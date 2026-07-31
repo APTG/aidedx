@@ -103,7 +103,7 @@ export function buildDefaultsNotice(filled: FilledSlot[]): string {
  * it" the way `buildDefaultsNotice()` does — there is no computed answer to show chips for here.
  */
 export function buildUnresolvedNotice(unresolved: UnresolvedEntity[]): string {
-  const parts = unresolved.map((u) => `"${u.phrase}" isn't a ${u.kind} libdedx has data for`);
+  const parts = unresolved.map((u) => `"${u.phrase}" isn't a ${u.kind} that libdedx has data for`);
   const noun =
     unresolved.length > 1
       ? "particle or material"

@@ -79,7 +79,14 @@
    */
   function normalizeTargetUnitInput(raw: string): string {
     const trimmed = raw.trim();
-    const compact = trimmed.toLowerCase().replace(/µ/g, "u").replace(/\s+/g, "");
+    // "²"/"·" are what render.ts's own answer text uses ("MeV·cm²/g", "g/cm²") — a user retyping
+    // exactly what's already on screen must normalize too, not just ASCII "^2"/"*" typists.
+    const compact = trimmed
+      .toLowerCase()
+      .replace(/µ/g, "u")
+      .replace(/²/g, "2")
+      .replace(/·/g, "")
+      .replace(/\s+/g, "");
     switch (compact) {
       case "cm":
         return "cm";
