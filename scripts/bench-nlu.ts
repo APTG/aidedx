@@ -731,12 +731,17 @@ function main(): void {
   const mutated = runCorrector(mutatedRaw);
   const corpus = [...canonical, ...mutated];
 
-  // Held-out check compares the CORRECTED text — the form that actually reaches matchIntent() —
-  // against eval/intents.jsonl. Checking the pre-correction text instead would wrongly count a
-  // generated sentence as "held out" even when correctTranscript() happens to turn it into an
-  // exact match for a frozen eval sentence (e.g. a unit-mishearing fix landing on frozen wording).
+  // Held-out check compares the CORRECTED text on both sides — the form that actually reaches
+  // matchIntent() — against eval/intents.jsonl. Checking pre-correction text on either side could
+  // wrongly count a generated sentence as "held out" when correctTranscript() would turn it (or a
+  // frozen eval sentence, should one ever need correction) into an exact match for the other.
+  // eval/intents.jsonl is hand-authored clean text, so this is a no-op on it today (correctTranscript
+  // is a verified no-op on well-formed text — see module doc comment), but keeps the check correct
+  // by construction rather than by the corrector's current rule set staying empty on frozen text.
   const evalPath = fileURLToPath(new URL("../eval/intents.jsonl", import.meta.url));
-  const frozenTexts = new Set(parseEvalRecords(readFileSync(evalPath, "utf-8")).map((e) => e.text));
+  const frozenTexts = new Set(
+    parseEvalRecords(readFileSync(evalPath, "utf-8")).map((e) => correctTranscript(e.text).text),
+  );
   const heldOut = corpus.filter((e) => !frozenTexts.has(e.text));
   const overlapping = corpus.length - heldOut.length;
 
