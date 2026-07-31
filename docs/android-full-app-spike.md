@@ -67,6 +67,42 @@ Build note: this machine has no system-wide JDK (`javac` is missing from the ins
 JRE-only packages) — `./gradlew assembleDebug` needs `JAVA_HOME` pointed at Android Studio's
 bundled JBR (`<android-studio-install-dir>/jbr`) instead, now documented in `CLAUDE.md`._
 
+_Updated 2026-07-31 for #161's "capture core" (the data-layer half of the on-device field-capture
+feature; the UI — Save button, verdict chips, "Debug captures" screen — and the PC-side
+import/label pipeline are still unbuilt, separate follow-on work). Every query now writes one
+capture — a WAV plus a JSON envelope — to `filesDir/captures/<session>/`, automatically and
+unconditionally (no dedicated capture UI yet; this is the data layer being exercised end to end,
+not the shipped UX). The envelope mirrors the TS `QueryIntent` shape field-for-field
+(`CaptureEnvelope.matchedIntentToQueryIntentJson()`) rather than a fixed set of named columns, so
+#159/#160 landing on the TS side won't force a capture-format bump. New: `BuildConfig.GIT_SHA`/
+`GIT_DIRTY`/`BUILD_TIME_MS` (evaluated by `app/build.gradle` at configure time — a capture is
+otherwise nearly worthless once a few fixes have landed since it was taken), device/battery/
+thermal info, per-stage (transcribe/match/compute) timings, audio quality metrics (peak/RMS/
+clipping/leading-trailing silence — pure-function, JVM-unit-tested in `AudioMetricsTest`), and
+which of `AsrCorrections`' ~30 rules actually fired for a given transcript
+(`AsrCorrections.correctWithTrace()` — `correct()` now delegates to it, so there's one fold to
+keep in sync, not two). `KotlinMatcher.match()` similarly now delegates to a new
+`matchWithTrace()`, which also surfaces the corrected text and fired-rule list; both are covered by
+new JVM tests, and the pre-existing `KotlinMatcherAgreementTest` was re-run to confirm the
+refactor changed no behavior: **still 83/83 (100.0%) semantic agreement**. Every pipeline stage
+(transcribe/match/compute) is now individually try/caught and attributed in the capture's
+`failure` block — an uncaught exception there used to crash the whole app on a single bad query;
+now it's a captured diagnostic and the query fails gracefully instead.
+
+**Device-verified** on the same Pixel 7a: a real (silent-room) recording produced
+`manifest.json` + `captures.json` + a `.wav` under `filesDir/captures/auto-2026-07-31/`, pulled via
+the same `run-as`-based trick `import-datagen-session.sh` already uses. The envelope's `build.gitSha`
+matched the actual merged commit exactly (`b88c842`) with `gitDirty: true` correctly reflecting
+this session's own uncommitted work; `audio.sampleCount` (31678) matched the pulled WAV's real
+frame count exactly (`python3`'s `wave` module); `audio` metrics (duration, peak amplitude, leading/
+trailing silence) were sane for a quiet-room clip; `nlu.matched: false` / `intent: null` correctly
+reflected the empty transcript; `timingsMs.transcribe` (~311 ms) was the only non-negligible stage,
+as expected when nothing downstream ran. The matched-intent path (`nlu.intent` populated,
+`compute` populated) isn't reachable by literally speaking into the mic over adb, so it's covered
+instead by `CaptureEnvelopeTest`'s synthetic-`MatchedIntent` cases. All 37 JVM unit tests pass
+(`AudioMetricsTest`, `CaptureEnvelopeTest`, the extended `AsrCorrectionsTest`/`KotlinMatcherTest`,
+plus the pre-existing suites), and zero `FATAL EXCEPTION`s appeared in logcat across the session._
+
 ## TL;DR
 
 - **`bench/android/full-app` builds clean** (`./gradlew assembleDebug`) and **runs clean on real

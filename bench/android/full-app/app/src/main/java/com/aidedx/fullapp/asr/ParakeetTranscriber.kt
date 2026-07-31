@@ -14,7 +14,12 @@ import java.io.File
  * sources + the .so files under `jniLibs/arm64-v8a` are vendored the same way as `bench/android/sherpa-onnx`
  * (see docs/android-asr-runtime-bench.md §3.1) — not a Maven/JitPack dependency.
  */
-class ParakeetTranscriber(modelDir: File, numThreads: Int = 2) {
+class ParakeetTranscriber(modelDir: File, val numThreads: Int = 2) {
+
+    /** issue #161 — exposed (alongside `numThreads` above) so a field capture can record exactly
+     * what config produced a given transcript, without duplicating these literals a second time
+     * at the call site. */
+    val decodingMethod: String = "greedy_search"
 
     private val recognizer: OfflineRecognizer
 
@@ -34,7 +39,7 @@ class ParakeetTranscriber(modelDir: File, numThreads: Int = 2) {
                 numThreads = numThreads,
                 provider = "cpu",
             ),
-            decodingMethod = "greedy_search",
+            decodingMethod = decodingMethod,
         )
         recognizer = OfflineRecognizer(config = config)
     }
