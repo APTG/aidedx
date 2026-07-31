@@ -13,7 +13,14 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden">
+            <!-- issue #161 — this Activity holds live state a destroy/recreate would lose or
+                 leak: an in-flight recording (AudioRecorder's mic stays open until stop() is
+                 called), the ~639 MB loaded ASR model, and any in-progress download/transcription
+                 Thread. Declaring configChanges keeps the Activity instance alive across a
+                 rotation; MainActivity.onConfigurationChanged() re-inflates the view (picking
+                 res/layout-land/ as needed) and reapplies the tracked UI state instead. -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
