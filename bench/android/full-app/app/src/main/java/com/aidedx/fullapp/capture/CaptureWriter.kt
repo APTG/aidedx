@@ -21,20 +21,21 @@ import kotlin.random.Random
  * Held as a plain field on `MainActivity` (constructed once in `onCreate()`, reused across
  * `onConfigurationChanged()`) rather than a separate `Application`-scoped singleton — #162 already
  * made the Activity instance itself survive rotation, which is the only in-app lifecycle event
- * that would otherwise threaten an in-flight write; a true cross-Activity singleton would only
- * matter once a second Activity (the "Debug captures" screen, still unbuilt) also needs to append
- * to the same session.
+ * that would otherwise threaten an in-flight write; `CaptureManagerActivity` (the "Debug captures"
+ * screen) only ever *reads* across sessions via `CaptureStore`, it never appends to this one, so a
+ * cross-Activity singleton still isn't needed.
  *
- * No dedicated Save-capture UI yet — that's issue #161's separate "UI" checklist item. This is
- * wired (in `MainActivity`) to capture *every* query automatically and unconditionally, so the
- * data layer is exercised end-to-end; read that as "capture core, verified" rather than the
- * shipped UX.
+ * Whether a query is captured automatically is `CapturePrefs.captureEverything` (default off) —
+ * `MainActivity` decides that, not this class; `write()` here is unconditional, callable either
+ * from the auto-capture path or from a person tapping Save/Flag on the result row.
  */
-class CaptureWriter(context: Context, sessionTag: String = defaultSessionTag()) {
+class CaptureWriter(context: Context, val sessionTag: String = defaultSessionTag()) {
 
     private val sessionDir: File = File(File(context.filesDir, "captures"), sessionTag)
     private val capturesFile: File = File(sessionDir, "captures.json")
     private val captures = mutableListOf<JSONObject>()
+
+    val captureCount: Int get() = captures.size
 
     init {
         sessionDir.mkdirs()
@@ -81,6 +82,31 @@ class CaptureWriter(context: Context, sessionTag: String = defaultSessionTag()) 
         writeWavFile(File(sessionDir, "$captureId.wav"), pcm, sampleRateHz)
         captures.add(envelope)
         writeCapturesFileAtomically()
+    }
+
+    /** Patches an existing capture's `annotation` block in place — the "⌄ details" dialog's Save
+     * action, for a capture "Capture everything" already auto-wrote. No-op if `captureId` isn't
+     * in this session (shouldn't happen; `MainActivity` only ever annotates its own last write). */
+    @Synchronized
+    fun updateAnnotation(captureId: String, annotation: JSONObject) {
+        val index = captures.indexOfFirst { it.optString("captureId") == captureId }
+        if (index < 0) return
+        captures[index].put("annotation", annotation)
+        writeCapturesFileAtomically()
+    }
+
+    /** Removes one capture (its `captures.json` entry and its `.wav`) — the result row's "Undo"
+     * on a just-Saved/Flagged capture. Deliberately removes the whole capture rather than just
+     * reverting the annotation: "Undo" reads as "I didn't mean to keep this one", not "un-flag
+     * it but keep the recording" — a simplification worth stating plainly rather than leaving
+     * implicit. */
+    @Synchronized
+    fun deleteCapture(captureId: String) {
+        val index = captures.indexOfFirst { it.optString("captureId") == captureId }
+        if (index < 0) return
+        captures.removeAt(index)
+        writeCapturesFileAtomically()
+        File(sessionDir, "$captureId.wav").delete()
     }
 
     /**

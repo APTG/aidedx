@@ -27,6 +27,7 @@ object CaptureEnvelope {
         compute: JSONObject?,
         timingsMs: JSONObject,
         failure: JSONObject?,
+        annotation: JSONObject = automaticAnnotation(),
         runtime: String = "android",
     ): JSONObject = JSONObject().apply {
         put("schemaVersion", SCHEMA_VERSION)
@@ -41,17 +42,23 @@ object CaptureEnvelope {
         put("compute", compute ?: JSONObject.NULL)
         put("timingsMs", timingsMs)
         put("failure", failure ?: JSONObject.NULL)
-        // User annotation (verdict chips, free-text note) has no UI yet — issue #161's separate
-        // "UI" checklist item — but the field exists now so a later PATCH-in-place edit doesn't
-        // need a schema change, only a value change.
-        put(
-            "annotation",
-            JSONObject().apply {
-                put("verdict", JSONObject.NULL)
-                put("note", JSONObject.NULL)
-                put("automatic", true)
-            },
-        )
+        put("annotation", annotation)
+    }
+
+    /** The envelope's `annotation` block for a capture nobody has looked at yet — "Capture
+     * everything" wrote this one, not a person tapping Save/Flag. */
+    fun automaticAnnotation(): JSONObject = JSONObject().apply {
+        put("verdict", JSONObject.NULL)
+        put("note", JSONObject.NULL)
+        put("automatic", true)
+    }
+
+    /** The envelope's `annotation` block for a person-initiated Save/Flag — `verdict`/`note` are
+     * whatever the capture-detail dialog collected, or both `null` for a bare "Skip"/quick-save. */
+    fun manualAnnotation(verdict: String?, note: String?): JSONObject = JSONObject().apply {
+        put("verdict", verdict ?: JSONObject.NULL)
+        put("note", note ?: JSONObject.NULL)
+        put("automatic", false)
     }
 
     /**

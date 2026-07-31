@@ -35,6 +35,16 @@
                 android:layout_weight="1"
                 android:text="aidedx" />
 
+            <!-- issue #161 — visible whenever "Capture everything" is on (Debug captures screen);
+                 a session silently recording every utterance must never be invisible. -->
+            <TextView
+                android:id="@+id/captureIndicatorText"
+                style="@style/MutedHintText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/statusText"
                 style="@style/MutedHintText"
@@ -188,35 +198,46 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingTop="2dp" />
-                </LinearLayout>
 
-                <!-- dev-only latency benchmark (issue #136/#143 goal 3 spike tooling, not a
-                     product feature) — kept visually de-emphasized and separated from the result
-                     card above instead of implying it's part of the same output. -->
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/border"
-                        android:layout_marginBottom="12dp" />
-
-                    <Button
-                        android:id="@+id/wasmSmokeTestButton"
-                        style="@style/Button.Outline"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Benchmark Approach A vs B latency" />
-                    <TextView
-                        android:id="@+id/wasmSmokeTestResult"
-                        style="@style/MutedHintText"
+                    <!-- issue #161 — one-tap capture of the answer just shown: saveCaptureButton
+                         (label toggles "Save capture" / "Flag this one" per whether "Capture
+                         everything" already auto-wrote this query) and captureDetailsButton (the
+                         optional verdict-chips + note dialog) are two independent entry points to
+                         the same underlying write/annotate — either one hides both and shows
+                         captureUndoButton for a few seconds. All three start gone; nothing to act
+                         on until a query has actually completed. -->
+                    <LinearLayout
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="8dp" />
+                        android:layout_marginTop="12dp">
+
+                        <Button
+                            android:id="@+id/saveCaptureButton"
+                            style="@style/Button.Outline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="⚑ Save capture"
+                            android:visibility="gone" />
+
+                        <Button
+                            android:id="@+id/captureDetailsButton"
+                            style="@style/Button.Outline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="⌄ details"
+                            android:visibility="gone" />
+
+                        <Button
+                            android:id="@+id/captureUndoButton"
+                            style="@style/Button.Outline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Undo"
+                            android:visibility="gone" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

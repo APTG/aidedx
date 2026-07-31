@@ -39,6 +39,14 @@
                 android:text="aidedx" />
 
             <TextView
+                android:id="@+id/captureIndicatorText"
+                style="@style/MutedHintText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone" />
+
+            <TextView
                 android:id="@+id/statusText"
                 style="@style/MutedHintText"
                 android:layout_width="wrap_content"
@@ -127,7 +135,10 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone">
 
-                <!-- left column: record control + dev-only latency benchmark -->
+                <!-- left column: record control. The dev-only latency benchmark that used to sit
+                     below it (issue #136/#143 goal 3 spike tooling) moved into the toolbar
+                     overflow (issue #161) — same "secondary/infrequent action doesn't belong on
+                     the primary screen" reasoning #144 already applied to "Manage downloads". -->
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
@@ -150,32 +161,6 @@
                         android:layout_marginTop="6dp"
                         android:indeterminate="true"
                         android:visibility="gone" />
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp">
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/border"
-                            android:layout_marginBottom="12dp" />
-
-                        <Button
-                            android:id="@+id/wasmSmokeTestButton"
-                            style="@style/Button.Outline"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Benchmark Approach A vs B latency" />
-                        <TextView
-                            android:id="@+id/wasmSmokeTestResult"
-                            style="@style/MutedHintText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="8dp" />
-                    </LinearLayout>
                 </LinearLayout>
 
                 <View
@@ -231,6 +216,39 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingTop="2dp" />
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp">
+
+                        <Button
+                            android:id="@+id/saveCaptureButton"
+                            style="@style/Button.Outline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="⚑ Save capture"
+                            android:visibility="gone" />
+
+                        <Button
+                            android:id="@+id/captureDetailsButton"
+                            style="@style/Button.Outline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="⌄ details"
+                            android:visibility="gone" />
+
+                        <Button
+                            android:id="@+id/captureUndoButton"
+                            style="@style/Button.Outline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Undo"
+                            android:visibility="gone" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
