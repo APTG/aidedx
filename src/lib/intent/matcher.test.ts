@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { correctTranscript } from "../asr/correct/core.ts";
 import { INDIRECT_IDIOMS } from "./lang/en.ts";
 import { matchIntent, matchQueryIntent } from "./matcher.ts";
 import { validateQueryIntent } from "./query-intent.ts";
@@ -754,5 +755,42 @@ describe("issue #163 B6 — unresolved (program-shaped but unsupported) program 
     expect(intent.program).toBeUndefined();
     expect(intent.compareDim).not.toBe("program");
     expect(unresolved).toEqual([{ kind: "program", phrase: "SRIM" }]);
+  });
+});
+
+describe("issue #169 — 'energy loss' misread as an inverse query", () => {
+  it("reads 'What is the energy loss of X' as stoppingPower, not energyFromRange", () => {
+    // Pre-fix: detectInverse() ran first (matchIntent's "inverse takes precedence"), and
+    // asksForEnergy()'s "<=3 words between wh-word and energy" regex fired on "what is the
+    // energy" even though "energy loss" is itself a DIRECT_STOPPING synonym — the query never
+    // reached detectForwardQuantity() at all, so it silently misread as energyFromRange with no
+    // target extracted (bench:nlu found this as a 100%-reproducible template failure).
+    const intent = matchQueryIntent("What is the energy loss of a 100 MeV proton in water?");
+    expect(intent.quantity).toBe("stoppingPower");
+    expect(intent.energies).toEqual([{ value: 100, unit: "MeV" }]);
+    expect(intent.target).toBeUndefined();
+  });
+
+  it("still reads a genuine 'which energy makes X lose Y' inverse query correctly", () => {
+    // Regression guard for the fix's scope: BLANK_BEFORE_INVERSE_RE now also blanks bare
+    // "energy loss", but must not blank this differently-worded genuine inverse query (already
+    // covered above in "issue #103 — bughunt regressions", repeated here for locality with the
+    // new "energy loss" case it sits right next to).
+    const intent = matchQueryIntent("Which energy makes a proton lose 2 MeV per cm in PMMA?");
+    expect(intent.quantity).toBe("energyFromStp");
+    expect(intent.target).toEqual({ value: 2, unit: "MeV/cm" });
+  });
+});
+
+describe("issue #169 — phonetic pass no longer misreads 'get' as 'LET'", () => {
+  it("keeps a 'how far does X get through Y' idiom as csdaRange through the full corrector+matcher pipeline", () => {
+    // Pre-fix: applyPhoneticPass() (src/lib/asr/correct/core.ts) silently rewrote "get" to "LET"
+    // (edit distance 1, "get" wasn't in PHONETIC_STOPWORDS) before the text ever reached the
+    // matcher, flipping the intended csdaRange idiom to stoppingPower.
+    const text = "Before coming to rest, how far does a 250 MeV proton get through water?";
+    const corrected = correctTranscript(text);
+    expect(corrected.text).toBe(text);
+    expect(corrected.substitutions).toEqual([]);
+    expect(matchQueryIntent(corrected.text).quantity).toBe("csdaRange");
   });
 });

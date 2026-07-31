@@ -385,4 +385,22 @@ export const PHONETIC_STOPWORDS = new Set([
   "can",
   "you",
   "your",
+  // issue #169 — "LET" (the quantity slot's shortest canonical, 3 letters) sits within edit
+  // distance 1 of a whole cluster of ordinary short English words, none of which have any
+  // legitimate reason to mean "LET" in this domain: "how far does a proton get through water?"
+  // was silently corrected to "...LET through water?", flipping csdaRange to stoppingPower.
+  // Confirmed via a systematic check against LEXICON with the same length/distance thresholds
+  // closestLexiconMatch() itself uses (bench/scripts, not shipped) — every word below is a real
+  // false-positive at distance ≤1, not a guess.
+  "get",
+  "lets",
+  "set",
+  "bet",
+  "yet",
+  "met",
+  "net",
+  "pet",
+  "vet",
+  "jet",
+  "wet",
 ]);

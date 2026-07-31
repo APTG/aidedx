@@ -301,6 +301,19 @@ describe("applyPhoneticPass — issue #28", () => {
     expect(applyPhoneticPass("100 kg of shielding").text).toBe("100 kg of shielding");
   });
 
+  // issue #169 — "LET" (the quantity slot's shortest canonical, 3 letters) sat within edit
+  // distance 1 of a whole cluster of ordinary short English words that have no legitimate reason
+  // to mean "LET" in this domain. "get" was the one a real generated sentence hit ("how far does
+  // a proton get through water?" silently became "...LET through water?"); the rest were found by
+  // auditing the same closestLexiconMatch() thresholds against common short words.
+  it.each(["get", "lets", "set", "bet", "yet", "met", "net", "pet", "vet", "jet", "wet"])(
+    "does not misread the ordinary word '%s' as 'LET' (issue #169)",
+    (word) => {
+      const text = `how far does a proton ${word} through water`;
+      expect(applyPhoneticPass(text).text).toBe(text);
+    },
+  );
+
   it("does not treat common material/particle words as program-name mishearings", () => {
     expect(applyPhoneticPass("range of protons in air and bone").text).toBe(
       "range of protons in air and bone",

@@ -75,9 +75,18 @@ export function mentionsStoppingPowerSynonym(lower: string, text: string): boole
  * between) so a genuine inverse query with a different grammatical subject between them —
  * "which energy makes a proton lose 2 MeV per cm" (eval `inv-stp-003`) — is left alone: there
  * "energy" is the cause being solved for, not the thing being lost.
+ *
+ * The fourth alternative, `energy loss` — `DIRECT_STOPPING`'s own synonym for the quantity —
+ * needs the same treatment for the same reason (issue #169): "What is the energy loss of a 100
+ * MeV proton in water?" has "is the" (2 words) between "what" and "energy", so `asksForEnergy`
+ * fired before `detectForwardQuantity` (which recognizes "energy loss" correctly) ever got a
+ * chance to — `detectInverse` runs first and short-circuits forward detection entirely (see
+ * `matchIntent`'s "inverse takes precedence" comment). Unlike the "per <length>" idiom above,
+ * no qualifying suffix is needed: "energy loss" alone is always the noun phrase, never a request
+ * to solve for an unknown energy value.
  */
 export const BLANK_BEFORE_INVERSE_RE =
-  /\blinear energy transfer\b|\benergy deposition(?:\s+density)?\b|\benergy\b\s+(?:is\s+|was\s+)?(?:lost|lose[s]?|shed[s]?|loss)\s+per\s+(?:centimeter|millimeter|cm|mm|unit length)\b/g;
+  /\blinear energy transfer\b|\benergy deposition(?:\s+density)?\b|\benergy\b\s+(?:is\s+|was\s+)?(?:lost|lose[s]?|shed[s]?|loss)\s+per\s+(?:centimeter|millimeter|cm|mm|unit length)\b|\benergy loss\b/g;
 
 /**
  * Inverse ("solve for energy") cue: the query must ask for *energy* as the
