@@ -79,7 +79,14 @@ export type QuantitySource = "direct" | "indirect" | "inverse" | "default";
  */
 export interface UnresolvedEntity {
   kind: "particle" | "material" | "program";
-  /** The phrase as it appeared in the query, not resolved against any alias table. */
+  /**
+   * The phrase as it appeared in the query, not resolved against any alias table — except for
+   * `kind: "program"`, which is uppercased (`"SRIM"`, not `"srim"`): `detectPrograms()` matches
+   * against the query's already-lowercased form (needed for its other job, counting *supported*
+   * mentions for `decideCompareDim`), so original casing was never available for the unsupported
+   * set either. Uppercase is the conventional way program acronyms are written, so this is a
+   * deliberate normalization, not an accident (Copilot review on PR #167).
+   */
   phrase: string;
 }
 
@@ -861,8 +868,14 @@ function detectUnresolvedParticlePhrase(
 // formula's own name (a bare stopping-power reference, not a request to use the Bethe *program*);
 // harmless before B5 since only a *second* program mention (this alternation's `>= 2` threshold)
 // affected anything, but a single "Bethe" match now sets `intent.program` outright.
+// `icru(?:49|73)?` — plain `icru` alone wouldn't match "ICRU49"/"ICRU73" at all: `\b` requires a
+// word boundary right after the captured text, and "49"/"73" are word characters directly abutting
+// "icru" with no boundary between them (Copilot review on PR #167). Both are real canonical program
+// names (PROGRAM_ALIASES already has entries for them) and a plausible thing to actually say
+// ("Using ICRU49, ..."), unlike "ICRU73OLD" (an internal alias, not natural spoken/typed text),
+// which stays out of scope here.
 const PROGRAM_RE =
-  /\b(astar|pstar|estar|mstar|srim|atima|libdedx|geant4?|fluka|bethe(?!-?\s*bloch)|icru|nist)\b/gi;
+  /\b(astar|pstar|estar|mstar|srim|atima|libdedx|geant4?|fluka|bethe(?!-?\s*bloch)|icru(?:49|73)?|nist)\b/gi;
 
 interface DetectedPrograms {
   /** Program names `resolveProgramName()` recognizes — feed `compareDim`/`intent.program`. */

@@ -686,6 +686,17 @@ describe("issue #163 B5 — matcher sets intent.program for a single explicit re
     expect(intent.program).toBe("ASTAR");
   });
 
+  it("recognizes 'ICRU49'/'ICRU73' as whole tokens, not just bare 'ICRU' (Copilot review on PR #167)", () => {
+    // \b(icru)\b alone doesn't match "icru49" — there's no word boundary between "u" and "4".
+    // Pre-fix, these silently detected zero program mentions and fell through to auto-select.
+    expect(
+      matchIntent("Using ICRU49, what is the range of 150 MeV protons in water?").intent.program,
+    ).toBe("ICRU49");
+    expect(
+      matchIntent("Using ICRU73, what is the range of 150 MeV protons in water?").intent.program,
+    ).toBe("ICRU73");
+  });
+
   it("leaves intent.program unset when no program is named", () => {
     const { intent } = matchIntent("range of 100 MeV protons in water");
     expect(intent.program).toBeUndefined();
