@@ -68,6 +68,44 @@
     return TARGET_UNITS.has(unit);
   }
 
+  /**
+   * Maps common case/spacing/symbol variants of a target unit ("mev/cm", "KEV/µM", "g/cm^2") to
+   * the canonical `RANGE_TARGET_UNITS`/`STP_TARGET_UNITS` spelling `isTargetUnit()` checks against.
+   * Without this, `isTargetUnit()`'s exact-match check (added for B1/B2's closed-union fix) made a
+   * physically unambiguous retyped edit silently fail to commit — a real usability regression
+   * Copilot's PR #166 review caught, since the *previous* free-text field accepted (and then
+   * miscomputed) anything. Falls back to the trimmed input unchanged when nothing matches, so
+   * `isTargetUnit()` still rejects genuine garbage exactly as before.
+   */
+  function normalizeTargetUnitInput(raw: string): string {
+    const trimmed = raw.trim();
+    const compact = trimmed.toLowerCase().replace(/µ/g, "u").replace(/\s+/g, "");
+    switch (compact) {
+      case "cm":
+        return "cm";
+      case "mm":
+        return "mm";
+      case "m":
+        return "m";
+      case "um":
+        return "um";
+      case "g/cm2":
+      case "g/cm^2":
+      case "gcm2":
+        return "g/cm2";
+      case "mevcm2/g":
+      case "mevcm^2/g":
+      case "mev*cm2/g":
+        return "MeV cm2/g";
+      case "mev/cm":
+        return "MeV/cm";
+      case "kev/um":
+        return "keV/um";
+      default:
+        return trimmed;
+    }
+  }
+
   function particleLabel(match: string): string {
     const resolved = resolveParticle(match);
     return resolved ? particleDisplayLabel(resolved.id, resolved.massNumber) : match;
@@ -195,7 +233,7 @@
     getButton: () => HTMLButtonElement | undefined,
   ) {
     if (suppressBlurCommit) return;
-    const trimmedUnit = unit.trim();
+    const trimmedUnit = normalizeTargetUnitInput(unit);
     const current = intent.target;
     if (
       Number.isFinite(value) &&
