@@ -15,6 +15,10 @@ import android.widget.TextView
 import android.widget.Toolbar
 import com.aidedx.fullapp.asr.ParakeetTranscriber
 import com.aidedx.fullapp.audio.AudioRecorder
+import com.aidedx.fullapp.capture.AudioMetrics
+import com.aidedx.fullapp.capture.CaptureEnvelope
+import com.aidedx.fullapp.capture.CaptureWriter
+import com.aidedx.fullapp.capture.DeviceInfo
 import com.aidedx.fullapp.compute.AnswerFormatter
 import com.aidedx.fullapp.compute.LibdedxBridge
 import com.aidedx.fullapp.compute.LibdedxWasmBridge
@@ -25,8 +29,11 @@ import com.aidedx.fullapp.download.ParakeetModel
 import com.aidedx.fullapp.nlu.AliasTables
 import com.aidedx.fullapp.nlu.KotlinMatcher
 import com.aidedx.fullapp.nlu.MatchedIntent
+import com.aidedx.fullapp.nlu.MatcherTrace
 import com.aidedx.fullapp.nlu.Quantity
 import androidx.core.content.ContextCompat
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.File
 
 /**
@@ -54,11 +61,19 @@ class MainActivity : Activity() {
 
     private lateinit var downloadManager: ModelDownloadManager
     private lateinit var aliases: AliasTables
+    private lateinit var captureWriter: CaptureWriter
 
     private var transcriber: ParakeetTranscriber? = null
     private var recorder: AudioRecorder? = null
     private val autoStopHandler = Handler(Looper.getMainLooper())
-    private val autoStopRunnable = Runnable { onRecordTapped() }
+    // issue #161 — set right before the auto-stop path re-enters onRecordTapped(), so the stop
+    // branch below can tell "the cap fired" apart from "the user tapped Stop", and a capture can
+    // record which one actually happened for this recording.
+    private var autoStopFiredForCurrentRecording = false
+    private val autoStopRunnable = Runnable {
+        autoStopFiredForCurrentRecording = true
+        onRecordTapped()
+    }
 
     private lateinit var downloadPromptPanel: View
     private lateinit var downloadProgressPanel: View
@@ -102,6 +117,11 @@ class MainActivity : Activity() {
 
         downloadManager = ModelDownloadManager(filesDir)
         aliases = AliasTables.load(assets)
+        // Constructed once here, not in bindViews() — #162 already made this Activity instance
+        // (and every plain field on it) survive rotation, so there's no reason to reopen/reload
+        // the session's captures.json on every config change the way loadTranscriberInBackground()
+        // must for the ASR model.
+        captureWriter = CaptureWriter(this)
 
         val entry = ParakeetModel.ENTRY
         promptInfoLine = "${entry.displayName}\n" +
@@ -330,6 +350,7 @@ class MainActivity : Activity() {
                 return
             }
             recorder = AudioRecorder().also { it.start() }
+            autoStopFiredForCurrentRecording = false
             recordUiState = RecordUiState.RECORDING
             setRecordButtonRecording()
             transcriptLine = ""
@@ -354,7 +375,7 @@ class MainActivity : Activity() {
             setRecordButtonTranscribing()
             val samples = currentRecorder.stop()
             recorder = null
-            processRecordingInBackground(samples)
+            processRecordingInBackground(samples, autoStopFiredForCurrentRecording)
         }
     }
 
@@ -383,11 +404,43 @@ class MainActivity : Activity() {
         recordProgressBar.visibility = View.VISIBLE
     }
 
-    private fun processRecordingInBackground(samples: ShortArray) {
+    /**
+     * issue #161 — same transcribe -> match -> compute -> display pipeline as before, now also
+     * timed per stage, exception-attributed per stage (an uncaught exception here used to crash
+     * the whole app on a single bad query; each stage below is now caught and recorded instead),
+     * and written out as a field capture at the end. There is no dedicated capture UI yet (see
+     * `CaptureWriter`'s own doc comment) — every query is captured automatically for now, purely
+     * to exercise the data layer end to end.
+     */
+    private fun processRecordingInBackground(samples: ShortArray, autoStopFired: Boolean) {
         Thread {
-            val floats = ParakeetTranscriber.shortsToFloats(samples)
-            val transcript = transcriber?.transcribe(floats) ?: ""
-            val matched = if (transcript.isBlank()) null else KotlinMatcher.match(transcript, aliases)
+            val captureId = captureWriter.newCaptureId()
+            val capturedAtEpochMs = System.currentTimeMillis()
+            var failure: JSONObject? = null
+
+            val transcribeStartNs = System.nanoTime()
+            val transcript = try {
+                val floats = ParakeetTranscriber.shortsToFloats(samples)
+                transcriber?.transcribe(floats) ?: ""
+            } catch (e: Exception) {
+                failure = CaptureEnvelope.buildFailureBlock("transcribe", e)
+                ""
+            }
+            val transcribeMs = (System.nanoTime() - transcribeStartNs) / 1_000_000.0
+
+            val matchStartNs = System.nanoTime()
+            val trace: MatcherTrace? = if (transcript.isBlank() || failure != null) {
+                null
+            } else {
+                try {
+                    KotlinMatcher.matchWithTrace(transcript, aliases)
+                } catch (e: Exception) {
+                    failure = CaptureEnvelope.buildFailureBlock("match", e)
+                    null
+                }
+            }
+            val matchMs = (System.nanoTime() - matchStartNs) / 1_000_000.0
+            val matched = trace?.intent
 
             // issue #143 — distinguish "heard nothing at all" from "heard something but couldn't
             // match it" instead of both silently reading as the same "No match" — the ambiguity
@@ -395,24 +448,79 @@ class MainActivity : Activity() {
             // diagnose on-device (see the auto-stop cap above and docs/android-full-app-spike.md).
             var matchedIntentSummary = if (transcript.isBlank()) "No speech detected — try again" else "No match"
             var matchedResultText = ""
+            var computeJson: JSONObject? = null
+            val computeStartNs = System.nanoTime()
             if (matched != null) {
                 matchedIntentSummary = "${matched.quantity} | particle=${matched.particleMatch} " +
                     "(id=${matched.particleId}) | material=${matched.materialMatch} " +
                     "(id=${matched.materialId}) | energy=${matched.energy.value} ${matched.energy.unit}"
+                try {
+                    val energyMevPerNucl = toMevPerNucl(matched)
+                    val density = LibdedxBridge.densityGramPerCm3(matched.materialId)
+                    val stp = if (matched.quantity == Quantity.STOPPING_POWER) {
+                        LibdedxBridge.stoppingPowerMevCm2PerG(matched.particleId, matched.materialId, energyMevPerNucl)
+                    } else {
+                        null
+                    }
+                    val csda = if (matched.quantity == Quantity.CSDA_RANGE) {
+                        LibdedxBridge.csdaRangeGramPerCm2(matched.particleId, matched.materialId, energyMevPerNucl)
+                    } else {
+                        null
+                    }
+                    matchedResultText = AnswerFormatter.format(matched, stp, csda, density)
+                    computeJson = JSONObject().apply {
+                        put("energyMevPerNucl", energyMevPerNucl)
+                        put("densityGramPerCm3", density?.toDouble() ?: JSONObject.NULL)
+                        put("stoppingPowerMevCm2PerG", stp?.toDouble() ?: JSONObject.NULL)
+                        put("csdaRangeGramPerCm2", csda ?: JSONObject.NULL)
+                        put("formattedAnswer", matchedResultText)
+                    }
+                } catch (e: Exception) {
+                    failure = CaptureEnvelope.buildFailureBlock("compute", e)
+                    matchedResultText = "Couldn't compute an answer: ${e.message}"
+                }
+            }
+            val computeMs = (System.nanoTime() - computeStartNs) / 1_000_000.0
 
-                val energyMevPerNucl = toMevPerNucl(matched)
-                val density = LibdedxBridge.densityGramPerCm3(matched.materialId)
-                val stp = if (matched.quantity == Quantity.STOPPING_POWER) {
-                    LibdedxBridge.stoppingPowerMevCm2PerG(matched.particleId, matched.materialId, energyMevPerNucl)
-                } else {
-                    null
+            // Best-effort: a capture-writing problem must never crash the app or block showing the
+            // answer the user is actually waiting on.
+            try {
+                val nluBlock = trace?.let { CaptureEnvelope.buildNluBlock(it) } ?: JSONObject().apply {
+                    put("rawTranscript", transcript)
+                    put("correctedTranscript", transcript)
+                    put("firedCorrectionRules", JSONArray())
+                    put("matched", false)
+                    put("intent", JSONObject.NULL)
+                    put("resolvedIds", JSONObject.NULL)
                 }
-                val csda = if (matched.quantity == Quantity.CSDA_RANGE) {
-                    LibdedxBridge.csdaRangeGramPerCm2(matched.particleId, matched.materialId, energyMevPerNucl)
-                } else {
-                    null
-                }
-                matchedResultText = AnswerFormatter.format(matched, stp, csda, density)
+                val envelope = CaptureEnvelope.build(
+                    captureId = captureId,
+                    capturedAtEpochMs = capturedAtEpochMs,
+                    device = DeviceInfo.collect(this),
+                    build = DeviceInfo.collectBuildInfo(),
+                    audio = CaptureEnvelope.buildAudioBlock(
+                        sampleRateHz = AudioRecorder.SAMPLE_RATE,
+                        sampleCount = samples.size,
+                        metrics = AudioMetrics.analyze(samples, AudioRecorder.SAMPLE_RATE),
+                        autoStopFired = autoStopFired,
+                    ),
+                    asr = JSONObject().apply {
+                        put("modelId", ParakeetModel.ENTRY.id)
+                        put("numThreads", transcriber?.numThreads ?: JSONObject.NULL)
+                        put("decodingMethod", transcriber?.decodingMethod ?: JSONObject.NULL)
+                    },
+                    nlu = nluBlock,
+                    compute = computeJson,
+                    timingsMs = JSONObject().apply {
+                        put("transcribe", transcribeMs)
+                        put("match", matchMs)
+                        put("compute", computeMs)
+                    },
+                    failure = failure,
+                )
+                captureWriter.write(envelope, samples, AudioRecorder.SAMPLE_RATE)
+            } catch (e: Exception) {
+                android.util.Log.w("CaptureWriter", "Failed to write capture", e)
             }
 
             runOnUiThread {

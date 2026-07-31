@@ -1,10 +1,36 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
+// issue #161 — a field capture needs to record exactly which build produced it (a capture from an
+// unknown commit is close to worthless once a few weeks and a few fixes have gone by). Evaluated
+// once at configuration time and baked into BuildConfig below, same "ask git, don't guess" spirit
+// as `docs/android-full-app-spike.md`'s device-verification convention. `.text.trim()` on a
+// process started outside a git repo (or without git on PATH) throws; falls back to a value that
+// makes the gap obvious rather than failing the whole build over a diagnostic-only field.
+def gitShaOrUnknown() {
+    try {
+        return "git rev-parse --short HEAD".execute([], project.rootDir).text.trim()
+    } catch (Exception ignored) {
+        return "unknown"
+    }
+}
+
+def gitIsDirty() {
+    try {
+        return !"git status --porcelain".execute([], project.rootDir).text.trim().isEmpty()
+    } catch (Exception ignored) {
+        return false
+    }
+}
+
 android {
     namespace "com.aidedx.fullapp"
     compileSdkVersion 34
     ndkVersion "28.2.13676358"
+
+    buildFeatures {
+        buildConfig true
+    }
 
     defaultConfig {
         applicationId "com.aidedx.fullapp"
@@ -20,6 +46,9 @@ android {
                 cppFlags ""
             }
         }
+        buildConfigField "String", "GIT_SHA", "\"${gitShaOrUnknown()}\""
+        buildConfigField "boolean", "GIT_DIRTY", "${gitIsDirty()}"
+        buildConfigField "long", "BUILD_TIME_MS", "${System.currentTimeMillis()}L"
     }
 
     buildTypes {

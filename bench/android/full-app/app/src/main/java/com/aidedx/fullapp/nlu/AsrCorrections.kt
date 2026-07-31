@@ -285,6 +285,25 @@ object AsrCorrections {
     )
 
     /** Apply every rule in order, each seeing the previous rule's output — mirrors en.ts's `applyRules()`. */
-    fun correct(text: String): String =
-        RULES.fold(text) { acc, rule -> acc.replace(rule.pattern, rule.replacement) }
+    fun correct(text: String): String = correctWithTrace(text).text
+
+    /**
+     * issue #161 — same fold as `correct()`, plus the ordered list of rule `label`s that actually
+     * changed the text. Field-capture wants to know which of the ~30 rules above are earning
+     * their place on real speech (and which one fired when a correction turns out wrong) — a
+     * question nothing today can answer, since `correct()` only ever returns the final string.
+     * `correct()` now delegates here so there is exactly one fold to keep in sync, not two.
+     */
+    fun correctWithTrace(text: String): CorrectionResult {
+        var acc = text
+        val fired = mutableListOf<String>()
+        for (rule in RULES) {
+            val next = acc.replace(rule.pattern, rule.replacement)
+            if (next != acc) fired.add(rule.label)
+            acc = next
+        }
+        return CorrectionResult(acc, fired)
+    }
 }
+
+data class CorrectionResult(val text: String, val firedRuleLabels: List<String>)

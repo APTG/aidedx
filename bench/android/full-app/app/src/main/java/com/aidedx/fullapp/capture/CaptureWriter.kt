@@ -1,0 +1,137 @@
+package com.aidedx.fullapp.capture
+
+import android.content.Context
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.File
+import java.io.RandomAccessFile
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
+import kotlin.random.Random
+
+/**
+ * issue #161 — writes one capture (a WAV + an entry in `captures.json`) per query under
+ * `filesDir/captures/<session>/`. Rewrites the whole `captures.json` after every capture — same
+ * crash-safety convention `DataGenActivity`'s `session.json` already uses (issue #130,
+ * `bench/android/sherpa-onnx`), so a killed/backgrounded app never loses more than the one
+ * in-flight capture. `manifest.json` is written once, on session start.
+ *
+ * Held as a plain field on `MainActivity` (constructed once in `onCreate()`, reused across
+ * `onConfigurationChanged()`) rather than a separate `Application`-scoped singleton — #162 already
+ * made the Activity instance itself survive rotation, which is the only in-app lifecycle event
+ * that would otherwise threaten an in-flight write; a true cross-Activity singleton would only
+ * matter once a second Activity (the "Debug captures" screen, still unbuilt) also needs to append
+ * to the same session.
+ *
+ * No dedicated Save-capture UI yet — that's issue #161's separate "UI" checklist item. This is
+ * wired (in `MainActivity`) to capture *every* query automatically and unconditionally, so the
+ * data layer is exercised end-to-end; read that as "capture core, verified" rather than the
+ * shipped UX.
+ */
+class CaptureWriter(context: Context, sessionTag: String = defaultSessionTag()) {
+
+    private val sessionDir: File = File(File(context.filesDir, "captures"), sessionTag)
+    private val capturesFile: File = File(sessionDir, "captures.json")
+    private val captures = mutableListOf<JSONObject>()
+
+    init {
+        sessionDir.mkdirs()
+        loadExisting()
+        writeManifestIfAbsent(sessionTag)
+    }
+
+    private fun loadExisting() {
+        if (!capturesFile.exists()) return
+        try {
+            val arr = JSONArray(capturesFile.readText())
+            for (i in 0 until arr.length()) captures.add(arr.getJSONObject(i))
+        } catch (e: Exception) {
+            // A corrupt captures.json from a prior crash mid-write must not block new captures —
+            // start this session's in-memory list fresh; the next write() below overwrites the
+            // file with a well-formed one again.
+        }
+    }
+
+    private fun writeManifestIfAbsent(sessionTag: String) {
+        val manifestFile = File(sessionDir, "manifest.json")
+        if (manifestFile.exists()) return
+        val manifest = JSONObject().apply {
+            put("schemaVersion", CaptureEnvelope.SCHEMA_VERSION)
+            put("sessionTag", sessionTag)
+            put("sessionStartedAtEpochMs", System.currentTimeMillis())
+            put("build", DeviceInfo.collectBuildInfo())
+        }
+        manifestFile.writeText(manifest.toString())
+    }
+
+    /** A capture's id is minted before its envelope is built (the envelope carries it as
+     * `captureId`), so `write()` below can just read it back rather than taking it twice. */
+    fun newCaptureId(): String {
+        val ts = SimpleDateFormat("yyyyMMdd-HHmmss-SSS", Locale.US)
+            .apply { timeZone = TimeZone.getTimeZone("UTC") }
+            .format(Date())
+        return "$ts-${Random.nextInt(1000, 9999)}"
+    }
+
+    @Synchronized
+    fun write(envelope: JSONObject, pcm: ShortArray, sampleRateHz: Int = 16_000) {
+        val captureId = envelope.getString("captureId")
+        writeWavFile(File(sessionDir, "$captureId.wav"), pcm, sampleRateHz)
+        captures.add(envelope)
+        capturesFile.writeText(JSONArray(captures).toString())
+    }
+
+    /** Same RIFF/WAVE writer as `DataGenActivity.writeWavFile()` (issue #130) — 16-bit mono PCM. */
+    private fun writeWavFile(file: File, pcm: ShortArray, sampleRate: Int) {
+        val dataLen = pcm.size * 2
+        RandomAccessFile(file, "rw").use { raf ->
+            raf.setLength(0)
+            fun writeIntLE(v: Int) {
+                raf.write(
+                    byteArrayOf(
+                        (v and 0xff).toByte(),
+                        ((v shr 8) and 0xff).toByte(),
+                        ((v shr 16) and 0xff).toByte(),
+                        ((v shr 24) and 0xff).toByte(),
+                    ),
+                )
+            }
+            fun writeShortLE(v: Int) {
+                raf.write(byteArrayOf((v and 0xff).toByte(), ((v shr 8) and 0xff).toByte()))
+            }
+            raf.writeBytes("RIFF")
+            writeIntLE(36 + dataLen)
+            raf.writeBytes("WAVE")
+            raf.writeBytes("fmt ")
+            writeIntLE(16)
+            writeShortLE(1) // PCM
+            writeShortLE(1) // mono
+            writeIntLE(sampleRate)
+            writeIntLE(sampleRate * 2) // byte rate = sampleRate * channels * bytesPerSample
+            writeShortLE(2) // block align
+            writeShortLE(16) // bits per sample
+            raf.writeBytes("data")
+            writeIntLE(dataLen)
+            val bytes = ByteArray(dataLen)
+            for (i in pcm.indices) {
+                val v = pcm[i].toInt()
+                bytes[i * 2] = (v and 0xff).toByte()
+                bytes[i * 2 + 1] = ((v shr 8) and 0xff).toByte()
+            }
+            raf.write(bytes)
+        }
+    }
+
+    companion object {
+        /** One session per UTC calendar day until the "Capture everything" UI (with a real
+         * session-tag field) exists — good enough for capture-core verification. */
+        fun defaultSessionTag(): String {
+            val date = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                .apply { timeZone = TimeZone.getTimeZone("UTC") }
+                .format(Date())
+            return "auto-$date"
+        }
+    }
+}

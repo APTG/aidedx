@@ -101,4 +101,25 @@ class KotlinMatcherTest {
         assertEquals(0.5, result!!.energy.value, 0.0)
         assertEquals("MeV", result.energy.unit)
     }
+
+    @Test
+    fun `matchWithTrace exposes the corrected text and fired rules, matching match() intent-for-intent`() {
+        val text = "What is the range of 20 Me V protons in silicone?"
+        val trace = KotlinMatcher.matchWithTrace(text, aliases())
+        assertEquals(text, trace.rawText)
+        assertEquals(
+            "What is the range of 20 MeV protons in silicon?",
+            trace.correctedText,
+        )
+        assertEquals(listOf("mev-letter-spelled", "silicone-as-silicon"), trace.firedCorrectionRules)
+        assertEquals(KotlinMatcher.match(text, aliases()), trace.intent)
+        assertNotNull(trace.intent)
+    }
+
+    @Test
+    fun `matchWithTrace on unmatchable text returns a null intent with the trace still populated`() {
+        val trace = KotlinMatcher.matchWithTrace("asdf qwerty zxcv", aliases())
+        assertEquals(null, trace.intent)
+        assertEquals("asdf qwerty zxcv", trace.correctedText)
+    }
 }

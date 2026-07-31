@@ -189,6 +189,28 @@ class AsrCorrectionsTest {
         assertEquals("dE/dx of protons", AsrCorrections.correct("de slash dx of protons"))
     }
 
+    @Test
+    fun `correctWithTrace reports which rule labels actually fired, in order`() {
+        val result = AsrCorrections.correctWithTrace("Range of 20 Me V proton in silicone.")
+        assertEquals("Range of 20 MeV proton in silicon.", result.text)
+        assertEquals(listOf("mev-letter-spelled", "silicone-as-silicon"), result.firedRuleLabels)
+    }
+
+    @Test
+    fun `correctWithTrace reports no fired rules for text needing no correction`() {
+        val result = AsrCorrections.correctWithTrace("Range of 20 MeV proton in silicon.")
+        assertEquals("Range of 20 MeV proton in silicon.", result.text)
+        assertEquals(emptyList<String>(), result.firedRuleLabels)
+    }
+
+    @Test
+    fun `correct() delegates to correctWithTrace and returns the same text`() {
+        assertEquals(
+            AsrCorrections.correctWithTrace("20 Me V protons").text,
+            AsrCorrections.correct("20 Me V protons"),
+        )
+    }
+
     private fun repoRoot(): java.io.File {
         var dir = java.io.File(".").absoluteFile
         while (!java.io.File(dir, "eval/intents.jsonl").exists()) {

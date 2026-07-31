@@ -33,6 +33,17 @@ data class MatchedIntent(
     val energy: EnergyValue,
 )
 
+/** issue #161 — `KotlinMatcher.matchWithTrace()`'s result: `intent` is `null` when nothing matched
+ * (no attribution yet of *which* stage failed — quantity/energy/particle/material detection are
+ * all private steps inside `matchCorrected()`; exposing that would need a deeper refactor than
+ * this capture-core pass, flagged as a follow-up rather than guessed at here). */
+data class MatcherTrace(
+    val rawText: String,
+    val correctedText: String,
+    val firedCorrectionRules: List<String>,
+    val intent: MatchedIntent?,
+)
+
 object KotlinMatcher {
 
     // Same direct-keyword vocabulary as en.ts's DIRECT_STOPPING/DIRECT_RANGE + LET synonym check
@@ -231,11 +242,25 @@ object KotlinMatcher {
         return null
     }
 
-    fun match(rawText: String, aliases: AliasTables): MatchedIntent? {
+    fun match(rawText: String, aliases: AliasTables): MatchedIntent? =
+        matchWithTrace(rawText, aliases).intent
+
+    /**
+     * issue #161 — the same matching pipeline as `match()`, plus the intermediate artifacts a
+     * field capture wants to record: the text after ASR-domain correction, and which correction
+     * rules actually fired (`AsrCorrections.correctWithTrace()`). `match()` is a thin wrapper over
+     * this, so there is exactly one implementation to keep in sync — `KotlinMatcherTest` and
+     * `KotlinMatcherAgreementTest` (both call `match()`) exercise this same code path unchanged.
+     */
+    fun matchWithTrace(rawText: String, aliases: AliasTables): MatcherTrace {
         // issue #147 — number normalization must run before the ASR correction rules, since
         // several of them (letter-spelled units, glued-unit-before-particle) are digit-gated;
         // see AsrCorrections.kt's header for why this ordering is itself part of the fix.
-        val text = AsrCorrections.correct(normalizeSpelledNumbers(rawText))
+        val (text, firedRules) = AsrCorrections.correctWithTrace(normalizeSpelledNumbers(rawText))
+        return MatcherTrace(rawText, text, firedRules, matchCorrected(text, aliases))
+    }
+
+    private fun matchCorrected(text: String, aliases: AliasTables): MatchedIntent? {
         val quantity = detectQuantity(text) ?: return null
 
         val energyMatch = ENERGY_RE.find(text) ?: return null
