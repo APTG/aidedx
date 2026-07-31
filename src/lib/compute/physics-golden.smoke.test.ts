@@ -183,7 +183,10 @@ describe("physics golden file — B1/B2: issue #163's own quoted measured number
 
 describe("physics golden file — B4: spelled-out hundreds+tens/ones parse to the same physics as digits", () => {
   it.each([
-    ["range of a two hundred thirty five MeV proton in water", "range of a 235 MeV proton in water"],
+    [
+      "range of a two hundred thirty five MeV proton in water",
+      "range of a 235 MeV proton in water",
+    ],
     [
       "range of a nine hundred ninety nine MeV proton in water",
       "range of a 999 MeV proton in water",
@@ -207,16 +210,19 @@ describe("physics golden file — B7: total energy is divided by A, and disclose
     ["range of 20 MeV alpha particles in air", 4, 5, "5 MeV/nucl"],
     ["range of 20 MeV deuteron in water", 2, 10, "10 MeV/nucl"],
     ["range of 20 MeV triton in water", 3, 20 / 3, "6.667 MeV/nucl"],
-  ])("%s divides by A=%i to %f MeV/nucl and discloses it", (query, _a, expectedMevPerNucl, noteFragment) => {
-    const match = matchIntent(query as string);
-    expect(match.intent.assumptions.some((a) => a.includes(noteFragment as string))).toBe(true);
-    const result = computeIntent(match.intent, service);
-    const s = req(result.series[0]);
-    expect(s.error).toBeUndefined();
-    const p = req(s.points[0]);
-    expect(p.energyMeVPerNucl).toBeCloseTo(expectedMevPerNucl as number, 3);
-    expect(req(p.csdaRange)).toBeGreaterThan(0);
-  });
+  ])(
+    "%s divides by A=%i to %f MeV/nucl and discloses it",
+    (query, _a, expectedMevPerNucl, noteFragment) => {
+      const match = matchIntent(query as string);
+      expect(match.intent.assumptions.some((a) => a.includes(noteFragment as string))).toBe(true);
+      const result = computeIntent(match.intent, service);
+      const s = req(result.series[0]);
+      expect(s.error).toBeUndefined();
+      const p = req(s.points[0]);
+      expect(p.energyMeVPerNucl).toBeCloseTo(expectedMevPerNucl as number, 3);
+      expect(req(p.csdaRange)).toBeGreaterThan(0);
+    },
+  );
 
   it("formats the disclosure note to 4 significant figures, not raw 1e-6 float noise", () => {
     const match = matchIntent("stopping power of a 400 MeV carbon ion in water");

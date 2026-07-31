@@ -104,6 +104,9 @@ export function buildDefaultsNotice(filled: FilledSlot[]): string {
  */
 export function buildUnresolvedNotice(unresolved: UnresolvedEntity[]): string {
   const parts = unresolved.map((u) => `"${u.phrase}" isn't a ${u.kind} libdedx has data for`);
-  const noun = unresolved.length > 1 ? "particle or material" : (unresolved[0]?.kind ?? "particle or material");
+  const noun =
+    unresolved.length > 1
+      ? "particle or material"
+      : (unresolved[0]?.kind ?? "particle or material");
   return `${parts.join("; ")}. Try a different ${noun}, or check the spelling.`;
 }

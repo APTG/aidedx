@@ -344,13 +344,15 @@ function isStpTargetUnit(unit: string): unit is StpTargetUnit {
  * without a conversion here is a compile error. `"um"` is the one this table exists for — its
  * absence (silently falling through to `"cm"`, a ~200× error) was the original bug.
  */
-const RANGE_TARGET_UNIT_TO_CM: Record<Exclude<RangeTargetUnit, "g/cm2">, (value: number) => number> =
-  {
-    cm: (v) => v,
-    mm: (v) => v / 10,
-    m: (v) => v * 100,
-    um: (v) => v / 10_000,
-  };
+const RANGE_TARGET_UNIT_TO_CM: Record<
+  Exclude<RangeTargetUnit, "g/cm2">,
+  (value: number) => number
+> = {
+  cm: (v) => v,
+  mm: (v) => v / 10,
+  m: (v) => v * 100,
+  um: (v) => v / 10_000,
+};
 
 /** Convert an inverse-query range target to g/cm² (the native libdedx unit). Throws
  * `ComputeError` for a stopping-power unit passed by mistake (`intent.target.unit`'s static type

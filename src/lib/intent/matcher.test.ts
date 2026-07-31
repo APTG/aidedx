@@ -657,4 +657,17 @@ describe("issue #163 B3 — unresolved (named but unrecognized) particles/materi
     expect(intent.materials).toEqual([{ match: "water" }]);
     expect(unresolved).toEqual([]);
   });
+
+  it("flags a particle named with a leading article ('a muon'), not just the bare plural", () => {
+    // Copilot review on PR #166: "a"/"an"/"the" are themselves in MATERIAL_STOPWORDS, so without
+    // stripping the leading article first, the bare stopword-leading-phrase reject silently
+    // swallowed exactly this — the most natural way to name a single unknown particle.
+    const { unresolved } = matchIntent("range of a muon in water at 100 MeV");
+    expect(unresolved).toEqual([{ kind: "particle", phrase: "muon" }]);
+  });
+
+  it("flags a material named with a leading article ('an unobtanium')", () => {
+    const { unresolved } = matchIntent("stopping power of 100 MeV protons in an unobtanium");
+    expect(unresolved).toEqual([{ kind: "material", phrase: "unobtanium" }]);
+  });
 });

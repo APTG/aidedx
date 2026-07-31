@@ -784,17 +784,36 @@ const NON_MATERIAL_IN_PHRASES = new Set([
   "other words",
 ]);
 
-function detectUnresolvedMaterialPhrase(text: string, stopwords: ReadonlySet<string>): string | null {
+/** "a"/"an"/"the" lead a captured phrase far more often than they lead a genuine function-word
+ * filler ("in general", "of the total"), so the leading-stopword reject below would otherwise
+ * also reject the single most natural way to name an unknown particle/material ("a muon", "a
+ * stainless steel") — silently falling back to the old defaults-substitution bug this pass exists
+ * to catch. Strips at most one leading article, from both the words used for the stopword check
+ * and the returned display phrase, so "a muon" resolves to the phrase "muon".
+ */
+const LEADING_ARTICLES = new Set(["a", "an", "the"]);
+
+function stripLeadingArticle(rawWords: string[], lowerWords: string[]): [string[], string[]] {
+  if (rawWords.length > 1 && LEADING_ARTICLES.has(lowerWords[0] ?? "")) {
+    return [rawWords.slice(1), lowerWords.slice(1)];
+  }
+  return [rawWords, lowerWords];
+}
+
+function detectUnresolvedMaterialPhrase(
+  text: string,
+  stopwords: ReadonlySet<string>,
+): string | null {
   const re = /\bin\s+([a-z][a-z-]*(?:\s+[a-z][a-z-]*)?)\b/gi;
   for (const m of text.matchAll(re)) {
     const phrase = (m[1] ?? "").trim();
     if (!phrase || phrase.length < 3) continue;
     const lower = phrase.toLowerCase();
     if (NON_MATERIAL_IN_PHRASES.has(lower)) continue;
-    const words = lower.split(/\s+/);
+    const [rawWords, words] = stripLeadingArticle(phrase.split(/\s+/), lower.split(/\s+/));
     if (stopwords.has(words[0] ?? "")) continue;
     if (words.every((w) => stopwords.has(w))) continue;
-    return phrase;
+    return rawWords.join(" ");
   }
   return null;
 }
@@ -808,15 +827,21 @@ function detectUnresolvedMaterialPhrase(text: string, stopwords: ReadonlySet<str
  * for the word(s) between "of" and "in", the shape every one of this domain's direct-phrasing
  * queries already uses for the particle. Only consulted when the real scan found nothing.
  */
-function detectUnresolvedParticlePhrase(text: string, stopwords: ReadonlySet<string>): string | null {
+function detectUnresolvedParticlePhrase(
+  text: string,
+  stopwords: ReadonlySet<string>,
+): string | null {
   const re = /\bof\s+([a-z][a-z-]*(?:\s+[a-z][a-z-]*)?)\s+in\b/gi;
   for (const m of text.matchAll(re)) {
     const phrase = (m[1] ?? "").trim();
     if (!phrase || phrase.length < 3) continue;
-    const words = phrase.toLowerCase().split(/\s+/);
+    const [rawWords, words] = stripLeadingArticle(
+      phrase.split(/\s+/),
+      phrase.toLowerCase().split(/\s+/),
+    );
     if (stopwords.has(words[0] ?? "")) continue;
     if (words.every((w) => stopwords.has(w))) continue;
-    return phrase;
+    return rawWords.join(" ");
   }
   return null;
 }

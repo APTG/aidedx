@@ -58,8 +58,13 @@
   // so this is the system boundary where it gets checked against the closed set `withTarget()`
   // now requires, the same "validate at the boundary" spot every other free-text chip edit below
   // already uses (a non-finite energy value, an empty unit — both already silently don't commit).
-  const TARGET_UNITS: ReadonlySet<string> = new Set<string>([...RANGE_TARGET_UNITS, ...STP_TARGET_UNITS]);
-  function isTargetUnit(unit: string): unit is (typeof RANGE_TARGET_UNITS)[number] | (typeof STP_TARGET_UNITS)[number] {
+  const TARGET_UNITS: ReadonlySet<string> = new Set<string>([
+    ...RANGE_TARGET_UNITS,
+    ...STP_TARGET_UNITS,
+  ]);
+  function isTargetUnit(
+    unit: string,
+  ): unit is (typeof RANGE_TARGET_UNITS)[number] | (typeof STP_TARGET_UNITS)[number] {
     return TARGET_UNITS.has(unit);
   }
 
