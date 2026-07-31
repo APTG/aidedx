@@ -36,6 +36,7 @@ import {
   type MaterialMatch,
   type ParticleMatch,
 } from "../aliases/index.ts";
+import { formatSignificant } from "../format.ts";
 import * as en from "./lang/en.ts";
 import * as pl from "./lang/pl.ts";
 import type { Lang, LangPack } from "./lang/types.ts";
@@ -47,6 +48,8 @@ import type {
   ParticleSlot,
   Quantity,
   QueryIntent,
+  RangeTargetUnit,
+  StpTargetUnit,
   TargetSlot,
 } from "./query-intent.ts";
 
@@ -62,6 +65,20 @@ function packFor(lang: Lang): LangPack {
 /** How the quantity was decided, for confidence weighting and debugging. */
 export type QuantitySource = "direct" | "indirect" | "inverse" | "default";
 
+/**
+ * issue #163 B3 — a particle/material *named* in the query text but not resolvable against the
+ * alias tables (an entity libdedx has no data for — "stainless steel", "muons" — as opposed to a
+ * slot that was never mentioned at all). Populated only when the corresponding slot in `intent`
+ * came up empty; `fill-defaults.ts`'s `fillMissingSlots()` must not silently substitute a default
+ * for a slot this lists, since doing so is what produced the false "material not specified"
+ * banner the bug report measured.
+ */
+export interface UnresolvedEntity {
+  kind: "particle" | "material";
+  /** The phrase as it appeared in the query, not resolved against any alias table. */
+  phrase: string;
+}
+
 export interface MatchResult {
   intent: QueryIntent;
   /** Which strategy fixed the quantity slot. */
@@ -70,6 +87,9 @@ export interface MatchResult {
   idiom?: string;
   /** True when a required slot could not be filled (a likely LLM-fallback). */
   incomplete: boolean;
+  /** Named-but-unresolved particle/material mentions — see `UnresolvedEntity`. Empty when every
+   * empty slot was genuinely never mentioned (the common case). */
+  unresolved: UnresolvedEntity[];
 }
 
 interface Span {
@@ -92,8 +112,11 @@ interface Span {
  * Parakeet has no ASR inverse-text-normalization, so hundreds come out fully spelled, not just
  * the single digits issue #26 originally handled). The leading multiplier is restricted to
  * `NUMBER_WORDS`' 1-9 entries ("ten hundred" isn't a real number); the optional trailing
- * remainder is any `NUMBER_WORDS` entry (1-99), so both "and"-joined and bare forms resolve.
- * "Thousand" and above is out of scope — not attested in this project's eval set.
+ * remainder is any `NUMBER_WORDS` entry (1-99) *or* an already-composed `\d+` run (issue #163 B4
+ * — `composeTensOnes()` now runs first, see `spellOutNumbers()` below, so "thirty five" has
+ * already become "35" by the time this pattern looks for a remainder), so "and"-joined, bare-word,
+ * and tens+ones-compound remainders all resolve. "Thousand" and above is out of scope — not
+ * attested in this project's eval set.
  */
 function composeHundreds(text: string, pack: LangPack): string {
   if (!pack.HUNDRED_WORD) return text;
@@ -103,7 +126,7 @@ function composeHundreds(text: string, pack: LangPack): string {
     .join("|");
   const remainderAlt = pack.NUMBER_WORDS.map(([w]) => w).join("|");
   const re = new RegExp(
-    `\\b(${onesAlt})\\s+${pack.HUNDRED_WORD}\\b(?:\\s+(?:and\\s+)?(${remainderAlt})\\b)?`,
+    `\\b(${onesAlt})\\s+${pack.HUNDRED_WORD}\\b(?:\\s+(?:and\\s+)?(\\d+|${remainderAlt})\\b)?`,
     "gi",
   );
   return text.replace(re, (m, onesWord: string, remainderWord?: string) => {
@@ -111,7 +134,9 @@ function composeHundreds(text: string, pack: LangPack): string {
     // No trailing remainder word ("just "one hundred") means the remainder is 0.
     let remainder = 0;
     if (remainderWord) {
-      remainder = Number(digitOf.get(remainderWord.toLowerCase()));
+      remainder = /^\d+$/.test(remainderWord)
+        ? Number(remainderWord)
+        : Number(digitOf.get(remainderWord.toLowerCase()));
     }
     return String(hundreds + remainder).padEnd(m.length);
   });
@@ -125,7 +150,14 @@ function composeHundreds(text: string, pack: LangPack): string {
  * into one number, and `extractEnergies()`'s single-`\d+` number grammar then picked up only
  * whichever word ended up adjacent to the unit). Must run before `composeDecimals()` so a
  * tens+ones compound in front of "point" is already a single digit run by the time that
- * function's whole-part alternative looks for one.
+ * function's whole-part alternative looks for one — and, since issue #163 B4, before
+ * `composeHundreds()` too: reusing `spellOutNumbers()`'s original hundreds-then-tens-ones order,
+ * "two hundred thirty five" had `composeHundreds()` consume "two hundred thirty" as hundreds=200 +
+ * remainder="thirty" (30) first, leaving "five" orphaned with no adjacent tens word left to compose
+ * with — so `extractEnergies()`'s number grammar picked up whichever bare digit ended up next to
+ * the unit (5 MeV, not 235). Composing "thirty five" into "35" *before* `composeHundreds()` runs
+ * means the hundreds pass instead sees an already-composed `\d+` remainder, which its own regex
+ * was widened above to accept.
  */
 function composeTensOnes(text: string, pack: LangPack): string {
   const digitOf = new Map(pack.NUMBER_WORDS);
@@ -192,7 +224,10 @@ function composeDecimals(text: string, pack: LangPack): string {
  * the substituted and original text, with no separate bookkeeping to reconcile them.
  */
 function spellOutNumbers(text: string, pack: LangPack): string {
-  let out = composeDecimals(composeTensOnes(composeHundreds(text, pack), pack), pack);
+  // issue #163 B4 — tens+ones must compose *before* hundreds (see composeTensOnes()'s own doc
+  // comment for why the opposite order silently drops a value like "thirty" out of "two hundred
+  // thirty five").
+  let out = composeDecimals(composeHundreds(composeTensOnes(text, pack), pack), pack);
   for (const [word, digit] of pack.NUMBER_WORDS) {
     out = out.replace(new RegExp(`\\b${word}\\b`, "gi"), (m) => digit.padEnd(m.length));
   }
@@ -480,22 +515,44 @@ interface RawTarget {
   span: Span;
 }
 
+/**
+ * Normalizes `LENGTH_TARGET_RE`'s captured unit group to the closed `RangeTargetUnit` set,
+ * returning `null` for anything unrecognized. issue #163 B1 — the previous version (`let unit =
+ * raw; if/else...`) had no real default: every branch that didn't match left `unit` as whatever
+ * raw text the regex happened to capture, typed as plain `string`. That's what let a captured
+ * "um"/"µm" silently reach `compute.ts`'s `rangeTargetToGcm2()`, which had no `"um"` branch either
+ * and fell through to treating it as centimetres — a ~200× error with no error, warning, or
+ * plausibility flag anywhere. Returning `null` here instead means an unrecognized unit drops the
+ * target entirely (the query reads as incomplete) rather than ever guessing one.
+ */
+function normalizeRangeTargetUnit(raw: string): RangeTargetUnit | null {
+  const compact = raw.toLowerCase().replace(/\s+/g, "");
+  if (compact.startsWith("g/cm") || compact.startsWith("gcm")) return "g/cm2";
+  if (
+    compact === "micron" ||
+    compact === "microns" ||
+    compact === "um" ||
+    compact === "µm" ||
+    compact.startsWith("micrometer")
+  ) {
+    return "um";
+  }
+  if (compact === "cm" || compact.startsWith("centimeter")) return "cm";
+  if (compact === "mm" || compact.startsWith("millimeter")) return "mm";
+  return null;
+}
+
 /** Extract the given range for an `energyFromRange` query. */
 function extractRangeTarget(text: string): RawTarget | null {
   const m = LENGTH_TARGET_RE.exec(text);
   if (!m) return null;
-  const raw = (m[2] ?? "").toLowerCase().replace(/\s+/g, "");
-  let unit = raw;
-  if (raw.startsWith("g/cm") || raw.startsWith("gcm")) unit = "g/cm2";
-  else if (raw === "micron" || raw === "microns" || raw === "µm" || raw.startsWith("micrometer"))
-    unit = "um";
-  else if (raw.startsWith("centimeter")) unit = "cm";
-  else if (raw.startsWith("millimeter")) unit = "mm";
+  const unit = normalizeRangeTargetUnit(m[2] ?? "");
+  if (!unit) return null;
   const start = m.index ?? 0;
   return { slot: { value: Number(m[1]), unit }, span: { start, end: start + m[0].length } };
 }
 
-const STP_TARGET_RES: ReadonlyArray<{ re: RegExp; unit: string }> = [
+const STP_TARGET_RES: ReadonlyArray<{ re: RegExp; unit: StpTargetUnit }> = [
   { re: /(\d+(?:\.\d+)?)\s*mev\s*cm2\s*\/\s*g\b/i, unit: "MeV cm2/g" },
   { re: /(\d+(?:\.\d+)?)\s*mev\s*\/\s*cm\b/i, unit: "MeV/cm" },
   { re: /(\d+(?:\.\d+)?)\s*mev\s+per\s+cm\b/i, unit: "MeV/cm" },
@@ -693,6 +750,102 @@ function extractMaterials(
   return out.sort((a, b) => a.span.start - b.span.start);
 }
 
+/**
+ * issue #163 B3 — `fillMissingSlots()` (fill-defaults.ts) treats "libdedx doesn't have this
+ * material" and "no material was mentioned at all" identically, because the real scan above only
+ * ever emits a slot for a phrase it can *resolve* — so both states are "materials.length === 0",
+ * and the UI substituted water with a banner claiming the material was "not specified", which is
+ * simply false for "protons in stainless steel". This is a second, narrowly-scoped pass, only
+ * ever consulted when the real scan found nothing anywhere in the query (so it can never override
+ * an already-successful match): the word(s) immediately after "in" — by far the dominant way a
+ * target material is phrased in this domain — capped at two words and rejected if they're
+ * function words, since "in general"/"in theory"/"in this case" are common filler this domain's
+ * queries can also contain and are not material mentions. A phrase outside this "in ..." shape,
+ * or that gets filtered out, still falls back to the old (also honest, just less specific) "not
+ * specified" behavior — a safe degradation, never a regression: every query this *does* catch
+ * already produced a silently wrong substitution before it existed.
+ */
+const NON_MATERIAL_IN_PHRASES = new Set([
+  "general",
+  "theory",
+  "practice",
+  "particular",
+  "fact",
+  "summary",
+  "short",
+  "addition",
+  "conclusion",
+  "reality",
+  "detail",
+  "total",
+  "comparison",
+  "this case",
+  "that case",
+  "other words",
+]);
+
+/** "a"/"an"/"the" lead a captured phrase far more often than they lead a genuine function-word
+ * filler ("in general", "of the total"), so the leading-stopword reject below would otherwise
+ * also reject the single most natural way to name an unknown particle/material ("a muon", "a
+ * stainless steel") — silently falling back to the old defaults-substitution bug this pass exists
+ * to catch. Strips at most one leading article, from both the words used for the stopword check
+ * and the returned display phrase, so "a muon" resolves to the phrase "muon".
+ */
+const LEADING_ARTICLES = new Set(["a", "an", "the"]);
+
+function stripLeadingArticle(rawWords: string[], lowerWords: string[]): [string[], string[]] {
+  if (rawWords.length > 1 && LEADING_ARTICLES.has(lowerWords[0] ?? "")) {
+    return [rawWords.slice(1), lowerWords.slice(1)];
+  }
+  return [rawWords, lowerWords];
+}
+
+function detectUnresolvedMaterialPhrase(
+  text: string,
+  stopwords: ReadonlySet<string>,
+): string | null {
+  const re = /\bin\s+([a-z][a-z-]*(?:\s+[a-z][a-z-]*)?)\b/gi;
+  for (const m of text.matchAll(re)) {
+    const phrase = (m[1] ?? "").trim();
+    if (!phrase || phrase.length < 3) continue;
+    const lower = phrase.toLowerCase();
+    if (NON_MATERIAL_IN_PHRASES.has(lower)) continue;
+    const [rawWords, words] = stripLeadingArticle(phrase.split(/\s+/), lower.split(/\s+/));
+    if (stopwords.has(words[0] ?? "")) continue;
+    if (words.every((w) => stopwords.has(w))) continue;
+    return rawWords.join(" ");
+  }
+  return null;
+}
+
+/**
+ * issue #163 B3, particle side — same reasoning as `detectUnresolvedMaterialPhrase()` above, for
+ * "range of muons in water" / "stopping power of pions in water" shaped queries. `extractParticles`
+ * only matches named particles (`NAMED_PARTICLE_RE`) or an "<element> ion(s)" head
+ * (`PARTICLE_HEAD_RE`) — a bare unknown noun like "muons" (no "ion" suffix, not in the named list)
+ * never gets attempted at all, so there's no failed-resolution span to report; this instead looks
+ * for the word(s) between "of" and "in", the shape every one of this domain's direct-phrasing
+ * queries already uses for the particle. Only consulted when the real scan found nothing.
+ */
+function detectUnresolvedParticlePhrase(
+  text: string,
+  stopwords: ReadonlySet<string>,
+): string | null {
+  const re = /\bof\s+([a-z][a-z-]*(?:\s+[a-z][a-z-]*)?)\s+in\b/gi;
+  for (const m of text.matchAll(re)) {
+    const phrase = (m[1] ?? "").trim();
+    if (!phrase || phrase.length < 3) continue;
+    const [rawWords, words] = stripLeadingArticle(
+      phrase.split(/\s+/),
+      phrase.toLowerCase().split(/\s+/),
+    );
+    if (stopwords.has(words[0] ?? "")) continue;
+    if (words.every((w) => stopwords.has(w))) continue;
+    return rawWords.join(" ");
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------------------
 // 5. compareDim — program names, then entity multiplicity
 // ---------------------------------------------------------------------------
@@ -731,11 +884,19 @@ function elementName(p: ParticleMatch): string {
   return p.name.toLowerCase();
 }
 
-/** Per-nucleon value + unit for a total→per-nucleon assumption note. */
-function perNucleon(value: number, unit: EnergyUnit, a: number): { value: number; unit: string } {
-  if (unit === "keV") return { value: round(value / a), unit: "keV/nucl" };
+/**
+ * Per-nucleon value + unit for a total→per-nucleon assumption note, formatted for display.
+ * issue #163 B7 — this used to return a raw `number` via `round()` (1e-6 precision, meant to trim
+ * floating-point fuzz like `84/12 === 6.999999999999999`, not to round for *display*), which put
+ * `round()`'s full precision straight into physicist-facing prose: "400 MeV taken as total →
+ * 33.333333 MeV/nucl". `formatSignificant()` both trims that same fuzz and rounds to 4 significant
+ * figures, the same convention every other physics value this app renders already uses
+ * (`nlg/render.ts`'s own `formatNumber()`).
+ */
+function perNucleon(value: number, unit: EnergyUnit, a: number): { value: string; unit: string } {
+  if (unit === "keV") return { value: formatSignificant(value / a), unit: "keV/nucl" };
   // MeV and GeV both express the per-nucleon figure in MeV/nucl.
-  return { value: round(toMeV(value, unit) / a), unit: "MeV/nucl" };
+  return { value: formatSignificant(toMeV(value, unit) / a), unit: "MeV/nucl" };
 }
 
 /** Trim floating-point fuzz so 84/12 prints as 7, not 6.999999999999999. */
@@ -848,8 +1009,28 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
     return { match: m.match };
   });
 
-  // The first element-named, multi-nucleon ion governs total→per-nucleon reads.
-  const heavyIon = rawParticles.find((p) => p.resolved.isotopeAssumed && p.resolved.massNumber > 1);
+  // issue #163 B3 — only ever consulted when the real scan above found nothing (see both
+  // detectors' own doc comments for the false-"not specified"-banner bug this closes).
+  const unresolved: UnresolvedEntity[] = [];
+  if (materials.length === 0) {
+    const phrase = detectUnresolvedMaterialPhrase(query, pack.MATERIAL_STOPWORDS);
+    if (phrase) unresolved.push({ kind: "material", phrase });
+  }
+  if (particles.length === 0) {
+    const phrase = detectUnresolvedParticlePhrase(query, pack.MATERIAL_STOPWORDS);
+    if (phrase) unresolved.push({ kind: "particle", phrase });
+  }
+
+  // The first multi-nucleon particle governs total→per-nucleon reads. issue #163 B7 — was gated
+  // on `isotopeAssumed`, which excludes every *named* multi-nucleon particle whose isotope is
+  // inherent rather than assumed (deuteron A=2, triton A=3, alpha A=4): `compute.ts`'s
+  // `energyToMeVPerNucl()` divides a bare energy by A for *any* massNumber > 1 regardless of how
+  // that A was determined, so "20 MeV deuteron" was silently computed at 10 MeV/nucl with no
+  // assumption note — the same silent total→per-nucleon division a bare "carbon" ion already
+  // discloses, just not disclosed here. `massNumber > 1` alone covers both cases uniformly,
+  // including an *explicit* isotope ("carbon-13") which is just as subject to the same division
+  // and equally deserves the note despite not being an assumed default.
+  const heavyIon = rawParticles.find((p) => p.resolved.massNumber > 1);
 
   const energies: EnergySlot[] = rawEnergies.map((e) => {
     const slot: EnergySlot = { value: e.value, unit: e.unit };
@@ -886,7 +1067,7 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
   };
   if (target !== undefined) intent.target = target;
 
-  const result: MatchResult = { intent, quantitySource: source, incomplete };
+  const result: MatchResult = { intent, quantitySource: source, incomplete, unresolved };
   if (!inverse && fwd?.idiom) result.idiom = fwd.idiom;
   return result;
 }

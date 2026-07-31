@@ -38,6 +38,23 @@ export type CompareDim = (typeof COMPARE_DIMS)[number];
 export const ENERGY_UNITS = ["MeV", "keV", "GeV", "TeV", "MeV/nucl", "MeV/u"] as const;
 export type EnergyUnit = (typeof ENERGY_UNITS)[number];
 
+/**
+ * issue #163 B1/B2 — closed unit sets for an inverse query's `target`, replacing the
+ * previously-free `unit: string`. That freedom is what let the matcher (`matcher.ts`'s
+ * `extractRangeTarget`/`extractStpTarget`) emit `"um"` / `"keV/um"` while the converters
+ * (`compute.ts`'s `rangeTargetToGcm2`/`stpTargetToMassUnits`) had no branch for either and
+ * silently fell through to the wrong unit family (~200× and ~18× errors, both with
+ * `confidence: 0.9`/`incomplete: false` — nothing signaled a problem). `RANGE_TARGET_UNITS` /
+ * `STP_TARGET_UNITS` are the two producers' *complete* vocabularies; `compute.ts` now switches
+ * over them exhaustively (a `never` check), so a unit added to one array without a matching
+ * converter branch is a compile error, not a silent wrong answer three files away.
+ */
+export const RANGE_TARGET_UNITS = ["cm", "mm", "m", "um", "g/cm2"] as const;
+export type RangeTargetUnit = (typeof RANGE_TARGET_UNITS)[number];
+
+export const STP_TARGET_UNITS = ["MeV cm2/g", "MeV/cm", "keV/um"] as const;
+export type StpTargetUnit = (typeof STP_TARGET_UNITS)[number];
+
 // ---------------------------------------------------------------------------
 // Slot types
 // ---------------------------------------------------------------------------
@@ -68,13 +85,16 @@ export interface EnergySlot {
 
 /**
  * The known value of an inverse query: a range (length / areal density) for
- * `energyFromRange`, or a stopping power for `energyFromStp`. `unit` is a free
- * string because the accepted units differ per quantity (e.g. "cm", "mm",
- * "g/cm2", "MeV/cm", "MeV cm2/g").
+ * `energyFromRange`, or a stopping power for `energyFromStp`. `unit` is the union of both
+ * quantities' closed vocabularies (`RangeTargetUnit | StpTargetUnit`) rather than a single
+ * `kind`-discriminated shape — which of the two subsets is actually valid is already implied by
+ * the surrounding `QueryIntent.quantity`, so a second discriminant field would just repeat that.
+ * `compute.ts` narrows with a runtime type guard before its exhaustive per-quantity switch (issue
+ * #163 B1/B2).
  */
 export interface TargetSlot {
   value: number;
-  unit: string;
+  unit: RangeTargetUnit | StpTargetUnit;
 }
 
 export interface QueryIntent {
@@ -229,14 +249,19 @@ export function validateQueryIntent(value: unknown, path = "expected"): string[]
 
   if ("target" in value && value.target !== undefined) {
     const t = value.target;
-    if (
-      !isPlainObject(t) ||
-      !isPositiveFiniteNumber(t.value) ||
-      typeof t.unit !== "string" ||
-      t.unit.length === 0
-    ) {
+    // issue #163 B1/B2 — was `typeof t.unit === "string"`, which is exactly what let an
+    // unhandled unit (`"um"`, `"keV/um"`) reach the compute layer's silent fallthrough. Checking
+    // membership in the combined closed set is the schema half of closing that hole; the other
+    // half is `compute.ts`'s exhaustive per-quantity switch over the narrower of the two unions.
+    const validUnit =
+      isPlainObject(t) &&
+      typeof t.unit === "string" &&
+      ((RANGE_TARGET_UNITS as readonly string[]).includes(t.unit) ||
+        (STP_TARGET_UNITS as readonly string[]).includes(t.unit));
+    if (!isPlainObject(t) || !isPositiveFiniteNumber(t.value) || !validUnit) {
       errors.push(
-        `${path}.target: must be { value: positive number, unit: non-empty string } when present`,
+        `${path}.target: must be { value: positive number, unit: one of ` +
+          `${[...RANGE_TARGET_UNITS, ...STP_TARGET_UNITS].join(" | ")} } when present`,
       );
     }
   }

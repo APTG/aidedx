@@ -7,7 +7,13 @@
    * is aimed at.
    */
   import { tick } from "svelte";
-  import { ENERGY_UNITS, type EnergyUnit, type QueryIntent } from "$lib/intent/query-intent.ts";
+  import {
+    ENERGY_UNITS,
+    RANGE_TARGET_UNITS,
+    STP_TARGET_UNITS,
+    type EnergyUnit,
+    type QueryIntent,
+  } from "$lib/intent/query-intent.ts";
   import { resolveParticle } from "$lib/aliases/lookup.ts";
   import { particleDisplayLabel } from "$lib/aliases/particles.ts";
   import {
@@ -47,6 +53,65 @@
     energyFromRange: "energy (from range)",
     energyFromStp: "energy (from stopping power)",
   };
+
+  // issue #163 B1/B2 — the target chip's unit field is free text (the user can type anything),
+  // so this is the system boundary where it gets checked against the closed set `withTarget()`
+  // now requires, the same "validate at the boundary" spot every other free-text chip edit below
+  // already uses (a non-finite energy value, an empty unit — both already silently don't commit).
+  const TARGET_UNITS: ReadonlySet<string> = new Set<string>([
+    ...RANGE_TARGET_UNITS,
+    ...STP_TARGET_UNITS,
+  ]);
+  function isTargetUnit(
+    unit: string,
+  ): unit is (typeof RANGE_TARGET_UNITS)[number] | (typeof STP_TARGET_UNITS)[number] {
+    return TARGET_UNITS.has(unit);
+  }
+
+  /**
+   * Maps common case/spacing/symbol variants of a target unit ("mev/cm", "KEV/µM", "g/cm^2") to
+   * the canonical `RANGE_TARGET_UNITS`/`STP_TARGET_UNITS` spelling `isTargetUnit()` checks against.
+   * Without this, `isTargetUnit()`'s exact-match check (added for B1/B2's closed-union fix) made a
+   * physically unambiguous retyped edit silently fail to commit — a real usability regression
+   * Copilot's PR #166 review caught, since the *previous* free-text field accepted (and then
+   * miscomputed) anything. Falls back to the trimmed input unchanged when nothing matches, so
+   * `isTargetUnit()` still rejects genuine garbage exactly as before.
+   */
+  function normalizeTargetUnitInput(raw: string): string {
+    const trimmed = raw.trim();
+    // "²"/"·" are what render.ts's own answer text uses ("MeV·cm²/g", "g/cm²") — a user retyping
+    // exactly what's already on screen must normalize too, not just ASCII "^2"/"*" typists.
+    const compact = trimmed
+      .toLowerCase()
+      .replace(/µ/g, "u")
+      .replace(/²/g, "2")
+      .replace(/·/g, "")
+      .replace(/\s+/g, "");
+    switch (compact) {
+      case "cm":
+        return "cm";
+      case "mm":
+        return "mm";
+      case "m":
+        return "m";
+      case "um":
+        return "um";
+      case "g/cm2":
+      case "g/cm^2":
+      case "gcm2":
+        return "g/cm2";
+      case "mevcm2/g":
+      case "mevcm^2/g":
+      case "mev*cm2/g":
+        return "MeV cm2/g";
+      case "mev/cm":
+        return "MeV/cm";
+      case "kev/um":
+        return "keV/um";
+      default:
+        return trimmed;
+    }
+  }
 
   function particleLabel(match: string): string {
     const resolved = resolveParticle(match);
@@ -175,12 +240,12 @@
     getButton: () => HTMLButtonElement | undefined,
   ) {
     if (suppressBlurCommit) return;
-    const trimmedUnit = unit.trim();
+    const trimmedUnit = normalizeTargetUnitInput(unit);
     const current = intent.target;
     if (
       Number.isFinite(value) &&
       value > 0 &&
-      trimmedUnit &&
+      isTargetUnit(trimmedUnit) &&
       (value !== current?.value || trimmedUnit !== current?.unit)
     ) {
       onEditIntent(withTarget(intent, value, trimmedUnit));

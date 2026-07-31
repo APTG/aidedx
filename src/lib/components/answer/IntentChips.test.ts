@@ -208,6 +208,58 @@ describe("IntentChips", () => {
     expect(getByRole("spinbutton", { name: /target value/i })).toBeInTheDocument();
   });
 
+  it("normalizes a retyped target unit's case/spacing/symbols before validating (Copilot review, PR #166)", async () => {
+    // Before B1/B2's closed-union fix, this free-text field accepted (and then silently
+    // miscomputed) any string. isTargetUnit()'s exact-match check closed that hole, but without
+    // normalization it also silently drops an edit that's physically unambiguous to a physicist
+    // just because the case/spacing/symbols don't match the canonical display string exactly.
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({
+      quantity: "energyFromStp",
+      target: { value: 10, unit: "MeV/cm" },
+    });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit target: 10 MeV\/cm/i }));
+    const unitInput = getByRole("textbox", { name: /target unit/i });
+    await fireEvent.input(unitInput, { target: { value: "kev/µm" } });
+    await fireEvent.focusOut(unitInput, { relatedTarget: document.body });
+
+    expect(onEditIntent).toHaveBeenCalledTimes(1);
+    const next = firstCallArg<QueryIntent>(onEditIntent);
+    expect(next.target).toEqual({ value: 10, unit: "keV/um" });
+  });
+
+  it("normalizes the superscript/middle-dot spelling render.ts itself displays ('g/cm²', 'MeV·cm²/g')", async () => {
+    // Copilot review follow-up on PR #166: a user retyping exactly what's already on screen
+    // (render.ts's own "MeV·cm²/g" / "g/cm²") must normalize too, not just ASCII "^2" typists.
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({ quantity: "energyFromRange", target: { value: 10, unit: "cm" } });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit target: 10 cm/i }));
+    const unitInput = getByRole("textbox", { name: /target unit/i });
+    await fireEvent.input(unitInput, { target: { value: "g/cm²" } });
+    await fireEvent.focusOut(unitInput, { relatedTarget: document.body });
+
+    expect(onEditIntent).toHaveBeenCalledTimes(1);
+    const next = firstCallArg<QueryIntent>(onEditIntent);
+    expect(next.target).toEqual({ value: 10, unit: "g/cm2" });
+  });
+
+  it("still rejects a genuinely unrecognized target unit after normalization", async () => {
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({ quantity: "energyFromRange", target: { value: 10, unit: "cm" } });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit target: 10 cm/i }));
+    const unitInput = getByRole("textbox", { name: /target unit/i });
+    await fireEvent.input(unitInput, { target: { value: "furlongs" } });
+    await fireEvent.focusOut(unitInput, { relatedTarget: document.body });
+
+    expect(onEditIntent).not.toHaveBeenCalled();
+  });
+
   it("renders a target chip for an inverse query", () => {
     const inverse = baseIntent({
       quantity: "energyFromRange",

@@ -141,18 +141,21 @@ describe("buildDedxWebCalculatorUrl", () => {
     ["keV/um", "kev-um"],
     ["MeV/cm", "mev-cm"],
     ["MeV cm2/g", "mev-cm2-g"],
-  ])("maps energyFromStp target unit %s to dedx_web token %s", (aidedxUnit, dedxWebToken) => {
-    const i = intent({
-      quantity: "energyFromStp",
-      energies: [],
-      target: { value: 15, unit: aidedxUnit },
-    });
-    const url = buildDedxWebCalculatorUrl(i, result({ quantity: "energyFromStp" }));
-    const params = paramsOf(url);
-    expect(params.get("imode")).toBe("stp");
-    expect(params.get("lookups")).toBe(`15:${dedxWebToken}`);
-    expect(params.get("iunit")).toBe(dedxWebToken);
-  });
+  ] as const)(
+    "maps energyFromStp target unit %s to dedx_web token %s",
+    (aidedxUnit, dedxWebToken) => {
+      const i = intent({
+        quantity: "energyFromStp",
+        energies: [],
+        target: { value: 15, unit: aidedxUnit },
+      });
+      const url = buildDedxWebCalculatorUrl(i, result({ quantity: "energyFromStp" }));
+      const params = paramsOf(url);
+      expect(params.get("imode")).toBe("stp");
+      expect(params.get("lookups")).toBe(`15:${dedxWebToken}`);
+      expect(params.get("iunit")).toBe(dedxWebToken);
+    },
+  );
 
   it("returns null when an inverse query has no target", () => {
     const i = intent({ quantity: "energyFromRange", energies: [] });

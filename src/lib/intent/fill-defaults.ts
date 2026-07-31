@@ -7,7 +7,7 @@
  * message. The defaults are deliberately generic/well-known reference values
  * (a proton in water at a round energy), not a guess at what the user meant.
  */
-import type { QuantitySource } from "./matcher.ts";
+import type { QuantitySource, UnresolvedEntity } from "./matcher.ts";
 import type { EnergySlot, QueryIntent, TargetSlot } from "./query-intent.ts";
 
 const DEFAULT_PARTICLE_MATCH = "proton";
@@ -92,4 +92,21 @@ export function fillMissingSlots(intent: QueryIntent): FillDefaultsResult {
 export function buildDefaultsNotice(filled: FilledSlot[]): string {
   const list = filled.map((f) => f.note).join("; ");
   return `Your question was missing some details, so I filled them in: ${list}. Tap a value below to correct it, or try asking again.`;
+}
+
+/**
+ * issue #163 B3 — the message for a query that *named* a particle/material libdedx has no data
+ * for, as opposed to one that never named anything. Callers must check this **before**
+ * `fillMissingSlots()` — silently substituting a default for a slot this describes is exactly the
+ * "material not specified → water" false banner the bug report measured (the user did specify
+ * one; libdedx just doesn't have it). Deliberately doesn't invite "tap a value below to correct
+ * it" the way `buildDefaultsNotice()` does — there is no computed answer to show chips for here.
+ */
+export function buildUnresolvedNotice(unresolved: UnresolvedEntity[]): string {
+  const parts = unresolved.map((u) => `"${u.phrase}" isn't a ${u.kind} that libdedx has data for`);
+  const noun =
+    unresolved.length > 1
+      ? "particle or material"
+      : (unresolved[0]?.kind ?? "particle or material");
+  return `${parts.join("; ")}. Try a different ${noun}, or check the spelling.`;
 }

@@ -100,7 +100,12 @@ describe("answerStatus", () => {
 
   it("computes and renders a plain-text answer for a confident, complete match", async () => {
     const i = intent({ confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     mocks.getService.mockResolvedValue({});
     mocks.computeIntent.mockReturnValue(computeResult());
 
@@ -119,7 +124,12 @@ describe("answerStatus", () => {
 
   it("shows a 'couldn't understand' message for a low-confidence match, without calling compute", async () => {
     const i = intent({ confidence: 0.4 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "default", incomplete: true });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "default",
+      incomplete: true,
+      unresolved: [],
+    });
 
     const store = await loadStore();
     await store.submit("um, something about physics");
@@ -142,7 +152,12 @@ describe("answerStatus", () => {
       energies: [],
       confidence: 0.4,
     });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: true });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: true,
+      unresolved: [],
+    });
     mocks.getService.mockResolvedValue({});
     mocks.computeIntent.mockReturnValue(computeResult());
 
@@ -172,7 +187,12 @@ describe("answerStatus", () => {
       energies: [{ value: 100, unit: "MeV" }],
       confidence: 0.4,
     });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "default", incomplete: true });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "default",
+      incomplete: true,
+      unresolved: [],
+    });
 
     const store = await loadStore();
     await store.submit("what does a 100 MeV proton do");
@@ -184,7 +204,12 @@ describe("answerStatus", () => {
 
   it("surfaces a computeIntent error inline instead of throwing", async () => {
     const i = intent({ particles: [{ match: "electrons" }], confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     mocks.getService.mockResolvedValue({});
     mocks.computeIntent.mockImplementation(() => {
       throw new Error("Electron stopping powers are not available in libdedx v1.4.0");
@@ -202,7 +227,12 @@ describe("answerStatus", () => {
 
   it("surfaces a WASM load failure inline", async () => {
     const i = intent({ confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     mocks.getService.mockRejectedValue(new Error("Failed to load libdedx WASM module: boom"));
 
     const store = await loadStore();
@@ -216,8 +246,18 @@ describe("answerStatus", () => {
     const firstIntent = intent({ particles: [{ match: "first-particle" }], confidence: 0.97 });
     const secondIntent = intent({ particles: [{ match: "second-particle" }], confidence: 0.97 });
     mocks.matchIntent
-      .mockReturnValueOnce({ intent: firstIntent, quantitySource: "direct", incomplete: false })
-      .mockReturnValueOnce({ intent: secondIntent, quantitySource: "direct", incomplete: false });
+      .mockReturnValueOnce({
+        intent: firstIntent,
+        quantitySource: "direct",
+        incomplete: false,
+        unresolved: [],
+      })
+      .mockReturnValueOnce({
+        intent: secondIntent,
+        quantitySource: "direct",
+        incomplete: false,
+        unresolved: [],
+      });
 
     let resolveFirst!: (service: unknown) => void;
     let resolveSecond!: (service: unknown) => void;
@@ -262,7 +302,12 @@ describe("answerStatus", () => {
 
   it("a reset() call discards a slower in-flight submit()'s eventual result", async () => {
     const i = intent({ confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     let resolveService!: (service: unknown) => void;
     mocks.getService.mockImplementationOnce(
       () =>
@@ -288,7 +333,12 @@ describe("answerStatus", () => {
 
   it("reset() clears phase/lines/message/intent/result back to idle", async () => {
     const i = intent({ confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     mocks.getService.mockResolvedValue({});
     mocks.computeIntent.mockReturnValue(computeResult());
     const store = await loadStore();
@@ -307,7 +357,12 @@ describe("answerStatus", () => {
 
   it("folds corrector substitutions into the intent's assumptions", async () => {
     const i = intent({ confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     mocks.getService.mockResolvedValue({});
     mocks.computeIntent.mockReturnValue(computeResult());
 
@@ -325,7 +380,12 @@ describe("answerStatus", () => {
 
   it("omits assumptions when no substitutions were passed", async () => {
     const i = intent({ confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     mocks.getService.mockResolvedValue({});
     mocks.computeIntent.mockReturnValue(computeResult());
 
@@ -337,7 +397,12 @@ describe("answerStatus", () => {
 
   it("sets a re-ask notice and target when validateIntent() flags exactly one issue", async () => {
     const i = intent({ confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     mocks.getService.mockResolvedValue({});
     mocks.computeIntent.mockReturnValue(computeResult());
     mocks.validateIntent.mockReturnValue({
@@ -363,7 +428,12 @@ describe("answerStatus", () => {
     // would highlight an unrelated chip, so the highlight is omitted while
     // the banner (which doesn't need an index) still shows.
     const i = intent({ confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     mocks.getService.mockResolvedValue({});
     mocks.computeIntent.mockReturnValue(computeResult());
     const issueWithoutIndex: PlausibilityIssue = { slot: "particle", message: "bad particle" };
@@ -383,7 +453,12 @@ describe("answerStatus", () => {
 
   it("leaves the re-ask notice/target null when validateIntent() finds nothing implausible", async () => {
     const i = intent({ confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     mocks.getService.mockResolvedValue({});
     mocks.computeIntent.mockReturnValue(computeResult());
     mocks.validateIntent.mockReturnValue({ plausible: true, issues: [] });
@@ -397,7 +472,12 @@ describe("answerStatus", () => {
 
   it("leaves the re-ask notice/target null when validateIntent() flags more than one issue", async () => {
     const i = intent({ confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     mocks.getService.mockResolvedValue({});
     mocks.computeIntent.mockReturnValue(computeResult());
     mocks.validateIntent.mockReturnValue({
@@ -417,7 +497,12 @@ describe("answerStatus", () => {
 
   it("clears a stale re-ask notice on reset()", async () => {
     const i = intent({ confidence: 0.97 });
-    mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
     mocks.getService.mockResolvedValue({});
     mocks.computeIntent.mockReturnValue(computeResult());
     mocks.validateIntent.mockReturnValue({
@@ -453,7 +538,12 @@ describe("answerStatus", () => {
 
     it("re-runs validateIntent() and can clear a prior re-ask notice", async () => {
       const i = intent({ confidence: 0.97 });
-      mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: false });
+      mocks.matchIntent.mockReturnValue({
+        intent: i,
+        quantitySource: "direct",
+        incomplete: false,
+        unresolved: [],
+      });
       mocks.getService.mockResolvedValue({});
       mocks.computeIntent.mockReturnValue(computeResult());
       mocks.validateIntent.mockReturnValueOnce({
@@ -480,7 +570,12 @@ describe("answerStatus", () => {
         energies: [],
         confidence: 0.4,
       });
-      mocks.matchIntent.mockReturnValue({ intent: i, quantitySource: "direct", incomplete: true });
+      mocks.matchIntent.mockReturnValue({
+        intent: i,
+        quantitySource: "direct",
+        incomplete: true,
+        unresolved: [],
+      });
       mocks.getService.mockResolvedValue({});
       mocks.computeIntent.mockReturnValue(computeResult());
 
