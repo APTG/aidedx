@@ -31,6 +31,17 @@ class AudioMetricsTest {
     }
 
     @Test
+    fun `negative-rail samples give a peak of 32768, not capped at 32767`() {
+        // Short.MIN_VALUE (-32768) has one more unit of magnitude than Short.MAX_VALUE (32767) —
+        // signed 16-bit PCM is asymmetric, so a clip that only touches the negative rail still
+        // has to report the true peak, not the positive-side maximum (issue #161 review feedback).
+        val samples = ShortArray(50) { Short.MIN_VALUE }
+        val r = AudioMetrics.analyze(samples)
+        assertEquals(32768, r.peakAmplitude)
+        assertEquals(50, r.clippedSampleCount)
+    }
+
+    @Test
     fun `full-scale samples are counted as clipped and set the peak`() {
         val samples = ShortArray(100) { Short.MAX_VALUE }
         val r = AudioMetrics.analyze(samples)

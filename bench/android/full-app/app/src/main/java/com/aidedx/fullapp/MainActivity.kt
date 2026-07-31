@@ -446,7 +446,18 @@ class MainActivity : Activity() {
             // match it" instead of both silently reading as the same "No match" — the ambiguity
             // is exactly what made the long-recording empty-transcript failure mode confusing to
             // diagnose on-device (see the auto-stop cap above and docs/android-full-app-spike.md).
-            var matchedIntentSummary = if (transcript.isBlank()) "No speech detected — try again" else "No match"
+            // A transcribe/match-stage exception must not fall into either bucket, though — it
+            // used to read as "No speech detected", which is actively misleading about what
+            // actually happened (issue #161 review feedback).
+            var matchedIntentSummary = when {
+                failure != null -> {
+                    val stage = failure.getString("stage")
+                    val detail = if (failure.isNull("message")) failure.getString("exceptionType") else failure.getString("message")
+                    "Error during $stage: $detail"
+                }
+                transcript.isBlank() -> "No speech detected — try again"
+                else -> "No match"
+            }
             var matchedResultText = ""
             var computeJson: JSONObject? = null
             val computeStartNs = System.nanoTime()
@@ -482,8 +493,21 @@ class MainActivity : Activity() {
             }
             val computeMs = (System.nanoTime() - computeStartNs) / 1_000_000.0
 
-            // Best-effort: a capture-writing problem must never crash the app or block showing the
-            // answer the user is actually waiting on.
+            runOnUiThread {
+                recordUiState = RecordUiState.IDLE
+                transcriptLine = transcript
+                intentLine = matchedIntentSummary
+                resultLine = matchedResultText
+                transcriptText.text = transcriptLine
+                intentText.text = intentLine
+                resultText.text = resultLine
+                setRecordButtonIdle()
+            }
+
+            // Posted after the UI update above (issue #161 review feedback) — WAV + JSON disk I/O
+            // must never delay the answer the user is actually waiting on. Still on this same
+            // background Thread, so it costs nothing to do it last; best-effort otherwise, a
+            // capture-writing problem must never crash the app either.
             try {
                 val nluBlock = trace?.let { CaptureEnvelope.buildNluBlock(it) } ?: JSONObject().apply {
                     put("rawTranscript", transcript)
@@ -521,17 +545,6 @@ class MainActivity : Activity() {
                 captureWriter.write(envelope, samples, AudioRecorder.SAMPLE_RATE)
             } catch (e: Exception) {
                 android.util.Log.w("CaptureWriter", "Failed to write capture", e)
-            }
-
-            runOnUiThread {
-                recordUiState = RecordUiState.IDLE
-                transcriptLine = transcript
-                intentLine = matchedIntentSummary
-                resultLine = matchedResultText
-                transcriptText.text = transcriptLine
-                intentText.text = intentLine
-                resultText.text = resultLine
-                setRecordButtonIdle()
             }
         }.start()
     }

@@ -80,7 +80,27 @@ class CaptureWriter(context: Context, sessionTag: String = defaultSessionTag()) 
         val captureId = envelope.getString("captureId")
         writeWavFile(File(sessionDir, "$captureId.wav"), pcm, sampleRateHz)
         captures.add(envelope)
-        capturesFile.writeText(JSONArray(captures).toString())
+        writeCapturesFileAtomically()
+    }
+
+    /**
+     * issue #161 review feedback — a direct `capturesFile.writeText(...)` is not atomic: a
+     * process kill mid-write (exactly the scenario this crash-safety convention exists for) can
+     * leave a truncated/corrupt `captures.json`, and `loadExisting()` recovering from that by
+     * starting fresh silently drops *every* prior capture in the session, not just the in-flight
+     * one. Writing to a same-directory temp file first and renaming over the target uses the
+     * filesystem's atomic `rename()` — a crash mid-write leaves either the old, still-valid file
+     * or a still-unreferenced `.tmp`, never a half-written `captures.json`.
+     */
+    private fun writeCapturesFileAtomically() {
+        val tmp = File(sessionDir, "captures.json.tmp")
+        tmp.writeText(JSONArray(captures).toString())
+        if (!tmp.renameTo(capturesFile)) {
+            // renameTo() is platform-dependent and can fail even same-directory/same-volume —
+            // fall back to a plain overwrite rather than silently losing this capture.
+            capturesFile.writeText(tmp.readText())
+            tmp.delete()
+        }
     }
 
     /** Same RIFF/WAVE writer as `DataGenActivity.writeWavFile()` (issue #130) — 16-bit mono PCM. */

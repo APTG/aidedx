@@ -16,7 +16,9 @@ import kotlin.math.sqrt
 object AudioMetrics {
 
     data class Result(
-        /** Max absolute sample value, 0..32767. */
+        /** Max absolute sample value, 0..32768 — signed 16-bit PCM is asymmetric
+         * (`Short.MIN_VALUE` is -32768, one more in magnitude than `Short.MAX_VALUE`'s 32767), so
+         * the true peak is only capped at 32767 for a clip that never touches the negative rail. */
         val peakAmplitude: Int,
         val rmsAmplitude: Double,
         val clippedSampleCount: Int,
