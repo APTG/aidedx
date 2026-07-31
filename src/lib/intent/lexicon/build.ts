@@ -13,7 +13,8 @@ import {
   INDIRECT_IDIOM_PATTERNS,
 } from "./quantity-en.ts";
 
-/** Each pattern already carries its own `\b` anchors — join as a flat alternation. */
+/** `patterns` are bare, unanchored fragments (see `quantity-en.ts`'s doc comment) — this is what
+ * adds the shared `\b...\b` anchoring, once per alternative, when joining them into one regex. */
 function alternation(patterns: readonly string[]): string {
   return patterns.map((p) => `\\b${p}\\b`).join("|");
 }

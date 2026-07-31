@@ -12,9 +12,17 @@
  * pattern `src/lib/aliases/` already uses for materials/particles (see `scripts/generate-aliases.ts`
  * and `bench/android/full-app/.../Aliases.kt`).
  *
- * Patterns are stored as regex *source strings*, each already wrapped in its own `\b...\b`
- * anchors, so both `new RegExp()` (TS) and `Regex()` (Kotlin) can consume them identically and the
- * JSON round-trips losslessly.
+ * Patterns are stored as regex *source strings* so both `new RegExp()` (TS) and `Regex()` (Kotlin)
+ * can consume them identically and the JSON round-trips losslessly. Two anchoring conventions
+ * coexist, matching how each is consumed:
+ *  - `STOPPING_POWER_DIRECT_PATTERNS` / `RANGE_DIRECT_PATTERNS`: bare, *unanchored* fragments —
+ *    `\b...\b` is added once, uniformly, when they're combined into an alternation
+ *    (`lexicon/build.ts`'s `alternation()`; the Kotlin loader does the equivalent). Don't add `\b`
+ *    here, or a pattern ends up double-anchored (harmless functionally — `\b\bfoo\b\b` behaves the
+ *    same as `\b foo \b` — but inconsistent with every other entry and confusing to read).
+ *  - `INDIRECT_IDIOM_PATTERNS`: each `source` is a *complete*, already-anchored regex source, used
+ *    verbatim (`new RegExp(source)`) rather than joined into a shared alternation — these do need
+ *    their own `\b`.
  */
 import type { Quantity } from "../query-intent.ts";
 

@@ -723,13 +723,6 @@ function main(): void {
   const mutationSubset = canonicalRaw.filter((_, i) => i % MUTATION_SAMPLE_STRIDE === 0);
   const mutatedRaw = applyMutations(mutationSubset);
 
-  // Held-out check uses the sentence AS GENERATED (before the ASR corrector runs) — that's the
-  // form comparable to eval/intents.jsonl's hand-authored text.
-  const evalPath = fileURLToPath(new URL("../eval/intents.jsonl", import.meta.url));
-  const frozenTexts = new Set(parseEvalRecords(readFileSync(evalPath, "utf-8")).map((e) => e.text));
-  const heldOutRaw = [...canonicalRaw, ...mutatedRaw].filter((e) => !frozenTexts.has(e.text));
-  const overlapping = canonicalRaw.length + mutatedRaw.length - heldOutRaw.length;
-
   // Everything that actually gets matched runs through correctTranscript() first, same as a real
   // ASR transcript would — see module doc comment.
   const runCorrector = (examples: EvalExample[]): EvalExample[] =>
@@ -737,7 +730,15 @@ function main(): void {
   const canonical = runCorrector(canonicalRaw);
   const mutated = runCorrector(mutatedRaw);
   const corpus = [...canonical, ...mutated];
-  const heldOut = runCorrector(heldOutRaw);
+
+  // Held-out check compares the CORRECTED text — the form that actually reaches matchIntent() —
+  // against eval/intents.jsonl. Checking the pre-correction text instead would wrongly count a
+  // generated sentence as "held out" even when correctTranscript() happens to turn it into an
+  // exact match for a frozen eval sentence (e.g. a unit-mishearing fix landing on frozen wording).
+  const evalPath = fileURLToPath(new URL("../eval/intents.jsonl", import.meta.url));
+  const frozenTexts = new Set(parseEvalRecords(readFileSync(evalPath, "utf-8")).map((e) => e.text));
+  const heldOut = corpus.filter((e) => !frozenTexts.has(e.text));
+  const overlapping = corpus.length - heldOut.length;
 
   const showMisses = process.argv.includes("--show-misses");
 
