@@ -100,6 +100,12 @@ thread is easy to miss, isn't linked from code, and isn't part of the durable pr
 model to follow: audit what prior comments found, correct anything that doesn't hold up, and leave a
 self-contained report the next reader doesn't have to reconstruct from issue history.
 
+**Every PR gets a Copilot review before merge.** After opening a PR, request a review from
+`copilot-pull-request-reviewer[bot]` (`gh api repos/<owner>/<repo>/pulls/<n>/requested_reviewers -f
+"reviewers[]=copilot-pull-request-reviewer[bot]"` — `gh pr edit --add-reviewer copilot` doesn't
+resolve the login and fails). Wait for the review, address every comment (fix or explicitly justify
+skipping), and make sure CI is green before merging.
+
 ## Key source files
 
 - `src/lib/intent/query-intent.ts` — `QueryIntent` schema, `EVAL_TAGS`, `validateQueryIntent()`
