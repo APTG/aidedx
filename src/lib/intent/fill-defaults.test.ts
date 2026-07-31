@@ -121,6 +121,13 @@ describe("buildDefaultsNotice", () => {
 });
 
 describe("buildUnresolvedNotice — issue #163 B3/B6", () => {
+  it("throws for an empty array instead of silently producing a malformed message (Copilot review on PR #167)", () => {
+    // Every real call site already guards with `unresolved.length > 0` — an empty array here is a
+    // caller bug, not a case to degrade for, since it would otherwise print ". Try a different
+    // particle, material, or program, or check the spelling." naming nothing at all.
+    expect(() => buildUnresolvedNotice([])).toThrow(/at least one unresolved entity/);
+  });
+
   it("names a single unresolved entity", () => {
     const notice = buildUnresolvedNotice([{ kind: "material", phrase: "stainless steel" }]);
     expect(notice).toBe(

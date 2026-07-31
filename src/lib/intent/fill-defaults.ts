@@ -103,6 +103,13 @@ export function buildDefaultsNotice(filled: FilledSlot[]): string {
  * it" the way `buildDefaultsNotice()` does — there is no computed answer to show chips for here.
  */
 export function buildUnresolvedNotice(unresolved: UnresolvedEntity[]): string {
+  // Copilot review on PR #167 — every real call site guards with `unresolved.length > 0` first
+  // (there's nothing to name otherwise), so an empty array here is a caller bug, not a case to
+  // degrade gracefully for: it would otherwise silently produce ". Try a different particle,
+  // material, or program, or check the spelling." with no actual named entity in it.
+  if (unresolved.length === 0) {
+    throw new Error("buildUnresolvedNotice() requires at least one unresolved entity");
+  }
   const parts = unresolved.map((u) => `"${u.phrase}" isn't a ${u.kind} that libdedx has data for`);
   // issue #163 B6 — was keyed off item *count* ("> 1 item → generic 'particle or material'"),
   // which silently mislabeled the moment a second kind (program) became possible: 2+ unresolved
