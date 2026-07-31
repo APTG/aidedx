@@ -100,9 +100,11 @@
     <!-- issue #161 — compact single-select "chip" for the capture-annotation dialog's verdict
          row. Starts as Button.Outline; CaptureManagerActivity/MainActivity swap the background to
          @drawable/bg_button_accent (Button.Accent's) on the one currently selected, so this style
-         only needs to define the smaller, chip-sized default look. -->
+         only needs to define the smaller, chip-sized default look. No layout_marginEnd here
+         (deliberately, issue #161 review feedback) — layout_* attributes are ViewGroup.LayoutParams
+         concerns the parent resolves from the view tag directly, not reliably from a style; each
+         chip sets its own in capture_annotate_dialog.xml instead. -->
     <style name="CaptureVerdictChip" parent="Button.Outline">
-        <item name="android:layout_marginEnd">6dp</item>
         <item name="android:paddingLeft">12dp</item>
         <item name="android:paddingRight">12dp</item>
         <item name="android:paddingTop">6dp</item>

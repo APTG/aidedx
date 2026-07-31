@@ -31,24 +31,28 @@
                 style="@style/CaptureVerdictChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
                 android:text="ASR" />
             <Button
                 android:id="@+id/verdictIntent"
                 style="@style/CaptureVerdictChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
                 android:text="Intent" />
             <Button
                 android:id="@+id/verdictNumber"
                 style="@style/CaptureVerdictChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
                 android:text="Number" />
             <Button
                 android:id="@+id/verdictSlow"
                 style="@style/CaptureVerdictChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
                 android:text="Slow" />
             <Button
                 android:id="@+id/verdictOther"

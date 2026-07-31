@@ -703,16 +703,26 @@ class MainActivity : Activity() {
      * annotation for `captureId`, off the main thread — same "disk I/O must not stall the UI"
      * reasoning as `processRecordingInBackground()`'s own write. */
     private fun commitCapture(captureId: String, annotation: JSONObject) {
+        // Hidden immediately, before the write even starts — issue #161 review feedback: leaving
+        // them up until the write finishes let a rapid double-tap enqueue two writes for the same
+        // capture (CaptureWriter.write() always appends). Restored below if the write fails, so a
+        // real failure doesn't just look like Save silently did nothing.
+        saveCaptureButton.visibility = View.GONE
+        captureDetailsButton.visibility = View.GONE
+
         val alreadyWritten = pendingCaptureWrittenToDisk
         val envelope = pendingCaptureEnvelope
         val samples = pendingCaptureSamples
         Thread {
+            var succeeded = false
             try {
                 if (alreadyWritten) {
                     captureWriter.updateAnnotation(captureId, annotation)
+                    succeeded = true
                 } else if (envelope != null && samples != null) {
                     envelope.put("annotation", annotation)
                     captureWriter.write(envelope, samples, AudioRecorder.SAMPLE_RATE)
+                    succeeded = true
                 }
             } catch (e: Exception) {
                 android.util.Log.w("CaptureWriter", "Failed to save/flag capture", e)
@@ -721,11 +731,19 @@ class MainActivity : Activity() {
                 // Only apply if this is still the query the user was looking at — a new recording
                 // started (and reset pendingCaptureId) while this write was in flight otherwise.
                 if (pendingCaptureId == captureId) {
-                    pendingCaptureWrittenToDisk = true
-                    pendingCaptureUserActed = true
-                    restoreCaptureButtonsState()
-                    Toast.makeText(this, "Capture saved", Toast.LENGTH_SHORT).show()
-                    showUndoAffordance()
+                    if (succeeded) {
+                        pendingCaptureWrittenToDisk = true
+                        pendingCaptureUserActed = true
+                        restoreCaptureButtonsState()
+                        Toast.makeText(this, "Capture saved", Toast.LENGTH_SHORT).show()
+                        showUndoAffordance()
+                    } else {
+                        // pendingCaptureUserActed is still false — this puts Save/Details back so
+                        // the user can retry, rather than silently discarding their tap.
+                        restoreCaptureButtonsState()
+                        Toast.makeText(this, "Couldn't save capture — try again", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
         }.start()

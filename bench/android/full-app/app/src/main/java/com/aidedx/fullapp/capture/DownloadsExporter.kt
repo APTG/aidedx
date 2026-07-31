@@ -57,12 +57,21 @@ object DownloadsExporter {
             put(MediaStore.Downloads.IS_PENDING, 1)
         }
         val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: return null
-        val stream = resolver.openOutputStream(uri) ?: return null
-        stream.use { zipInto(it, root) }
-        values.clear()
-        values.put(MediaStore.Downloads.IS_PENDING, 0)
-        resolver.update(uri, values, null, null)
-        return fileName
+        // issue #161 review feedback — a failure anywhere below (no output stream, zipInto()
+        // throwing mid-write) must not leave the just-inserted row behind as an orphaned,
+        // permanently-IS_PENDING entry Downloads can't show and this app has no other reference
+        // to; delete it on any failure path instead of only handling the happy path.
+        try {
+            val stream = resolver.openOutputStream(uri) ?: throw java.io.IOException("openOutputStream returned null")
+            stream.use { zipInto(it, root) }
+            values.clear()
+            values.put(MediaStore.Downloads.IS_PENDING, 0)
+            resolver.update(uri, values, null, null)
+            return fileName
+        } catch (e: Exception) {
+            resolver.delete(uri, null, null)
+            return null
+        }
     }
 
     @Suppress("DEPRECATION")
