@@ -1,0 +1,36 @@
+
+=== E2E (datagen, pl) onnx-community/whisper-small [q8] corrector=shipped ===
+audio→intent slot-match: raw 8/50 (16%)  corrected 12/50 (24%)
+mean WER vs. canonical (raw transcript): 30.9%
+per speaker (corrected): undefined 12/50
+failures (38):
+  undefined/dg-01 [particles]: Jaki jest zasięg zdaprotonu energii 150 MeV w wodzie?
+  undefined/dg-02 [energies]: jaki jest zasięg protonu o energistonę fał w kości korowej?
+  undefined/dg-03 [materials]: Jak daleko doleci proton o energii 250 MeV-pMA?
+  undefined/dg-05 [materials,energies]: jaki jest zasięg deuteronu o energii, 60 matał w krzenie.
+  undefined/dg-06 [particles,energies]: Jak goęboko wnik, yetryton, ONR, ditrzterdziesci mefałów PMMA?
+  undefined/dg-08 [particles,energies]: jak głęboko wniknie jądelu czy poranelli, czydzieśliny fałów graficie?
+  undefined/dg-09 [particles,energies]: I jaki jest zasięg jonu, lite o nr, 50 mefa na nukleon w poliwęglanie?
+  undefined/dg-10 [particles]: jaki jest zasięgion uboru o energii 100 MeV na nukleon w polietylenie?
+  undefined/dg-13 [compareDim,particles,materials]: Jaki jest zasięg zdajonu tlenu, ONRD 250 MeV na nukleon, PMMA?
+  undefined/dg-14 [materials]: Jak głęboko wniknie jon neonu o nerni 400 MeV na nukleon w wodze?
+  undefined/dg-15 [particles,materials]: jaki jest zasięg jonu na gnezu, enel i 150 MeV na nukleon w plastiku, tkankopodobny na 150.
+  undefined/dg-16 [energies]: Jaki jest zasięg jonu krzemu energii czysta MeV na nukleon w dwutlenku krzemu?
+  undefined/dg-17 [materials]: Jak daleko doleci jon argonu o energii 350 MeV na nukleon w wodze?
+  undefined/dg-18 [compareDim,particles,materials,energies]: jakiej jest zasięgionu wapnia o energii, zwieście mełsauna nukleon z tkanka tłuszczowej.
+  undefined/dg-20 [particles,materials]: Jaki jest zasięg zdają z żelaza o energii 600 MeV na nukleon w voluminiu?
+  undefined/dg-21 [particles]: Tedy jaki jest zasięgionu miedzie energii? 500 MeV na nukleon w ołowiu
+  undefined/dg-22 [energies]: Jak daleko doleci proton, bo ja nabij 1 gigareptronowe w dwu wodzie.
+  undefined/dg-23 [materials,energies]: Jak jest zasięg protonu w wodze dla energii z tę MeV? 150 MeV i 200 MeV.
+  undefined/dg-24 [particles,materials,energies]: jaki jest zasięgionu gęgla wywodzą dla energii, 200 MeV na nukleon, czyste MeV na nukleon i 400 MeV na nukleon.
+  undefined/dg-25 [particles]: jaki jest zasięg, cząstki i to alfa w powietrzu dyle energii 5 MeV, 10 MeV i 20 MeV.
+  undefined/dg-26 [compareDim,materials]: porówna i zasięg protonu o energii 150 MeV w wodze, ma i kości korowej.
+  undefined/dg-27 [particles,materials]: porówna i zasięgionu tlenu o energii 300 MeV na nukleon w wodzie i aluminiu.
+  undefined/dg-28 [compareDim,materials,energies]: kolówna i zasięg, protonu, onenagistone, fał w wodze i tkance tłuszczowej.
+  undefined/dg-32 [materials]: Ile energii potrzebuje proton na zasięg 15 cm w wodze?
+  undefined/dg-33 [materials,target]: Jakon energiom musi mieć proton, żeby jego zasięg w PMA wynosił 5 centynetrów?
+  undefined/dg-34 [quantity,particles,materials,target]: i nienedzi potrzebuję jon węgla 14 na zasięg, 10 cm w wodzy.
+  undefined/dg-35 [particles]: Jako energię musi mieć czostka alfa, żeby jej zasięg tkanka mięśniowej wynosił 30 mm.
+  undefined/dg-39 [quantity,particles,materials,target]: Jako menedzie musi mieć, i on wapnia, żeby jego zasięd ma wynosił 5 centymetrów.
+  undefined/dg-40 [compareDim,materials]: jaką energię musi mieć proton, aby uzyskać zasięg 10 cm w wodzie IPMA?
+  undefined/dg-42 [materials,target]: jaką energię potrzebuje proton na zasięg 15 centynetrów w wodzy, jon węgla.

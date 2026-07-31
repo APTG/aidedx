@@ -1,0 +1,14 @@
+
+=== E2E (datagen, en) onnx-community/whisper-small [q8] corrector=shipped ===
+audio→intent slot-match: raw 37/50 (74%)  corrected 42/50 (84%)
+mean WER vs. canonical (raw transcript): 6.9%
+per speaker (corrected): undefined 42/50
+failures (8):
+  undefined/dg-02 [energies]: What is the range of a ton in MAV, proton and cortical bone?
+  undefined/dg-11 [compareDim,particles,energies]: What is the range of a 300-megawatt electron volt per nucleon carbon ion in water?
+  undefined/dg-15 [materials]: What is the range of a 150 MeV per nucleon magnesium ion in a 150 tissue equivalent plastic?
+  undefined/dg-21 [quantity,materials]: What is the range of a 500 MeV per nucleon copper ion in LET?
+  undefined/dg-27 [particles,materials]: Compare the range of a 300 MeV per nucleon, oxygen, ion, and water and aluminum.
+  undefined/dg-43 [quantity,energies]: What is the let of a 100 megalelectron volt proton in water?
+  undefined/dg-46 [quantity]: What is the let of a 40 MeV deuteron in air?
+  undefined/dg-50 [quantity]: Compare the let of a proton and a carbon ion in water both at 100 MeV.

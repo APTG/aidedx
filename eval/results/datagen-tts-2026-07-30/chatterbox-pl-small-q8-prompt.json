@@ -1,0 +1,359 @@
+{
+  "modelId": "onnx-community/whisper-small",
+  "dtype": "q8",
+  "lang": "pl",
+  "withPrompt": true,
+  "loadS": 1.635,
+  "records": [
+    {
+      "id": "dg-01",
+      "raw": "jaki jest zasięg, czez daplotonu o energii 5 centamf w wodzie.",
+      "secs": 3.24,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-02",
+      "raw": "jaki jest zasięg protonu o energii ceta mew kości korowej?",
+      "secs": 2.538,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-03",
+      "raw": "Jak daleko doleci proton o energii 25 stem FMA?",
+      "secs": 2.035,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-04",
+      "raw": "Jaki jest zasięg protonu o energii 50 kV w wodzie?",
+      "secs": 2.749,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-05",
+      "raw": "jaki jest zasięg douteronu o energii szczantem F krzemień?",
+      "secs": 3.141,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-06",
+      "raw": "Jak głęboko wniknie tryton o energii 40 MeV w PMMA?",
+      "secs": 2.501,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-07",
+      "raw": "i ją daleko doleczyć cząstka alfa o energii 20 m w powietrzu.",
+      "secs": 2.273,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-08",
+      "raw": "Jeb głęboko wniknie, jon heru-3 dusz, o energii 30 MeV graficie?",
+      "secs": 3.967,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-09",
+      "raw": "jaki jest zasięgionolitoenergi 50-tymev na nukleon w poliwęglanie.",
+      "secs": 3.776,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-10",
+      "raw": "Jaki jest zasięg jonu boru o energistame w na nukleon w polietylenie?",
+      "secs": 3.232,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-11",
+      "raw": "Jaki jest zasięg jonu węgla o energii 3 mega elektronową dotnę nukleon w wodzie?",
+      "secs": 3.856,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-12",
+      "raw": "Anie Gdaereko doleci jon azotą energii T-33GET-MF na nukleon, w kości korowej.",
+      "secs": 4.447,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-13",
+      "raw": "Jaki jest zasięg cyzda jonu tlenu o energii 2050 MeV na nukleon w PMMA?",
+      "secs": 2.856,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-14",
+      "raw": "Jak łęboko wniknie jon neonu o energii 4 samcemev na nukleon w wodzie?",
+      "secs": 2.748,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-15",
+      "raw": "Jaki jest zasięgionu magnezu o energii 500 jóżtom mev na nukleon w plastikut kankopodobnym, a pieczęcień twa?",
+      "secs": 3.443,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-16",
+      "raw": "Jaki jest zasięgionu krzemu energii przez systemę ewną nukleon w wtlanku krzemu?",
+      "secs": 2.911,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-17",
+      "raw": "Jak daleko doleci jon argonu o energii 4050 MeV na nukleon w wodzie?",
+      "secs": 2.713,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-18",
+      "raw": "jaki jest doszczę jonu wapniał energii 20 mev na nukleon w koncert hłuszczowej.",
+      "secs": 2.76,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-19",
+      "raw": "Jak głęboko wniknie jon tytanu o energii 6-cie St MeV na nukleon w wodzie?",
+      "secs": 3.081,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-20",
+      "raw": "jaki jest zasięg CSDA jonu żelaza o energii 6.mF na nukleon w aluminium.",
+      "secs": 3.743,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-21",
+      "raw": "Jaki jest zasięg jonu? Miedzi o energii 5 cm na nukleon w ołowiu.",
+      "secs": 3.919,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-22",
+      "raw": "ja daleko doleci proton o energii EDA, GIGA ELECTRONOVOLT w wodzie",
+      "secs": 2.762,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-23",
+      "raw": "jaki jest zasięg protonu w wodzie dla energii, send ta mev, się tęciąt mev i dwusie ta mev.",
+      "secs": 4.129,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-24",
+      "raw": "jaki jest zasięg jonu węgla w wodzie dla energii dwudziestocomew na nukleon, cztesicomew na nukleon i cztyczomew na nukleon, na nukleon.",
+      "secs": 4.672,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-25",
+      "raw": "jaki jest zasięg cząstki alfa w pogieczu dla energii 5 MeV, 10 MeV i 20 MeV?",
+      "secs": 2.849,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-26",
+      "raw": "porównej zasięg protonu o energii 500 czadem MeV w wodzie, PMMA i kości korowej.",
+      "secs": 2.602,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-27",
+      "raw": "Porówna i zasięgionu tlenu o energii 3D SatMeV na nukleon w wodzie i aluminium.",
+      "secs": 2.858,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-28",
+      "raw": "poródna i zasięt protonu o energii SatMe w wodzie i tkanka tłuszczowej.",
+      "secs": 2.865,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-29",
+      "raw": "cowniknie głębiej w wodzie przed 200 sedami e. nukleon, jon węgla czy jon neonu.",
+      "secs": 3.952,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-30",
+      "raw": "co wniknie głębiej w wodzie przy 60 MeV, proton czy deuteron?",
+      "secs": 3.031,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-31",
+      "raw": "jaką energię musi mieć proton, żeby jego zasięg w wodzie wynosił 2 cm?",
+      "secs": 2.134,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-32",
+      "raw": "Ile energii potrzebuje proton na zasięg 5 z tej centymetrów w wodzie?",
+      "secs": 2.763,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-33",
+      "raw": "Jako energię musi mieć proton, żeby jego zasięg ma wynosił 500 cm?",
+      "secs": 2.323,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-34",
+      "raw": "Ile energii potrzebuje jon węgla, czterna lasing, 10-10 metrów w wodzie?",
+      "secs": 3.048,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-35",
+      "raw": "Jaką energię musi mieć cząstka alfa, żeby jej zasięg w kance mięśniowej wynosił 30 mm?",
+      "secs": 2.911,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-36",
+      "raw": "Ile energii potrzebuje jon żelaza na zasięg 3 cm w wodzie?",
+      "secs": 3.249,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-37",
+      "raw": "Jaką energię musi nieć jon tlenu, żeby jego zasięg w wodzie wynosił 2-3 cm?",
+      "secs": 3.196,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-38",
+      "raw": "ile energii potrzebuje proton na lasing 9 od centymetrów kości korowej?",
+      "secs": 2.494,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-39",
+      "raw": "Jaką energię musi mieć jon wapnia, żeby jego zasięg w PMMA wynosił 5 cm?",
+      "secs": 3.324,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-40",
+      "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 10 cm w wodzie i PMMA?",
+      "secs": 2.423,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-41",
+      "raw": "jaką energię musi mieć proton, aby uzyskać zasięg 5-6 cm w wodzie, kości korowe i tkanka tłuszczowej.",
+      "secs": 3.851,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-42",
+      "raw": "Jako energię potrzebuję proton na zasięg 5 tezcie centymetr w wodzie, a jon węgla?",
+      "secs": 3.331,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-43",
+      "raw": "jaki jest LED protonu o energii sub-megalektronowodów w wodzie?",
+      "secs": 3.224,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-44",
+      "raw": "jaka jest dona się hamowania jonu węgla o energii 2,000 MW na nukleon wodzie?",
+      "secs": 3.447,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-45",
+      "raw": "jaki jest let protonu o energii cieczamy w aluminium.",
+      "secs": 3.309,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-46",
+      "raw": "Jakie jest led deuteronu o energii 40 m w pogietrzu?",
+      "secs": 3.627,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-47",
+      "raw": "jaki jest let cząstki alfa o energii pięc me w krzemie.",
+      "secs": 3.348,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-48",
+      "raw": "po równej let protonu o energii 510 kp. w wodzie MA i kości korowej.",
+      "secs": 2.968,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-49",
+      "raw": "porówna i let protonu w wodzie przy pięćście mięth, czyta mięth i tysiątem pięci mięth.",
+      "secs": 3.08,
+      "error": null,
+      "usedPromptFallback": false
+    },
+    {
+      "id": "dg-50",
+      "raw": "porówna i let protonu, jonu węgla w wodzie przy STAMF.",
+      "secs": 3.051,
+      "error": null,
+      "usedPromptFallback": false
+    }
+  ]
+}
