@@ -103,6 +103,62 @@ instead by `CaptureEnvelopeTest`'s synthetic-`MatchedIntent` cases. All 37 JVM u
 (`AudioMetricsTest`, `CaptureEnvelopeTest`, the extended `AsrCorrectionsTest`/`KotlinMatcherTest`,
 plus the pre-existing suites), and zero `FATAL EXCEPTION`s appeared in logcat across the session._
 
+_Updated 2026-07-31 for #161's field-capture UI (the piece the "capture core" update above left
+unbuilt) — done fully autonomously, no manual phone interaction, everything below driven by
+`uiautomator`/`input tap`/`input text`. `CapturePrefs` (SharedPreferences, `captureEverything`
+**default off** — a privacy-relevant default worth stating plainly) now gates the automatic write
+`processRecordingInBackground()` was doing unconditionally; either way, the result row grows a
+"⚑ Save capture" / "⚑ Flag this one" button (label depends on whether this query was already
+auto-written) plus a "⌄ details" button opening a dialog of single-select verdict chips (ASR /
+Intent / Number / Slow / Other) and a free-text note. Either path writes or patches the capture's
+`annotation` block (`CaptureWriter.updateAnnotation()`/`deleteCapture()`, new) and shows a
+toolbar-adjacent Undo for 6s. A new `CaptureManagerActivity` ("Debug captures", off the toolbar
+overflow next to "Manage downloads") lists every capture across every session
+(`CaptureStore.listAll()`, new — cross-session, unlike `CaptureWriter`'s own single-session view),
+shows total count/size and a privacy statement, hosts the `captureEverything` toggle + session-tag
+field, and offers per-row WAV playback (`MediaPlayer`) plus zip export to the shared Downloads
+collection (`DownloadsExporter`, `MediaStore.Downloads` on API 29+ — this app's only real device —
+with an unverified legacy fallback for API 26-28) and delete-all. The dev-only latency-benchmark
+button/text block that used to sit permanently at the bottom of the main screen (issue #136/#143
+goal 3 spike tooling) moved into the toolbar overflow too, one-shot result in a dialog instead of a
+persistent TextView — the same "secondary/infrequent action doesn't belong on the primary screen"
+reasoning #144 already applied to "Manage downloads", now decluttering the screen further.
+
+**A real bug found and fixed during this session, not just described in retrospect**: the
+verdict-chip `Button`s in the new annotate-dialog layout only had `style="@style/CaptureVerdictChip"`
+with no `android:layout_width`/`android:layout_height` on the tag itself — a real Android
+constraint (a `<style>` cannot supply `layout_width`/`layout_height`; `ViewGroup.LayoutParams`
+attributes must be on the view element) that crashed the app (`InflateException`) the first time
+the dialog was opened on-device. Caught immediately by the crash-monitoring `Monitor` task running
+throughout this session, fixed, rebuilt, and reverified.
+
+**Device-verified**, exhaustively, on the same Pixel 7a: (1) default-off capture — a query with the
+toggle off wrote nothing until Save was tapped, confirmed via `run-as` file listings before/after;
+(2) quick Save writes with `annotation.automatic: false`, verdict/note both `null`; (3) the
+verdict-chip + note dialog — including recovering from the on-screen keyboard shifting the
+dialog's Save button to a different position mid-test — correctly wrote `{"verdict": "asr", "note":
+"material said silicon heard silicone"}`; (4) Undo removes the capture's `captures.json` entry
+_and_ its `.wav` (first attempt "failed" purely from this session's own multi-step adb verification
+eating into the 6s window — confirmed as a testing-methodology issue, not an app bug, by retrying
+with tap-immediately-after-tap timing); (5) toggling "Capture everything" on persisted to
+`shared_prefs/capture_prefs.xml` and correctly switched the button label to "Flag this one" and the
+write path to auto-write-then-`updateAnnotation()` (verified: WAV count unchanged across the Flag
+tap, only the JSON `annotation` field changed); (6) the toolbar's "⚑ N" indicator was caught
+one-query stale (refreshed before the async auto-write completed) and fixed with a second, still
+non-blocking, post-write UI refresh; (7) `CaptureManagerActivity`'s list, per-row detail dialog
+(scrollable pretty-printed JSON), and WAV playback (button correctly flips to "⏹ Stop" and back via
+`onCompletionListener` with no manual verification needed — the auto-revert is the proof) all
+rendered and behaved correctly; (8) Export to Downloads produced a real
+`aidedx-captures-<timestamp>.zip` in `/sdcard/Download/`, pulled and verified with Python's
+`zipfile` module — zero corrupt entries, correct `<session>/<file>` structure, one entry per WAV
+plus `captures.json` and `manifest.json`; (9) Delete All removed the entire `filesDir/captures/`
+tree, and `MainActivity.onResume()`'s unconditional `CaptureWriter` rebuild picked up the change
+immediately on returning to it (indicator dropped to "⚑ 0"); (10) landscape rotation with a pending
+capture on screen preserved the Save/Flag/details buttons and the indicator, same `restoreUiState()`
+mechanism #162 already established. Zero `FATAL EXCEPTION`s in logcat after the one bug above was
+fixed. All 38 JVM unit tests pass (unchanged in count from the "capture core" update above — this
+update is UI/wiring, no new JVM-testable logic of its own)._
+
 ## TL;DR
 
 - **`bench/android/full-app` builds clean** (`./gradlew assembleDebug`) and **runs clean on real

@@ -2,6 +2,7 @@ package com.aidedx.fullapp
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -10,13 +11,16 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import android.widget.Toolbar
 import com.aidedx.fullapp.asr.ParakeetTranscriber
 import com.aidedx.fullapp.audio.AudioRecorder
 import com.aidedx.fullapp.capture.AudioMetrics
 import com.aidedx.fullapp.capture.CaptureEnvelope
+import com.aidedx.fullapp.capture.CapturePrefs
 import com.aidedx.fullapp.capture.CaptureWriter
 import com.aidedx.fullapp.capture.DeviceInfo
 import com.aidedx.fullapp.compute.AnswerFormatter
@@ -56,11 +60,17 @@ import java.io.File
  * `DownloadPanel`/`RecordUiState` enums and the `*Line` fields below are for, reapplied by
  * `restoreUiState()` (called from `bindViews()`, called from both `onCreate()` and
  * `onConfigurationChanged()`).
+ *
+ * Field-capture UI (also #161): `CapturePrefs.captureEverything` (default off) decides whether a
+ * query is captured automatically; either way, the result row's Save/Details buttons let a person
+ * keep — or annotate — the one they just heard. `CaptureManagerActivity` ("Debug captures", off
+ * the toolbar overflow) is where that toggle, the session tag, and the capture list itself live.
  */
 class MainActivity : Activity() {
 
     private lateinit var downloadManager: ModelDownloadManager
     private lateinit var aliases: AliasTables
+    private lateinit var capturePrefs: CapturePrefs
     private lateinit var captureWriter: CaptureWriter
 
     private var transcriber: ParakeetTranscriber? = null
@@ -74,6 +84,8 @@ class MainActivity : Activity() {
         autoStopFiredForCurrentRecording = true
         onRecordTapped()
     }
+    private val captureUndoHandler = Handler(Looper.getMainLooper())
+    private var captureUndoRunnable: Runnable? = null
 
     private lateinit var downloadPromptPanel: View
     private lateinit var downloadProgressPanel: View
@@ -84,13 +96,15 @@ class MainActivity : Activity() {
     private lateinit var progressText: TextView
     private lateinit var cancelButton: Button
     private lateinit var statusText: TextView
+    private lateinit var captureIndicatorText: TextView
     private lateinit var recordButton: Button
     private lateinit var recordProgressBar: ProgressBar
     private lateinit var transcriptText: TextView
     private lateinit var intentText: TextView
     private lateinit var resultText: TextView
-    private lateinit var wasmButton: Button
-    private lateinit var wasmResultText: TextView
+    private lateinit var saveCaptureButton: Button
+    private lateinit var captureDetailsButton: Button
+    private lateinit var captureUndoButton: Button
 
     // issue #161 — the persisted UI snapshot `restoreUiState()` reapplies after every
     // `bindViews()` call (initial creation, and again after every configuration change).
@@ -110,18 +124,28 @@ class MainActivity : Activity() {
     private var transcriptLine = ""
     private var intentLine = ""
     private var resultLine = ""
-    private var wasmResultLine = ""
+
+    // The most recent query's not-yet-finalized capture — survives rotation like everything else
+    // tracked here. `pendingCaptureSamples` is only kept in memory while the capture *isn't* on
+    // disk yet (captureEverything off); once written, the raw PCM is dropped and Save/Flag act via
+    // `captureWriter.updateAnnotation()` instead of a second write.
+    private var pendingCaptureId: String? = null
+    private var pendingCaptureEnvelope: JSONObject? = null
+    private var pendingCaptureSamples: ShortArray? = null
+    private var pendingCaptureWrittenToDisk = false
+    private var pendingCaptureUserActed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         downloadManager = ModelDownloadManager(filesDir)
         aliases = AliasTables.load(assets)
+        capturePrefs = CapturePrefs(this)
         // Constructed once here, not in bindViews() — #162 already made this Activity instance
-        // (and every plain field on it) survive rotation, so there's no reason to reopen/reload
-        // the session's captures.json on every config change the way loadTranscriberInBackground()
-        // must for the ASR model.
-        captureWriter = CaptureWriter(this)
+        // survive rotation, so there's no reason to reopen/reload captures.json on every config
+        // change the way loadTranscriberInBackground() must for the ASR model. onResume() rebuilds
+        // it (cheap) to pick up a session-tag change made on the Debug Captures screen.
+        captureWriter = CaptureWriter(this, capturePrefs.sessionTag)
 
         val entry = ParakeetModel.ENTRY
         promptInfoLine = "${entry.displayName}\n" +
@@ -147,12 +171,18 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        // Cheap (a small mkdirs + JSON read), and the only way this Activity — which #162 already
+        // keeps alive across a rotation, and which never gets destroyed just by navigating to
+        // CaptureManagerActivity and back — finds out about a session-tag change or a Delete All
+        // that happened on that other screen while this one was paused.
+        captureWriter = CaptureWriter(this, capturePrefs.sessionTag)
         refreshState()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         autoStopHandler.removeCallbacks(autoStopRunnable)
+        captureUndoHandler.removeCallbacksAndMessages(null)
         // issue #161 — an in-progress recording used to leak here: `AudioRecorder`'s reader
         // thread loops on its own `recording` flag, which only `stop()` ever clears, so a
         // destroy that skipped calling it left the thread — and the `AudioRecord` itself, mic
@@ -193,11 +223,20 @@ class MainActivity : Activity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.inflateMenu(R.menu.main_menu)
         toolbar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.action_manage_downloads) {
-                startActivity(Intent(this, ModelManagerActivity::class.java))
-                true
-            } else {
-                false
+            when (item.itemId) {
+                R.id.action_manage_downloads -> {
+                    startActivity(Intent(this, ModelManagerActivity::class.java))
+                    true
+                }
+                R.id.action_debug_captures -> {
+                    startActivity(Intent(this, CaptureManagerActivity::class.java))
+                    true
+                }
+                R.id.action_latency_benchmark -> {
+                    runLatencyBenchmark()
+                    true
+                }
+                else -> false
             }
         }
 
@@ -210,18 +249,22 @@ class MainActivity : Activity() {
         progressText = findViewById(R.id.progressText)
         cancelButton = findViewById(R.id.cancelButton)
         statusText = findViewById(R.id.statusText)
+        captureIndicatorText = findViewById(R.id.captureIndicatorText)
         recordButton = findViewById(R.id.recordButton)
         recordProgressBar = findViewById(R.id.recordProgressBar)
         transcriptText = findViewById(R.id.transcriptText)
         intentText = findViewById(R.id.intentText)
         resultText = findViewById(R.id.resultText)
-        wasmButton = findViewById(R.id.wasmSmokeTestButton)
-        wasmResultText = findViewById(R.id.wasmSmokeTestResult)
+        saveCaptureButton = findViewById(R.id.saveCaptureButton)
+        captureDetailsButton = findViewById(R.id.captureDetailsButton)
+        captureUndoButton = findViewById(R.id.captureUndoButton)
 
         downloadButton.setOnClickListener { startDownload() }
         cancelButton.setOnClickListener { downloadManager.cancel() }
         recordButton.setOnClickListener { onRecordTapped() }
-        wasmButton.setOnClickListener { runLatencyBenchmark() }
+        saveCaptureButton.setOnClickListener { onSaveCaptureTapped() }
+        captureDetailsButton.setOnClickListener { showCaptureAnnotateDialog() }
+        captureUndoButton.setOnClickListener { onUndoCaptureTapped() }
 
         restoreUiState()
     }
@@ -266,7 +309,34 @@ class MainActivity : Activity() {
         transcriptText.text = transcriptLine
         intentText.text = intentLine
         resultText.text = resultLine
-        wasmResultText.text = wasmResultLine
+
+        restoreCaptureButtonsState()
+    }
+
+    /** issue #161 — the toolbar's "capture everything is on" flag, and the result row's
+     * Save/Details buttons for whatever `pendingCapture*` state the last query left behind. Split
+     * out of `restoreUiState()` only because it's the one piece with its own non-trivial branch
+     * (written-to-disk vs. not) rather than a flat field-to-view copy. */
+    private fun restoreCaptureButtonsState() {
+        if (capturePrefs.captureEverything) {
+            captureIndicatorText.visibility = View.VISIBLE
+            captureIndicatorText.text = "⚑ ${captureWriter.captureCount}"
+        } else {
+            captureIndicatorText.visibility = View.GONE
+        }
+
+        if (pendingCaptureId == null || pendingCaptureUserActed) {
+            saveCaptureButton.visibility = View.GONE
+            captureDetailsButton.visibility = View.GONE
+        } else {
+            saveCaptureButton.visibility = View.VISIBLE
+            captureDetailsButton.visibility = View.VISIBLE
+            saveCaptureButton.text = if (pendingCaptureWrittenToDisk) "⚑ Flag this one" else "⚑ Save capture"
+        }
+        // The Undo grace-period button is driven by captureUndoHandler's delayed hide, not by
+        // this restore pass — a rotation landing mid-grace-period just loses the Undo offer a
+        // little early, an acceptable simplification rather than resurrecting a countdown.
+        captureUndoButton.visibility = View.GONE
     }
 
     private fun refreshState() {
@@ -359,6 +429,15 @@ class MainActivity : Activity() {
             transcriptText.text = ""
             intentText.text = ""
             resultText.text = ""
+            // A fresh recording retires whatever the previous query's capture buttons were
+            // offering — there's a new query now, and its own capture (if any) starts clean.
+            captureUndoRunnable?.let { captureUndoHandler.removeCallbacks(it) }
+            pendingCaptureId = null
+            pendingCaptureEnvelope = null
+            pendingCaptureSamples = null
+            pendingCaptureWrittenToDisk = false
+            pendingCaptureUserActed = false
+            restoreCaptureButtonsState()
             // issue #143 — sherpa-onnx's non-streaming OfflineRecognizer is built for short
             // clips; a recording left running for minutes (observed during #136's on-device
             // testing, from a missed Stop tap) came back with a silently empty transcript rather
@@ -405,12 +484,12 @@ class MainActivity : Activity() {
     }
 
     /**
-     * issue #161 — same transcribe -> match -> compute -> display pipeline as before, now also
-     * timed per stage, exception-attributed per stage (an uncaught exception here used to crash
-     * the whole app on a single bad query; each stage below is now caught and recorded instead),
-     * and written out as a field capture at the end. There is no dedicated capture UI yet (see
-     * `CaptureWriter`'s own doc comment) — every query is captured automatically for now, purely
-     * to exercise the data layer end to end.
+     * issue #161 — same transcribe -> match -> compute -> display pipeline as before, timed per
+     * stage and exception-attributed per stage (an uncaught exception here used to crash the
+     * whole app on a single bad query; each stage below is now caught and recorded instead).
+     * Whether the resulting capture is written immediately is `capturePrefs.captureEverything`;
+     * either way it's kept in `pendingCapture*` so the result row's Save/Flag/Details buttons
+     * (wired in `bindViews()`) have something to act on.
      */
     private fun processRecordingInBackground(samples: ShortArray, autoStopFired: Boolean) {
         Thread {
@@ -493,6 +572,41 @@ class MainActivity : Activity() {
             }
             val computeMs = (System.nanoTime() - computeStartNs) / 1_000_000.0
 
+            val nluBlock = trace?.let { CaptureEnvelope.buildNluBlock(it) } ?: JSONObject().apply {
+                put("rawTranscript", transcript)
+                put("correctedTranscript", transcript)
+                put("firedCorrectionRules", JSONArray())
+                put("matched", false)
+                put("intent", JSONObject.NULL)
+                put("resolvedIds", JSONObject.NULL)
+            }
+            val envelope = CaptureEnvelope.build(
+                captureId = captureId,
+                capturedAtEpochMs = capturedAtEpochMs,
+                device = DeviceInfo.collect(this),
+                build = DeviceInfo.collectBuildInfo(),
+                audio = CaptureEnvelope.buildAudioBlock(
+                    sampleRateHz = AudioRecorder.SAMPLE_RATE,
+                    sampleCount = samples.size,
+                    metrics = AudioMetrics.analyze(samples, AudioRecorder.SAMPLE_RATE),
+                    autoStopFired = autoStopFired,
+                ),
+                asr = JSONObject().apply {
+                    put("modelId", ParakeetModel.ENTRY.id)
+                    put("numThreads", transcriber?.numThreads ?: JSONObject.NULL)
+                    put("decodingMethod", transcriber?.decodingMethod ?: JSONObject.NULL)
+                },
+                nlu = nluBlock,
+                compute = computeJson,
+                timingsMs = JSONObject().apply {
+                    put("transcribe", transcribeMs)
+                    put("match", matchMs)
+                    put("compute", computeMs)
+                },
+                failure = failure,
+            )
+            val autoCapture = capturePrefs.captureEverything
+
             runOnUiThread {
                 recordUiState = RecordUiState.IDLE
                 transcriptLine = transcript
@@ -502,49 +616,146 @@ class MainActivity : Activity() {
                 intentText.text = intentLine
                 resultText.text = resultLine
                 setRecordButtonIdle()
+
+                pendingCaptureId = captureId
+                pendingCaptureEnvelope = envelope
+                pendingCaptureSamples = if (autoCapture) null else samples
+                pendingCaptureWrittenToDisk = autoCapture
+                pendingCaptureUserActed = false
+                restoreCaptureButtonsState()
             }
 
             // Posted after the UI update above (issue #161 review feedback) — WAV + JSON disk I/O
             // must never delay the answer the user is actually waiting on. Still on this same
             // background Thread, so it costs nothing to do it last; best-effort otherwise, a
-            // capture-writing problem must never crash the app either.
-            try {
-                val nluBlock = trace?.let { CaptureEnvelope.buildNluBlock(it) } ?: JSONObject().apply {
-                    put("rawTranscript", transcript)
-                    put("correctedTranscript", transcript)
-                    put("firedCorrectionRules", JSONArray())
-                    put("matched", false)
-                    put("intent", JSONObject.NULL)
-                    put("resolvedIds", JSONObject.NULL)
+            // capture-writing problem must never crash the app either. Only "Capture everything"
+            // writes unconditionally here — with it off, this capture stays in-memory
+            // (`pendingCapture*` above) until/unless a person taps Save/Flag/Details.
+            if (autoCapture) {
+                try {
+                    captureWriter.write(envelope, samples, AudioRecorder.SAMPLE_RATE)
+                } catch (e: Exception) {
+                    android.util.Log.w("CaptureWriter", "Failed to write capture", e)
                 }
-                val envelope = CaptureEnvelope.build(
-                    captureId = captureId,
-                    capturedAtEpochMs = capturedAtEpochMs,
-                    device = DeviceInfo.collect(this),
-                    build = DeviceInfo.collectBuildInfo(),
-                    audio = CaptureEnvelope.buildAudioBlock(
-                        sampleRateHz = AudioRecorder.SAMPLE_RATE,
-                        sampleCount = samples.size,
-                        metrics = AudioMetrics.analyze(samples, AudioRecorder.SAMPLE_RATE),
-                        autoStopFired = autoStopFired,
-                    ),
-                    asr = JSONObject().apply {
-                        put("modelId", ParakeetModel.ENTRY.id)
-                        put("numThreads", transcriber?.numThreads ?: JSONObject.NULL)
-                        put("decodingMethod", transcriber?.decodingMethod ?: JSONObject.NULL)
-                    },
-                    nlu = nluBlock,
-                    compute = computeJson,
-                    timingsMs = JSONObject().apply {
-                        put("transcribe", transcribeMs)
-                        put("match", matchMs)
-                        put("compute", computeMs)
-                    },
-                    failure = failure,
+                // The toolbar's "⚑ N" count would otherwise stay one behind until some later,
+                // unrelated UI refresh — the write above only finishes after the main UI update
+                // was already posted, by design (the comment above this block).
+                runOnUiThread {
+                    if (pendingCaptureId == captureId) restoreCaptureButtonsState()
+                }
+            }
+        }.start()
+    }
+
+    // ---- field-capture Save / Flag / Details / Undo ----
+
+    private fun onSaveCaptureTapped() {
+        val captureId = pendingCaptureId ?: return
+        commitCapture(captureId, CaptureEnvelope.manualAnnotation(verdict = null, note = null))
+    }
+
+    /** issue #161 — the "⌄ details" dialog: single-select verdict chips + an optional free-text
+     * note. "Skip" commits with no annotation detail (same as tapping Save directly); "Save"
+     * commits with whatever was picked/typed. Either button is a valid, independent way to
+     * finalize this capture — this dialog doesn't require the quick Save button to have run first. */
+    private fun showCaptureAnnotateDialog() {
+        val captureId = pendingCaptureId ?: return
+        val view = layoutInflater.inflate(R.layout.capture_annotate_dialog, null)
+        val noteInput = view.findViewById<EditText>(R.id.captureNoteInput)
+        val chips = linkedMapOf(
+            "asr" to view.findViewById<Button>(R.id.verdictAsr),
+            "intent" to view.findViewById<Button>(R.id.verdictIntent),
+            "number" to view.findViewById<Button>(R.id.verdictNumber),
+            "slow" to view.findViewById<Button>(R.id.verdictSlow),
+            "other" to view.findViewById<Button>(R.id.verdictOther),
+        )
+        var selectedVerdict: String? = null
+        fun applyChipStyle() {
+            for ((key, button) in chips) {
+                val selected = key == selectedVerdict
+                button.setBackgroundResource(if (selected) R.drawable.bg_button_accent else R.drawable.bg_button_outline)
+                button.setTextColor(
+                    ContextCompat.getColor(this, if (selected) R.color.accent_foreground else R.color.foreground),
                 )
-                captureWriter.write(envelope, samples, AudioRecorder.SAMPLE_RATE)
+            }
+        }
+        for ((key, button) in chips) {
+            button.setOnClickListener {
+                selectedVerdict = if (selectedVerdict == key) null else key
+                applyChipStyle()
+            }
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Save capture")
+            .setView(view)
+            .setNegativeButton("Skip") { _, _ ->
+                commitCapture(captureId, CaptureEnvelope.manualAnnotation(null, null))
+            }
+            .setPositiveButton("Save") { _, _ ->
+                val note = noteInput.text?.toString()?.trim()?.takeIf { it.isNotEmpty() }
+                commitCapture(captureId, CaptureEnvelope.manualAnnotation(selectedVerdict, note))
+            }
+            .show()
+    }
+
+    /** Writes (if not already on disk) or patches (if "Capture everything" already wrote it) the
+     * annotation for `captureId`, off the main thread — same "disk I/O must not stall the UI"
+     * reasoning as `processRecordingInBackground()`'s own write. */
+    private fun commitCapture(captureId: String, annotation: JSONObject) {
+        val alreadyWritten = pendingCaptureWrittenToDisk
+        val envelope = pendingCaptureEnvelope
+        val samples = pendingCaptureSamples
+        Thread {
+            try {
+                if (alreadyWritten) {
+                    captureWriter.updateAnnotation(captureId, annotation)
+                } else if (envelope != null && samples != null) {
+                    envelope.put("annotation", annotation)
+                    captureWriter.write(envelope, samples, AudioRecorder.SAMPLE_RATE)
+                }
             } catch (e: Exception) {
-                android.util.Log.w("CaptureWriter", "Failed to write capture", e)
+                android.util.Log.w("CaptureWriter", "Failed to save/flag capture", e)
+            }
+            runOnUiThread {
+                // Only apply if this is still the query the user was looking at — a new recording
+                // started (and reset pendingCaptureId) while this write was in flight otherwise.
+                if (pendingCaptureId == captureId) {
+                    pendingCaptureWrittenToDisk = true
+                    pendingCaptureUserActed = true
+                    restoreCaptureButtonsState()
+                    Toast.makeText(this, "Capture saved", Toast.LENGTH_SHORT).show()
+                    showUndoAffordance()
+                }
+            }
+        }.start()
+    }
+
+    private fun showUndoAffordance() {
+        captureUndoRunnable?.let { captureUndoHandler.removeCallbacks(it) }
+        captureUndoButton.visibility = View.VISIBLE
+        val runnable = Runnable { captureUndoButton.visibility = View.GONE }
+        captureUndoRunnable = runnable
+        captureUndoHandler.postDelayed(runnable, UNDO_WINDOW_MS)
+    }
+
+    /** Removes the whole capture just Saved/Flagged, not just its annotation — "Undo" reads as "I
+     * didn't mean to keep this one", not "keep the recording but un-flag it" (same simplification
+     * `CaptureWriter.deleteCapture()`'s own doc comment states). */
+    private fun onUndoCaptureTapped() {
+        val captureId = pendingCaptureId ?: return
+        captureUndoRunnable?.let { captureUndoHandler.removeCallbacks(it) }
+        captureUndoButton.visibility = View.GONE
+        Thread {
+            try {
+                captureWriter.deleteCapture(captureId)
+            } catch (e: Exception) {
+                android.util.Log.w("CaptureWriter", "Failed to undo capture", e)
+            }
+            runOnUiThread {
+                if (pendingCaptureId == captureId) {
+                    Toast.makeText(this, "Capture removed", Toast.LENGTH_SHORT).show()
+                }
             }
         }.start()
     }
@@ -615,11 +826,18 @@ class MainActivity : Activity() {
                 android.util.Log.d("LatencyBench", "Approach A warm: session init failed")
             }
 
+            val resultText = "B (JNI): ${"%.3f".format(bAvgMs)} ms/call\n" +
+                "A cold (wasm3): ${"%.3f".format(coldAvgMs)} ms/call\n" +
+                "A warm (wasm3): ${"%.3f".format(warmAvgMs)} ms/call"
+            // issue #161 — used to persist to an always-visible TextView on the main screen;
+            // moved into the toolbar overflow (this is one-off dev/spike tooling, issue #136/#143
+            // goal 3, not a product feature), so the result is now a one-shot dialog instead.
             runOnUiThread {
-                wasmResultLine = "B (JNI): ${"%.3f".format(bAvgMs)} ms/call | " +
-                    "A cold (wasm3): ${"%.3f".format(coldAvgMs)} ms/call | " +
-                    "A warm (wasm3): ${"%.3f".format(warmAvgMs)} ms/call"
-                wasmResultText.text = wasmResultLine
+                AlertDialog.Builder(this)
+                    .setTitle("Latency benchmark")
+                    .setMessage(resultText)
+                    .setPositiveButton("OK", null)
+                    .show()
             }
         }.start()
     }
@@ -635,6 +853,9 @@ class MainActivity : Activity() {
         // without leaving the door open to the multi-minute silent-empty-transcript failure mode
         // #136 hit on-device.
         private const val MAX_RECORDING_MS = 15_000L
+
+        // issue #161 — how long the result row's "Undo" stays available after a Save/Flag.
+        private const val UNDO_WINDOW_MS = 6_000L
 
         private const val STATE_TRANSCRIPT = "transcript"
         private const val STATE_INTENT = "intent"

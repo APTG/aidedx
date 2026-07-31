@@ -8,4 +8,17 @@
         android:id="@+id/action_manage_downloads"
         android:title="Manage downloads"
         android:showAsAction="never" />
+    <!-- issue #161 — same "secondary, infrequent action belongs in the overflow" reasoning as
+         "Manage downloads" above. -->
+    <item
+        android:id="@+id/action_debug_captures"
+        android:title="Debug captures"
+        android:showAsAction="never" />
+    <!-- issue #161 — moved off the main screen entirely (was a permanently-visible button+text
+         block at the bottom of the result card) for the same reason: dev-only spike tooling
+         (issue #136/#143 goal 3) doesn't belong competing with the primary record action. -->
+    <item
+        android:id="@+id/action_latency_benchmark"
+        android:title="Run latency benchmark"
+        android:showAsAction="never" />
 </menu>

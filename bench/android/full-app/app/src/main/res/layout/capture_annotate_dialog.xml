@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- issue #161 — the optional "⌄ details" sheet behind MainActivity's saveCaptureButton /
+     captureDetailsButton: single-select verdict chips + a free-text note, both optional. Wrapped
+     in a HorizontalScrollView rather than trying to fit 5 chips in a fixed dialog width — robust
+     to any screen size/font scale instead of a guessed width that might wrap awkwardly. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
+
+    <TextView
+        style="@style/SectionLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="What went wrong? (optional)" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/verdictAsr"
+                style="@style/CaptureVerdictChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ASR" />
+            <Button
+                android:id="@+id/verdictIntent"
+                style="@style/CaptureVerdictChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Intent" />
+            <Button
+                android:id="@+id/verdictNumber"
+                style="@style/CaptureVerdictChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Number" />
+            <Button
+                android:id="@+id/verdictSlow"
+                style="@style/CaptureVerdictChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Slow" />
+            <Button
+                android:id="@+id/verdictOther"
+                style="@style/CaptureVerdictChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Other" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <TextView
+        style="@style/SectionLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="What did you actually say / expect? (optional)" />
+
+    <EditText
+        android:id="@+id/captureNoteInput"
+        style="@style/BodyText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:minLines="2"
+        android:gravity="top"
+        android:background="@drawable/bg_button_outline"
+        android:padding="10dp"
+        android:inputType="textMultiLine|textCapSentences" />
+</LinearLayout>

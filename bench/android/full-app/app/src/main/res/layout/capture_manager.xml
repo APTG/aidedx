@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- issue #161 — "Debug captures" screen. Fixed (non-scrolling) settings block on top + a
+     ListView taking the rest of the screen, rather than wrapping everything in a ScrollView — a
+     ListView nested inside a ScrollView is the same touch-handling trap res/layout-land/main.xml's
+     own header already documents (the inner view captures the gesture and the outer one becomes
+     unscrollable), and the settings block is short enough to never need to scroll on its own. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <android.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/AppToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:navigationIcon="@drawable/ic_back">
+
+        <TextView
+            style="@style/ToolbarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Debug captures" />
+    </android.widget.Toolbar>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:padding="14dp">
+
+            <TextView
+                android:id="@+id/captureCountText"
+                style="@style/SectionLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/captureSizeText"
+                style="@style/BodyText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp" />
+
+            <TextView
+                style="@style/MutedHintText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Captures (audio + transcript + matched intent) stay on this device — nothing is uploaded anywhere. Export or delete them any time." />
+
+            <Button
+                android:id="@+id/deleteAllButton"
+                style="@style/Button.Outline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Delete all" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_card"
+            android:padding="14dp">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <TextView
+                    style="@style/BodyText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Capture everything" />
+
+                <Switch
+                    android:id="@+id/captureEverythingSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/MutedHintText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="On: every query is saved automatically. Off: use Save/Flag on a result to keep one on purpose." />
+
+            <TextView
+                style="@style/SectionLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="14dp"
+                android:text="Session tag" />
+
+            <EditText
+                android:id="@+id/sessionTagInput"
+                style="@style/BodyText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:padding="10dp"
+                android:inputType="text"
+                android:singleLine="true"
+                android:background="@drawable/bg_button_outline" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp">
+
+            <Button
+                android:id="@+id/exportButton"
+                style="@style/Button.Outline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Export to Downloads" />
+
+            <TextView
+                android:id="@+id/exportResultText"
+                style="@style/MutedHintText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp" />
+        </LinearLayout>
+
+        <TextView
+            style="@style/SectionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="6dp"
+            android:text="Captures" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/captureEmptyText"
+        style="@style/MutedHintText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:gravity="center"
+        android:text="No captures yet."
+        android:visibility="gone" />
+
+    <ListView
+        android:id="@+id/captureListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@color/border"
+        android:dividerHeight="1dp"
+        android:visibility="gone" />
+
+</LinearLayout>

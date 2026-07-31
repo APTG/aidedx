@@ -4,6 +4,12 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- issue #161 — only used by DownloadsExporter's legacy (API 26-28) export path; MediaStore's
+         Downloads collection (API 29+, this app's actual test device) needs no permission at all.
+         maxSdkVersion so it's a no-op — not even requested — on every modern device. -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
 
     <application
         android:allowBackup="false"
@@ -30,5 +36,9 @@
             android:name=".ModelManagerActivity"
             android:exported="false"
             android:label="Downloaded models" />
+        <activity
+            android:name=".CaptureManagerActivity"
+            android:exported="false"
+            android:label="Debug captures" />
     </application>
 </manifest>
