@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   EVAL_TAGS,
   parseEvalRecords,
+  resolveProgramName,
   validateEvalDataset,
   validateQueryIntent,
   type QueryIntent,
@@ -136,4 +137,30 @@ describe("validateQueryIntent", () => {
     const errors = validateQueryIntent({ ...valid, confidence: 2 });
     expect(errors.some((e) => e.includes("confidence"))).toBe(true);
   });
+});
+
+describe("resolveProgramName — issue #163 B5/B6", () => {
+  it.each([
+    ["PSTAR", "PSTAR"],
+    ["pstar", "PSTAR"],
+    ["astar", "ASTAR"],
+    ["icru", "ICRU49"],
+    ["icru73old", "ICRU73 (old)"],
+    ["ICRU73-OLD", "ICRU73 (old)"],
+    ["bethe", "Bethe"],
+    ["libdedx", "Bethe"],
+    ["default", "Bethe"],
+    ["bethe ext", "Bethe-ext"],
+    ["bethe_ext", "Bethe-ext"],
+    ["BETHE-EXT", "Bethe-ext"],
+  ])("resolves %s to the canonical %s", (raw, canonical) => {
+    expect(resolveProgramName(raw)).toBe(canonical);
+  });
+
+  it.each(["srim", "atima", "geant4", "geant", "fluka", "nist", "banana"])(
+    "returns null for %s — a program-shaped or unrelated word libdedx has no program for",
+    (raw) => {
+      expect(resolveProgramName(raw)).toBeNull();
+    },
+  );
 });

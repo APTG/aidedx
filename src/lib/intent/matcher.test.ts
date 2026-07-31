@@ -671,3 +671,77 @@ describe("issue #163 B3 — unresolved (named but unrecognized) particles/materi
     expect(unresolved).toEqual([{ kind: "material", phrase: "unobtanium" }]);
   });
 });
+
+describe("issue #163 B5 — matcher sets intent.program for a single explicit request", () => {
+  it("sets intent.program when exactly one supported program is named", () => {
+    const { intent } = matchIntent("Using PSTAR, what is the range of 150 MeV protons in water?");
+    expect(intent.program).toBe("PSTAR");
+    expect(intent.compareDim).toBe("none");
+  });
+
+  it("resolves a different alias to its canonical spelling ('With ASTAR' -> 'ASTAR')", () => {
+    const { intent } = matchIntent(
+      "With ASTAR, give me the stopping power of 5 MeV alpha particles in air.",
+    );
+    expect(intent.program).toBe("ASTAR");
+  });
+
+  it("leaves intent.program unset when no program is named", () => {
+    const { intent } = matchIntent("range of 100 MeV protons in water");
+    expect(intent.program).toBeUndefined();
+  });
+
+  it("leaves intent.program unset (not just the first name) when 2+ supported programs are named — that's compareDim: program's territory", () => {
+    const { intent } = matchIntent(
+      "Compare the range of 150 MeV protons in water using ASTAR and PSTAR.",
+    );
+    expect(intent.compareDim).toBe("program");
+    expect(intent.program).toBeUndefined();
+  });
+
+  it("does not mistake the Bethe-Bloch formula's own name for a request to use the Bethe program", () => {
+    const { intent, unresolved } = matchIntent(
+      "What is the Bethe-Bloch value for 100 MeV protons in water?",
+    );
+    expect(intent.program).toBeUndefined();
+    expect(unresolved).toEqual([]);
+  });
+
+  it("still recognizes a genuine bare 'Bethe' program request", () => {
+    const { intent } = matchIntent("Using Bethe, what is the range of 100 MeV protons in water?");
+    expect(intent.program).toBe("Bethe");
+  });
+});
+
+describe("issue #163 B6 — unresolved (program-shaped but unsupported) program names", () => {
+  it("flags a single unsupported program instead of silently ignoring it", () => {
+    const { intent, unresolved } = matchIntent(
+      "Using SRIM, what is the range of 100 MeV protons in water?",
+    );
+    expect(intent.program).toBeUndefined();
+    expect(unresolved).toEqual([{ kind: "program", phrase: "SRIM" }]);
+  });
+
+  it("flags two unsupported programs instead of silently fanning out over three unrelated ones", () => {
+    // The exact issue #163 B6 example: pre-fix, this computed PSTAR/ICRU49/Bethe unremarked.
+    const { intent, unresolved } = matchIntent(
+      "Compare SRIM and ATIMA for the range of 100 MeV protons in water.",
+    );
+    expect(intent.compareDim).toBe("none");
+    expect(unresolved).toEqual(
+      expect.arrayContaining([
+        { kind: "program", phrase: "SRIM" },
+        { kind: "program", phrase: "ATIMA" },
+      ]),
+    );
+  });
+
+  it("flags the unsupported name and does not fall back to the one supported program when both are named", () => {
+    const { intent, unresolved } = matchIntent(
+      "Compare SRIM and PSTAR for the range of 100 MeV protons in water.",
+    );
+    expect(intent.program).toBeUndefined();
+    expect(intent.compareDim).not.toBe("program");
+    expect(unresolved).toEqual([{ kind: "program", phrase: "SRIM" }]);
+  });
+});

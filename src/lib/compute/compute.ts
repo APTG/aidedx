@@ -21,7 +21,9 @@
 import {
   RANGE_TARGET_UNITS,
   STP_TARGET_UNITS,
+  resolveProgramName,
   type CompareDim,
+  type ProgramName,
   type Quantity,
   type QueryIntent,
   type RangeTargetUnit,
@@ -97,29 +99,27 @@ export interface ComputeResult {
   libdedxVersion: string;
 }
 
-// Keys are normalized via `normalizeProgramName` (alphanumerics only), so
-// "Bethe ext", "bethe_ext" and "BETHE-EXT" all map to the same program.
-const PROGRAM_NAME_TO_ID: Record<string, number> = {
+/**
+ * issue #163 B5/B6 — `Record<ProgramName, ...>` (not a loose `Record<string, ...>` with synonym
+ * keys baked in) makes this exhaustive against the shared `PROGRAM_NAMES` union from
+ * query-intent.ts: a program name added there without an entry here is a compile error, closing
+ * §4.1's "PROGRAM_RE's name list vs `PROGRAM_NAME_TO_ID`'s keys" drift. Synonym/case folding
+ * ("bethe_ext", "ICRU") happens once, in the shared `resolveProgramName()`, before a name ever
+ * reaches this table.
+ */
+const PROGRAM_NAME_TO_ID: Record<ProgramName, number> = {
   ASTAR: PROGRAMS.ASTAR,
   PSTAR: PROGRAMS.PSTAR,
   ESTAR: PROGRAMS.ESTAR,
   MSTAR: PROGRAMS.MSTAR,
   ICRU73: PROGRAMS.ICRU73,
-  ICRU73OLD: PROGRAMS.ICRU73_OLD,
+  "ICRU73 (old)": PROGRAMS.ICRU73_OLD,
   ICRU49: PROGRAMS.ICRU49,
-  ICRU: PROGRAMS.ICRU49,
-  DEFAULT: PROGRAMS.DEFAULT,
-  BETHE: PROGRAMS.DEFAULT,
-  BETHEEXT: PROGRAMS.BETHE_EXT00,
-  LIBDEDX: PROGRAMS.DEFAULT,
+  Bethe: PROGRAMS.DEFAULT,
+  "Bethe-ext": PROGRAMS.BETHE_EXT00,
 };
 
-/** Fold a program name to a key: uppercase, strip everything but A–Z/0–9. */
-function normalizeProgramName(name: string): string {
-  return name.toUpperCase().replace(/[^A-Z0-9]/g, "");
-}
-
-const PROGRAM_ID_TO_NAME: Record<number, string> = {
+const PROGRAM_ID_TO_NAME: Record<number, ProgramName> = {
   [PROGRAMS.ASTAR]: "ASTAR",
   [PROGRAMS.PSTAR]: "PSTAR",
   [PROGRAMS.ESTAR]: "ESTAR",
@@ -262,6 +262,16 @@ function firstEnergyHintMeVPerNucl(
   return energyToMeVPerNucl(first, particle.massNumber, atomicMass);
 }
 
+/**
+ * issue #163 B5 "latent follow-on" — `intent.program` is a free `string` (other producers besides
+ * `matcher.ts` may supply loosely-formatted names), so this still has to resolve it rather than
+ * assume it's already canonical. What changed is the *unresolved* case: it used to fall straight
+ * through to auto-select, silently computing with a different program than the one named and
+ * labelling the answer as if that had been auto-selected all along — the same silent-fallthrough
+ * shape B1/B2 had for target units. `matcher.ts`'s own B5/B6 fix means this only ever receives an
+ * unresolvable name from a producer that bypassed that validation, so throwing here is the loud
+ * failure that shape of bug deserves, not a quieter one three files downstream.
+ */
 export function resolveProgramId(
   intent: QueryIntent,
   particle: { id: number; massNumber: number },
@@ -269,8 +279,11 @@ export function resolveProgramId(
   service: LibdedxService,
 ): number {
   if (intent.program) {
-    const id = PROGRAM_NAME_TO_ID[normalizeProgramName(intent.program)];
-    if (id !== undefined) return id;
+    const resolved = resolveProgramName(intent.program);
+    if (!resolved) {
+      throw new ComputeError(`"${intent.program}" is not a program libdedx has data for`);
+    }
+    return PROGRAM_NAME_TO_ID[resolved];
   }
   const energyHint = firstEnergyHintMeVPerNucl(intent, particle, service);
   return autoProgramForParticle(particle.id, materialId, service, energyHint);

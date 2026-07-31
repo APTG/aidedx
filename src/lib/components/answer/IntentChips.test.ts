@@ -297,6 +297,51 @@ describe("IntentChips", () => {
     expect(getByRole("button", { name: /edit program: PSTAR/i })).toBeInTheDocument();
   });
 
+  it("normalizes a retyped program name to its canonical spelling before committing (issue #163 B5/B6)", async () => {
+    // Before B5/B6, this free-text field committed literally anything, which then silently
+    // reached resolveProgramId()'s auto-select fallback with no feedback.
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({ program: "PSTAR" });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit program: PSTAR/i }));
+    const programInput = getByRole("textbox", { name: /program/i });
+    await fireEvent.input(programInput, { target: { value: "astar" } });
+    await fireEvent.blur(programInput);
+
+    expect(onEditIntent).toHaveBeenCalledTimes(1);
+    const next = firstCallArg<QueryIntent>(onEditIntent);
+    expect(next.program).toBe("ASTAR");
+  });
+
+  it("does not commit a program name libdedx has no data for", async () => {
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({ program: "PSTAR" });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit program: PSTAR/i }));
+    const programInput = getByRole("textbox", { name: /program/i });
+    await fireEvent.input(programInput, { target: { value: "SRIM" } });
+    await fireEvent.blur(programInput);
+
+    expect(onEditIntent).not.toHaveBeenCalled();
+  });
+
+  it("clears the program chip when retyped as empty", async () => {
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({ program: "PSTAR" });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit program: PSTAR/i }));
+    const programInput = getByRole("textbox", { name: /program/i });
+    await fireEvent.input(programInput, { target: { value: "" } });
+    await fireEvent.blur(programInput);
+
+    expect(onEditIntent).toHaveBeenCalledTimes(1);
+    const next = firstCallArg<QueryIntent>(onEditIntent);
+    expect(next.program).toBeUndefined();
+  });
+
   describe("highlight (issue #10 targeted re-ask)", () => {
     it("marks the matching chip's accessible name, aria-describedby, and ring class", () => {
       const { getByRole } = render(IntentChips, {

@@ -40,6 +40,7 @@ import { formatSignificant } from "../format.ts";
 import * as en from "./lang/en.ts";
 import * as pl from "./lang/pl.ts";
 import type { Lang, LangPack } from "./lang/types.ts";
+import { resolveProgramName, type ProgramName } from "./query-intent.ts";
 import type {
   CompareDim,
   EnergySlot,
@@ -66,15 +67,18 @@ function packFor(lang: Lang): LangPack {
 export type QuantitySource = "direct" | "indirect" | "inverse" | "default";
 
 /**
- * issue #163 B3 — a particle/material *named* in the query text but not resolvable against the
- * alias tables (an entity libdedx has no data for — "stainless steel", "muons" — as opposed to a
- * slot that was never mentioned at all). Populated only when the corresponding slot in `intent`
- * came up empty; `fill-defaults.ts`'s `fillMissingSlots()` must not silently substitute a default
- * for a slot this lists, since doing so is what produced the false "material not specified"
- * banner the bug report measured.
+ * issue #163 B3/B6 — an entity *named* in the query text but not resolvable against the relevant
+ * alias table (libdedx has no data for it — "stainless steel", "muons", "SRIM" — as opposed to a
+ * slot that was never mentioned at all). `particle`/`material` are populated only when the
+ * corresponding `intent` slot came up empty; `fill-defaults.ts`'s `fillMissingSlots()` must not
+ * silently substitute a default for a slot this lists, since doing so is what produced the false
+ * "material not specified" banner B3's bug report measured. `program` (B6) has no analogous slot
+ * to guard — `detectPrograms()` below is the only detector, not a fallback — so it fires whenever
+ * a program-shaped word is mentioned that `resolveProgramName()` doesn't recognize, instead of
+ * silently falling into `compareDim: "program"`'s hardcoded, unrelated three-program fan-out.
  */
 export interface UnresolvedEntity {
-  kind: "particle" | "material";
+  kind: "particle" | "material" | "program";
   /** The phrase as it appeared in the query, not resolved against any alias table. */
   phrase: string;
 }
@@ -850,20 +854,43 @@ function detectUnresolvedParticlePhrase(
 // 5. compareDim — program names, then entity multiplicity
 // ---------------------------------------------------------------------------
 
+// Deliberately broader than libdedx's actual program list — this is what lets `detectPrograms()`
+// below tell "SRIM"/"ATIMA"/"NIST" apart from an ordinary word, so B6 can flag them as unresolved
+// instead of silently never noticing they were program names at all. `bethe(?!-?\s*bloch)` —
+// issue #163, found while wiring B5's `intent.program` — excludes "Bethe-Bloch", the physics
+// formula's own name (a bare stopping-power reference, not a request to use the Bethe *program*);
+// harmless before B5 since only a *second* program mention (this alternation's `>= 2` threshold)
+// affected anything, but a single "Bethe" match now sets `intent.program` outright.
 const PROGRAM_RE =
-  /\b(astar|pstar|estar|mstar|srim|atima|libdedx|geant4?|fluka|bethe|icru|nist)\b/gi;
+  /\b(astar|pstar|estar|mstar|srim|atima|libdedx|geant4?|fluka|bethe(?!-?\s*bloch)|icru|nist)\b/gi;
 
-function detectPrograms(lower: string): Set<string> {
-  const progs = new Set<string>();
+interface DetectedPrograms {
+  /** Program names `resolveProgramName()` recognizes — feed `compareDim`/`intent.program`. */
+  supported: Set<ProgramName>;
+  /** Program-shaped words libdedx has no program for, as typed (uppercased) — issue #163 B6. */
+  unsupported: Set<string>;
+}
+
+/**
+ * issue #163 B5/B6 — every layer resolves a detected name through the same
+ * `resolveProgramName()` (query-intent.ts) that `compute.ts`'s `resolveProgramId()` does, so
+ * "supported" can never mean something different here than it does downstream.
+ */
+function detectPrograms(lower: string): DetectedPrograms {
+  const supported = new Set<ProgramName>();
+  const unsupported = new Set<string>();
   for (const m of lower.matchAll(PROGRAM_RE)) {
-    const name = m[1];
-    if (name) progs.add(name.toLowerCase());
+    const raw = m[1];
+    if (!raw) continue;
+    const resolved = resolveProgramName(raw);
+    if (resolved) supported.add(resolved);
+    else unsupported.add(raw.toUpperCase());
   }
-  return progs;
+  return { supported, unsupported };
 }
 
 function decideCompareDim(
-  programs: Set<string>,
+  programs: ReadonlySet<ProgramName>,
   particles: number,
   materials: number,
   energies: number,
@@ -982,13 +1009,24 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
   const rawMaterials = dedupeByKey(rawMaterialsAll, (m) => String(m.resolved.id));
 
   // 4. compareDim from program names + entity multiplicity.
-  const programs = detectPrograms(lower);
+  const { supported: supportedPrograms, unsupported: unsupportedPrograms } = detectPrograms(lower);
   const compareDim = decideCompareDim(
-    programs,
+    supportedPrograms,
     rawParticles.length,
     rawMaterials.length,
     rawEnergies.length,
   );
+  // issue #163 B5 — a single explicitly-named, supported program ("Using PSTAR, ...") sets
+  // `intent.program` so `compute.ts`'s `resolveProgramId()` honors it instead of silently
+  // auto-selecting and labelling the answer with whichever program that picked. Left unset when
+  // 2+ supported programs are named (that's `compareDim: "program"`'s territory, a single scalar
+  // field can't represent a comparison set) or when any unsupported name was also mentioned
+  // (`unresolved` below is the honest response to that, not a partial guess at the one name that
+  // did resolve).
+  const program: ProgramName | undefined =
+    unsupportedPrograms.size === 0 && supportedPrograms.size === 1
+      ? [...supportedPrograms][0]
+      : undefined;
 
   // 5. Assemble slots, assumptions, confidence.
   const assumptions: string[] = [];
@@ -1020,6 +1058,10 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
     const phrase = detectUnresolvedParticlePhrase(query, pack.MATERIAL_STOPWORDS);
     if (phrase) unresolved.push({ kind: "particle", phrase });
   }
+  // issue #163 B6 — unlike particle/material above, this isn't a fallback consulted only when a
+  // real scan came up empty: `detectPrograms()` is the *only* program detector, so every
+  // unsupported name it finds is reported, every time.
+  for (const phrase of unsupportedPrograms) unresolved.push({ kind: "program", phrase });
 
   // The first multi-nucleon particle governs total→per-nucleon reads. issue #163 B7 — was gated
   // on `isotopeAssumed`, which excludes every *named* multi-nucleon particle whose isotope is
@@ -1066,6 +1108,7 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
     confidence,
   };
   if (target !== undefined) intent.target = target;
+  if (program !== undefined) intent.program = program;
 
   const result: MatchResult = { intent, quantitySource: source, incomplete, unresolved };
   if (!inverse && fwd?.idiom) result.idiom = fwd.idiom;
