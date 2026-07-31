@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { QueryIntent } from "./query-intent.ts";
-import { buildDefaultsNotice, fillMissingSlots, isRecoverableIncomplete } from "./fill-defaults.ts";
+import {
+  buildDefaultsNotice,
+  buildUnresolvedNotice,
+  fillMissingSlots,
+  isRecoverableIncomplete,
+} from "./fill-defaults.ts";
 
 function baseIntent(overrides: Partial<QueryIntent> = {}): QueryIntent {
   return {
@@ -112,5 +117,41 @@ describe("buildDefaultsNotice", () => {
     expect(notice).toBe(
       "Your question was missing some details, so I filled them in: material not specified → water; energy not specified → 100 MeV. Tap a value below to correct it, or try asking again.",
     );
+  });
+});
+
+describe("buildUnresolvedNotice — issue #163 B3/B6", () => {
+  it("throws for an empty array instead of silently producing a malformed message (Copilot review on PR #167)", () => {
+    // Every real call site already guards with `unresolved.length > 0` — an empty array here is a
+    // caller bug, not a case to degrade for, since it would otherwise print ". Try a different
+    // particle, material, or program, or check the spelling." naming nothing at all.
+    expect(() => buildUnresolvedNotice([])).toThrow(/at least one unresolved entity/);
+  });
+
+  it("names a single unresolved entity", () => {
+    const notice = buildUnresolvedNotice([{ kind: "material", phrase: "stainless steel" }]);
+    expect(notice).toBe(
+      '"stainless steel" isn\'t a material that libdedx has data for. Try a different material, or check the spelling.',
+    );
+  });
+
+  it("joins multiple same-kind entities and names that one kind", () => {
+    const notice = buildUnresolvedNotice([
+      { kind: "program", phrase: "SRIM" },
+      { kind: "program", phrase: "ATIMA" },
+    ]);
+    expect(notice).toBe(
+      '"SRIM" isn\'t a program that libdedx has data for; "ATIMA" isn\'t a program that libdedx has data for. Try a different program, or check the spelling.',
+    );
+  });
+
+  it("names every distinct kind present when mixed, not a hardcoded 'particle or material'", () => {
+    // Regression guard: this used to key off item *count*, not the actual kinds present, which
+    // would have mislabeled a 2-item all-program case as "particle or material".
+    const notice = buildUnresolvedNotice([
+      { kind: "material", phrase: "stainless steel" },
+      { kind: "program", phrase: "SRIM" },
+    ]);
+    expect(notice).toContain("Try a different material or program, or check the spelling.");
   });
 });

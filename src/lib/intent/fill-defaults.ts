@@ -95,18 +95,28 @@ export function buildDefaultsNotice(filled: FilledSlot[]): string {
 }
 
 /**
- * issue #163 B3 — the message for a query that *named* a particle/material libdedx has no data
- * for, as opposed to one that never named anything. Callers must check this **before**
+ * issue #163 B3/B6 — the message for a query that *named* a particle/material/program libdedx has
+ * no data for, as opposed to one that never named anything. Callers must check this **before**
  * `fillMissingSlots()` — silently substituting a default for a slot this describes is exactly the
  * "material not specified → water" false banner the bug report measured (the user did specify
  * one; libdedx just doesn't have it). Deliberately doesn't invite "tap a value below to correct
  * it" the way `buildDefaultsNotice()` does — there is no computed answer to show chips for here.
  */
 export function buildUnresolvedNotice(unresolved: UnresolvedEntity[]): string {
+  // Copilot review on PR #167 — every real call site guards with `unresolved.length > 0` first
+  // (there's nothing to name otherwise), so an empty array here is a caller bug, not a case to
+  // degrade gracefully for: it would otherwise silently produce ". Try a different particle,
+  // material, or program, or check the spelling." with no actual named entity in it.
+  if (unresolved.length === 0) {
+    throw new Error("buildUnresolvedNotice() requires at least one unresolved entity");
+  }
   const parts = unresolved.map((u) => `"${u.phrase}" isn't a ${u.kind} that libdedx has data for`);
+  // issue #163 B6 — was keyed off item *count* ("> 1 item → generic 'particle or material'"),
+  // which silently mislabeled the moment a second kind (program) became possible: 2+ unresolved
+  // programs would have printed "particle or material" despite naming neither. Built from the
+  // *distinct kinds* actually present instead, so it's correct regardless of how many of each.
+  const kinds = [...new Set(unresolved.map((u) => u.kind))];
   const noun =
-    unresolved.length > 1
-      ? "particle or material"
-      : (unresolved[0]?.kind ?? "particle or material");
+    kinds.length > 1 ? kinds.join(" or ") : (kinds[0] ?? "particle, material, or program");
   return `${parts.join("; ")}. Try a different ${noun}, or check the spelling.`;
 }

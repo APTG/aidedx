@@ -55,6 +55,67 @@ export type RangeTargetUnit = (typeof RANGE_TARGET_UNITS)[number];
 export const STP_TARGET_UNITS = ["MeV cm2/g", "MeV/cm", "keV/um"] as const;
 export type StpTargetUnit = (typeof STP_TARGET_UNITS)[number];
 
+/**
+ * issue #163 B5/B6 — the closed set of canonical program *display* names, the third of §4.1's
+ * three named cross-layer-drift sites (`TargetSlot.unit` was B1/B2; this and `PROGRAM_RE`'s
+ * vocabulary are B5/B6). `matcher.ts` (to decide `intent.program` vs. B6's `unresolved`),
+ * `compute.ts` (`PROGRAM_NAME_TO_ID`, exhaustive against this set), and `IntentChips.svelte` (chip
+ * re-entry validation) all resolve against the *same* `PROGRAM_ALIASES` table below rather than
+ * each keeping their own synonym list, so a program name added to one can't silently drift from
+ * what the others recognize.
+ */
+export const PROGRAM_NAMES = [
+  "ASTAR",
+  "PSTAR",
+  "ESTAR",
+  "MSTAR",
+  "ICRU73",
+  "ICRU73 (old)",
+  "ICRU49",
+  "Bethe",
+  "Bethe-ext",
+] as const;
+export type ProgramName = (typeof PROGRAM_NAMES)[number];
+
+/** Fold a program name to a lookup key: uppercase, strip everything but A–Z/0–9. */
+function normalizeProgramKey(name: string): string {
+  return name.toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
+/**
+ * Synonyms/case variants ("bethe", "libdedx", "icru", "ICRU73OLD") folded onto the canonical
+ * `PROGRAM_NAMES` spelling. Deliberately does *not* include `PROGRAM_RE`'s wider match vocabulary
+ * (`srim`, `atima`, `geant4`, `fluka`, `nist`) — those are program-shaped words libdedx has no
+ * data for at all, exactly the set B6 exists to flag as `unresolved` rather than silently
+ * substitute a name from this table for.
+ */
+const PROGRAM_ALIASES: Readonly<Record<string, ProgramName>> = {
+  ASTAR: "ASTAR",
+  PSTAR: "PSTAR",
+  ESTAR: "ESTAR",
+  MSTAR: "MSTAR",
+  ICRU73: "ICRU73",
+  ICRU73OLD: "ICRU73 (old)",
+  ICRU49: "ICRU49",
+  ICRU: "ICRU49",
+  DEFAULT: "Bethe",
+  BETHE: "Bethe",
+  LIBDEDX: "Bethe",
+  BETHEEXT: "Bethe-ext",
+};
+
+/**
+ * Resolves any case/spacing/separator variant of a program name ("pstar", "Bethe Ext", "icru")
+ * to its canonical `ProgramName`, or `null` when libdedx has no such program (an unrecognized name,
+ * or a program-shaped word `PROGRAM_RE` matches but this table doesn't cover — `srim`, `nist`, …).
+ * The one shared authority every layer (`matcher.ts`, `compute.ts`, `IntentChips.svelte`) resolves
+ * a program name string against, so "supported" can never mean something different in one layer
+ * than another.
+ */
+export function resolveProgramName(raw: string): ProgramName | null {
+  return PROGRAM_ALIASES[normalizeProgramKey(raw)] ?? null;
+}
+
 // ---------------------------------------------------------------------------
 // Slot types
 // ---------------------------------------------------------------------------

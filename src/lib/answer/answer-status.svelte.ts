@@ -110,18 +110,21 @@ class AnswerStore {
             ],
           }
         : match.intent;
+    // issue #163 B3/B6 — checked unconditionally, *before* the confidence-threshold branch below
+    // (not nested inside it): a named-but-unrecognized particle/material ("stainless steel",
+    // "muons") also leaves its slot empty, which naturally drops confidence, so nesting this check
+    // happened to work for B3 alone. An unrecognized *program* ("Using SRIM, ...") doesn't leave
+    // any required slot empty — particles/materials/energies can all still resolve fine — so
+    // confidence can stay high and the nested version would never have run for it, silently
+    // falling through to a computed answer that resolveProgramId() would auto-select around the
+    // program the user actually named. No computed answer here either way — there's nothing to
+    // show chips for when the named entity itself is the problem.
+    if (match.unresolved.length > 0) {
+      this.phase = "unmatched";
+      this.message = buildUnresolvedNotice(match.unresolved);
+      return;
+    }
     if (intent.confidence < CONFIDENCE_THRESHOLD) {
-      // issue #163 B3 — must be checked *before* isRecoverableIncomplete()/fillMissingSlots()
-      // below: a named-but-unrecognized particle/material ("stainless steel", "muons") also
-      // leaves its slot empty, which fillMissingSlots() can't tell apart from "never mentioned"
-      // and would silently substitute water/proton for, with a banner falsely claiming the user
-      // didn't specify one. No computed answer here — there's nothing to show chips for when the
-      // named entity itself is the problem.
-      if (match.unresolved.length > 0) {
-        this.phase = "unmatched";
-        this.message = buildUnresolvedNotice(match.unresolved);
-        return;
-      }
       if (!isRecoverableIncomplete(match)) {
         this.phase = "unmatched";
         this.message = UNMATCHED_MESSAGE;

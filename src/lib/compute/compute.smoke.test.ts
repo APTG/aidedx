@@ -269,6 +269,28 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(req(result.series[0]).program.name).toBe("Bethe-ext");
   });
 
+  it("issue #163 B5 latent follow-on: an unresolvable program name throws instead of silently auto-selecting", () => {
+    // matcher.ts's own B5/B6 fix means this shape only reaches here from a producer that bypassed
+    // that validation (a hand-built intent, a future LLM producer) — it must fail loudly, not
+    // silently compute with whichever program auto-select happens to pick and label the answer as
+    // if that had been the request all along. Thrown directly out of computeIntent(), the same
+    // "can't even start building a series" shape as resolveParticleOrThrow()/
+    // resolveMaterialOrThrow() and issue #132's compareDim assert — answer-status.svelte.ts's
+    // existing try/catch around computeIntent() already surfaces this as an inline error.
+    expect(() =>
+      computeIntent(
+        intent({
+          quantity: "csdaRange",
+          particles: [{ match: "protons" }],
+          materials: [{ match: "water" }],
+          energies: [{ value: 150, unit: "MeV" }],
+          program: "SRIM",
+        }),
+        service,
+      ),
+    ).toThrow(/"SRIM" is not a program libdedx has data for/);
+  });
+
   it("falls back to Bethe for proton + Boron, where PSTAR has no tabulated data (dedx_web#845)", () => {
     const result = computeIntent(
       intent({

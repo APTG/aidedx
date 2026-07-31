@@ -11,6 +11,7 @@
     ENERGY_UNITS,
     RANGE_TARGET_UNITS,
     STP_TARGET_UNITS,
+    resolveProgramName,
     type EnergyUnit,
     type QueryIntent,
   } from "$lib/intent/query-intent.ts";
@@ -256,8 +257,19 @@
   function commitProgram(value: string, getButton: () => HTMLButtonElement | undefined) {
     if (suppressBlurCommit) return;
     const trimmed = value.trim();
-    if (trimmed !== (intent.program ?? "")) {
-      onEditIntent(withProgram(intent, trimmed || undefined));
+    if (trimmed === "") {
+      if (intent.program !== undefined) onEditIntent(withProgram(intent, undefined));
+      void stopEdit(getButton);
+      return;
+    }
+    // issue #163 B5/B6 — was a bare truthy check (any non-empty string committed), so a chip
+    // retyped as "srim" or a typo silently reached `resolveProgramId()`'s auto-select fallback
+    // with no feedback, the same B6 "unresolved program" gap this PR closes for the matcher.
+    // Resolves through the shared `resolveProgramName()` so "supported" means the same thing here
+    // as it does in `matcher.ts`/`compute.ts`, and commits the canonical spelling either way.
+    const resolved = resolveProgramName(trimmed);
+    if (resolved && resolved !== intent.program) {
+      onEditIntent(withProgram(intent, resolved));
     }
     void stopEdit(getButton);
   }

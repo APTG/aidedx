@@ -32,6 +32,7 @@ export interface FieldVerdicts {
   materials: boolean;
   energies: boolean;
   target: boolean;
+  program: boolean;
   assumptions: boolean;
 }
 
@@ -102,6 +103,19 @@ function eqTarget(a: QueryIntent["target"], b: QueryIntent["target"]): boolean {
   return a.value === b.value && normUnit(a.unit) === normUnit(b.unit);
 }
 
+/**
+ * issue #163 B5 — `program` was entirely absent from `FieldVerdicts`/`compareIntent()`, so a gold
+ * row carrying it (e.g. `prog-001`'s "Using PSTAR, ...") scored an exact match regardless of
+ * whether the matcher got it right, because nothing ever compared it. Case-insensitive: both the
+ * matcher and gold rows use the canonical `ProgramName` spelling, but this stays tolerant the same
+ * way `eqTarget()`'s unit comparison does, rather than newly demanding exact-case agreement.
+ */
+function eqProgram(a: string | undefined, b: string | undefined): boolean {
+  if (a === undefined && b === undefined) return true;
+  if (a === undefined || b === undefined) return false;
+  return a.toLowerCase() === b.toLowerCase();
+}
+
 function eqAssumptions(a: string[], b: string[]): boolean {
   if (a.length !== b.length) return false;
   const sa = [...a].sort();
@@ -118,6 +132,7 @@ export function compareIntent(predicted: QueryIntent, expected: QueryIntent): Fi
     materials: eqMaterials(predicted.materials, expected.materials),
     energies: eqEnergies(predicted.energies, expected.energies),
     target: eqTarget(predicted.target, expected.target),
+    program: eqProgram(predicted.program, expected.program),
     assumptions: eqAssumptions(predicted.assumptions, expected.assumptions),
   };
 }
@@ -132,7 +147,8 @@ export function evaluateExample(example: EvalExample): ExampleResult {
     fields.particles &&
     fields.materials &&
     fields.energies &&
-    fields.target;
+    fields.target &&
+    fields.program;
   return {
     id: example.id,
     text: example.text,
@@ -184,6 +200,7 @@ const FIELD_KEYS: ReadonlyArray<keyof FieldVerdicts> = [
   "materials",
   "energies",
   "target",
+  "program",
   "assumptions",
 ];
 
