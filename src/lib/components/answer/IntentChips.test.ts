@@ -142,7 +142,9 @@ describe("IntentChips", () => {
 
     expect(onEditIntent).toHaveBeenCalledTimes(1);
     const next = firstCallArg<QueryIntent>(onEditIntent);
-    expect(next.energies[0]).toEqual({ value: 214, unit: "MeV" });
+    // issue #163 C1 — MeV is an absolute (non-per-nucleon) unit, so `perNucleonAssumed` is now
+    // explicitly `false` rather than carried over/omitted.
+    expect(next.energies[0]).toEqual({ value: 214, unit: "MeV", perNucleonAssumed: false });
   });
 
   it("editing the energy value then focusing away from the whole editor commits", async () => {
@@ -159,7 +161,8 @@ describe("IntentChips", () => {
 
     expect(onEditIntent).toHaveBeenCalledTimes(1);
     const next = firstCallArg<QueryIntent>(onEditIntent);
-    expect(next.energies[0]).toEqual({ value: 240, unit: "keV" });
+    // issue #163 C1 — see the analogous assertion above.
+    expect(next.energies[0]).toEqual({ value: 240, unit: "keV", perNucleonAssumed: false });
   });
 
   it("moving focus from the energy value input to its own unit select does not commit prematurely", async () => {

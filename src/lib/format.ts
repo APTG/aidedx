@@ -139,3 +139,36 @@ export function stoppingPowerToKevPerUm(
 export function csdaRangeToCm(csdaRangeGPerCm2: number, densityGPerCm3: number): number {
   return csdaRangeGPerCm2 / densityGPerCm3;
 }
+
+/**
+ * Converts an absolute energy unit (keV/MeV/GeV/TeV) to MeV. "MeV/nucl"/"MeV/u" (already
+ * per-nucleon) and anything else fall through unchanged — dividing them again in
+ * `perNucleonDisplay()` below would double-apply the "/nucl".
+ */
+export function energyUnitToMeV(value: number, unit: string): number {
+  if (unit === "keV") return value / 1000;
+  if (unit === "GeV") return value * 1000;
+  if (unit === "TeV") return value * 1_000_000;
+  return value;
+}
+
+/**
+ * Per-nucleon value + unit for a total→per-nucleon assumption note, formatted to 4 significant
+ * figures (issue #163 B7). keV stays keV/nucl, matching the input's own scale; every other
+ * absolute unit reads as MeV/nucl. Shared by `intent/matcher.ts` (the note for a fresh match) and
+ * `nlg/render.ts` (issue #163 C1/C2/B8 — the same note re-derived per `ComputeSeries` so it
+ * survives a chip edit and gives each series in a multi-particle comparison its own figure).
+ */
+export function perNucleonDisplay(
+  value: number,
+  unit: string,
+  massNumber: number,
+): { value: string; unit: string } {
+  if (unit === "keV") {
+    return { value: formatSignificant(value / massNumber), unit: "keV/nucl" };
+  }
+  return {
+    value: formatSignificant(energyUnitToMeV(value, unit) / massNumber),
+    unit: "MeV/nucl",
+  };
+}

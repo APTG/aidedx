@@ -22,6 +22,7 @@ import {
   csdaRangeToCm,
   formatLengthCm,
   formatSignificant,
+  perNucleonDisplay,
   stoppingPowerToKevPerUm,
 } from "../format.ts";
 
@@ -50,6 +51,74 @@ function capitalize(s: string): string {
 
 function isInverse(quantity: Quantity): quantity is "energyFromRange" | "energyFromStp" {
   return quantity === "energyFromRange" || quantity === "energyFromStp";
+}
+
+/**
+ * Matches the "<value> <unit> taken as total → …" fragment `matcher.ts` bakes into a fresh
+ * intent's `assumptions` at match time, from `particles[0]`/the first heavy ion found (issue #163
+ * B7). Stripped out of `result.assumptions` in `renderAnswer()` below and replaced with
+ * `totalToPerNucleonNotes()`'s fresh derivation — the baked-in fragment goes stale the moment a
+ * chip edit changes the energy's unit or the particle (`withCorrection()` always resets
+ * `assumptions` to `[]`, but `compute.ts` keeps dividing by A regardless — C1/C2), and it's wrong
+ * for every series but the first in a multi-particle comparison, since it's derived once, not per
+ * series (B8).
+ */
+const TOTAL_PER_NUCLEON_NOTE_RE = / taken as total → /;
+
+/**
+ * The total→per-nucleon disclosure for one series+energy pair, derived fresh from whatever the
+ * intent *currently* holds — the series' own resolved `particle.massNumber` (correct even after a
+ * particle chip edit swapped in a different ion) and `intent.energies[energyIndex]` (correct even
+ * after an energy chip edit changed the unit, since C1's fix keeps `perNucleonAssumed` in sync with
+ * it). Returns null when there's nothing to disclose: inverse queries (nothing was "taken as
+ * total" — C9 is a separate, not-yet-covered gap), a single-nucleon particle (proton), an
+ * explicitly per-nucleon unit, or an energy the matcher itself already read as per-nucleon.
+ */
+function totalToPerNucleonNote(
+  intent: QueryIntent,
+  quantity: Quantity,
+  series: ComputeSeries,
+  energyIndex: number,
+): string | null {
+  if (isInverse(quantity)) return null;
+  const massNumber = series.particle.massNumber;
+  if (massNumber <= 1) return null;
+  const energy = intent.energies[energyIndex];
+  if (!energy || energy.unit === "MeV/nucl" || energy.unit === "MeV/u") return null;
+  if (energy.perNucleonAssumed === true) return null;
+  const pn = perNucleonDisplay(energy.value, energy.unit, massNumber);
+  return `${formatNumber(energy.value)} ${energy.unit} taken as total → ${pn.value} ${pn.unit}`;
+}
+
+/**
+ * All distinct total→per-nucleon notes across a result's series (deduped — `compareDim:
+ * "material"`/`"program"` share one particle+energy across every series, so they'd otherwise
+ * repeat the identical note once per series). `compareDim: "energy"` is the one shape with several
+ * energies against a single series, so it's the one case iterating `intent.energies` by index
+ * matters; every other compareDim uses `intent.energies[0]` against each series' own point 0.
+ */
+function totalToPerNucleonNotes(
+  intent: QueryIntent,
+  quantity: Quantity,
+  compareDim: ComputeResult["compareDim"],
+  series: ComputeSeries[],
+): string[] {
+  const notes = new Set<string>();
+  if (compareDim === "energy") {
+    const series0 = series[0];
+    if (series0) {
+      intent.energies.forEach((_, i) => {
+        const note = totalToPerNucleonNote(intent, quantity, series0, i);
+        if (note) notes.add(note);
+      });
+    }
+  } else {
+    for (const s of series) {
+      const note = totalToPerNucleonNote(intent, quantity, s, 0);
+      if (note) notes.add(note);
+    }
+  }
+  return [...notes];
 }
 
 function particleLabel(intent: QueryIntent, index: number): string {
@@ -214,8 +283,14 @@ export function renderAnswer(intent: QueryIntent, result: ComputeResult): string
     });
   }
 
-  if (result.assumptions.length > 0) {
-    lines.push(`Note: ${result.assumptions.join("; ")}.`);
+  // issue #163 C1/C2/B8 — the matcher-baked total→per-nucleon fragment (if any) is dropped and
+  // replaced with a fresh one derived per series from the intent/series this render actually
+  // holds, so the disclosure survives a chip edit and is correct for every series in a comparison.
+  const carriedAssumptions = result.assumptions.filter((a) => !TOTAL_PER_NUCLEON_NOTE_RE.test(a));
+  const perNucleonNotes = totalToPerNucleonNotes(intent, quantity, compareDim, series);
+  const notes = [...carriedAssumptions, ...perNucleonNotes];
+  if (notes.length > 0) {
+    lines.push(`Note: ${notes.join("; ")}.`);
   }
 
   return lines;
