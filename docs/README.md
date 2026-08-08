@@ -45,6 +45,12 @@ reading in order gives the current picture rather than a snapshot.
 | [`tts-eval-1000-v3.md`](./tts-eval-1000-v3.md)                     | 2026-07-18                         | v3 of the above: `DOMAIN_PROMPT` expansion + voice-composition fixes (issue #92 Group B) — measured.                                                                      |
 | [`nlp-libraries-polish.md`](./nlp-libraries-polish.md)             | 2026-07-16 (+ 07-18 status update) | Would an NLP library help the matcher/corrector ahead of Polish? (Verdict: no — a core+language-pack refactor instead; issue #87.)                                        |
 
+## Product & release planning
+
+| Doc                                                                    | Covers                                                                                                                   |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| [`google-play-publication-plan.md`](./google-play-publication-plan.md) | Publishing APTG apps on Google Play: account setup, licensing, one-vs-two listings, repo layout, and a phased work plan. |
+
 ## Environment & tooling
 
 | Doc                                    | Covers                                                               |
