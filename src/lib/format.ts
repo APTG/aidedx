@@ -141,9 +141,14 @@ export function csdaRangeToCm(csdaRangeGPerCm2: number, densityGPerCm3: number):
 }
 
 /**
- * Converts an absolute energy unit (keV/MeV/GeV/TeV) to MeV. "MeV/nucl"/"MeV/u" (already
- * per-nucleon) and anything else fall through unchanged — dividing them again in
- * `perNucleonDisplay()` below would double-apply the "/nucl".
+ * Converts an absolute energy unit (keV/MeV/GeV/TeV) to MeV; "MeV/nucl"/"MeV/u" and anything else
+ * pass through unchanged. That passthrough is only safe here — it is NOT safe for
+ * `perNucleonDisplay()` below, which divides this function's return value by `massNumber`: a
+ * value already read as per-nucleon (`"MeV/nucl"`/`"MeV/u"`) would be divided by A a second time.
+ * Both functions require `unit` to be an absolute (not-already-per-nucleon) unit; every current
+ * caller already guards for that before calling in (`matcher.ts` only reaches `perNucleonDisplay()`
+ * for a bare, non-per-nucleon energy; `render.ts`'s `totalToPerNucleonNote()` returns early for a
+ * `"MeV/nucl"`/`"MeV/u"` energy before it would call either function).
  */
 export function energyUnitToMeV(value: number, unit: string): number {
   if (unit === "keV") return value / 1000;
@@ -154,10 +159,12 @@ export function energyUnitToMeV(value: number, unit: string): number {
 
 /**
  * Per-nucleon value + unit for a total→per-nucleon assumption note, formatted to 4 significant
- * figures (issue #163 B7). keV stays keV/nucl, matching the input's own scale; every other
- * absolute unit reads as MeV/nucl. Shared by `intent/matcher.ts` (the note for a fresh match) and
- * `nlg/render.ts` (issue #163 C1/C2/B8 — the same note re-derived per `ComputeSeries` so it
- * survives a chip edit and gives each series in a multi-particle comparison its own figure).
+ * figures (issue #163 B7). `unit` must be an absolute (not-already-per-nucleon) unit — see
+ * `energyUnitToMeV()`'s doc comment above for why. keV stays keV/nucl, matching the input's own
+ * scale; every other absolute unit reads as MeV/nucl. Shared by `intent/matcher.ts` (the note for
+ * a fresh match) and `nlg/render.ts` (issue #163 C1/C2/B8 — the same note re-derived per
+ * `ComputeSeries` so it survives a chip edit and gives each series in a multi-particle comparison
+ * its own figure).
  */
 export function perNucleonDisplay(
   value: number,
