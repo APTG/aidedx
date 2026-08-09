@@ -263,17 +263,110 @@ describe("validateIntent — energy within the tabulated grid (unit-suspect firs
     expect(v).toEqual({ plausible: true, issues: [] });
   });
 
-  it("skips the energy check for inverse queries (there's nothing given to check)", () => {
+  it("skips the forward energy-bounds check for inverse queries (there's nothing given to check)", () => {
+    // The (3) energy-bounds check above is forward-only by construction — there's no
+    // `intent.energies` entry to bound-check on an inverse query. issue #163 B10's round-trip
+    // check is the inverse-query counterpart; see the dedicated describe block below for it.
     const v = validateIntent(
       intent({
         quantity: "energyFromRange",
         particles: [{ match: "proton" }],
         materials: [{ match: "water" }],
         energies: [],
-        target: { value: 10_000_000, unit: "cm" }, // absurd, but not this module's concern
+        target: { value: 10, unit: "cm" },
       }),
       service,
     );
+    expect(v).toEqual({ plausible: true, issues: [] });
+  });
+});
+
+describe("validateIntent — issue #163 B10: inverse-query target round-trip", () => {
+  it("does not flag an ordinary, reachable range target", () => {
+    const v = validateIntent(
+      intent({
+        quantity: "energyFromRange",
+        particles: [{ match: "proton" }],
+        materials: [{ match: "water" }],
+        energies: [],
+        target: { value: 10, unit: "cm" },
+      }),
+      service,
+    );
+    expect(v).toEqual({ plausible: true, issues: [] });
+  });
+
+  it("does not flag an ordinary, reachable stopping-power target", () => {
+    const v = validateIntent(
+      intent({
+        quantity: "energyFromStp",
+        particles: [{ match: "proton" }],
+        materials: [{ match: "water" }],
+        energies: [],
+        target: { value: 7.29, unit: "MeV cm2/g" },
+      }),
+      service,
+    );
+    expect(v).toEqual({ plausible: true, issues: [] });
+  });
+
+  it("flags a range target so far outside the tabulated grid that the solve can't actually reach it", () => {
+    // issue #163 B10's own motivating example — pre-fix, this absurd target (100,000 km) was
+    // silently `plausible: true`; validateIntent() had no target check of any kind.
+    const v = validateIntent(
+      intent({
+        quantity: "energyFromRange",
+        particles: [{ match: "proton" }],
+        materials: [{ match: "water" }],
+        energies: [],
+        target: { value: 10_000_000, unit: "cm" },
+      }),
+      service,
+    );
+    expect(v.plausible).toBe(false);
+    expect(v.issues).toContainEqual(
+      expect.objectContaining({
+        slot: "target",
+        message: expect.stringContaining("actually reaches") as unknown as string,
+      }),
+    );
+  });
+
+  it("does not double-report a stopping-power target libdedx's own solver already rejects", () => {
+    // Unlike getInverseCsda (which silently saturates and echoes the requested range back — the
+    // exact case the test above catches), getInverseStp cleanly returns a LibdedxError for a
+    // stopping power this far outside the tabulated grid. checkTargetRoundTrip() defers to that
+    // (computeIntent()'s own series.error surfaces it) rather than raising a second, weaker
+    // plausibility issue on top of a solve that already failed loudly.
+    const v = validateIntent(
+      intent({
+        quantity: "energyFromStp",
+        particles: [{ match: "proton" }],
+        materials: [{ match: "water" }],
+        energies: [],
+        target: { value: 100_000, unit: "MeV cm2/g" },
+      }),
+      service,
+    );
+    expect(v).toEqual({ plausible: true, issues: [] });
+  });
+
+  it("does not flag anything when the particle/material/program combination is already unsupported", () => {
+    // The combination check ((2) above) already reports this loudly — the round-trip check must
+    // not also try to solve for a combination it knows has no data, which would either throw
+    // (caught and swallowed, so harmless) or, worse, produce a second, redundant issue.
+    const v = validateIntent(
+      intent({
+        quantity: "energyFromRange",
+        particles: [{ match: "electron" }],
+        materials: [{ match: "water" }],
+        energies: [],
+        target: { value: 10, unit: "cm" },
+      }),
+      service,
+    );
+    // Electron mentions are skipped entirely (see validateIntent()'s own doc comment) — this is
+    // really just confirming that skip still holds for the inverse path too.
     expect(v).toEqual({ plausible: true, issues: [] });
   });
 });

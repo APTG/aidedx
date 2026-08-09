@@ -188,8 +188,51 @@ describe("renderAnswer — single (compareDim: none)", () => {
       ],
     });
 
+    // issue #163 C9 — a heavier ion's inverse answer now also discloses the implied total, the
+    // same "here's what we assumed" convention the forward direction already uses.
     expect(renderAnswer(i, r)).toEqual([
-      "The energy for carbon ion in water to reach a stopping power of 7.29 MeV/cm is 12 MeV/nucl (MSTAR).",
+      "The energy for carbon ion in water to reach a stopping power of 7.29 MeV/cm is 12 MeV/nucl (= 144 MeV total) (MSTAR).",
+    ]);
+  });
+
+  it("issue #163 C9 — discloses the implied total energy for an inverse answer on an A>1 particle", () => {
+    const i = intent({
+      quantity: "energyFromRange",
+      particles: [{ match: "alpha particle" }],
+      materials: [{ match: "water" }],
+      energies: [],
+      target: { value: 30, unit: "um" },
+    });
+    const r = result({
+      quantity: "energyFromRange",
+      series: [
+        series({
+          particle: { id: 2, name: "Helium", massNumber: 4, isotope: "⁴He" },
+          points: [{ energyMeVPerNucl: 1.066, energy: 1.066 }],
+        }),
+      ],
+    });
+
+    expect(renderAnswer(i, r)).toEqual([
+      "The energy for alpha particle in water to reach a range of 30 um is 1.066 MeV/nucl (= 4.264 MeV total) (PSTAR).",
+    ]);
+  });
+
+  it("issue #163 C9 — does not append a total for a proton (A=1), where it would be redundant", () => {
+    const i = intent({
+      quantity: "energyFromRange",
+      particles: [{ match: "protons" }],
+      materials: [{ match: "water" }],
+      energies: [],
+      target: { value: 10, unit: "cm" },
+    });
+    const r = result({
+      quantity: "energyFromRange",
+      series: [series({ points: [{ energyMeVPerNucl: 100, energy: 100 }] })],
+    });
+
+    expect(renderAnswer(i, r)).toEqual([
+      "The energy for protons in water to reach a range of 10 cm is 100 MeV (PSTAR).",
     ]);
   });
 

@@ -154,4 +154,14 @@ describe("buildUnresolvedNotice — issue #163 B3/B6", () => {
     ]);
     expect(notice).toContain("Try a different material or program, or check the spelling.");
   });
+
+  it("issue #163 C5(c) — gives an unresolved energy an honest 'didn't understand' clause, not 'libdedx has no data'", () => {
+    // An unresolved energy isn't an entity libdedx lacks data for — it's a number-shaped phrase
+    // the matcher's grammar couldn't parse at all, so it gets its own phrasing rather than the
+    // "isn't a X that libdedx has data for" template every other kind shares.
+    const notice = buildUnresolvedNotice([{ kind: "energy", phrase: "12 hundred" }]);
+    expect(notice).toBe(
+      'didn\'t understand "12 hundred" as an energy value. Try a different energy, or check the spelling.',
+    );
+  });
 });

@@ -15,6 +15,7 @@
     type EnergyUnit,
     type QueryIntent,
   } from "$lib/intent/query-intent.ts";
+  import type { PlausibilitySlot } from "$lib/compute/validate.ts";
   import { resolveParticle } from "$lib/aliases/lookup.ts";
   import { particleDisplayLabel } from "$lib/aliases/particles.ts";
   import {
@@ -28,8 +29,14 @@
   interface Props {
     intent: QueryIntent;
     onEditIntent: (next: QueryIntent) => void;
-    /** The chip a targeted re-ask (issue #10) is about, or null/absent when none. */
-    highlight?: { slot: "particle" | "material" | "energy"; index: number } | null;
+    /**
+     * The chip a targeted re-ask (issue #10) is about, or null/absent when none. issue #163 B10 —
+     * typed against the full `PlausibilitySlot` (now including `"target"`) even though no chip
+     * below has per-index highlighting wired up for `"target"` — `answer-status.svelte.ts` never
+     * constructs one (a target issue carries no `index`), but the type is shared with
+     * `PlausibilityIssue.slot` and has to admit the possibility.
+     */
+    highlight?: { slot: PlausibilitySlot; index: number } | null;
     /** Id of the re-ask banner `highlight` refers to, wired via `aria-describedby`. */
     highlightId?: string;
   }
@@ -59,14 +66,26 @@
   // so this is the system boundary where it gets checked against the closed set `withTarget()`
   // now requires, the same "validate at the boundary" spot every other free-text chip edit below
   // already uses (a non-finite energy value, an empty unit — both already silently don't commit).
-  const TARGET_UNITS: ReadonlySet<string> = new Set<string>([
-    ...RANGE_TARGET_UNITS,
-    ...STP_TARGET_UNITS,
-  ]);
+  //
+  // issue #163 C6 — checked against the *union* of both families, not the one `intent.quantity`
+  // actually implies (`TargetSlot.unit`'s own doc comment: "which of the two subsets is actually
+  // valid is already implied by the surrounding `QueryIntent.quantity`"). That let a range-target
+  // chip commit a stopping-power unit (or vice versa) two keystrokes away — `withTarget()` would
+  // happily store it, and `compute.ts`'s `rangeTargetToGcm2()`/`stpTargetToMassUnits()` would then
+  // throw a can't-happen `ComputeError` ("keV/um is a stopping-power unit, not a range unit")
+  // straight to the user, `validateIntent()` having no target check to catch it first (B10).
+  // `quantity` is always `energyFromRange`/`energyFromStp` whenever this chip renders at all — a
+  // `target` slot only ever exists for one of those two — so there's no third case to handle.
+  function targetUnitsFor(
+    quantity: QueryIntent["quantity"],
+  ): ReadonlyArray<(typeof RANGE_TARGET_UNITS)[number] | (typeof STP_TARGET_UNITS)[number]> {
+    return quantity === "energyFromStp" ? STP_TARGET_UNITS : RANGE_TARGET_UNITS;
+  }
   function isTargetUnit(
     unit: string,
+    quantity: QueryIntent["quantity"],
   ): unit is (typeof RANGE_TARGET_UNITS)[number] | (typeof STP_TARGET_UNITS)[number] {
-    return TARGET_UNITS.has(unit);
+    return (targetUnitsFor(quantity) as readonly string[]).includes(unit);
   }
 
   /**
@@ -246,7 +265,7 @@
     if (
       Number.isFinite(value) &&
       value > 0 &&
-      isTargetUnit(trimmedUnit) &&
+      isTargetUnit(trimmedUnit, intent.quantity) &&
       (value !== current?.value || trimmedUnit !== current?.unit)
     ) {
       onEditIntent(withTarget(intent, value, trimmedUnit));
@@ -254,10 +273,18 @@
     void stopEdit(getButton);
   }
 
+  // issue #163 C10 — set when a program-chip edit is discarded because `resolveProgramName()`
+  // didn't recognize it, so the chip snapping back to its old value isn't silent: the matcher path
+  // for the exact same string already says "isn't a program that libdedx has data for" (B6); the
+  // chip path said nothing at all. Cleared whenever a new edit starts or a commit succeeds, so it
+  // never lingers past the input that caused it.
+  let programError = $state<string | null>(null);
+
   function commitProgram(value: string, getButton: () => HTMLButtonElement | undefined) {
     if (suppressBlurCommit) return;
     const trimmed = value.trim();
     if (trimmed === "") {
+      programError = null;
       if (intent.program !== undefined) onEditIntent(withProgram(intent, undefined));
       void stopEdit(getButton);
       return;
@@ -268,8 +295,13 @@
     // Resolves through the shared `resolveProgramName()` so "supported" means the same thing here
     // as it does in `matcher.ts`/`compute.ts`, and commits the canonical spelling either way.
     const resolved = resolveProgramName(trimmed);
-    if (resolved && resolved !== intent.program) {
-      onEditIntent(withProgram(intent, resolved));
+    if (resolved) {
+      programError = null;
+      if (resolved !== intent.program) onEditIntent(withProgram(intent, resolved));
+    } else {
+      // issue #163 C10 — was silent: the editor just closed and the chip snapped back, giving no
+      // indication the edit was even seen, let alone why it didn't take.
+      programError = `"${trimmed}" isn't a program that libdedx has data for`;
     }
     void stopEdit(getButton);
   }
@@ -500,7 +532,10 @@
           type="button"
           bind:this={programButton}
           aria-label={`Edit program: ${intent.program}`}
-          onclick={() => startEdit("program")}
+          onclick={() => {
+            programError = null;
+            startEdit("program");
+          }}
           class="rounded-full border border-input bg-muted px-2.5 py-1 text-sm hover:bg-card focus-visible:ring-2 focus-visible:ring-ring"
         >
           {intent.program}
@@ -508,6 +543,10 @@
       {/if}
     {/if}
   </div>
+
+  {#if programError}
+    <p role="alert" class="text-xs text-danger">{programError}</p>
+  {/if}
 
   {#if intent.assumptions.length > 0}
     <ul class="list-disc space-y-1 pl-5 text-xs text-muted-foreground">

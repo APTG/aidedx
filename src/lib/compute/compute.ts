@@ -37,9 +37,18 @@ import { formatEnergyPerNucleon } from "../format.ts";
 
 /** Raised when an intent cannot be mapped to a libdedx computation. */
 export class ComputeError extends Error {
-  constructor(message: string) {
+  /**
+   * issue #163 B9 — a short, physicist-facing rephrasing of this error, for the sites where
+   * `message` is a developer-facing diagnostic (an internal invariant name like `compareDim`)
+   * rather than something meant to reach the answer box. `answer-status.svelte.ts` prefers this
+   * over `message` when set; every other throw site leaves it unset and falls back to `message`
+   * unchanged, exactly as before this existed.
+   */
+  readonly userMessage?: string;
+  constructor(message: string, userMessage?: string) {
     super(message);
     this.name = "ComputeError";
+    if (userMessage !== undefined) this.userMessage = userMessage;
   }
 }
 
@@ -235,8 +244,44 @@ export function autoProgramForParticle(
   return available[0] ?? PROGRAMS.DEFAULT;
 }
 
-/** Candidate programs to fan out over for a `compareDim: "program"` query. */
-function compareProgramsForParticle(particleId: number): number[] {
+/**
+ * Candidate programs to fan out over for a `compareDim: "program"` query.
+ *
+ * issue #163 C7 — `intent.programs` (set by `matcher.ts` whenever it detected 2+ *supported*
+ * program names — B5's `program` is the analogous 1-name case) is honored first when present: it
+ * resolves every name through the shared `resolveProgramName()`, same as `resolveProgramId()`
+ * does for the singular `program`. Before this, every `compareDim: "program"` query — regardless
+ * of which programs were actually named — silently fanned out over this hardcoded, particle-keyed
+ * triple instead: a query naming PSTAR got ICRU49/Bethe in its place and PSTAR dropped entirely.
+ * The triple survives as the fallback for a producer that hasn't set `intent.programs` yet
+ * (hand-built eval gold, a test that bypasses the matcher).
+ *
+ * An unresolvable name in `intent.programs` throws rather than being silently filtered out — the
+ * same "loud failure, not a quieter one three files downstream" call `resolveProgramId()` makes
+ * for the singular `program` (Copilot review on this PR: silently dropping it, and falling back
+ * to the hardcoded triple if *every* name failed to resolve, would have reintroduced exactly the
+ * silent-substitution shape B6 exists to prevent, for any producer that bypasses the matcher's own
+ * B6 filtering — `matcher.ts` never puts an unresolved name here itself). Resolved names are
+ * deduped by id, since two aliases of the same program ("PSTAR", "pstar") would otherwise produce
+ * duplicate series for what's really one requested program.
+ */
+function compareProgramsForParticle(particleId: number, intent: QueryIntent): number[] {
+  if (intent.programs && intent.programs.length > 0) {
+    const ids: number[] = [];
+    const seen = new Set<number>();
+    for (const name of intent.programs) {
+      const resolved = resolveProgramName(name);
+      if (!resolved) {
+        throw new ComputeError(`"${name}" is not a program libdedx has data for`);
+      }
+      const id = PROGRAM_NAME_TO_ID[resolved];
+      if (!seen.has(id)) {
+        seen.add(id);
+        ids.push(id);
+      }
+    }
+    return ids;
+  }
   if (particleId === PROTON_ID) return [PROGRAMS.PSTAR, PROGRAMS.ICRU49, PROGRAMS.DEFAULT];
   if (particleId === HELIUM_ID) return [PROGRAMS.ASTAR, PROGRAMS.ICRU49, PROGRAMS.DEFAULT];
   return [PROGRAMS.MSTAR, PROGRAMS.ICRU73, PROGRAMS.DEFAULT];
@@ -369,8 +414,11 @@ const RANGE_TARGET_UNIT_TO_CM: Record<
 
 /** Convert an inverse-query range target to g/cm² (the native libdedx unit). Throws
  * `ComputeError` for a stopping-power unit passed by mistake (`intent.target.unit`'s static type
- * is the wider `RangeTargetUnit | StpTargetUnit`) or a missing density, rather than guessing. */
-function rangeTargetToGcm2(
+ * is the wider `RangeTargetUnit | StpTargetUnit`) or a missing density, rather than guessing.
+ * Exported for `validate.ts`'s issue #163 B10 round-trip check, which needs the exact same
+ * conversion `inverseSeries()` below uses — a second, independently-written copy would be exactly
+ * the kind of cross-layer drift §4.1 warns about. */
+export function rangeTargetToGcm2(
   target: { value: number; unit: RangeTargetUnit | StpTargetUnit },
   density: number | undefined,
 ): number {
@@ -401,8 +449,9 @@ const STP_TARGET_UNIT_TO_MASS_UNITS: Record<
 };
 
 /** Convert an inverse-query stopping-power target to MeV·cm²/g (native unit). Throws
- * `ComputeError` for a range unit passed by mistake or a missing density. */
-function stpTargetToMassUnits(
+ * `ComputeError` for a range unit passed by mistake or a missing density. Exported for the same
+ * `validate.ts` B10 reason as `rangeTargetToGcm2()` above. */
+export function stpTargetToMassUnits(
   target: { value: number; unit: RangeTargetUnit | StpTargetUnit },
   density: number | undefined,
 ): number {
@@ -581,6 +630,45 @@ function inverseSeries(
   return base;
 }
 
+/** Plural form of a `CompareDim` for the B9 user-facing message below — "energy" -> "energies",
+ * everything else already reads fine with a trailing "s". */
+function pluralCompareDim(dim: CompareDim): string {
+  return dim === "energy" ? "energies" : `${dim}s`;
+}
+
+/**
+ * issue #163 B9 — the friendly counterpart to the raw "compareDim X but N present" assert below,
+ * which names an internal concept (`compareDim`) a physicist reading the answer box was never
+ * introduced to. `overflow` is whichever slot actually has more than one entry — the one
+ * `compareDim` isn't already varying — so the message names *both* dimensions the query mixed,
+ * not just the one that happened to trip the assert.
+ *
+ * `compareDim === "none"` gets its own phrasing (Copilot review on this PR) rather than falling
+ * through to the general one below: `pluralCompareDim("none")` would otherwise produce "nones"
+ * ("a comparison across both nones and 2 materials"), and there's also no second *named*
+ * dimension to mention in that case — `compareDim: "none"` reaching here at all means the
+ * particle/material multiplicity wasn't attributed to any comparison, the same invariant-violation
+ * shape issue #132 was about, not literally a request to compare two things at once.
+ */
+function ambiguousCompareMessage(
+  compareDim: CompareDim,
+  overflow: "particle" | "material",
+  count: number,
+): string {
+  const overflowPlural = overflow === "particle" ? "particles" : "materials";
+  if (compareDim === "none") {
+    return (
+      `This question names ${count} ${overflowPlural}, but I can only answer about one at a ` +
+      `time. Try asking about a single ${overflow}, or ask separately for each one.`
+    );
+  }
+  return (
+    `This looks like a comparison across both ${pluralCompareDim(compareDim)} and ` +
+    `${count} ${overflowPlural}, which I can't answer in one go. Try asking about a single ` +
+    `${overflow}, or ask separately for each one.`
+  );
+}
+
 /**
  * Compute libdedx numbers for a `QueryIntent`. The intent's `compareDim`
  * controls how many series are returned (one per varied material / particle /
@@ -642,7 +730,7 @@ export function computeIntent(intent: QueryIntent, service: LibdedxService): Com
   } else if (intent.compareDim === "program") {
     const particle = resolveParticleOrThrow(reqFirst(intent.particles, "particle").match);
     const material = resolveMaterialOrThrow(reqFirst(intent.materials, "material").match);
-    for (const programId of compareProgramsForParticle(particle.id)) {
+    for (const programId of compareProgramsForParticle(particle.id, intent)) {
       series.push(build(particle, material, programId, programName(programId)));
     }
   } else {
@@ -658,11 +746,13 @@ export function computeIntent(intent: QueryIntent, service: LibdedxService): Com
     if (intent.particles.length > 1) {
       throw new ComputeError(
         `compareDim "${intent.compareDim}" but ${intent.particles.length} particles present — only the first would be computed`,
+        ambiguousCompareMessage(intent.compareDim, "particle", intent.particles.length),
       );
     }
     if (intent.materials.length > 1) {
       throw new ComputeError(
         `compareDim "${intent.compareDim}" but ${intent.materials.length} materials present — only the first would be computed`,
+        ambiguousCompareMessage(intent.compareDim, "material", intent.materials.length),
       );
     }
     const particle = resolveParticleOrThrow(reqFirst(intent.particles, "particle").match);

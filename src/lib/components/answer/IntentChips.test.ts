@@ -263,6 +263,53 @@ describe("IntentChips", () => {
     expect(onEditIntent).not.toHaveBeenCalled();
   });
 
+  it("issue #163 C6 — rejects a stopping-power unit on a range-quantity target chip", async () => {
+    // Pre-fix: isTargetUnit() checked the *union* of RANGE_TARGET_UNITS and STP_TARGET_UNITS, so
+    // this committed and reached compute.ts's rangeTargetToGcm2(), which throws a can't-happen
+    // ComputeError ("keV/um is a stopping-power unit, not a range unit") straight to the user.
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({ quantity: "energyFromRange", target: { value: 10, unit: "cm" } });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit target: 10 cm/i }));
+    const unitInput = getByRole("textbox", { name: /target unit/i });
+    await fireEvent.input(unitInput, { target: { value: "keV/um" } });
+    await fireEvent.focusOut(unitInput, { relatedTarget: document.body });
+
+    expect(onEditIntent).not.toHaveBeenCalled();
+  });
+
+  it("issue #163 C6 — rejects a range unit on a stopping-power-quantity target chip", async () => {
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({
+      quantity: "energyFromStp",
+      target: { value: 10, unit: "MeV/cm" },
+    });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit target: 10 MeV\/cm/i }));
+    const unitInput = getByRole("textbox", { name: /target unit/i });
+    await fireEvent.input(unitInput, { target: { value: "cm" } });
+    await fireEvent.focusOut(unitInput, { relatedTarget: document.body });
+
+    expect(onEditIntent).not.toHaveBeenCalled();
+  });
+
+  it("issue #163 C6 — still accepts a same-family unit edit (range -> range)", async () => {
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({ quantity: "energyFromRange", target: { value: 10, unit: "cm" } });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit target: 10 cm/i }));
+    const unitInput = getByRole("textbox", { name: /target unit/i });
+    await fireEvent.input(unitInput, { target: { value: "mm" } });
+    await fireEvent.focusOut(unitInput, { relatedTarget: document.body });
+
+    expect(onEditIntent).toHaveBeenCalledTimes(1);
+    const next = firstCallArg<QueryIntent>(onEditIntent);
+    expect(next.target).toEqual({ value: 10, unit: "mm" });
+  });
+
   it("renders a target chip for an inverse query", () => {
     const inverse = baseIntent({
       quantity: "energyFromRange",
@@ -328,6 +375,46 @@ describe("IntentChips", () => {
     await fireEvent.blur(programInput);
 
     expect(onEditIntent).not.toHaveBeenCalled();
+  });
+
+  it("issue #163 C10 — explains why an unrecognized program name was discarded, instead of reverting silently", async () => {
+    // Pre-fix: the editor just closed and the chip snapped back to "PSTAR" with no indication the
+    // edit was even seen — the matcher path for the same string already says so loudly (B6).
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({ program: "PSTAR" });
+    const { getByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit program: PSTAR/i }));
+    const programInput = getByRole("textbox", { name: /program/i });
+    await fireEvent.input(programInput, { target: { value: "SRIM" } });
+    await fireEvent.blur(programInput);
+
+    expect(onEditIntent).not.toHaveBeenCalled();
+    expect(getByRole("alert")).toHaveTextContent(
+      `"SRIM" isn't a program that libdedx has data for`,
+    );
+    // The chip itself reverted to the last-good value.
+    expect(getByRole("button", { name: /edit program: PSTAR/i })).toBeInTheDocument();
+  });
+
+  it("issue #163 C10 — clears the discard message once a valid program name commits", async () => {
+    const onEditIntent = vi.fn();
+    const intent = baseIntent({ program: "PSTAR" });
+    const { getByRole, queryByRole } = render(IntentChips, { props: { intent, onEditIntent } });
+
+    await fireEvent.click(getByRole("button", { name: /edit program: PSTAR/i }));
+    let programInput = getByRole("textbox", { name: /program/i });
+    await fireEvent.input(programInput, { target: { value: "SRIM" } });
+    await fireEvent.blur(programInput);
+    expect(queryByRole("alert")).toBeInTheDocument();
+
+    await fireEvent.click(getByRole("button", { name: /edit program: PSTAR/i }));
+    programInput = getByRole("textbox", { name: /program/i });
+    await fireEvent.input(programInput, { target: { value: "astar" } });
+    await fireEvent.blur(programInput);
+
+    expect(onEditIntent).toHaveBeenCalledTimes(1);
+    expect(queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("clears the program chip when retyped as empty", async () => {

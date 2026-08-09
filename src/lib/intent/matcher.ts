@@ -76,9 +76,14 @@ export type QuantitySource = "direct" | "indirect" | "inverse" | "default";
  * to guard — `detectPrograms()` below is the only detector, not a fallback — so it fires whenever
  * a program-shaped word is mentioned that `resolveProgramName()` doesn't recognize, instead of
  * silently falling into `compareDim: "program"`'s hardcoded, unrelated three-program fan-out.
+ * `energy` (issue #163 C5(c)) is a narrower case still: not an entity libdedx lacks data for, but
+ * a number-shaped phrase (`"twelve hundred MeV"`, `"one thousand MeV"`) `composeHundreds()`
+ * deliberately leaves uncomposed (out of scope — see its own doc comment) — flagging it stops
+ * `fillMissingSlots()` from replacing a stated-but-unparseable energy with a silent 100 MeV
+ * default, the same false-"not specified" shape B3 closed for particles/materials.
  */
 export interface UnresolvedEntity {
-  kind: "particle" | "material" | "program";
+  kind: "particle" | "material" | "program" | "energy";
   /**
    * The phrase as it appeared in the query, not resolved against any alias table — except for
    * `kind: "program"`, which is uppercased (`"SRIM"`, not `"srim"`): `detectPrograms()` matches
@@ -817,6 +822,20 @@ function stripLeadingArticle(rawWords: string[], lowerWords: string[]): [string[
   return [rawWords, lowerWords];
 }
 
+/**
+ * issue #163 C4 — energy/length/stopping-power unit *words*, language-neutral (unit notation
+ * doesn't translate). `detectUnresolvedMaterialPhrase()` below captures the 1-2 words after "in",
+ * which is also exactly the shape of "in <unit>" — a normal way to pin the output unit ("stopping
+ * power **in MeV per cm**", "range **in centimeters**"), not a material mention. Pre-fix, every
+ * one of these hard-dead-ended a query that used to answer (before B3's detector existed, "in
+ * MeV per cm" fell back to the honest "material not specified -> water"). Checking only the
+ * *first* word is enough to reject all four of the audit's measured cases ("MeV per", "keV per",
+ * "centimeters for", "MeV") — a genuine material/particle name in this domain is never spelled
+ * exactly one of these tokens.
+ */
+const UNIT_WORD_RE =
+  /^(mev|kev|gev|tev|per|mm|cm|m|um|g|millimeters?|centimeters?|meters?|metres?|micrometers?|microns?)$/i;
+
 function detectUnresolvedMaterialPhrase(
   text: string,
   stopwords: ReadonlySet<string>,
@@ -828,6 +847,7 @@ function detectUnresolvedMaterialPhrase(
     const lower = phrase.toLowerCase();
     if (NON_MATERIAL_IN_PHRASES.has(lower)) continue;
     const [rawWords, words] = stripLeadingArticle(phrase.split(/\s+/), lower.split(/\s+/));
+    if (UNIT_WORD_RE.test(words[0] ?? "")) continue;
     if (stopwords.has(words[0] ?? "")) continue;
     if (words.every((w) => stopwords.has(w))) continue;
     return rawWords.join(" ");
@@ -861,6 +881,27 @@ function detectUnresolvedParticlePhrase(
     return rawWords.join(" ");
   }
   return null;
+}
+
+/**
+ * issue #163 C5(c) — a spelled-out number `composeHundreds()` deliberately leaves out of scope:
+ * a multiplier outside `NUMBER_WORDS`' 1-9 entries ("twelve hundred") or a bare "<number>
+ * thousand" (`"thousand"` isn't composed at all — see `NUMBER_WORDS`' own doc comment). Both
+ * still have their leading number word turned into digits by `spellOutNumbers()`'s per-word
+ * pass, but `HUNDRED_WORD`/`THOUSAND_WORD` themselves are left as literal text with nothing
+ * downstream that can consume them — `extractEnergies()`'s grammar requires the unit to sit
+ * directly after the number, so "12    hundred MeV" never matches. Only ever consulted when
+ * `extractEnergies()` found nothing at all (same pattern as the unresolved particle/material
+ * detectors above): a *successful* `composeHundreds()` match replaces the whole phrase, including
+ * the hundred/thousand word, with digits and padding, so no literal "hundred"/"thousand" text
+ * survives for this to false-positive on.
+ */
+function detectUnresolvedEnergyPhrase(query: string, pack: LangPack): string | null {
+  const words = [pack.HUNDRED_WORD, pack.THOUSAND_WORD].filter((w): w is string => w !== null);
+  if (words.length === 0) return null;
+  const re = new RegExp(`\\d+(?:\\.\\d+)?\\s+(?:${words.join("|")})\\b`, "i");
+  const m = re.exec(query);
+  return m ? m[0].replace(/\s+/g, " ").trim() : null;
 }
 
 // ---------------------------------------------------------------------------
@@ -1037,6 +1078,15 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
     unsupportedPrograms.size === 0 && supportedPrograms.size === 1
       ? [...supportedPrograms][0]
       : undefined;
+  // issue #163 C7 — the companion to B5's `program` above, for the 2+ case `program` deliberately
+  // leaves unset. `compareDim === "program"` here means `decideCompareDim()` saw
+  // `supportedPrograms.size >= 2` (its first, highest-priority check) — exactly the condition
+  // this guards on, so `[...supportedPrograms]` is never empty when it fires. Without this,
+  // `compute.ts`'s `compareProgramsForParticle()` had no way to know *which* programs were named
+  // and fanned out over a hardcoded, particle-keyed triple instead — silently dropping a
+  // requested-but-untabulated program and adding two the user never asked for.
+  const programs: ProgramName[] | undefined =
+    compareDim === "program" ? [...supportedPrograms] : undefined;
 
   // 5. Assemble slots, assumptions, confidence.
   const assumptions: string[] = [];
@@ -1067,6 +1117,13 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
   if (particles.length === 0) {
     const phrase = detectUnresolvedParticlePhrase(query, pack.MATERIAL_STOPWORDS);
     if (phrase) unresolved.push({ kind: "particle", phrase });
+  }
+  // issue #163 C5(c) — same "only when the real scan found nothing" pattern, for a forward
+  // query whose energy is a spelled-out number `composeHundreds()` deliberately leaves out of
+  // scope, rather than one that was simply never mentioned.
+  if (quantity !== "energyFromRange" && quantity !== "energyFromStp" && rawEnergies.length === 0) {
+    const phrase = detectUnresolvedEnergyPhrase(query, pack);
+    if (phrase) unresolved.push({ kind: "energy", phrase });
   }
   // issue #163 B6 — unlike particle/material above, this isn't a fallback consulted only when a
   // real scan came up empty: `detectPrograms()` is the *only* program detector, so every
@@ -1119,6 +1176,7 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
   };
   if (target !== undefined) intent.target = target;
   if (program !== undefined) intent.program = program;
+  if (programs !== undefined) intent.programs = programs;
 
   const result: MatchResult = { intent, quantitySource: source, incomplete, unresolved };
   if (!inverse && fwd?.idiom) result.idiom = fwd.idiom;

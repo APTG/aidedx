@@ -754,6 +754,18 @@ describe("issue #163 B5 — matcher sets intent.program for a single explicit re
     expect(intent.program).toBeUndefined();
   });
 
+  it("issue #163 C7: sets intent.programs to the exact named set when compareDim is 'program'", () => {
+    const { intent } = matchIntent(
+      "Compare the range of 150 MeV protons in water using ASTAR and PSTAR.",
+    );
+    expect(intent.programs).toEqual(["ASTAR", "PSTAR"]);
+  });
+
+  it("issue #163 C7: leaves intent.programs unset when only one program is named", () => {
+    const { intent } = matchIntent("Using PSTAR, what is the range of 150 MeV protons in water?");
+    expect(intent.programs).toBeUndefined();
+  });
+
   it("does not mistake the Bethe-Bloch formula's own name for a request to use the Bethe program", () => {
     const { intent, unresolved } = matchIntent(
       "What is the Bethe-Bloch value for 100 MeV protons in water?",
@@ -826,6 +838,83 @@ describe("issue #163 B6 — unresolved (program-shaped but unsupported) program 
     );
     expect(intent.program).toBeUndefined();
     expect(unresolved).toEqual([{ kind: "program", phrase: "ICRU 90" }]);
+  });
+});
+
+describe("issue #163 C4 — 'in <unit>' no longer hard-dead-ends as an unresolved material", () => {
+  // Pre-fix: detectUnresolvedMaterialPhrase() captured the 1-2 words after "in" with no regard
+  // for whether they were a unit, not a material — every one of these used to fail loudly
+  // ("\"MeV per\" isn't a material that libdedx has data for") instead of falling through to the
+  // honest "material not specified -> water" default these queries got before B3 existed.
+  it("does not flag 'in MeV per cm' as an unresolved material", () => {
+    const { unresolved } = matchIntent(
+      "What is the stopping power in MeV per cm for a 100 MeV proton?",
+    );
+    expect(unresolved).toEqual([]);
+  });
+
+  it("does not flag 'in keV per micron' as an unresolved material", () => {
+    const { unresolved } = matchIntent(
+      "What is the stopping power in keV per micron for a 100 MeV proton?",
+    );
+    expect(unresolved).toEqual([]);
+  });
+
+  it("does not flag 'in centimeters' as an unresolved material", () => {
+    const { unresolved } = matchIntent("Give me the range in centimeters for a 100 MeV proton.");
+    expect(unresolved).toEqual([]);
+  });
+
+  it("does not flag a bare unit word ('in MeV cm2 per g') as an unresolved material", () => {
+    const { unresolved } = matchIntent(
+      "Express the stopping power in MeV cm2 per g for a 100 MeV proton.",
+    );
+    expect(unresolved).toEqual([]);
+  });
+
+  it("still flags a genuine unresolved material named with 'in <unit>' words elsewhere in the query", () => {
+    // Regression guard: the unit-word reject must not swallow every "in ..." match — a real
+    // unresolved material earlier in the same query is still reported.
+    const { unresolved } = matchIntent(
+      "What is the stopping power of 100 MeV protons in stainless steel, in MeV per cm?",
+    );
+    expect(unresolved).toEqual([{ kind: "material", phrase: "stainless steel" }]);
+  });
+});
+
+describe("issue #163 C5(c) — out-of-scope spelled numbers flagged instead of silently defaulted", () => {
+  // Pre-fix: neither "twelve hundred" (multiplier outside composeHundreds()'s 1-9 range) nor "one
+  // thousand" (out of scope entirely) composed into a number extractEnergies() could find, so
+  // energies stayed empty and fillMissingSlots() silently substituted "energy not specified ->
+  // 100 MeV" — indistinguishable from a query that never stated an energy at all.
+  it("flags 'twelve hundred MeV' instead of silently defaulting to 100 MeV", () => {
+    const { intent, unresolved } = matchIntent("range of a twelve hundred MeV proton in water");
+    expect(intent.energies).toEqual([]);
+    expect(unresolved).toEqual([{ kind: "energy", phrase: "12 hundred" }]);
+  });
+
+  it("flags 'one thousand MeV' instead of silently defaulting to 100 MeV", () => {
+    const { unresolved } = matchIntent("range of a one thousand MeV proton in water");
+    expect(unresolved).toEqual([{ kind: "energy", phrase: "1 thousand" }]);
+  });
+
+  it("does not flag a normal in-scope spelled-out hundreds energy", () => {
+    const { unresolved } = matchIntent("range of a two hundred thirty five MeV proton in water");
+    expect(unresolved).toEqual([]);
+  });
+
+  it("does not flag anything when energy genuinely isn't mentioned at all", () => {
+    const { unresolved } = matchIntent("range of a proton in water");
+    expect(unresolved).toEqual([]);
+  });
+
+  it("does not misfire on an inverse query, which carries no energy slot to begin with", () => {
+    const { unresolved } = matchIntent(
+      "What proton energy gives a twelve hundred cm range in water?",
+    );
+    // The out-of-scope number sits in the *target*, not the energy slot — C5(c) is scoped to
+    // energyFromRange/energyFromStp's energy check being skipped, not a claim this target parses.
+    expect(unresolved.find((u) => u.kind === "energy")).toBeUndefined();
   });
 });
 

@@ -8,7 +8,7 @@
  * `asr-status.svelte.ts` / `model-status.svelte.ts`.
  */
 import { matchIntent } from "../intent/matcher.ts";
-import { computeIntent, type ComputeResult } from "../compute/compute.ts";
+import { computeIntent, ComputeError, type ComputeResult } from "../compute/compute.ts";
 import { getService } from "../wasm/sveltekit.ts";
 import { renderAnswer } from "../nlg/render.ts";
 import type { QueryIntent } from "../intent/query-intent.ts";
@@ -193,7 +193,16 @@ class AnswerStore {
     } catch (error) {
       if (requestId !== this.#requestId) return;
       this.phase = "error";
-      this.message = error instanceof Error ? error.message : String(error);
+      // issue #163 B9 — a ComputeError carrying a `userMessage` (currently: the ambiguous
+      // multi-dimension compareDim assert) gets that instead of its raw, developer-facing
+      // `message` ("compareDim \"energy\" but 2 materials present..."), which used to reach the
+      // answer box verbatim.
+      this.message =
+        error instanceof ComputeError && error.userMessage !== undefined
+          ? error.userMessage
+          : error instanceof Error
+            ? error.message
+            : String(error);
     }
   }
 
