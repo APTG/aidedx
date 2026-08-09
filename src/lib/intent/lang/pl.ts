@@ -105,6 +105,9 @@ export const HUNDRED_WORD: string | null = null;
 /** Null — same reasoning as `HUNDRED_WORD` above. */
 export const POINT_WORD: string | null = null;
 
+/** Null — same reasoning as `HUNDRED_WORD` above. */
+export const THOUSAND_WORD: string | null = null;
+
 /** "Zdolność hamowania" is Polish's own long, distinctive direct keyword (mirrors en.ts's
  * "stopping power" entry) — safe to extend the same edit-distance typo tolerance to. */
 export const FUZZY_QUANTITY_PHRASES: ReadonlyArray<{ phrase: string; quantity: Quantity }> = [

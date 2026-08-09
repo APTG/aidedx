@@ -162,6 +162,10 @@ export const HUNDRED_WORD: string | null = "hundred";
  * "dot" rather than "point"). Null for a language with no `POINT_WORD` support yet (see pl.ts). */
 export const POINT_WORD: string | null = "point|dot";
 
+/** Multiplier word for spelled-out thousands, consulted by issue #163 C5(c)'s
+ * `detectUnresolvedEnergyPhrase()` in matcher.ts — see the `LangPack` interface doc comment. */
+export const THOUSAND_WORD: string | null = "thousand";
+
 /** "Stopping power" is the only phrase judged safe for edit-distance typo tolerance (issue
  * #26, "Stoping power") — long and distinctive enough that a fuzzy match is unlikely to
  * collide with unrelated text, unlike a short/generic word such as "range". */

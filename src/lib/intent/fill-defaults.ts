@@ -102,6 +102,18 @@ export function buildDefaultsNotice(filled: FilledSlot[]): string {
  * one; libdedx just doesn't have it). Deliberately doesn't invite "tap a value below to correct
  * it" the way `buildDefaultsNotice()` does — there is no computed answer to show chips for here.
  */
+/**
+ * issue #163 C5(c) — an unresolved `energy` isn't an entity libdedx lacks data for, the way a
+ * particle/material/program is: it's a number-shaped phrase the matcher's grammar couldn't parse
+ * at all (an out-of-scope spelled-out number). "isn't an energy that libdedx has data for" would
+ * be actively misleading there — libdedx was never consulted — so this kind gets its own, honest
+ * "didn't understand" phrasing instead of the shared "libdedx has no data for X" template below.
+ */
+function unresolvedClause(u: UnresolvedEntity): string {
+  if (u.kind === "energy") return `didn't understand "${u.phrase}" as an energy value`;
+  return `"${u.phrase}" isn't a ${u.kind} that libdedx has data for`;
+}
+
 export function buildUnresolvedNotice(unresolved: UnresolvedEntity[]): string {
   // Copilot review on PR #167 — every real call site guards with `unresolved.length > 0` first
   // (there's nothing to name otherwise), so an empty array here is a caller bug, not a case to
@@ -110,7 +122,7 @@ export function buildUnresolvedNotice(unresolved: UnresolvedEntity[]): string {
   if (unresolved.length === 0) {
     throw new Error("buildUnresolvedNotice() requires at least one unresolved entity");
   }
-  const parts = unresolved.map((u) => `"${u.phrase}" isn't a ${u.kind} that libdedx has data for`);
+  const parts = unresolved.map(unresolvedClause);
   // issue #163 B6 — was keyed off item *count* ("> 1 item → generic 'particle or material'"),
   // which silently mislabeled the moment a second kind (program) became possible: 2+ unresolved
   // programs would have printed "particle or material" despite naming neither. Built from the

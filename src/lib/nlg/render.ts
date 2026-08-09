@@ -164,8 +164,17 @@ function valueText(
   if (!point) return null;
   if (isInverse(quantity)) {
     if (point.energy === undefined || !Number.isFinite(point.energy)) return null;
-    const unit = massNumber === 1 ? "MeV" : "MeV/nucl";
-    return `${formatNumber(point.energy)} ${unit}`;
+    if (massNumber === 1) return `${formatNumber(point.energy)} MeV`;
+    // issue #163 C9 — the forward direction reads a bare energy as *total* and discloses the
+    // per-nucleon reading it derives (`totalToPerNucleonNote()` above); the inverse direction
+    // returns the per-nucleon energy `service.getInverseCsda()`/`getInverseStp()` themselves solve
+    // for (both native to libdedx's MeV/nucl grid) with no total shown at all — two round-trippable
+    // conventions, one disclosed. `point.energy` is always MeV/nucl here (`inverseSeries()` sets
+    // both `energyMeVPerNucl` and `energy` from the same solved value), so the total is the same
+    // "× massNumber" `energyToMeVPerNucl()`'s absolute-unit branch divides by on the forward path —
+    // not `atomicMassForConversion()`'s atomic mass, for symmetry with that existing convention.
+    const totalMeV = point.energy * massNumber;
+    return `${formatNumber(point.energy)} MeV/nucl (= ${formatNumber(totalMeV)} MeV total)`;
   }
   const raw = quantity === "stoppingPower" ? point.stoppingPower : point.csdaRange;
   if (raw === undefined || !Number.isFinite(raw)) return null;

@@ -17,19 +17,26 @@
  * (`getMinEnergy`/`getMaxEnergy`, `getParticles`/`getMaterials`) the checks below need.
  */
 import type { EnergySlot, QueryIntent } from "../intent/query-intent.ts";
-import { resolveMaterial, resolveParticle } from "../aliases/lookup.ts";
+import {
+  resolveMaterial,
+  resolveParticle,
+  type MaterialMatch,
+  type ParticleMatch,
+} from "../aliases/lookup.ts";
 import { ELECTRON_ID } from "../wasm/libdedx.ts";
-import type { LibdedxService } from "../wasm/types.ts";
-import { formatEnergyPerNucleon } from "../format.ts";
+import { LibdedxError, type LibdedxService } from "../wasm/types.ts";
+import { formatEnergyPerNucleon, formatSignificant } from "../format.ts";
 import {
   atomicMassForConversion,
   energyToMeVPerNucl,
   programName,
   programSupportsCombination,
+  rangeTargetToGcm2,
   resolveProgramId,
+  stpTargetToMassUnits,
 } from "./compute.ts";
 
-export type PlausibilitySlot = "particle" | "material" | "energy";
+export type PlausibilitySlot = "particle" | "material" | "energy" | "target";
 
 export interface PlausibilityIssue {
   slot: PlausibilitySlot;
@@ -150,6 +157,91 @@ function activePairsFor(intent: QueryIntent): ActivePair[] {
   return [];
 }
 
+/** Relative tolerance for `checkTargetRoundTrip()`'s solve-then-verify comparison — loose enough
+ * to absorb ordinary grid/interpolation slack, tight enough that a magnitude-order regression
+ * (B1/B2 were ~200x and ~18x) still trips it by a wide margin. */
+const TARGET_ROUND_TRIP_TOLERANCE = 0.02;
+
+function withinTolerance(achieved: number, target: number): boolean {
+  // A non-finite or zero target can't be evaluated meaningfully — don't flag what this check
+  // can't actually judge (`Number.isFinite`/`=== 0` guards, not evidence of a real problem).
+  if (!Number.isFinite(achieved) || !Number.isFinite(target) || target === 0) return true;
+  return Math.abs(achieved - target) / Math.abs(target) <= TARGET_ROUND_TRIP_TOLERANCE;
+}
+
+/**
+ * issue #163 B10 — round-trips an inverse query's target: solve for the energy libdedx thinks
+ * reaches it, forward-compute at that energy, and confirm the result actually reproduces the
+ * target. Closed unit types (B1/B2) and the quantity-aware target-unit chip guard (C6) already
+ * prevent the *unit* confusion that originally motivated this, but nothing before this checked
+ * the *solve* itself — a future regression in `rangeTargetToGcm2()`/`stpTargetToMassUnits()`, a
+ * bad density lookup, or a WASM precision issue would all still report `plausible: true` without
+ * it. Both the conversion and both WASM calls can throw or return a `LibdedxError` for reasons
+ * unrelated to plausibility (missing density, energy out of range) — those already surface louder
+ * elsewhere (`computeIntent()`'s own `series.error`), so this quietly skips (returns null) rather
+ * than raising a second, weaker copy of the same failure. Compared in libdedx's own native units
+ * (g/cm², MeV·cm²/g) rather than the target's stated unit — the round trip itself is the point,
+ * not a re-display of the answer.
+ */
+function checkTargetRoundTrip(
+  intent: QueryIntent,
+  particle: ParticleMatch,
+  material: MaterialMatch,
+  programId: number,
+  service: LibdedxService,
+): PlausibilityIssue | null {
+  const target = intent.target;
+  if (!target) return null;
+  const density = service.getDensity(material.id);
+  try {
+    if (intent.quantity === "energyFromRange") {
+      const targetGcm2 = rangeTargetToGcm2(target, density);
+      const [solved] = service.getInverseCsda({
+        programId,
+        particleId: particle.id,
+        materialId: material.id,
+        ranges: [targetGcm2],
+      });
+      if (!solved || solved instanceof LibdedxError) return null;
+      const forward = service.calculate(programId, particle.id, material.id, [solved.energy], {
+        computeCsda: true,
+      });
+      const achievedGcm2 = forward.csdaRanges[0];
+      if (achievedGcm2 === undefined || withinTolerance(achievedGcm2, targetGcm2)) return null;
+      return {
+        slot: "target",
+        message: `Solving for the energy that gives a range of ${formatSignificant(targetGcm2)} g/cm² for ${particle.name} in ${material.name} actually reaches ${formatSignificant(achievedGcm2)} g/cm² — the result may not be reliable`,
+      };
+    }
+    if (intent.quantity === "energyFromStp") {
+      const targetMassStp = stpTargetToMassUnits(target, density);
+      const [solved] = service.getInverseStp({
+        programId,
+        particleId: particle.id,
+        materialId: material.id,
+        stoppingPowers: [targetMassStp],
+        side: 1,
+      });
+      if (!solved || solved instanceof LibdedxError) return null;
+      const forward = service.calculate(programId, particle.id, material.id, [solved.energy], {
+        computeCsda: false,
+      });
+      const achievedMassStp = forward.stoppingPowers[0];
+      if (achievedMassStp === undefined || withinTolerance(achievedMassStp, targetMassStp)) {
+        return null;
+      }
+      return {
+        slot: "target",
+        message: `Solving for the energy that gives a stopping power of ${formatSignificant(targetMassStp)} MeV·cm²/g for ${particle.name} in ${material.name} actually reaches ${formatSignificant(achievedMassStp)} MeV·cm²/g — the result may not be reliable`,
+      };
+    }
+  } catch {
+    // Conversion/WASM failure — not this check's job to flag a second time (see doc comment).
+    return null;
+  }
+  return null;
+}
+
 /**
  * Drops exact (slot, index, message) repeats — the same underlying fact can otherwise surface
  * once per pair, e.g. a particle unsupported by the selected program fails identically against
@@ -168,13 +260,19 @@ function dedupeIssues(issues: PlausibilityIssue[]): PlausibilityIssue[] {
 /**
  * Physics-plausibility gate: everything here is a *soft* signal (an issues list, never a throw)
  * so a caller can still fall through to `computeIntent()` once the user confirms an odd-looking
- * input was intentional. Three checks, matching the issue's three named slots:
+ * input was intentional. Four checks:
  *
  *  1. isotope existence — every particle mention, via the bound above.
  *  2. particle/material/program combination — see `activePairsFor()`.
- *  3. energy within the tabulated grid — forward queries only (inverse queries solve *for*
- *     energy; there's nothing given to check) and only once (2) checked out for that pair (an
- *     unsupported program's [min, max] is meaningless, not evidence about the energy itself).
+ *  3. energy within the tabulated grid — forward queries only, and only once (2) checked out for
+ *     that pair (an unsupported program's [min, max] is meaningless, not evidence about the
+ *     energy itself).
+ *  4. issue #163 B10 — for an inverse query instead of (3), a target round-trip: see
+ *     `checkTargetRoundTrip()`. Forward queries have nothing to round-trip (the energy *is* the
+ *     given value); inverse queries have nothing (3) can check (there's no `energies` list to
+ *     bound-check — the energy is what's being solved for), which is exactly the gap that let
+ *     both B1 and B2 report `plausible: true` before the closed unit types (B1/B2) and the
+ *     quantity-aware target-unit chip guard (C6) closed the *unit* half of it.
  *
  * Unresolvable particles/materials are silently skipped: `computeIntent()` already throws a
  * clear `ComputeError` for those, and duplicating that here would just be a second, weaker copy
@@ -227,7 +325,12 @@ export function validateIntent(intent: QueryIntent, service: LibdedxService): Va
       continue;
     }
 
-    if (isInverse || intent.energies.length === 0) continue;
+    if (isInverse) {
+      const issue = checkTargetRoundTrip(intent, particle, material, programId, service);
+      if (issue) issues.push(issue);
+      continue;
+    }
+    if (intent.energies.length === 0) continue;
     const min = service.getMinEnergy(programId, particle.id);
     const max = service.getMaxEnergy(programId, particle.id);
     const atomicMass = atomicMassForConversion(particle, service);

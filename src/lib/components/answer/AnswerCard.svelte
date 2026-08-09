@@ -2,6 +2,7 @@
   import type { AnswerPhase } from "$lib/answer/answer-status.svelte.ts";
   import type { QueryIntent } from "$lib/intent/query-intent.ts";
   import type { ComputeResult } from "$lib/compute/compute.ts";
+  import type { PlausibilitySlot } from "$lib/compute/validate.ts";
   import { buildDedxWebCalculatorUrl } from "$lib/nlg/dedx-web-link.ts";
   import IntentChips from "./IntentChips.svelte";
 
@@ -19,8 +20,14 @@
     defaultsNotice: string | null;
     /** Set when `validateIntent()` flagged exactly one implausible slot (issue #10 targeted re-ask); only read when `phase === "answered"`. */
     reAskNotice: string | null;
-    /** The chip `reAskNotice` is about, so it can be highlighted in `IntentChips`. */
-    reAskTarget: { slot: "particle" | "material" | "energy"; index: number } | null;
+    /**
+     * The chip `reAskNotice` is about, so it can be highlighted in `IntentChips`. issue #163 B10 —
+     * `PlausibilitySlot` now also includes `"target"` (a round-trip mismatch), which `IntentChips`
+     * doesn't have per-index highlighting wiring for; `answer-status.svelte.ts` never actually
+     * constructs `{ slot: "target", ... }` here (a target issue carries no `index`), but the type
+     * has to admit the possibility since it's shared with `PlausibilityIssue.slot`.
+     */
+    reAskTarget: { slot: PlausibilitySlot; index: number } | null;
     /** Called with a manually-corrected intent when a chip edit is committed. */
     onEditIntent: (next: QueryIntent) => void;
   }

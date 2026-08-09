@@ -75,6 +75,14 @@ export interface LangPack {
    */
   POINT_WORD: string | null;
   /**
+   * Multiplier word for spelled-out thousands ("one thousand"), consulted only by issue #163
+   * C5(c)'s `detectUnresolvedEnergyPhrase()` in matcher.ts — composing thousands themselves is
+   * still out of scope (see `HUNDRED_WORD`'s own doc comment), but a bare "<number> thousand"
+   * left uncomposed must be flagged as an unresolved energy rather than silently read as "no
+   * energy mentioned at all". Null when a language has no vetted word for it yet.
+   */
+  THOUSAND_WORD: string | null;
+  /**
    * Canonical quantity-keyword phrases eligible for edit-distance typo tolerance as a
    * last-resort fallback before indirect idioms fail through to the default guess (issue #26,
    * e.g. "Stoping power" still reads as stoppingPower). Kept to a short list of long,

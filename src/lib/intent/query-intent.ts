@@ -168,6 +168,17 @@ export interface QueryIntent {
   target?: TargetSlot;
   /** Usually omitted → auto-select (reuse dedx_web logic). */
   program?: string;
+  /**
+   * issue #163 C7 — the explicit set of programs to fan out over for a `compareDim: "program"`
+   * query, analogous to `program` above but for a comparison, where a single scalar can't
+   * represent a set. Free strings (not `ProgramName[]`), for the same producer-agnostic reason
+   * `program` is: `compute.ts` resolves each one through the shared `resolveProgramName()` at
+   * compute time, exactly the way it resolves `program`. Omitted, or present but empty, falls
+   * back to `compute.ts`'s legacy particle-keyed triple — the pre-C7 behavior, still exercised by
+   * a producer that hasn't set this field (hand-built eval gold, a test that bypasses the
+   * matcher). Only meaningful alongside `compareDim: "program"`; ignored otherwise.
+   */
+  programs?: string[];
   /** Human-readable assumption notes, e.g. ["carbon → ¹²C"]. */
   assumptions: string[];
   /** Producer confidence; 1.0 for hand-labeled gold examples. */
@@ -329,6 +340,14 @@ export function validateQueryIntent(value: unknown, path = "expected"): string[]
 
   if ("program" in value && value.program !== undefined && typeof value.program !== "string") {
     errors.push(`${path}.program: must be a string when present`);
+  }
+
+  if (
+    "programs" in value &&
+    value.programs !== undefined &&
+    (!Array.isArray(value.programs) || value.programs.some((p) => typeof p !== "string"))
+  ) {
+    errors.push(`${path}.programs: must be an array of strings when present`);
   }
 
   if (!Array.isArray(value.assumptions) || value.assumptions.some((a) => typeof a !== "string")) {

@@ -11,7 +11,14 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("../intent/matcher.ts", () => ({ matchIntent: mocks.matchIntent }));
-vi.mock("../compute/compute.ts", () => ({ computeIntent: mocks.computeIntent }));
+// issue #163 B9 — keep the real `ComputeError` export alongside the mocked `computeIntent`:
+// answer-status.svelte.ts does `error instanceof ComputeError`, which throws a TypeError if
+// `ComputeError` isn't a real constructor (a bare `{ computeIntent: ... }` factory would make it
+// `undefined`).
+vi.mock("../compute/compute.ts", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../compute/compute.ts")>();
+  return { ...actual, computeIntent: mocks.computeIntent };
+});
 vi.mock("../wasm/sveltekit.ts", () => ({ getService: mocks.getService }));
 // `validateIntent` is stubbed out (it otherwise calls real service methods
 // the `{}` mock service below doesn't have); `buildReAskNotice` stays real
@@ -223,6 +230,40 @@ describe("answerStatus", () => {
     expect(store.lines).toEqual([]);
     expect(store.intent).toBeNull();
     expect(store.result).toBeNull();
+  });
+
+  it("issue #163 B9 — prefers a ComputeError's userMessage over its raw diagnostic message", async () => {
+    const { ComputeError } = await import("../compute/compute.ts");
+    const i = intent({
+      compareDim: "energy",
+      materials: [{ match: "water" }, { match: "PMMA" }],
+      energies: [
+        { value: 100, unit: "MeV" },
+        { value: 200, unit: "MeV" },
+      ],
+      confidence: 0.97,
+    });
+    mocks.matchIntent.mockReturnValue({
+      intent: i,
+      quantitySource: "direct",
+      incomplete: false,
+      unresolved: [],
+    });
+    mocks.getService.mockResolvedValue({});
+    mocks.computeIntent.mockImplementation(() => {
+      throw new ComputeError(
+        'compareDim "energy" but 2 materials present — only the first would be computed',
+        "This looks like a comparison across both energies and 2 materials, which I can't answer in one go.",
+      );
+    });
+
+    const store = await loadStore();
+    await store.submit("range of protons in water and PMMA at 100 and 200 MeV");
+
+    expect(store.phase).toBe("error");
+    expect(store.message).toBe(
+      "This looks like a comparison across both energies and 2 materials, which I can't answer in one go.",
+    );
   });
 
   it("surfaces a WASM load failure inline", async () => {
