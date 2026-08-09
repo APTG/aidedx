@@ -254,15 +254,33 @@ export function autoProgramForParticle(
  * of which programs were actually named — silently fanned out over this hardcoded, particle-keyed
  * triple instead: a query naming PSTAR got ICRU49/Bethe in its place and PSTAR dropped entirely.
  * The triple survives as the fallback for a producer that hasn't set `intent.programs` yet
- * (hand-built eval gold, a test that bypasses the matcher) or names nothing this resolves.
+ * (hand-built eval gold, a test that bypasses the matcher).
+ *
+ * An unresolvable name in `intent.programs` throws rather than being silently filtered out — the
+ * same "loud failure, not a quieter one three files downstream" call `resolveProgramId()` makes
+ * for the singular `program` (Copilot review on this PR: silently dropping it, and falling back
+ * to the hardcoded triple if *every* name failed to resolve, would have reintroduced exactly the
+ * silent-substitution shape B6 exists to prevent, for any producer that bypasses the matcher's own
+ * B6 filtering — `matcher.ts` never puts an unresolved name here itself). Resolved names are
+ * deduped by id, since two aliases of the same program ("PSTAR", "pstar") would otherwise produce
+ * duplicate series for what's really one requested program.
  */
 function compareProgramsForParticle(particleId: number, intent: QueryIntent): number[] {
   if (intent.programs && intent.programs.length > 0) {
-    const ids = intent.programs
-      .map((name) => resolveProgramName(name))
-      .filter((name): name is ProgramName => name !== null)
-      .map((name) => PROGRAM_NAME_TO_ID[name]);
-    if (ids.length > 0) return ids;
+    const ids: number[] = [];
+    const seen = new Set<number>();
+    for (const name of intent.programs) {
+      const resolved = resolveProgramName(name);
+      if (!resolved) {
+        throw new ComputeError(`"${name}" is not a program libdedx has data for`);
+      }
+      const id = PROGRAM_NAME_TO_ID[resolved];
+      if (!seen.has(id)) {
+        seen.add(id);
+        ids.push(id);
+      }
+    }
+    return ids;
   }
   if (particleId === PROTON_ID) return [PROGRAMS.PSTAR, PROGRAMS.ICRU49, PROGRAMS.DEFAULT];
   if (particleId === HELIUM_ID) return [PROGRAMS.ASTAR, PROGRAMS.ICRU49, PROGRAMS.DEFAULT];
@@ -624,6 +642,13 @@ function pluralCompareDim(dim: CompareDim): string {
  * introduced to. `overflow` is whichever slot actually has more than one entry — the one
  * `compareDim` isn't already varying — so the message names *both* dimensions the query mixed,
  * not just the one that happened to trip the assert.
+ *
+ * `compareDim === "none"` gets its own phrasing (Copilot review on this PR) rather than falling
+ * through to the general one below: `pluralCompareDim("none")` would otherwise produce "nones"
+ * ("a comparison across both nones and 2 materials"), and there's also no second *named*
+ * dimension to mention in that case — `compareDim: "none"` reaching here at all means the
+ * particle/material multiplicity wasn't attributed to any comparison, the same invariant-violation
+ * shape issue #132 was about, not literally a request to compare two things at once.
  */
 function ambiguousCompareMessage(
   compareDim: CompareDim,
@@ -631,6 +656,12 @@ function ambiguousCompareMessage(
   count: number,
 ): string {
   const overflowPlural = overflow === "particle" ? "particles" : "materials";
+  if (compareDim === "none") {
+    return (
+      `This question names ${count} ${overflowPlural}, but I can only answer about one at a ` +
+      `time. Try asking about a single ${overflow}, or ask separately for each one.`
+    );
+  }
   return (
     `This looks like a comparison across both ${pluralCompareDim(compareDim)} and ` +
     `${count} ${overflowPlural}, which I can't answer in one go. Try asking about a single ` +

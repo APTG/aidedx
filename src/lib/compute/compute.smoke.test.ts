@@ -331,6 +331,41 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(result.series.map((s) => s.program.name)).toEqual(["PSTAR", "ICRU49", "Bethe"]);
   });
 
+  it("issue #163 C7 (Copilot review): throws rather than silently dropping an unresolvable name in intent.programs", () => {
+    // Pre-review-fix: an unrecognized name was silently filtered out (and if every name failed to
+    // resolve, the function fell back to the legacy hardcoded triple) — reintroducing the exact
+    // silent-substitution shape B6 exists to prevent, for any producer that bypasses the matcher's
+    // own B6 filtering (matcher.ts itself never puts an unresolved name in intent.programs).
+    expect(() =>
+      computeIntent(
+        intent({
+          quantity: "csdaRange",
+          compareDim: "program",
+          particles: [{ match: "protons" }],
+          materials: [{ match: "water" }],
+          energies: [{ value: 150, unit: "MeV" }],
+          programs: ["ASTAR", "SRIM"],
+        }),
+        service,
+      ),
+    ).toThrow(/"SRIM" is not a program libdedx has data for/);
+  });
+
+  it("issue #163 C7 (Copilot review): dedupes intent.programs entries that resolve to the same program", () => {
+    const result = computeIntent(
+      intent({
+        quantity: "csdaRange",
+        compareDim: "program",
+        particles: [{ match: "protons" }],
+        materials: [{ match: "water" }],
+        energies: [{ value: 150, unit: "MeV" }],
+        programs: ["ASTAR", "astar", "Bethe"],
+      }),
+      service,
+    );
+    expect(result.series.map((s) => s.program.name)).toEqual(["ASTAR", "Bethe"]);
+  });
+
   it("falls back to Bethe for proton + Boron, where PSTAR has no tabulated data (dedx_web#845)", () => {
     const result = computeIntent(
       intent({
@@ -477,6 +512,34 @@ describe("computeIntent — issue #132 particle-comparison regression", () => {
         "This looks like a comparison across both energies and 2 materials, which I can't answer " +
           "in one go. Try asking about a single material, or ask separately for each one.",
       );
+    }
+  });
+
+  it("issue #163 B9 (Copilot review): compareDim 'none' gets its own userMessage, not 'nones'", () => {
+    // Reproduces the exact malformed shape from "throws rather than silently reading
+    // particles[0]..." above (compareDim left at "none" with 2 particles present) — before the
+    // review fix, ambiguousCompareMessage() would have said "a comparison across both nones and 2
+    // particles", since pluralCompareDim("none") naively appends "s".
+    try {
+      computeIntent(
+        intent({
+          quantity: "csdaRange",
+          compareDim: "none",
+          particles: [{ match: "carbon-12 ion" }, { match: "neon-20 ion" }],
+          materials: [{ match: "water" }],
+          energies: [{ value: 200, unit: "MeV/nucl", perNucleonAssumed: true }],
+        }),
+        service,
+      );
+      expect.unreachable("computeIntent should have thrown");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ComputeError);
+      const e = error as ComputeError;
+      expect(e.userMessage).toBe(
+        "This question names 2 particles, but I can only answer about one at a time. Try asking " +
+          "about a single particle, or ask separately for each one.",
+      );
+      expect(e.userMessage).not.toMatch(/nones?\b/);
     }
   });
 });
