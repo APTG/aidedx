@@ -36,7 +36,7 @@ import {
   type MaterialMatch,
   type ParticleMatch,
 } from "../aliases/index.ts";
-import { formatSignificant } from "../format.ts";
+import { perNucleonDisplay } from "../format.ts";
 import * as en from "./lang/en.ts";
 import * as pl from "./lang/pl.ts";
 import type { Lang, LangPack } from "./lang/types.ts";
@@ -136,8 +136,14 @@ function composeHundreds(text: string, pack: LangPack): string {
     .map(([w]) => w)
     .join("|");
   const remainderAlt = pack.NUMBER_WORDS.map(([w]) => w).join("|");
+  // issue #163 C5(b) — a remainder word is never itself the start of a new hundreds phrase, so a
+  // negative lookahead for "<remainder> HUNDRED_WORD" tells the two apart: without it, a list like
+  // "one hundred and two hundred MeV" greedily consumed "and two" as *this* match's remainder
+  // (remainderAlt matches any 1-99 word, "two" included), collapsing "one hundred and two hundred"
+  // to "102" and stranding a bare, un-composed "hundred" that no downstream number+unit grammar can
+  // reach — the query silently read as having no energy at all, defaulting to 100 MeV.
   const re = new RegExp(
-    `\\b(${onesAlt})\\s+${pack.HUNDRED_WORD}\\b(?:\\s+(?:and\\s+)?(\\d+|${remainderAlt})\\b)?`,
+    `\\b(${onesAlt})\\s+${pack.HUNDRED_WORD}\\b(?:\\s+(?:and\\s+)?(\\d+|${remainderAlt})\\b(?!\\s+${pack.HUNDRED_WORD}\\b))?`,
     "gi",
   );
   return text.replace(re, (m, onesWord: string, remainderWord?: string) => {
@@ -505,21 +511,20 @@ function extractEnergies(text: string, pack: LangPack): RawEnergy[] {
   return out.sort((a, b) => a.span.start - b.span.start);
 }
 
-/** Convert an energy value to MeV (for the total→per-nucleon assumption note). */
-function toMeV(value: number, unit: EnergyUnit): number {
-  if (unit === "keV") return value / 1000;
-  if (unit === "GeV") return value * 1000;
-  if (unit === "TeV") return value * 1_000_000;
-  return value; // MeV, MeV/nucl, MeV/u
-}
-
 // [\s-]* (not \s*) between the number and unit — issue #26: a written "10-cm range" hyphenates
 // the compound adjective, which \s* alone doesn't match (a literal "-" isn't whitespace).
 // Spelled-out forms ("centimeters", "millimeters", "micrometers") added for issue #122 — NeMo
 // Parakeet, unlike Whisper, tends to spell length units out in full rather than abbreviate them
 // (the issue's own maintainer quote: "length units (cm, mm), usually spelled out in full").
+// `m|meters?|metres?` — issue #163 C5(a): `RANGE_TARGET_UNITS` has carried "m" since B1
+// (`compute.ts`'s `RANGE_TARGET_UNIT_TO_CM` has a `m` branch, `IntentChips.svelte`'s
+// `normalizeTargetUnitInput` accepts it) but this producer never emitted it — a metre range target
+// ("a 3 m range in water", "a range of 2 meters") could never be extracted at all, so the query
+// read as `target === undefined` and fell into `fillMissingSlots()`'s "target not specified -> 10
+// cm" banner despite the user having stated a target, the same false-banner shape B3 fixed for
+// particles/materials.
 const LENGTH_TARGET_RE =
-  /(\d+(?:\.\d+)?)[\s-]*(g\s*\/\s*cm\s*\^?\s*2|g\s*cm\s*\^?\s*-?\s*2|mm|millimeters?|cm|centimeters?|[uµ]m|micrometers?|micron[s]?)\b/i;
+  /(\d+(?:\.\d+)?)[\s-]*(g\s*\/\s*cm\s*\^?\s*2|g\s*cm\s*\^?\s*-?\s*2|mm|millimeters?|cm|centimeters?|m|meters?|metres?|[uµ]m|micrometers?|micron[s]?)\b/i;
 
 interface RawTarget {
   slot: TargetSlot;
@@ -550,6 +555,7 @@ function normalizeRangeTargetUnit(raw: string): RangeTargetUnit | null {
   }
   if (compact === "cm" || compact.startsWith("centimeter")) return "cm";
   if (compact === "mm" || compact.startsWith("millimeter")) return "mm";
+  if (compact === "m" || compact.startsWith("meter") || compact.startsWith("metre")) return "m";
   return null;
 }
 
@@ -868,14 +874,20 @@ function detectUnresolvedParticlePhrase(
 // formula's own name (a bare stopping-power reference, not a request to use the Bethe *program*);
 // harmless before B5 since only a *second* program mention (this alternation's `>= 2` threshold)
 // affected anything, but a single "Bethe" match now sets `intent.program` outright.
-// `icru(?:49|73)?` — plain `icru` alone wouldn't match "ICRU49"/"ICRU73" at all: `\b` requires a
-// word boundary right after the captured text, and "49"/"73" are word characters directly abutting
-// "icru" with no boundary between them (Copilot review on PR #167). Both are real canonical program
-// names (PROGRAM_ALIASES already has entries for them) and a plausible thing to actually say
-// ("Using ICRU49, ..."), unlike "ICRU73OLD" (an internal alias, not natural spoken/typed text),
-// which stays out of scope here.
+// `icru[\s-]*\d*` — issue #163 C3: the original `icru(?:49|73)?` required "49"/"73" to abut "icru"
+// with no separator (Copilot review on PR #167 already widened bare `icru` to also match
+// "ICRU49"/"ICRU73"), but "ICRU 73"/"ICRU-73" — at least as plausible to actually say as the
+// abutted form — still matched only the bare "icru" branch, silently dropping the "73" and
+// resolving through PROGRAM_ALIASES.ICRU to ICRU49 instead: a regression that turned a single
+// supported-but-mis-parsed program mention into a *wrong* program, not merely an unlabeled one.
+// Capturing *any* trailing digit run (not just 49/73) closes that and a second gap at once: a
+// number libdedx doesn't have at all ("ICRU 90") now round-trips through `resolveProgramName()` as
+// the literal "ICRU90" — which isn't in `PROGRAM_ALIASES` — so `detectPrograms()` reports it as
+// unsupported (B6's loud "isn't a program libdedx has data for") instead of silently aliasing it to
+// ICRU49 too. Bare "icru" (no digits) is unchanged: it still resolves to ICRU49 via the alias
+// table, a deliberate, pre-existing choice (`PROGRAM_ALIASES.ICRU`), not a fallthrough.
 const PROGRAM_RE =
-  /\b(astar|pstar|estar|mstar|srim|atima|libdedx|geant4?|fluka|bethe(?!-?\s*bloch)|icru(?:49|73)?|nist)\b/gi;
+  /\b(astar|pstar|estar|mstar|srim|atima|libdedx|geant4?|fluka|bethe(?!-?\s*bloch)|icru[\s-]*\d*|nist)\b/gi;
 
 interface DetectedPrograms {
   /** Program names `resolveProgramName()` recognizes — feed `compareDim`/`intent.program`. */
@@ -922,21 +934,6 @@ function decideCompareDim(
 /** Lowercase element name from a resolved particle, e.g. "Carbon" → "carbon". */
 function elementName(p: ParticleMatch): string {
   return p.name.toLowerCase();
-}
-
-/**
- * Per-nucleon value + unit for a total→per-nucleon assumption note, formatted for display.
- * issue #163 B7 — this used to return a raw `number` via `round()` (1e-6 precision, meant to trim
- * floating-point fuzz like `84/12 === 6.999999999999999`, not to round for *display*), which put
- * `round()`'s full precision straight into physicist-facing prose: "400 MeV taken as total →
- * 33.333333 MeV/nucl". `formatSignificant()` both trims that same fuzz and rounds to 4 significant
- * figures, the same convention every other physics value this app renders already uses
- * (`nlg/render.ts`'s own `formatNumber()`).
- */
-function perNucleon(value: number, unit: EnergyUnit, a: number): { value: string; unit: string } {
-  if (unit === "keV") return { value: formatSignificant(value / a), unit: "keV/nucl" };
-  // MeV and GeV both express the per-nucleon figure in MeV/nucl.
-  return { value: formatSignificant(toMeV(value, unit) / a), unit: "MeV/nucl" };
 }
 
 /** Trim floating-point fuzz so 84/12 prints as 7, not 6.999999999999999. */
@@ -1094,7 +1091,7 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
     } else if (heavyIon) {
       // A bare energy on a heavy ion is read as *total* and flagged.
       slot.perNucleonAssumed = false;
-      const pn = perNucleon(e.value, e.unit, heavyIon.resolved.massNumber);
+      const pn = perNucleonDisplay(e.value, e.unit, heavyIon.resolved.massNumber);
       assumptions.push(`${e.value} ${e.unit} taken as total → ${pn.value} ${pn.unit}`);
     }
     return slot;

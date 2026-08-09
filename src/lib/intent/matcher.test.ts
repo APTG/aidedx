@@ -437,6 +437,32 @@ describe("issue #122 — spelled-out tens and hundreds (NeMo Parakeet has no ASR
     ).toEqual([{ value: 135, unit: "MeV" }]);
   });
 
+  it("issue #163 C5(b) — a spelled-out hundreds list keeps every member instead of collapsing to none", () => {
+    // Pre-fix: composeHundreds()'s remainder greedily consumed "and two" ("two" is itself a
+    // NUMBER_WORDS entry) as this match's remainder, collapsing "one hundred and two hundred" to
+    // "102" and stranding a bare "hundred" no number+unit grammar could reach — energies came back
+    // empty and the query silently defaulted to 100 MeV instead of comparing 100 and 200.
+    expect(
+      matchQueryIntent("Compare the range of a proton in water at one hundred and two hundred MeV.")
+        .energies,
+    ).toEqual([
+      { value: 100, unit: "MeV" },
+      { value: 200, unit: "MeV" },
+    ]);
+    expect(
+      matchQueryIntent(
+        "Compare the range of a proton in water at three hundred and four hundred MeV.",
+      ).energies,
+    ).toEqual([
+      { value: 300, unit: "MeV" },
+      { value: 400, unit: "MeV" },
+    ]);
+    // Control (issue #163 re-audit): a genuine "and <tens/ones>" remainder must still compose.
+    expect(
+      matchQueryIntent("Range of a one hundred and fifty MeV proton in water.").energies,
+    ).toEqual([{ value: 150, unit: "MeV" }]);
+  });
+
   it("recognizes a spelled-out length-target unit ('centimeters')", () => {
     const intent = matchQueryIntent(
       "What energy gives a 10 centimeters range in water for protons?",
@@ -452,6 +478,23 @@ describe("issue #122 — spelled-out tens and hundreds (NeMo Parakeet has no ASR
     expect(
       matchQueryIntent("What energy gives a 200 micrometers range in water for protons?").target,
     ).toEqual({ value: 200, unit: "um" });
+  });
+
+  it("issue #163 C5(a) — recognizes a metre range target ('m'/'meters'/'metres')", () => {
+    // Pre-fix: RANGE_TARGET_UNITS/compute.ts/IntentChips all already handled "m" — only this
+    // producer's LENGTH_TARGET_RE had no m|meters?|metres? alternative, so a metre target could
+    // never be extracted and the query silently fell back to fillMissingSlots()'s "target not
+    // specified -> 10 cm" banner despite the user having named one.
+    expect(matchQueryIntent("What proton energy gives a 3 m range in water?").target).toEqual({
+      value: 3,
+      unit: "m",
+    });
+    expect(
+      matchQueryIntent("What proton energy gives a range of 2 meters in water?").target,
+    ).toEqual({ value: 2, unit: "m" });
+    expect(
+      matchQueryIntent("What proton energy gives a range of 2 metres in water?").target,
+    ).toEqual({ value: 2, unit: "m" });
   });
 });
 
@@ -723,6 +766,23 @@ describe("issue #163 B5 — matcher sets intent.program for a single explicit re
     const { intent } = matchIntent("Using Bethe, what is the range of 100 MeV protons in water?");
     expect(intent.program).toBe("Bethe");
   });
+
+  it("issue #163 C3 — recognizes 'ICRU 73'/'ICRU-73' (separated) the same as abutted 'ICRU73'", () => {
+    // Regression from PR #167's own `icru(?:49|73)?` widening: a space or hyphen between "icru"
+    // and the digits matched only the bare "icru" branch, silently resolving to ICRU49 instead of
+    // the ICRU73 actually named.
+    expect(
+      matchIntent("Using ICRU 73, what is the range of 400 MeV/u carbon ions in water?").intent
+        .program,
+    ).toBe("ICRU73");
+    expect(
+      matchIntent("Using ICRU-73, what is the range of 400 MeV/u carbon ions in water?").intent
+        .program,
+    ).toBe("ICRU73");
+    expect(
+      matchIntent("Using ICRU 49, what is the range of 150 MeV protons in water?").intent.program,
+    ).toBe("ICRU49");
+  });
 });
 
 describe("issue #163 B6 — unresolved (program-shaped but unsupported) program names", () => {
@@ -755,6 +815,17 @@ describe("issue #163 B6 — unresolved (program-shaped but unsupported) program 
     expect(intent.program).toBeUndefined();
     expect(intent.compareDim).not.toBe("program");
     expect(unresolved).toEqual([{ kind: "program", phrase: "SRIM" }]);
+  });
+
+  it("issue #163 C3 — flags an ICRU number libdedx doesn't have instead of silently aliasing it to ICRU49", () => {
+    // Pre-fix: "ICRU 90" matched only the bare "icru" branch (no separator support) and resolved
+    // straight to ICRU49, unremarked — worse than the plain-SRIM case above, since ICRU is also a
+    // real, otherwise-valid program name.
+    const { intent, unresolved } = matchIntent(
+      "Using ICRU 90, what is the range of 150 MeV protons in water?",
+    );
+    expect(intent.program).toBeUndefined();
+    expect(unresolved).toEqual([{ kind: "program", phrase: "ICRU 90" }]);
   });
 });
 

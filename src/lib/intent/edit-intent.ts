@@ -24,13 +24,27 @@ export function withMaterialMatch(intent: QueryIntent, index: number, match: str
   return withCorrection(intent, { materials });
 }
 
+// issue #163 C1 — an explicit per-nucleon unit (MeV/nucl, MeV/u); every other unit is an absolute
+// (total) energy reading. `withEnergy()` must re-derive `perNucleonAssumed` from the *new* unit,
+// not carry over the old one: `{...e, value, unit}` used to keep whatever flag the *previous* unit
+// had, so switching a heavy-ion energy's unit from "MeV/u" to "MeV" left `perNucleonAssumed: true`
+// attached to a now-absolute unit — `energyToMeVPerNucl()`'s default branch reads that flag and
+// skipped the ÷A division entirely, a silent 76x error on carbon (`plausible: true` throughout,
+// since `validateIntent()` has no target/energy-reading check for this). The fix must not depend
+// on the particle's mass number: a single energy can be shared across several particles in a
+// comparison (`compareDim: "particle"`), each with their own A, and `perNucleonAssumed` only ever
+// says how to *read* the unit, not what any one particle does with it downstream.
+const EXPLICIT_PER_NUCLEON_UNITS: ReadonlySet<EnergyUnit> = new Set(["MeV/nucl", "MeV/u"]);
+
 export function withEnergy(
   intent: QueryIntent,
   index: number,
   value: number,
   unit: EnergyUnit,
 ): QueryIntent {
-  const energies = intent.energies.map((e, i) => (i === index ? { ...e, value, unit } : e));
+  const energies = intent.energies.map((e, i) =>
+    i === index ? { value, unit, perNucleonAssumed: EXPLICIT_PER_NUCLEON_UNITS.has(unit) } : e,
+  );
   return withCorrection(intent, { energies });
 }
 

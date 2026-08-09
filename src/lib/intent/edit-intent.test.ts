@@ -72,6 +72,28 @@ describe("withEnergy", () => {
     withEnergy(intent, 0, 240, "MeV");
     expect(intent.energies[0]).toEqual({ value: 214, unit: "keV" });
   });
+
+  it("issue #163 C1 — re-derives perNucleonAssumed from the new unit instead of carrying over the old one", () => {
+    // Pre-fix: `{...e, value, unit}` kept whatever `perNucleonAssumed` the *previous* unit had.
+    // Switching a heavy-ion energy from an explicit per-nucleon unit (MeV/u) to an absolute one
+    // (MeV) left `perNucleonAssumed: true` attached to a unit `energyToMeVPerNucl()`'s default
+    // branch reads literally — silently skipping the ÷A division energyToMeVPerNucl() would
+    // otherwise apply, a 76x error on a heavy ion (issue #163 C1's measured carbon example).
+    const intent = baseIntent({
+      particles: [{ match: "carbon ion" }],
+      energies: [{ value: 400, unit: "MeV/u", perNucleonAssumed: true }],
+    });
+    const next = withEnergy(intent, 0, 400, "MeV");
+    expect(next.energies[0]).toEqual({ value: 400, unit: "MeV", perNucleonAssumed: false });
+  });
+
+  it("issue #163 C1 — marks perNucleonAssumed true for an explicit per-nucleon unit regardless of the old flag", () => {
+    const intent = baseIntent({
+      energies: [{ value: 100, unit: "MeV", perNucleonAssumed: false }],
+    });
+    const next = withEnergy(intent, 0, 100, "MeV/nucl");
+    expect(next.energies[0]).toEqual({ value: 100, unit: "MeV/nucl", perNucleonAssumed: true });
+  });
 });
 
 describe("withTarget", () => {

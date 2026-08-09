@@ -238,7 +238,12 @@ describe("renderAnswer — single (compareDim: none)", () => {
     });
     const r = result({
       quantity: "csdaRange",
-      series: [series({ points: [{ energyMeVPerNucl: 0.02, csdaRange: 0.0001234 }] })],
+      series: [
+        series({
+          particle: { id: 6, name: "Carbon", massNumber: 12, isotope: "¹²C" },
+          points: [{ energyMeVPerNucl: 0.02, csdaRange: 0.0001234 }],
+        }),
+      ],
       assumptions: ["carbon → ¹²C", "240 keV taken as total → 20 keV/nucl"],
     });
 
@@ -476,6 +481,88 @@ describe("renderAnswer — comparisons", () => {
       "Stopping power of 100 MeV protons, by material:",
       "- water: 7.289 MeV·cm²/g (PSTAR)",
       "- air: couldn't compute",
+    ]);
+  });
+});
+
+describe("issue #163 C1/C2/B8 — total→per-nucleon disclosure derived per series", () => {
+  it("gives each particle in a comparison its own correct figure (B8), not particles[0]'s", () => {
+    // Pre-fix: the matcher baked one note from particles[0]/the first heavy ion found, so a
+    // carbon-vs-neon comparison at a shared bare energy disclosed carbon's per-nucleon figure
+    // twice — once correctly for carbon, once (wrongly) for neon's own row.
+    const i = intent({
+      quantity: "csdaRange",
+      compareDim: "particle",
+      particles: [
+        { match: "carbon ions", isotopeAssumed: "¹²C" },
+        { match: "neon ions", isotopeAssumed: "²⁰Ne" },
+      ],
+      materials: [{ match: "water" }],
+      energies: [{ value: 400, unit: "MeV" }],
+    });
+    const r = result({
+      quantity: "csdaRange",
+      compareDim: "particle",
+      series: [
+        series({
+          particle: { id: 6, name: "Carbon", massNumber: 12, isotope: "¹²C" },
+          program: { id: 15, name: "ICRU73" },
+          points: [{ energyMeVPerNucl: 400 / 12, csdaRange: 0.3626 }],
+        }),
+        series({
+          particle: { id: 10, name: "Neon", massNumber: 20, isotope: "²⁰Ne" },
+          program: { id: 15, name: "ICRU73" },
+          points: [{ energyMeVPerNucl: 400 / 20, csdaRange: 0.08914 }],
+        }),
+      ],
+    });
+
+    const lines = renderAnswer(i, r);
+    expect(lines[lines.length - 1]).toBe(
+      "Note: 400 MeV taken as total → 33.33 MeV/nucl; 400 MeV taken as total → 20 MeV/nucl.",
+    );
+  });
+
+  it("still discloses after a chip edit clears intent.assumptions (C1/C2)", () => {
+    // A chip edit (edit-intent.ts's withCorrection()) always resets assumptions to [] — the
+    // fresh-from-series derivation must not depend on that array carrying anything.
+    const i = intent({
+      quantity: "csdaRange",
+      particles: [{ match: "carbon ion" }],
+      materials: [{ match: "water" }],
+      energies: [{ value: 400, unit: "MeV", perNucleonAssumed: false }],
+      assumptions: [],
+    });
+    const r = result({
+      quantity: "csdaRange",
+      series: [
+        series({
+          particle: { id: 6, name: "Carbon", massNumber: 12, isotope: "¹²C" },
+          program: { id: 15, name: "ICRU73" },
+          points: [{ energyMeVPerNucl: 400 / 12, csdaRange: 0.3626 }],
+        }),
+      ],
+      assumptions: [],
+    });
+
+    const lines = renderAnswer(i, r);
+    expect(lines[lines.length - 1]).toBe("Note: 400 MeV taken as total → 33.33 MeV/nucl.");
+  });
+
+  it("does not disclose for a single-nucleon particle (proton) or an explicit per-nucleon unit", () => {
+    const i = intent({
+      quantity: "csdaRange",
+      particles: [{ match: "protons" }],
+      materials: [{ match: "water" }],
+      energies: [{ value: 100, unit: "MeV/nucl", perNucleonAssumed: true }],
+    });
+    const r = result({
+      quantity: "csdaRange",
+      series: [series({ points: [{ energyMeVPerNucl: 100, csdaRange: 7.7 }] })],
+    });
+
+    expect(renderAnswer(i, r)).toEqual([
+      "The CSDA range of 100 MeV/nucl protons in water is 7.7 g/cm² (PSTAR).",
     ]);
   });
 });
