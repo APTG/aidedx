@@ -243,13 +243,21 @@ export function buildDedxWebCalculatorUrl(
       params.set("imode", "csda");
       params.set("lookups", `${target.value}:${unit}`);
       params.set("iunit", unit);
-    } else {
+    } else if (intent.quantity === "energyFromStp") {
       if (!isStpTargetUnit(target.unit)) return null;
       const unit = STP_UNIT_TO_DEDXWEB[target.unit];
       if (!unit) return null;
       params.set("imode", "stp");
       params.set("lookups", `${target.value}:${unit}`);
       params.set("iunit", unit);
+    } else {
+      // issue #163 (Copilot review on #178) — the `else` branch above used to assume any
+      // non-`energyFromRange` inverse quantity was `energyFromStp`, true only because
+      // `QUANTITY_KIND`'s "inverse" set currently has exactly two members. A future third
+      // inverse quantity would otherwise silently fall into stopping-power mode and produce a
+      // link with the wrong numbers instead of the `null` ("can't represent this shape") every
+      // other unrepresentable case in this module returns.
+      return null;
     }
   }
 

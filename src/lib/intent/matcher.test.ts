@@ -815,6 +815,18 @@ describe("issue #163 B5 — matcher sets intent.program for a single explicit re
     ).toBe("ICRU73 (old)");
   });
 
+  it("issue #163 (Copilot review on #178) — a bare 'ICRU old' with no version number still falls back to plain ICRU, not unresolved", () => {
+    // The "old" suffix is nested inside the digit group specifically so it can only attach when a
+    // digit run precedes it. Without that gating, "ICRU old" would normalize to "ICRUOLD" — not a
+    // key in PROGRAM_ALIASES (only "ICRU73OLD" is) — and dead-end as an unresolved program where
+    // it previously (and still does) fall through to the bare "icru" -> ICRU49 alias.
+    const { intent, unresolved } = matchIntent(
+      "Using ICRU old, what is the range of 100 MeV protons in water?",
+    );
+    expect(intent.program).toBe("ICRU49");
+    expect(unresolved).toEqual([]);
+  });
+
   it("issue #163 (found via contracts.test.ts) — does not fold an unrelated following word into the program name", () => {
     // Regression guard for the "old" widening above: "oldest"/"older" etc. must not be treated as
     // part of the program mention just because they start with the letters "old".
