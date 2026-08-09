@@ -16,7 +16,7 @@
  * list rather than a fuller sentence per series — the richer comparison UX
  * (issue #10) is out of scope here.
  */
-import type { QueryIntent, Quantity } from "../intent/query-intent.ts";
+import { isInverseQuantity, type QueryIntent, type Quantity } from "../intent/query-intent.ts";
 import type { ComputePoint, ComputeResult, ComputeSeries } from "../compute/compute.ts";
 import {
   csdaRangeToCm,
@@ -49,10 +49,6 @@ function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-function isInverse(quantity: Quantity): quantity is "energyFromRange" | "energyFromStp" {
-  return quantity === "energyFromRange" || quantity === "energyFromStp";
-}
-
 /**
  * Matches the "<value> <unit> taken as total → …" fragment `matcher.ts` bakes into a fresh
  * intent's `assumptions` at match time, from `particles[0]`/the first heavy ion found (issue #163
@@ -80,7 +76,7 @@ function totalToPerNucleonNote(
   series: ComputeSeries,
   energyIndex: number,
 ): string | null {
-  if (isInverse(quantity)) return null;
+  if (isInverseQuantity(quantity)) return null;
   const massNumber = series.particle.massNumber;
   if (massNumber <= 1) return null;
   const energy = intent.energies[energyIndex];
@@ -162,7 +158,7 @@ function valueText(
   massNumber: number,
 ): string | null {
   if (!point) return null;
-  if (isInverse(quantity)) {
+  if (isInverseQuantity(quantity)) {
     if (point.energy === undefined || !Number.isFinite(point.energy)) return null;
     if (massNumber === 1) return `${formatNumber(point.energy)} MeV`;
     // issue #163 C9 — the forward direction reads a bare energy as *total* and discloses the
@@ -210,7 +206,7 @@ function singleSentence(intent: QueryIntent, quantity: Quantity, series: Compute
   const material = materialLabel(intent, 0);
 
   if (series.error) {
-    return isInverse(quantity)
+    return isInverseQuantity(quantity)
       ? `Couldn't find the energy for ${particle} in ${material}: ${series.error}`
       : `Couldn't compute the ${QUANTITY_PHRASE[quantity]} of ${energyLabel(intent, 0)} ${particle} in ${material}: ${series.error}`;
   }
@@ -218,7 +214,7 @@ function singleSentence(intent: QueryIntent, quantity: Quantity, series: Compute
   const value = valueText(quantity, series.points[0], series.density, series.particle.massNumber);
   if (value === null) return "Couldn't compute an answer for that query.";
 
-  if (isInverse(quantity)) {
+  if (isInverseQuantity(quantity)) {
     return `The energy for ${particle} in ${material} to reach ${targetPhrase(intent)} is ${value} (${series.program.name}).`;
   }
   return `The ${QUANTITY_PHRASE[quantity]} of ${energyLabel(intent, 0)} ${particle} in ${material} is ${value} (${series.program.name}).`;
@@ -230,7 +226,7 @@ function introLine(
   quantity: Quantity,
   compareDim: ComputeResult["compareDim"],
 ): string {
-  const inverse = isInverse(quantity);
+  const inverse = isInverseQuantity(quantity);
   const subject = inverse
     ? `The energy needed to reach ${targetPhrase(intent)}`
     : capitalize(QUANTITY_PHRASE[quantity]);

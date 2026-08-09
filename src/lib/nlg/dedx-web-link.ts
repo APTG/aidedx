@@ -51,8 +51,15 @@
  * `sunit=` (dedx_web issue #840) — emitting the formal names would produce
  * a link that silently fails to pre-fill on the actually-deployed site.
  */
-import type { EnergySlot, EnergyUnit, QueryIntent } from "../intent/query-intent.ts";
-import type { ComputeResult } from "../compute/compute.ts";
+import {
+  isInverseQuantity,
+  type EnergySlot,
+  type EnergyUnit,
+  type QueryIntent,
+  type RangeTargetUnit,
+  type StpTargetUnit,
+} from "../intent/query-intent.ts";
+import { isRangeTargetUnit, isStpTargetUnit, type ComputeResult } from "../compute/compute.ts";
 
 /**
  * `urlv=3` is only understood by dedx_web's dev deployment — the stable
@@ -79,15 +86,30 @@ const ENERGY_UNIT_TO_DEDXWEB: Record<EnergyUnit, { anchor: DedxWebEnergyAnchor; 
     "MeV/u": { anchor: "MeV/u" },
   };
 
-/** Length units dedx_web's inverse-CSDA `iunit=` accepts; aidedx's `g/cm2` has no equivalent. */
-const RANGE_UNIT_TO_DEDXWEB: Readonly<Record<string, string>> = {
+/**
+ * Length units dedx_web's inverse-CSDA `iunit=` accepts; `null` for the two `RangeTargetUnit`
+ * members it has no equivalent for (`m` — no metre token; `g/cm2` — an areal density, not a
+ * length `iunit=` can express).
+ *
+ * issue #163 C11 — keyed on the closed `RangeTargetUnit` union (matching `ENERGY_UNIT_TO_DEDXWEB`
+ * above), not a loose `Record<string, string>`: a unit added to `RANGE_TARGET_UNITS` without an
+ * entry here used to degrade this link to `null` *silently* rather than fail the build — the
+ * third consumer B1/B2's exhaustiveness fix (`compute.ts`'s `RANGE_TARGET_UNIT_TO_CM`) missed.
+ * `string | null` (not just `string`) makes the two deliberate "no equivalent" gaps an explicit
+ * decision every member of the union has to make, not an accidental omission.
+ */
+const RANGE_UNIT_TO_DEDXWEB: Readonly<Record<RangeTargetUnit, string | null>> = {
   cm: "cm",
   mm: "mm",
   um: "um",
+  m: null,
+  "g/cm2": null,
 };
 
-/** aidedx's 3 STP target units (`matcher.ts`'s `STP_TARGET_RES`), mapped to dedx_web's tokens. */
-const STP_UNIT_TO_DEDXWEB: Readonly<Record<string, string>> = {
+/** aidedx's 3 STP target units (`matcher.ts`'s `STP_TARGET_RES`), mapped to dedx_web's tokens.
+ * issue #163 C11 — keyed on the closed `StpTargetUnit` union, same reasoning as
+ * `RANGE_UNIT_TO_DEDXWEB` above; all 3 members already have a real dedx_web token. */
+const STP_UNIT_TO_DEDXWEB: Readonly<Record<StpTargetUnit, string>> = {
   "keV/um": "kev-um",
   "MeV/cm": "mev-cm",
   "MeV cm2/g": "mev-cm2-g",
@@ -133,7 +155,7 @@ export function buildDedxWebCalculatorUrl(
   intent: QueryIntent,
   result: ComputeResult,
 ): string | null {
-  const isForward = intent.quantity === "stoppingPower" || intent.quantity === "csdaRange";
+  const isForward = !isInverseQuantity(intent.quantity);
   // "energy" (multiple energy rows against one entity) only makes sense for
   // forward quantities; every other compareDim (including inverse queries)
   // is representable via the entity-params handling below.
@@ -158,15 +180,15 @@ export function buildDedxWebCalculatorUrl(
   // and Auto-select — now mirroring `autoProgramForParticle()` exactly,
   // energy included — independently resolves to the same program per row.
   //
-  // `intent.program` is free text, though: `resolveProgramId()` silently
-  // falls back to auto-select when the name isn't recognized (unlike this
-  // module, it has no way to report that back). If it did fall back, a
-  // material/particle comparison can have each row auto-resolve to a
-  // *different* program despite `intent.program` being set — so "explicit"
-  // is only trusted when every surviving row actually agrees on one program
-  // id; a would-be-explicit request that diverged across rows falls back to
-  // `program=auto` instead of forcing a single id that would misrepresent
-  // the other rows.
+  // issue #163 C11 — `resolveProgramId()` now *throws* for an `intent.program` name it can't
+  // resolve (B5/B6, #167) rather than silently falling back to auto-select, so for any real
+  // `computeIntent()` result, every surviving row here already shares the same program id when
+  // `intent.program` is set: `resolveProgramId()` doesn't vary by material/particle once a name
+  // resolves. The `successful.every(...)` check below is accordingly defense-in-depth, not a
+  // guard against a presently-reachable divergence — `buildDedxWebCalculatorUrl()` takes
+  // `intent`/`result` as plain data, not exclusively `computeIntent()`'s own output, so it still
+  // refuses to force a single id onto rows that (however they got that way) don't actually agree,
+  // rather than risk a link that shows different numbers than the ones just computed.
   const explicitProgram =
     Boolean(intent.program) && successful.every((s) => s.program.id === primary.program.id);
 
@@ -210,12 +232,19 @@ export function buildDedxWebCalculatorUrl(
     const target = intent.target;
     if (!target) return null;
     if (intent.quantity === "energyFromRange") {
+      // `target.unit`'s static type is the wider `RangeTargetUnit | StpTargetUnit` (TargetSlot's
+      // own doc comment: the valid subset is implied by `quantity`, not a second discriminant
+      // field) — narrowed here the same way compute.ts's exhaustive converters do, so a
+      // mismatched target (a bug elsewhere, not something this module should ever guess past)
+      // returns `null` rather than a link with the wrong numbers.
+      if (!isRangeTargetUnit(target.unit)) return null;
       const unit = RANGE_UNIT_TO_DEDXWEB[target.unit];
       if (!unit) return null;
       params.set("imode", "csda");
       params.set("lookups", `${target.value}:${unit}`);
       params.set("iunit", unit);
     } else {
+      if (!isStpTargetUnit(target.unit)) return null;
       const unit = STP_UNIT_TO_DEDXWEB[target.unit];
       if (!unit) return null;
       params.set("imode", "stp");

@@ -795,6 +795,70 @@ describe("issue #163 B5 — matcher sets intent.program for a single explicit re
       matchIntent("Using ICRU 49, what is the range of 150 MeV protons in water?").intent.program,
     ).toBe("ICRU49");
   });
+
+  it("issue #163 (found via contracts.test.ts) — recognizes 'ICRU73 old'/'ICRU73-old' as ICRU73 (old)", () => {
+    // Pre-fix: PROGRAM_RE's icru[\s-]*\d* branch never captured the word "old" at all — "ICRU73
+    // old" always matched only the bare "icru73" alternative, so PROGRAM_NAMES/PROGRAM_ALIASES'
+    // "ICRU73 (old)" entry (present since B5/B6) could never actually be produced by any natural
+    // phrase, a gap contracts.test.ts's producer-vocabulary check exists to catch.
+    expect(
+      matchIntent("Using ICRU73 old, what is the range of 100 MeV protons in water?").intent
+        .program,
+    ).toBe("ICRU73 (old)");
+    expect(
+      matchIntent("Using ICRU73-old, what is the range of 100 MeV protons in water?").intent
+        .program,
+    ).toBe("ICRU73 (old)");
+    expect(
+      matchIntent("Using ICRU 73 old, what is the range of 100 MeV protons in water?").intent
+        .program,
+    ).toBe("ICRU73 (old)");
+  });
+
+  it("issue #163 (found via contracts.test.ts) — does not fold an unrelated following word into the program name", () => {
+    // Regression guard for the "old" widening above: "oldest"/"older" etc. must not be treated as
+    // part of the program mention just because they start with the letters "old".
+    const { intent, unresolved } = matchIntent(
+      "Using ICRU73, the oldest reliable dataset, what is the range of 100 MeV protons in water?",
+    );
+    expect(intent.program).toBe("ICRU73");
+    expect(unresolved).toEqual([]);
+  });
+
+  it("issue #163 (found via contracts.test.ts) — recognizes 'Bethe ext'/'Bethe-ext'/'bethe_ext' as Bethe-ext", () => {
+    // Pre-fix: PROGRAM_RE's bethe(?!-?\s*bloch) branch never captured "ext" as part of a match
+    // (and "bethe_ext" didn't match *at all*, since "_" is a \w character with no \b boundary
+    // between it and "bethe") — PROGRAM_NAMES' "Bethe-ext" entry (present since B5/B6) could
+    // never actually be produced by any natural phrase, the same producer/consumer gap as the
+    // ICRU73 (old) case just above.
+    expect(
+      matchIntent("Using Bethe ext, what is the range of 100 MeV protons in water?").intent.program,
+    ).toBe("Bethe-ext");
+    expect(
+      matchIntent("Using Bethe-ext, what is the range of 100 MeV protons in water?").intent.program,
+    ).toBe("Bethe-ext");
+    expect(
+      matchIntent("Using bethe_ext, what is the range of 100 MeV protons in water?").intent.program,
+    ).toBe("Bethe-ext");
+    expect(
+      matchIntent("Using Bethe extended, what is the range of 100 MeV protons in water?").intent
+        .program,
+    ).toBe("Bethe-ext");
+  });
+
+  it("issue #163 (found via contracts.test.ts) — still excludes 'Bethe-Bloch' after the 'ext' widening", () => {
+    const { intent, unresolved } = matchIntent(
+      "What is the Bethe-Bloch value for 100 MeV protons in water?",
+    );
+    expect(intent.program).toBeUndefined();
+    expect(unresolved).toEqual([]);
+  });
+
+  it("still recognizes a genuine bare 'Bethe' request after the 'ext' widening", () => {
+    expect(
+      matchIntent("Using Bethe, what is the range of 100 MeV protons in water?").intent.program,
+    ).toBe("Bethe");
+  });
 });
 
 describe("issue #163 B6 — unresolved (program-shaped but unsupported) program names", () => {

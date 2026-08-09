@@ -8,7 +8,12 @@
  * (a proton in water at a round energy), not a guess at what the user meant.
  */
 import type { QuantitySource, UnresolvedEntity } from "./matcher.ts";
-import type { EnergySlot, QueryIntent, TargetSlot } from "./query-intent.ts";
+import {
+  isInverseQuantity,
+  type EnergySlot,
+  type QueryIntent,
+  type TargetSlot,
+} from "./query-intent.ts";
 
 const DEFAULT_PARTICLE_MATCH = "proton";
 const DEFAULT_MATERIAL_MATCH = "water";
@@ -46,7 +51,7 @@ export interface FillDefaultsResult {
 /** Fills whichever of particles/materials/energies/target is empty with a default; leaves recognized slots untouched. */
 export function fillMissingSlots(intent: QueryIntent): FillDefaultsResult {
   const filled: FilledSlot[] = [];
-  const isInverse = intent.quantity === "energyFromRange" || intent.quantity === "energyFromStp";
+  const isInverse = isInverseQuantity(intent.quantity);
 
   let particles = intent.particles;
   if (particles.length === 0) {

@@ -927,8 +927,24 @@ function detectUnresolvedEnergyPhrase(query: string, pack: LangPack): string | n
 // unsupported (B6's loud "isn't a program libdedx has data for") instead of silently aliasing it to
 // ICRU49 too. Bare "icru" (no digits) is unchanged: it still resolves to ICRU49 via the alias
 // table, a deliberate, pre-existing choice (`PROGRAM_ALIASES.ICRU`), not a fallthrough.
+// `(?:[\s-]*old\b)?` — found via `contracts.test.ts` (issue #163): PROGRAM_NAMES/PROGRAM_ALIASES
+// have carried "ICRU73 (old)"/`ICRU73OLD` since B5/B6, but this regex had no branch that ever
+// captured the word "old" as part of a match — "ICRU73 old"/"ICRU73-old" always matched only the
+// bare "icru73" alternative, so `resolveProgramName()` only ever saw "ICRU73" and "ICRU73 (old)"
+// could never actually be produced by any natural phrase. `normalizeProgramKey()` already strips
+// spaces/hyphens and uppercases, so once the regex captures the word "old" too ("ICRU73 old" ->
+// "ICRU73OLD"), the existing `PROGRAM_ALIASES.ICRU73OLD` entry resolves it correctly with no
+// further change needed.
+// `(?:[\s_-]*ext(?:ended)?)?` on the bethe branch — same class of gap, same instrument: "Bethe
+// (?!-?\s*bloch)" only ever captured the bare word "bethe", so "Bethe-ext"/"Bethe ext" always
+// resolved to plain "Bethe" and PROGRAM_NAMES' "Bethe-ext" could never be produced either. Placed
+// *before* the "-Bloch" negative lookahead so "Bethe-Bloch" is still excluded exactly as before
+// (the optional "ext" group simply fails to match "-Bloch" text and is skipped, then the
+// lookahead still sees and rejects "-Bloch" unchanged). "extended" needs its own
+// `PROGRAM_ALIASES.BETHEEXTENDED` entry (query-intent.ts) since normalizeProgramKey() only strips
+// spaces/punctuation, not the extra letters "-ext" doesn't have.
 const PROGRAM_RE =
-  /\b(astar|pstar|estar|mstar|srim|atima|libdedx|geant4?|fluka|bethe(?!-?\s*bloch)|icru[\s-]*\d*|nist)\b/gi;
+  /\b(astar|pstar|estar|mstar|srim|atima|libdedx|geant4?|fluka|bethe(?:[\s_-]*ext(?:ended)?)?(?!-?\s*bloch)|icru[\s-]*\d*(?:[\s-]*old\b)?|nist)\b/gi;
 
 interface DetectedPrograms {
   /** Program names `resolveProgramName()` recognizes — feed `compareDim`/`intent.program`. */

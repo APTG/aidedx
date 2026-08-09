@@ -21,6 +21,7 @@
 import {
   RANGE_TARGET_UNITS,
   STP_TARGET_UNITS,
+  isInverseQuantity,
   resolveProgramName,
   type CompareDim,
   type ProgramName,
@@ -387,10 +388,14 @@ export function energyToMeVPerNucl(
   }
 }
 
-function isRangeTargetUnit(unit: string): unit is RangeTargetUnit {
+// Exported for nlg/dedx-web-link.ts (issue #163 C11) — the same runtime narrowing
+// `TargetSlot.unit`'s own doc comment describes ("implied by the surrounding
+// QueryIntent.quantity, not a second discriminant field"), reused rather than a third
+// independent copy.
+export function isRangeTargetUnit(unit: string): unit is RangeTargetUnit {
   return (RANGE_TARGET_UNITS as readonly string[]).includes(unit);
 }
-function isStpTargetUnit(unit: string): unit is StpTargetUnit {
+export function isStpTargetUnit(unit: string): unit is StpTargetUnit {
   return (STP_TARGET_UNITS as readonly string[]).includes(unit);
 }
 
@@ -680,7 +685,7 @@ function ambiguousCompareMessage(
  * `ComputeError`.
  */
 export function computeIntent(intent: QueryIntent, service: LibdedxService): ComputeResult {
-  const isInverse = intent.quantity === "energyFromRange" || intent.quantity === "energyFromStp";
+  const isInverse = isInverseQuantity(intent.quantity);
 
   if (intent.particles.length === 0) throw new ComputeError("Intent has no particle");
   if (intent.materials.length === 0) throw new ComputeError("Intent has no material");
