@@ -7,6 +7,11 @@ name: Deploy
 # Deploys only fire once ci.yml has run to completion on main and succeeded — a push that
 # breaks format/lint/typecheck/validate:eval/tests no longer publishes (issue #163 §6.1).
 # workflow_dispatch is kept for manual re-deploys without a new push.
+#
+# ci.yml also runs on pull_request, so workflow_run fires for PR CI too — the build job's `if`
+# requires event == 'push' (excludes PR-triggered runs, including a fork PR whose head branch
+# happens to be named "main") and head_repository == this repo, so only an actual push to this
+# repo's main branch can reach the checkout/build/deploy steps below.
 
 on:
   workflow_run:
@@ -30,7 +35,9 @@ jobs:
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.head_branch == 'main' &&
+      (github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository &&
        github.event.workflow_run.conclusion == 'success')
     steps:
       - name: Checkout
