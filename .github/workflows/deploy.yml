@@ -1,12 +1,17 @@
 name: Deploy
 
-# Continuous deploy to GitHub Pages on every push to main (mirrors dedx_web's
+# Continuous deploy to GitHub Pages, gated on CI passing on main (mirrors dedx_web's
 # web_dev continuous deploy). Publishes the static build to the repo's own
 # GitHub Pages site at https://aptg.github.io/aidedx/.
+#
+# Deploys only fire once ci.yml has run to completion on main and succeeded — a push that
+# breaks format/lint/typecheck/validate:eval/tests no longer publishes (issue #163 §6.1).
+# workflow_dispatch is kept for manual re-deploys without a new push.
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -23,9 +28,15 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.conclusion == 'success')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4

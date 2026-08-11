@@ -9,3 +9,17 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+
+  # Action version pins (e.g. actions/checkout@v4) never update on their own (issue #163 §6.2).
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # The bench/android/* apps (full-app, sherpa-onnx, vosk, wav2vec2, whispercpp) each vendor
+  # their own Gradle wrapper + dependencies; none were covered before (issue #163 §6.2).
+  - package-ecosystem: "gradle"
+    directories:
+      - "/bench/android/*"
+    schedule:
+      interval: "weekly"
