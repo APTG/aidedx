@@ -16,7 +16,7 @@
  * a threshold-tuning follow-up, not a blocker to this v1: libdedx already exposes the hard data
  * (`getMinEnergy`/`getMaxEnergy`, `getParticles`/`getMaterials`) the checks below need.
  */
-import type { EnergySlot, QueryIntent } from "../intent/query-intent.ts";
+import { isInverseQuantity, type EnergySlot, type QueryIntent } from "../intent/query-intent.ts";
 import {
   resolveMaterial,
   resolveParticle,
@@ -293,7 +293,7 @@ export function validateIntent(intent: QueryIntent, service: LibdedxService): Va
     }
   });
 
-  const isInverse = intent.quantity === "energyFromRange" || intent.quantity === "energyFromStp";
+  const isInverse = isInverseQuantity(intent.quantity);
 
   for (const pair of activePairsFor(intent)) {
     const particle = resolveParticle(pair.particleMatch);

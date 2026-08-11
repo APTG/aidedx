@@ -13,7 +13,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { LibdedxServiceImpl } from "../../wasm/libdedx.ts";
 import type { LibdedxModuleFactory, LibdedxService } from "../../wasm/types.ts";
-import { matchQueryIntent } from "../../intent/matcher.ts";
+import { matchIntent } from "../../intent/matcher.ts";
 import { computeIntent } from "../../compute/compute.ts";
 import { renderAnswer } from "../../nlg/render.ts";
 import { EXAMPLE_QUERIES } from "./example-queries.ts";
@@ -41,7 +41,13 @@ describe("EXAMPLE_QUERIES", () => {
   });
 
   it.each(EXAMPLE_QUERIES)("resolves and computes cleanly: %s", (text) => {
-    const intent = matchQueryIntent(text);
+    // issue #163 C12 — matchQueryIntent() discards `unresolved`, bypassing the real store's gate
+    // (answer-status.svelte.ts checks `match.unresolved.length > 0` before anything else — B3/B6).
+    // An example that tripped that gate (e.g. C4's regression class) would still pass this smoke
+    // test on `intent` alone and dead-end for real users on the landing page; asserting
+    // `unresolved` is empty here closes that blind spot.
+    const { intent, unresolved } = matchIntent(text);
+    expect(unresolved).toEqual([]);
     expect(intent.confidence).toBeGreaterThan(0.5);
     expect(intent.particles.length).toBeGreaterThan(0);
     expect(intent.materials.length).toBeGreaterThan(0);

@@ -32,6 +32,44 @@ export const QUANTITIES = [
 ] as const;
 export type Quantity = (typeof QUANTITIES)[number];
 
+/**
+ * issue #163 §5.2 forward-compat prep — classifies each `Quantity` as `"forward"` (the answer is
+ * a physical value at a given energy) or `"inverse"` (the answer is the energy that reaches a
+ * given value). Before this, `compute.ts`, `validate.ts`, `render.ts`, `dedx-web-link.ts`, and
+ * `fill-defaults.ts` each independently re-derived the same boolean from the literal quantity
+ * names (`quantity === "energyFromRange" || quantity === "energyFromStp"`, repeated verbatim at
+ * 6 call sites) — every one an equally-plausible place for a future quantity (electron/ESTAR
+ * support already has its plumbing ready per the issue's §5.1; projected range is further out)
+ * to be missed and silently take the wrong branch, rather than a compile error. A
+ * `Record<Quantity, ...>` keyed on the closed `QUANTITIES` union makes that impossible: adding a
+ * quantity without an entry here fails to typecheck.
+ *
+ * `stoppingPower`/`csdaRange` finer-grained *which-forward-quantity* branches (`render.ts`'s
+ * `valueText()` picking `point.stoppingPower` vs `point.csdaRange`, `matcher.ts`'s target-slot
+ * grammar picking range vs stopping-power) aren't replaced by this — they need to know which
+ * specific quantity, not just the forward/inverse class, so a per-quantity switch is still the
+ * right tool there. This only consolidates the genuine forward-vs-inverse boolean.
+ */
+export const QUANTITY_KIND: Record<Quantity, "forward" | "inverse"> = {
+  stoppingPower: "forward",
+  csdaRange: "forward",
+  energyFromRange: "inverse",
+  energyFromStp: "inverse",
+};
+
+/**
+ * True for a quantity whose answer is the energy that reaches a given `target` value, as opposed
+ * to a physical value at a given energy. See `QUANTITY_KIND`'s doc comment. A type predicate (not
+ * just a boolean-returning function) so a guard clause built on it — `if (isInverseQuantity(q))
+ * return ...;` — narrows `q` to the forward pair for the code after it, the same narrowing
+ * `render.ts`'s now-removed local `isInverse()` used to provide directly.
+ */
+export function isInverseQuantity(
+  quantity: Quantity,
+): quantity is "energyFromRange" | "energyFromStp" {
+  return QUANTITY_KIND[quantity] === "inverse";
+}
+
 export const COMPARE_DIMS = ["none", "material", "particle", "program", "energy"] as const;
 export type CompareDim = (typeof COMPARE_DIMS)[number];
 
@@ -102,6 +140,11 @@ const PROGRAM_ALIASES: Readonly<Record<string, ProgramName>> = {
   BETHE: "Bethe",
   LIBDEDX: "Bethe",
   BETHEEXT: "Bethe-ext",
+  // issue #163 (found via contracts.test.ts) — "extended" is a plausible full pronunciation of
+  // "ext" (matcher.ts's PROGRAM_RE now captures both), so it needs its own normalized key here
+  // too; "BETHEEXT" alone doesn't match "Bethe extended" — normalizeProgramKey() strips spaces,
+  // not the extra letters.
+  BETHEEXTENDED: "Bethe-ext",
 };
 
 /**
@@ -362,7 +405,10 @@ export function validateQueryIntent(value: unknown, path = "expected"): string[]
   // one. `target: undefined` counts as "missing" so programmatically-built
   // objects can't slip an inverse quantity through without a real target.
   const q = value.quantity;
-  const needsTarget = q === "energyFromRange" || q === "energyFromStp";
+  // Cast is safe: an invalid `q` (already flagged above) isn't a QUANTITY_KIND key, so
+  // isInverseQuantity() reads it as `undefined === "inverse"` -> false, same as the old
+  // `q === "energyFromRange" || q === "energyFromStp"` comparison would for garbage input.
+  const needsTarget = isInverseQuantity(q as Quantity);
   const hasTarget = "target" in value && value.target !== undefined;
   if (needsTarget && !hasTarget) {
     errors.push(`${path}.target: required for quantity "${String(q)}"`);

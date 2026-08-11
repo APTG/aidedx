@@ -3,6 +3,9 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   EVAL_TAGS,
+  QUANTITIES,
+  QUANTITY_KIND,
+  isInverseQuantity,
   parseEvalRecords,
   resolveProgramName,
   validateEvalDataset,
@@ -153,6 +156,7 @@ describe("resolveProgramName — issue #163 B5/B6", () => {
     ["bethe ext", "Bethe-ext"],
     ["bethe_ext", "Bethe-ext"],
     ["BETHE-EXT", "Bethe-ext"],
+    ["bethe extended", "Bethe-ext"],
   ])("resolves %s to the canonical %s", (raw, canonical) => {
     expect(resolveProgramName(raw)).toBe(canonical);
   });
@@ -163,4 +167,23 @@ describe("resolveProgramName — issue #163 B5/B6", () => {
       expect(resolveProgramName(raw)).toBeNull();
     },
   );
+});
+
+describe("QUANTITY_KIND / isInverseQuantity — issue #163 §5.2 forward-compat prep", () => {
+  it("has an entry for every member of QUANTITIES — a new quantity without one is a compile error", () => {
+    // The real safety net here is the type system (Record<Quantity, ...> forces this at compile
+    // time); this test is the runtime cross-check that QUANTITY_KIND's keys and QUANTITIES stay
+    // in sync, in case anyone ever hand-edits one without the other despite the type.
+    expect(Object.keys(QUANTITY_KIND).sort()).toEqual([...QUANTITIES].sort());
+  });
+
+  it.each([
+    ["stoppingPower", "forward"],
+    ["csdaRange", "forward"],
+    ["energyFromRange", "inverse"],
+    ["energyFromStp", "inverse"],
+  ] as const)("classifies %s as %s", (quantity, kind) => {
+    expect(QUANTITY_KIND[quantity]).toBe(kind);
+    expect(isInverseQuantity(quantity)).toBe(kind === "inverse");
+  });
 });

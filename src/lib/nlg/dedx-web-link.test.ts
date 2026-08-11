@@ -137,6 +137,32 @@ describe("buildDedxWebCalculatorUrl", () => {
     expect(buildDedxWebCalculatorUrl(i, result({ quantity: "energyFromRange" }))).toBeNull();
   });
 
+  it("issue #163 C11: returns null for an energyFromRange target in metres (no dedx_web iunit= token)", () => {
+    // RANGE_UNIT_TO_DEDXWEB is now exhaustive over RangeTargetUnit, with "m" mapped to an
+    // explicit null (a deliberate gap, not an accidental omission) — this is the runtime
+    // behavior that exhaustiveness protects, on the one RangeTargetUnit member besides g/cm2
+    // this module doesn't have a dedx_web token for.
+    const i = intent({
+      quantity: "energyFromRange",
+      energies: [],
+      target: { value: 3, unit: "m" },
+    });
+    expect(buildDedxWebCalculatorUrl(i, result({ quantity: "energyFromRange" }))).toBeNull();
+  });
+
+  it("issue #163 C11: returns null for a target whose unit doesn't match the intent's quantity", () => {
+    // A stopping-power unit on an energyFromRange target (or vice versa) shouldn't be possible
+    // through the matcher or the C6-guarded chip, but this module takes intent/result as plain
+    // data — isRangeTargetUnit()/isStpTargetUnit() narrow target.unit defensively rather than
+    // ever index a unit map with a mismatched key.
+    const i = intent({
+      quantity: "energyFromRange",
+      energies: [],
+      target: { value: 10, unit: "keV/um" },
+    });
+    expect(buildDedxWebCalculatorUrl(i, result({ quantity: "energyFromRange" }))).toBeNull();
+  });
+
   it.each([
     ["keV/um", "kev-um"],
     ["MeV/cm", "mev-cm"],
@@ -207,12 +233,13 @@ describe("buildDedxWebCalculatorUrl", () => {
       expect(params.get("program")).toBe("100");
     });
 
-    it("falls back to program=auto when intent.program was unrecognized and rows auto-resolved to different programs", () => {
-      // `intent.program` is free text — resolveProgramId() silently falls
-      // back to per-row auto-select when the name isn't recognized, so rows
-      // can diverge despite intent.program being set (a bogus name here
-      // stands in for that case). Forcing program=<primary's id> would
-      // misrepresent whichever rows resolved to a different program.
+    it("falls back to program=auto when rows disagree on a program despite intent.program being set", () => {
+      // issue #163 C11 — resolveProgramId() now *throws* for an unrecognized intent.program
+      // (B5/B6, #167), so this specific divergence can no longer arise from a real
+      // computeIntent() result; the check is defense-in-depth against a hand-built or otherwise
+      // malformed ComputeResult (buildDedxWebCalculatorUrl() takes intent/result as plain data,
+      // not exclusively computeIntent()'s own output). Still worth testing: forcing
+      // program=<primary's id> here would misrepresent whichever rows disagree.
       const bogusProgram = intent({ ...i, program: "not-a-real-program" });
       const diverged = result({
         ...r,
