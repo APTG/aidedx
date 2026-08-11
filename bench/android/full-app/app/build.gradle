@@ -82,7 +82,7 @@ configurations.all {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.24'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:2.4.10'
 
     // issue #136 goal 4 — a real (non-Android-stub) org.json so the matcher-vs-TS agreement
     // check (KotlinMatcherAgreementTest, a local JVM unit test — no device/emulator needed) can
