@@ -1,0 +1,47 @@
+name: Android Bench Tests
+
+# KotlinMatcherAgreementTest.kt is the only thing keeping the TS and Kotlin NLU matchers from
+# silently diverging (issue #163 §6.3) — but nothing invoked Gradle in CI, so it never ran. This
+# runs the full-app bench's JVM unit tests (no emulator needed) whenever bench/android/** changes,
+# path-filtered so it doesn't slow the main gate for ordinary src/ changes.
+
+on:
+  push:
+    branches: [main, "claude/**", "feature/**", "feat/**", "fix/**"]
+    paths:
+      - "bench/android/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "bench/android/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  full-app-unit-tests:
+    name: full-app unit tests (JVM, incl. KotlinMatcherAgreementTest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bench/android/full-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run app unit tests
+        run: ./gradlew :app:test --console=plain
