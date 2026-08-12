@@ -14,8 +14,8 @@
       set env.backends.onnx.wasm.numThreads explicitly instead of ORT's conservative default.
       Measured effect: whisper-small prefill drops ~2-3x (~8s -> ~3-5s). Using COEP
       `credentialless` so the cross-origin ORT wasm and Cyfronet S3 model mirror keep loading
-      without their own CORP headers. Remove this line + static/coi-serviceworker.js only if
-      that decision is reversed.
+      without their own CORP headers. Remove the <script> tag below + static/coi-serviceworker.js
+      only if that decision is reversed.
     -->
     <script src="%sveltekit.assets%/coi-serviceworker.js"></script>
 

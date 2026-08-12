@@ -1,13 +1,14 @@
 /*! coi-serviceworker v0.1.7 - Guido Zuidhof and contributors, licensed under MIT */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-// DEBUG (#9 threading experiment — revertable). Vendored copy of
+// Permanent production threading path (issue #9, decided and measured — see
+// docs/threading-coop-coep.md). Vendored copy of
 // https://github.com/gzuidhof/coi-serviceworker — a service worker that injects
 // COOP/COEP response headers client-side so a static host that CANNOT set them
 // (GitHub Pages) can still become cross-origin isolated, enabling
 // SharedArrayBuffer / WASM multithreading. Uses COEP: credentialless so
 // cross-origin subresources (jsdelivr ORT wasm, the Cyfronet S3 weights mirror)
 // load without needing their own CORP header. See docs/threading-coop-coep.md.
-// Registered from app.html; remove both to revert.
+// Registered from app.html; remove both only if that decision is reversible.
 let coepCredentialless = true;
 if (typeof window === "undefined") {
   self.addEventListener("install", () => self.skipWaiting());
