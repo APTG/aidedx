@@ -2,18 +2,33 @@ name: Android Bench Tests
 
 # KotlinMatcherAgreementTest.kt is the only thing keeping the TS and Kotlin NLU matchers from
 # silently diverging (issue #163 §6.3) — but nothing invoked Gradle in CI, so it never ran. This
-# runs the full-app bench's JVM unit tests (no emulator needed) whenever bench/android/** changes,
-# path-filtered so it doesn't slow the main gate for ordinary src/ changes.
+# runs each bench/android/* app's JVM unit-test task (no emulator needed) whenever bench/android/**
+# changes, path-filtered so it doesn't slow the main gate for ordinary src/ changes.
+#
+# All five apps are matrixed, not just full-app: `:app:test` compiles each app's main sources
+# (Kotlin and/or Java) even when a module has no test sources of its own — verified locally,
+# `compileDebugKotlin`/`compileDebugJavaWithJavac` still run and report NO-SOURCE only for the
+# test-source tasks. That's enough to catch a build-breaking dependency bump (e.g. a
+# kotlin-stdlib/kotlin-gradle-plugin version-skew like #188) in sherpa-onnx, vosk, wav2vec2, and
+# whispercpp too, none of which had any CI signal before. It does not invoke external native
+# builds (cmake/NDK) — confirmed locally for whispercpp, the one app with externalNativeBuild —
+# so the job stays fast and doesn't need an NDK install step.
+#
+# This workflow's own file is included in the path filter too (Copilot review on #200) — otherwise
+# an edit to this file wouldn't get exercised by its own matrix job before merge, the same "false
+# green" gap this PR exists to close for the apps it tests.
 
 on:
   push:
     branches: [main, "claude/**", "feature/**", "feat/**", "fix/**"]
     paths:
       - "bench/android/**"
+      - ".github/workflows/android-bench.yml"
   pull_request:
     branches: [main]
     paths:
       - "bench/android/**"
+      - ".github/workflows/android-bench.yml"
   workflow_dispatch:
 
 concurrency:
@@ -24,12 +39,26 @@ permissions:
   contents: read
 
 jobs:
-  full-app-unit-tests:
-    name: full-app unit tests (JVM, incl. KotlinMatcherAgreementTest)
+  bench-app-unit-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dir: full-app
+            name: "full-app unit tests (JVM, incl. KotlinMatcherAgreementTest)"
+          - dir: sherpa-onnx
+            name: "sherpa-onnx unit tests (JVM)"
+          - dir: vosk
+            name: "vosk unit tests (JVM)"
+          - dir: wav2vec2
+            name: "wav2vec2 unit tests (JVM)"
+          - dir: whispercpp
+            name: "whispercpp unit tests (JVM)"
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: bench/android/full-app
+        working-directory: bench/android/${{ matrix.dir }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

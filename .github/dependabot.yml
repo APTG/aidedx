@@ -23,3 +23,13 @@ updates:
       - "/bench/android/*"
     schedule:
       interval: "weekly"
+    groups:
+      # kotlin-gradle-plugin (the compiler) and kotlin-stdlib must move together: a stdlib jar
+      # newer than the compiler that reads it fails with "compiled with an incompatible version
+      # of Kotlin" (full-app's #188 vs #193 split hit exactly this - stdlib alone bumped to
+      # 2.4.10 while the 1.9.24 compiler could only read up to metadata 2.0). Grouping applies
+      # per expanded directory, so full-app and sherpa-onnx each get their own single PR instead
+      # of two that can land out of order.
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin:*"
