@@ -13,16 +13,22 @@ name: Android Bench Tests
 # whispercpp too, none of which had any CI signal before. It does not invoke external native
 # builds (cmake/NDK) — confirmed locally for whispercpp, the one app with externalNativeBuild —
 # so the job stays fast and doesn't need an NDK install step.
+#
+# This workflow's own file is included in the path filter too (Copilot review on #200) — otherwise
+# an edit to this file wouldn't get exercised by its own matrix job before merge, the same "false
+# green" gap this PR exists to close for the apps it tests.
 
 on:
   push:
     branches: [main, "claude/**", "feature/**", "feat/**", "fix/**"]
     paths:
       - "bench/android/**"
+      - ".github/workflows/android-bench.yml"
   pull_request:
     branches: [main]
     paths:
       - "bench/android/**"
+      - ".github/workflows/android-bench.yml"
   workflow_dispatch:
 
 concurrency:
