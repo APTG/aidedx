@@ -7,19 +7,16 @@
     <title>aidedx</title>
 
     <!--
-      Cross-origin isolation hook (deferred to Spike 3 — runtime/hosting).
-      In-browser ML backends (transformers.js / WebLLM / wllama) need
-      SharedArrayBuffer, which requires the page to be cross-origin isolated
-      (COOP/COEP headers). GitHub Pages can't set those headers, so the
-      planned workaround is `coi-serviceworker`: drop coi-serviceworker.js
-      into static/ and register it here, e.g.:
-        <script src="%sveltekit.assets%/coi-serviceworker.js"></script>
-      Left intentionally inert until the hosting decision is made.
+      Cross-origin isolation (COOP/COEP), permanent (issue #9, decided and measured in
+      docs/threading-coop-coep.md). GitHub Pages can't set COOP/COEP headers itself, so
+      coi-serviceworker fakes them client-side: crossOriginIsolated becomes true after a
+      one-time reload on first visit, which unlocks SharedArrayBuffer and lets transcribe.ts
+      set env.backends.onnx.wasm.numThreads explicitly instead of ORT's conservative default.
+      Measured effect: whisper-small prefill drops ~2-3x (~8s -> ~3-5s). Using COEP
+      `credentialless` so the cross-origin ORT wasm and Cyfronet S3 model mirror keep loading
+      without their own CORP headers. Remove this line + static/coi-serviceworker.js only if
+      that decision is reversed.
     -->
-
-    <!-- DEBUG (#9 threading experiment — revertable): enable cross-origin
-         isolation on GitHub Pages so the ?debug thread control actually bites.
-         Adds a one-time reload on first visit. Remove this line + static/coi-serviceworker.js to revert. -->
     <script src="%sveltekit.assets%/coi-serviceworker.js"></script>
 
     %sveltekit.head%

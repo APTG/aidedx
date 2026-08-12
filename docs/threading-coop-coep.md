@@ -1,5 +1,12 @@
 # WASM threading (COOP/COEP) — how much it actually cuts the ~8 s prefill (issue #9)
 
+> **Status update, 2026-08-12 (issue #163 §5.3):** steps 1-2 of the plan below are shipped —
+> `coi-serviceworker.js` is registered in `src/app.html` and `transcribe.ts` sets
+> `env.backends.onnx.wasm.numThreads` explicitly under `crossOriginIsolated`. This is now the
+> permanent production threading path, not the experiment described below; `app.html`'s comment
+> was updated to match. Step 3 (live GitHub Pages + real S3 mirror verification, including Cache
+> Storage surviving a reload cycle) is still outstanding — see §5.4 of issue #163.
+
 _Session report, 2026-07-15. Local measurements on Linux, 12 logical cores, headless Chromium
 (Playwright), the real shipped stack: SvelteKit static build + transformers.js 4.2.0 +
 `onnxruntime-web` 1.27.0 (WASM), whisper-small q8 with domain-prompt biasing. This answers the two
