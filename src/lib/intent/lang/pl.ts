@@ -207,8 +207,14 @@ export const MATERIAL_STOPWORDS = new Set([
  * issue #163 C8 — Polish counterpart of `en.ts`'s `UNRESOLVED_MATERIAL_RE`: the word(s)
  * immediately after "w"/"we" ("in"), the dominant way a target material is phrased directly in
  * Polish (locative case, e.g. "w wodzie"). Capture group 1 is the candidate phrase.
+ *
+ * Trailing boundary is a negative lookahead, not `\b`: JS's `\b` is defined over ASCII `\w`, so a
+ * capture ending in a Polish diacritic (outside `[A-Za-z0-9_]`) sits between two "non-word"
+ * characters from `\b`'s point of view and the boundary silently fails to match there, missing
+ * the phrase entirely (Copilot review, PR #214). `(?![\p{L}])` stays Unicode-aware the same way
+ * the capture group's own `\p{L}` character class already is.
  */
-export const UNRESOLVED_MATERIAL_RE = /\bwe?\s+([\p{L}][\p{L}-]*(?:\s+[\p{L}-]+)?)\b/giu;
+export const UNRESOLVED_MATERIAL_RE = /\bwe?\s+([\p{L}][\p{L}-]*(?:\s+[\p{L}-]+)?)(?![\p{L}])/giu;
 
 /** Polish counterpart of `en.ts`'s `UNRESOLVED_MATERIAL_FILLERS` — "w ogóle"/"w teorii"/"w tym
  * przypadku" etc. are common filler, not material mentions. */
