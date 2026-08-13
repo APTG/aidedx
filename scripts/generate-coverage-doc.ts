@@ -133,8 +133,13 @@ function materialsSection(): string {
     "",
     `### Elements (Z=${minZ}–${maxZ}, ${elements.length} elements)`,
     "",
-    "Any of the same elements listed under Particles above can also be named as a pure elemental " +
-      "target:",
+    // Only the first `elements.length` of the Particles section's elements are usable as
+    // materials too (libdedx's elemental *targets* stop at Z=98, well short of the full Z=1–118
+    // ion catalogue) — naming an explicit subset here rather than "the same elements as above",
+    // which would overstate the range.
+    `The first ${elements.length} elements (Z=${minZ}–${maxZ}) — named the same way as under ` +
+      "Particles above (element name, symbol, or spelling variant) — can also be used as a pure " +
+      "elemental target:",
     "",
     symbols,
     "",
@@ -186,7 +191,12 @@ function gapsSection(service: LibdedxService, programs: ProgramEntity[]): string
     lines.push(
       "**Particles with no usable stopping-power data under any program:**",
       "",
-      ...gaps.particles.map((p) => `- ${p.name} (Z=${p.id === ELECTRON_ID ? "—" : p.id})`),
+      // `CanonicalParticle.name` capitalizes every entry as a periodic-table element name
+      // ("Nihonium"); the electron isn't one, and every other section of this doc names it
+      // lowercase ("electron", matching "proton"/"deuteron") — kept consistent here too.
+      ...gaps.particles.map(
+        (p) => `- ${p.id === ELECTRON_ID ? "electron (Z=—)" : `${p.name} (Z=${p.id})`}`,
+      ),
       "",
     );
   } else {
