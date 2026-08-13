@@ -93,8 +93,8 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(s.program.name).toBe("ICRU49");
     expect(p.energyMeVPerNucl).toBeCloseTo(40, 5);
     // NIST PSTAR PMMA @ 40 MeV ≈ 1.52 g/cm²; libdedx's ICRU49 table gives ~1.529 too.
-    expect(p.csdaRange).toBeCloseTo(1.529, 2);
-    expect(p.stoppingPower).toBeCloseTo(14.48, 1);
+    expect(p.values.csdaRange).toBeCloseTo(1.529, 2);
+    expect(p.values.stoppingPower).toBeCloseTo(14.48, 1);
     expect(result.libdedxVersion).toBeTypeOf("string");
   });
 
@@ -119,8 +119,8 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(s.program.name).toBe("MSTAR");
     // 240 keV total / A=12 = 0.02 MeV/nucl.
     expect(p.energyMeVPerNucl).toBeCloseTo(0.02, 6);
-    expect(req(p.csdaRange)).toBeGreaterThan(0);
-    expect(Number.isFinite(req(p.csdaRange))).toBe(true);
+    expect(req(p.values.csdaRange)).toBeGreaterThan(0);
+    expect(Number.isFinite(req(p.values.csdaRange))).toBe(true);
   });
 
   it("issue #151: 5 TeV proton in water reports a clean out-of-range error, not a silent MeV answer", () => {
@@ -155,8 +155,8 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(result.series).toHaveLength(2);
     const water = req(result.series[0]);
     const air = req(result.series[1]);
-    const waterStp = req(req(water.points[0]).stoppingPower);
-    const airStp = req(req(air.points[0]).stoppingPower);
+    const waterStp = req(req(water.points[0]).values.stoppingPower);
+    const airStp = req(req(air.points[0]).values.stoppingPower);
     expect(water.material.id).toBe(276);
     expect(air.material.id).toBe(104);
     expect(req(water.points[0]).energyMeVPerNucl).toBeCloseTo(100, 5);
@@ -176,7 +176,7 @@ describe("computeIntent — issue #6 smoke cases", () => {
       }),
       service,
     );
-    const rangeGcm2 = req(req(forward.series[0]).points[0]).csdaRange;
+    const rangeGcm2 = req(req(forward.series[0]).points[0]).values.csdaRange;
     expect(req(rangeGcm2)).toBeGreaterThan(0);
 
     const inverse = computeIntent(
@@ -191,7 +191,7 @@ describe("computeIntent — issue #6 smoke cases", () => {
     );
     const s = req(inverse.series[0]);
     expect(s.error).toBeUndefined();
-    expect(req(req(s.points[0]).energy)).toBeCloseTo(100, 0);
+    expect(req(req(s.points[0]).values.energyFromRange)).toBeCloseTo(100, 0);
   });
 
   it("stoppingPower queries skip the CSDA integrator (no csdaRange)", () => {
@@ -205,8 +205,8 @@ describe("computeIntent — issue #6 smoke cases", () => {
       service,
     );
     const point = req(req(result.series[0]).points[0]);
-    expect(point.stoppingPower).toBeGreaterThan(0);
-    expect(point.csdaRange).toBeUndefined();
+    expect(point.values.stoppingPower).toBeGreaterThan(0);
+    expect(point.values.csdaRange).toBeUndefined();
   });
 
   it("reports a per-series error for out-of-range energy instead of throwing", () => {
@@ -380,7 +380,7 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(s.error).toBeUndefined();
     expect(s.material.id).toBe(5); // elemental Boron
     expect(s.program.name).toBe("Bethe");
-    expect(req(req(s.points[0]).stoppingPower)).toBeGreaterThan(0);
+    expect(req(req(s.points[0]).values.stoppingPower)).toBeGreaterThan(0);
   });
 
   it("falls back to Bethe for calcium and heavier ions, which MSTAR doesn't tabulate at all (docs/tts-eval-1000.md §2.2)", () => {
@@ -398,8 +398,8 @@ describe("computeIntent — issue #6 smoke cases", () => {
     expect(s.error).toBeUndefined();
     expect(s.particle.id).toBe(20); // calcium
     expect(s.program.name).toBe("Bethe");
-    expect(p.stoppingPower).toBeGreaterThan(0);
-    expect(p.csdaRange).toBeGreaterThan(0);
+    expect(p.values.stoppingPower).toBeGreaterThan(0);
+    expect(p.values.csdaRange).toBeGreaterThan(0);
   });
 
   it("uses ICRU73 for argon at a typical energy, mirroring dedx_web's Auto-select chain (issue #116)", () => {
@@ -455,8 +455,8 @@ describe("computeIntent — issue #132 particle-comparison regression", () => {
     const neon = req(result.series[1]);
     expect(carbon.particle.id).toBe(6); // carbon
     expect(neon.particle.id).toBe(10); // neon
-    const carbonRange = req(req(carbon.points[0]).csdaRange);
-    const neonRange = req(req(neon.points[0]).csdaRange);
+    const carbonRange = req(req(carbon.points[0]).values.csdaRange);
+    const neonRange = req(req(neon.points[0]).values.csdaRange);
     expect(Number.isFinite(carbonRange)).toBe(true);
     expect(Number.isFinite(neonRange)).toBe(true);
     // The actual bug (issue #132): before the fix, a mis-detected `compareDim: "energy"`

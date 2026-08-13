@@ -51,7 +51,7 @@ function computeResult(partial: Partial<ComputeResult> = {}): ComputeResult {
         particle: { id: 1, name: "Hydrogen", massNumber: 1, isotope: "¹H" },
         material: { id: 276, name: "Water, Liquid" },
         program: { id: 2, name: "PSTAR" },
-        points: [{ energyMeVPerNucl: 40, csdaRange: 1.529, stoppingPower: 14.48 }],
+        points: [{ energyMeVPerNucl: 40, values: { csdaRange: 1.529, stoppingPower: 14.48 } }],
       },
     ],
     assumptions: [],

@@ -47,7 +47,7 @@ const TEST_RESULT: ComputeResult = {
       particle: { id: 1, name: "Hydrogen", massNumber: 1, isotope: "¹H" },
       material: { id: 224, name: "Lucite, Perspex, Plexiglas" },
       program: { id: 2, name: "PSTAR" },
-      points: [{ energyMeVPerNucl: 40, csdaRange: 1.529 }],
+      points: [{ energyMeVPerNucl: 40, values: { csdaRange: 1.529 } }],
     },
   ],
   assumptions: [],
@@ -274,7 +274,7 @@ describe("AnswerCard", () => {
       particle: { id: 1, name: "Hydrogen", massNumber: 1, isotope: "¹H" },
       material: { id: 224, name: "Lucite, Perspex, Plexiglas" },
       program: { id: 2, name: "PSTAR" },
-      points: [{ energyMeVPerNucl: 40, csdaRange: 1.529 }],
+      points: [{ energyMeVPerNucl: 40, values: { csdaRange: 1.529 } }],
     };
     const comparisonResult: ComputeResult = {
       ...TEST_RESULT,

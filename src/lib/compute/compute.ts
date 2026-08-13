@@ -71,12 +71,18 @@ export interface ResolvedMaterial {
 export interface ComputePoint {
   /** Energy in MeV/nucl actually handed to libdedx. */
   energyMeVPerNucl: number;
-  /** Forward: mass stopping power in MeV·cm²/g. */
-  stoppingPower?: number;
-  /** Forward: CSDA range in g/cm². */
-  csdaRange?: number;
-  /** Inverse: resolved energy in MeV/nucl. */
-  energy?: number;
+  /**
+   * issue #163 §5.5 — the computed value(s) at this energy, keyed by `Quantity` rather than by
+   * separate `stoppingPower`/`csdaRange`/`energy` fields. A forward series carries `stoppingPower`
+   * and, unless the CSDA integrator was skipped, `csdaRange`; an inverse series carries the one
+   * quantity (`energyFromRange`/`energyFromStp`) it solved for, plus an echo of the target under
+   * its own native-unit key. Readers index `values[quantity]` for whichever quantity the intent
+   * actually asked for (see `render.ts`'s `valueText()`) — a lookup that reads back `undefined`
+   * for an unhandled quantity instead of silently returning another quantity's number, which is
+   * what a hardcoded `quantity === "stoppingPower" ? point.stoppingPower : point.csdaRange`
+   * ternary did the moment a third forward quantity existed.
+   */
+  values: Partial<Record<Quantity, number>>;
 }
 
 /** One (particle, material, program) curve. Comparison queries return several. */
@@ -562,12 +568,11 @@ function forwardSeries(
     });
     // stoppingPowers / csdaRanges are aligned 1:1 with energies by the wrapper.
     base.points = result.energies.map((e, i) => {
-      const point: ComputePoint = {
-        energyMeVPerNucl: e,
+      const values: Partial<Record<Quantity, number>> = {
         stoppingPower: result.stoppingPowers[i] ?? Number.NaN,
       };
-      if (computeCsda) point.csdaRange = result.csdaRanges[i] ?? Number.NaN;
-      return point;
+      if (computeCsda) values.csdaRange = result.csdaRanges[i] ?? Number.NaN;
+      return { energyMeVPerNucl: e, values };
     });
   } catch (e) {
     base.error = e instanceof Error ? e.message : String(e);
@@ -610,7 +615,9 @@ function inverseSeries(
       if (!r || r instanceof LibdedxError) {
         base.error = r instanceof LibdedxError ? r.message : "Inverse CSDA lookup failed";
       } else {
-        base.points = [{ energyMeVPerNucl: r.energy, energy: r.energy, csdaRange: range }];
+        base.points = [
+          { energyMeVPerNucl: r.energy, values: { energyFromRange: r.energy, csdaRange: range } },
+        ];
       }
     } else {
       const stp = stpTargetToMassUnits(intent.target, density);
@@ -626,7 +633,9 @@ function inverseSeries(
       if (!r || r instanceof LibdedxError) {
         base.error = r instanceof LibdedxError ? r.message : "Inverse STP lookup failed";
       } else {
-        base.points = [{ energyMeVPerNucl: r.energy, energy: r.energy, stoppingPower: stp }];
+        base.points = [
+          { energyMeVPerNucl: r.energy, values: { energyFromStp: r.energy, stoppingPower: stp } },
+        ];
       }
     }
   } catch (e) {

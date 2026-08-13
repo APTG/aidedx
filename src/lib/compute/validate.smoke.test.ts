@@ -67,7 +67,7 @@ describe("validateIntent — isotope plausibility", () => {
     // confident, real-looking number with no error at all.
     const result = computeIntent(bad, service);
     expect(result.series[0]?.error).toBeUndefined();
-    expect(result.series[0]?.points[0]?.stoppingPower).toBeGreaterThan(0);
+    expect(result.series[0]?.points[0]?.values.stoppingPower).toBeGreaterThan(0);
   });
 
   it("passes a real isotope (carbon-13)", () => {
