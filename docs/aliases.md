@@ -9,6 +9,9 @@ deterministic matcher's accuracy backbone and are designed to be reusable by
 - Shipped JSON: [`static/aliases/`](../static/aliases/) (served at
   `/<base>/aliases/materials.json` and `/particles.json`)
 - Issue: [APTG/aidedx#4](https://github.com/APTG/aidedx/issues/4)
+- For "what can/can't be asked about" from a physicist's perspective — including which stopping-power
+  programs actually cover which particles/materials — see [`coverage.md`](./coverage.md), generated
+  from these same tables.
 
 ## Layout
 

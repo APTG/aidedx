@@ -24,6 +24,9 @@ static/lexicon/
 # Vendored libdedx WASM artifacts — built by emscripten, not hand-maintained (issue #6)
 static/wasm/
 
+# Generated coverage doc — owned by scripts/generate-coverage-doc.ts (issue #163 §8 Phase 5)
+docs/coverage.md
+
 # Android benchmark harnesses (issue #120) — separate Gradle/Java/Kotlin/C++ projects, not
 # part of the SvelteKit app; same exclusion as eslint.config's "bench/**" ignorePatterns.
 bench/

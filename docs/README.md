@@ -18,6 +18,7 @@ Docs that map 1:1 to shipped code — read these when working on the correspondi
 | ---------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | [`nlu.md`](./nlu.md)                                       | Deterministic NLU matcher (`src/lib/intent/matcher.ts`) + coverage harness.      |
 | [`aliases.md`](./aliases.md)                               | Material/particle alias tables (`src/lib/aliases/`) — provenance & regeneration. |
+| [`coverage.md`](./coverage.md)                             | What aidedx can and cannot compute — generated from the alias tables + libdedx's own program/particle/material availability. |
 | [`wasm.md`](./wasm.md)                                     | libdedx WASM wrapper (`src/lib/wasm/`) — vendored binaries & rebuild steps.      |
 | [`answer-pipeline.md`](./answer-pipeline.md)               | matcher → compute → NLG → UI state; unit conversion; error messages.             |
 | [`status-panel-design.md`](./status-panel-design.md)       | Model-status header, download-consent, and clear-cache UX.                       |
