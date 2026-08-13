@@ -33,6 +33,7 @@ export interface FieldVerdicts {
   energies: boolean;
   target: boolean;
   program: boolean;
+  programs: boolean;
   assumptions: boolean;
 }
 
@@ -116,6 +117,21 @@ function eqProgram(a: string | undefined, b: string | undefined): boolean {
   return a.toLowerCase() === b.toLowerCase();
 }
 
+/**
+ * issue #163 C7 — `programs` (the `compareDim: "program"` fan-out set `program` above can't
+ * represent) had no comparator either, so `cmp-prog-*`'s gold rows scored an exact match no
+ * matter what the matcher fanned out over. Order-insensitive and case-insensitive, matching
+ * `eqProgram()`'s tolerance above and `eqAssumptions()`'s sort-then-compare shape below.
+ */
+function eqPrograms(a: string[] | undefined, b: string[] | undefined): boolean {
+  if (a === undefined && b === undefined) return true;
+  if (a === undefined || b === undefined) return false;
+  if (a.length !== b.length) return false;
+  const sa = [...a].map((x) => x.toLowerCase()).sort();
+  const sb = [...b].map((x) => x.toLowerCase()).sort();
+  return sa.every((x, i) => x === sb[i]);
+}
+
 function eqAssumptions(a: string[], b: string[]): boolean {
   if (a.length !== b.length) return false;
   const sa = [...a].sort();
@@ -133,6 +149,7 @@ export function compareIntent(predicted: QueryIntent, expected: QueryIntent): Fi
     energies: eqEnergies(predicted.energies, expected.energies),
     target: eqTarget(predicted.target, expected.target),
     program: eqProgram(predicted.program, expected.program),
+    programs: eqPrograms(predicted.programs, expected.programs),
     assumptions: eqAssumptions(predicted.assumptions, expected.assumptions),
   };
 }
@@ -148,7 +165,8 @@ export function evaluateExample(example: EvalExample): ExampleResult {
     fields.materials &&
     fields.energies &&
     fields.target &&
-    fields.program;
+    fields.program &&
+    fields.programs;
   return {
     id: example.id,
     text: example.text,
@@ -201,6 +219,7 @@ const FIELD_KEYS: ReadonlyArray<keyof FieldVerdicts> = [
   "energies",
   "target",
   "program",
+  "programs",
   "assumptions",
 ];
 

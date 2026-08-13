@@ -786,25 +786,11 @@ function extractMaterials(
  * or that gets filtered out, still falls back to the old (also honest, just less specific) "not
  * specified" behavior — a safe degradation, never a regression: every query this *does* catch
  * already produced a silently wrong substitution before it existed.
+ *
+ * issue #163 C8 — the phrase shape and the filler-phrase denylist are language-specific ("in
+ * general" vs. Polish's "w ogóle"), so both come from `pack.UNRESOLVED_MATERIAL_RE`/
+ * `pack.UNRESOLVED_MATERIAL_FILLERS` rather than being hardcoded here.
  */
-const NON_MATERIAL_IN_PHRASES = new Set([
-  "general",
-  "theory",
-  "practice",
-  "particular",
-  "fact",
-  "summary",
-  "short",
-  "addition",
-  "conclusion",
-  "reality",
-  "detail",
-  "total",
-  "comparison",
-  "this case",
-  "that case",
-  "other words",
-]);
 
 /** "a"/"an"/"the" lead a captured phrase far more often than they lead a genuine function-word
  * filler ("in general", "of the total"), so the leading-stopword reject below would otherwise
@@ -836,20 +822,17 @@ function stripLeadingArticle(rawWords: string[], lowerWords: string[]): [string[
 const UNIT_WORD_RE =
   /^(mev|kev|gev|tev|per|mm|cm|m|um|g|millimeters?|centimeters?|meters?|metres?|micrometers?|microns?)$/i;
 
-function detectUnresolvedMaterialPhrase(
-  text: string,
-  stopwords: ReadonlySet<string>,
-): string | null {
-  const re = /\bin\s+([a-z][a-z-]*(?:\s+[a-z][a-z-]*)?)\b/gi;
-  for (const m of text.matchAll(re)) {
+function detectUnresolvedMaterialPhrase(text: string, pack: LangPack): string | null {
+  if (!pack.UNRESOLVED_MATERIAL_RE) return null;
+  for (const m of text.matchAll(pack.UNRESOLVED_MATERIAL_RE)) {
     const phrase = (m[1] ?? "").trim();
     if (!phrase || phrase.length < 3) continue;
     const lower = phrase.toLowerCase();
-    if (NON_MATERIAL_IN_PHRASES.has(lower)) continue;
+    if (pack.UNRESOLVED_MATERIAL_FILLERS.has(lower)) continue;
     const [rawWords, words] = stripLeadingArticle(phrase.split(/\s+/), lower.split(/\s+/));
     if (UNIT_WORD_RE.test(words[0] ?? "")) continue;
-    if (stopwords.has(words[0] ?? "")) continue;
-    if (words.every((w) => stopwords.has(w))) continue;
+    if (pack.MATERIAL_STOPWORDS.has(words[0] ?? "")) continue;
+    if (words.every((w) => pack.MATERIAL_STOPWORDS.has(w))) continue;
     return rawWords.join(" ");
   }
   return null;
@@ -863,21 +846,21 @@ function detectUnresolvedMaterialPhrase(
  * never gets attempted at all, so there's no failed-resolution span to report; this instead looks
  * for the word(s) between "of" and "in", the shape every one of this domain's direct-phrasing
  * queries already uses for the particle. Only consulted when the real scan found nothing.
+ *
+ * issue #163 C8 — `pack.UNRESOLVED_PARTICLE_RE` is null for a language (e.g. Polish) that
+ * expresses this head-first instead, already covered by `PARTICLE_HEAD_RE`.
  */
-function detectUnresolvedParticlePhrase(
-  text: string,
-  stopwords: ReadonlySet<string>,
-): string | null {
-  const re = /\bof\s+([a-z][a-z-]*(?:\s+[a-z][a-z-]*)?)\s+in\b/gi;
-  for (const m of text.matchAll(re)) {
+function detectUnresolvedParticlePhrase(text: string, pack: LangPack): string | null {
+  if (!pack.UNRESOLVED_PARTICLE_RE) return null;
+  for (const m of text.matchAll(pack.UNRESOLVED_PARTICLE_RE)) {
     const phrase = (m[1] ?? "").trim();
     if (!phrase || phrase.length < 3) continue;
     const [rawWords, words] = stripLeadingArticle(
       phrase.split(/\s+/),
       phrase.toLowerCase().split(/\s+/),
     );
-    if (stopwords.has(words[0] ?? "")) continue;
-    if (words.every((w) => stopwords.has(w))) continue;
+    if (pack.MATERIAL_STOPWORDS.has(words[0] ?? "")) continue;
+    if (words.every((w) => pack.MATERIAL_STOPWORDS.has(w))) continue;
     return rawWords.join(" ");
   }
   return null;
@@ -1136,11 +1119,11 @@ export function matchIntent(text: string, lang: Lang = "en"): MatchResult {
   // detectors' own doc comments for the false-"not specified"-banner bug this closes).
   const unresolved: UnresolvedEntity[] = [];
   if (materials.length === 0) {
-    const phrase = detectUnresolvedMaterialPhrase(query, pack.MATERIAL_STOPWORDS);
+    const phrase = detectUnresolvedMaterialPhrase(query, pack);
     if (phrase) unresolved.push({ kind: "material", phrase });
   }
   if (particles.length === 0) {
-    const phrase = detectUnresolvedParticlePhrase(query, pack.MATERIAL_STOPWORDS);
+    const phrase = detectUnresolvedParticlePhrase(query, pack);
     if (phrase) unresolved.push({ kind: "particle", phrase });
   }
   // issue #163 C5(c) — same "only when the real scan found nothing" pattern, for a forward

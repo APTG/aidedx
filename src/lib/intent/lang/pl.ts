@@ -203,6 +203,40 @@ export const MATERIAL_STOPWORDS = new Set([
   "centymetra",
 ]);
 
+/**
+ * issue #163 C8 — Polish counterpart of `en.ts`'s `UNRESOLVED_MATERIAL_RE`: the word(s)
+ * immediately after "w"/"we" ("in"), the dominant way a target material is phrased directly in
+ * Polish (locative case, e.g. "w wodzie"). Capture group 1 is the candidate phrase.
+ *
+ * Trailing boundary is a negative lookahead, not `\b`: JS's `\b` is defined over ASCII `\w`, so a
+ * capture ending in a Polish diacritic (outside `[A-Za-z0-9_]`) sits between two "non-word"
+ * characters from `\b`'s point of view and the boundary silently fails to match there, missing
+ * the phrase entirely (Copilot review, PR #214). `(?![\p{L}])` stays Unicode-aware the same way
+ * the capture group's own `\p{L}` character class already is.
+ */
+export const UNRESOLVED_MATERIAL_RE = /\bwe?\s+([\p{L}][\p{L}-]*(?:\s+[\p{L}-]+)?)(?![\p{L}])/giu;
+
+/** Polish counterpart of `en.ts`'s `UNRESOLVED_MATERIAL_FILLERS` — "w ogóle"/"w teorii"/"w tym
+ * przypadku" etc. are common filler, not material mentions. */
+export const UNRESOLVED_MATERIAL_FILLERS = new Set([
+  "ogóle",
+  "teorii",
+  "praktyce",
+  "szczególności",
+  "rzeczywistości",
+  "skrócie",
+  "sumie",
+  "tym przypadku",
+  "tamtym przypadku",
+]);
+
+/**
+ * Null — Polish expresses "range of a muon" head-first via genitive case ("zasięg mionu"),
+ * already covered by `PARTICLE_HEAD_RE`/`NAMED_PARTICLE_RE`, so there is no separate "of <X> in
+ * <Y>" shape a fallback detector needs to catch (issue #163 C8).
+ */
+export const UNRESOLVED_PARTICLE_RE: RegExp | null = null;
+
 /** Connector between list members — Polish uses "i" ("and"), serial-comma "X, Y i Z". */
 export const LIST_SEP_SRC = "(?:\\s*,\\s*(?:i\\s+)?|\\s+i\\s+)";
 
