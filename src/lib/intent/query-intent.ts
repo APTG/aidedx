@@ -44,11 +44,12 @@ export type Quantity = (typeof QUANTITIES)[number];
  * `Record<Quantity, ...>` keyed on the closed `QUANTITIES` union makes that impossible: adding a
  * quantity without an entry here fails to typecheck.
  *
- * `stoppingPower`/`csdaRange` finer-grained *which-forward-quantity* branches (`render.ts`'s
- * `valueText()` picking `point.stoppingPower` vs `point.csdaRange`, `matcher.ts`'s target-slot
- * grammar picking range vs stopping-power) aren't replaced by this — they need to know which
- * specific quantity, not just the forward/inverse class, so a per-quantity switch is still the
- * right tool there. This only consolidates the genuine forward-vs-inverse boolean.
+ * `stoppingPower`/`csdaRange` finer-grained *which-forward-quantity* branches (`matcher.ts`'s
+ * target-slot grammar picking range vs stopping-power) aren't replaced by this — they need to
+ * know which specific quantity, not just the forward/inverse class. This only consolidates the
+ * genuine forward-vs-inverse boolean; `render.ts`'s own which-forward-quantity pick was §5.5's
+ * separate fix — `ComputePoint.values` is keyed directly by `Quantity` (`compute.ts`), so
+ * `valueText()` reads `point.values[quantity]` instead of a hardcoded field-name ternary.
  */
 export const QUANTITY_KIND: Record<Quantity, "forward" | "inverse"> = {
   stoppingPower: "forward",

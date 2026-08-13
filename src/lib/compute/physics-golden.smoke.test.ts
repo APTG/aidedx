@@ -81,7 +81,7 @@ describe("physics golden file — B1: every RangeTargetUnit round-trips to the s
       }),
       service,
     );
-    referenceRangeGcm2 = req(req(forward.series[0]).points[0]).csdaRange as number;
+    referenceRangeGcm2 = req(req(forward.series[0]).points[0]).values.csdaRange as number;
     density = req(req(forward.series[0]).density);
   });
 
@@ -106,7 +106,7 @@ describe("physics golden file — B1: every RangeTargetUnit round-trips to the s
     );
     const s = req(result.series[0]);
     expect(s.error).toBeUndefined();
-    expect(req(req(s.points[0]).energy)).toBeCloseTo(100, 0);
+    expect(req(req(s.points[0]).values[result.quantity])).toBeCloseTo(100, 0);
   });
 });
 
@@ -127,7 +127,7 @@ describe("physics golden file — B2: every StpTargetUnit round-trips to the sam
       }),
       service,
     );
-    referenceStpMevCm2PerG = req(req(forward.series[0]).points[0]).stoppingPower as number;
+    referenceStpMevCm2PerG = req(req(forward.series[0]).points[0]).values.stoppingPower as number;
     density = req(req(forward.series[0]).density);
   });
 
@@ -149,7 +149,7 @@ describe("physics golden file — B2: every StpTargetUnit round-trips to the sam
     );
     const s = req(result.series[0]);
     expect(s.error).toBeUndefined();
-    expect(req(req(s.points[0]).energy)).toBeCloseTo(100, 0);
+    expect(req(req(s.points[0]).values[result.quantity])).toBeCloseTo(100, 0);
   });
 });
 
@@ -166,7 +166,7 @@ describe("physics golden file — B1/B2: issue #163's own quoted measured number
     const result = computeIntent(match.intent, service);
     const s = req(result.series[0]);
     expect(s.error).toBeUndefined();
-    expect(req(req(s.points[0]).energy)).toBeCloseTo(expectedMev as number, 1);
+    expect(req(req(s.points[0]).values[result.quantity])).toBeCloseTo(expectedMev as number, 1);
   });
 
   it.each([
@@ -177,7 +177,7 @@ describe("physics golden file — B1/B2: issue #163's own quoted measured number
     const result = computeIntent(match.intent, service);
     const s = req(result.series[0]);
     expect(s.error).toBeUndefined();
-    expect(req(req(s.points[0]).energy)).toBeCloseTo(expectedMev as number, 2);
+    expect(req(req(s.points[0]).values[result.quantity])).toBeCloseTo(expectedMev as number, 2);
   });
 });
 
@@ -198,8 +198,8 @@ describe("physics golden file — B4: spelled-out hundreds+tens/ones parse to th
   ])("%s computes the identical CSDA range as %s", (spelled, digits) => {
     const spelledResult = computeIntent(matchIntent(spelled).intent, service);
     const digitsResult = computeIntent(matchIntent(digits).intent, service);
-    const spelledRange = req(req(spelledResult.series[0]).points[0]).csdaRange;
-    const digitsRange = req(req(digitsResult.series[0]).points[0]).csdaRange;
+    const spelledRange = req(req(spelledResult.series[0]).points[0]).values.csdaRange;
+    const digitsRange = req(req(digitsResult.series[0]).points[0]).values.csdaRange;
     expect(req(spelledRange)).toBeCloseTo(req(digitsRange), 6);
     expect(req(spelledRange)).toBeGreaterThan(0);
   });
@@ -220,7 +220,7 @@ describe("physics golden file — B7: total energy is divided by A, and disclose
       expect(s.error).toBeUndefined();
       const p = req(s.points[0]);
       expect(p.energyMeVPerNucl).toBeCloseTo(expectedMevPerNucl as number, 3);
-      expect(req(p.csdaRange)).toBeGreaterThan(0);
+      expect(req(p.values.csdaRange)).toBeGreaterThan(0);
     },
   );
 
@@ -232,6 +232,6 @@ describe("physics golden file — B7: total energy is divided by A, and disclose
     expect(s.error).toBeUndefined();
     const p = req(s.points[0]);
     expect(p.energyMeVPerNucl).toBeCloseTo(400 / 12, 6);
-    expect(req(p.stoppingPower)).toBeGreaterThan(0);
+    expect(req(p.values.stoppingPower)).toBeGreaterThan(0);
   });
 });

@@ -22,7 +22,7 @@ function series(overrides: Partial<ComputeSeries> = {}): ComputeSeries {
     particle: { id: 1, name: "Hydrogen", massNumber: 1, isotope: "¹H" },
     material: { id: 276, name: "Water, Liquid" },
     program: { id: 2, name: "PSTAR" },
-    points: [{ energyMeVPerNucl: 40, stoppingPower: 14.48, csdaRange: 1.529 }],
+    points: [{ energyMeVPerNucl: 40, values: { stoppingPower: 14.48, csdaRange: 1.529 } }],
     ...overrides,
   };
 }
@@ -66,7 +66,9 @@ describe("renderAnswer — single (compareDim: none)", () => {
     const r = result({
       quantity: "csdaRange",
       series: [
-        series({ points: [{ energyMeVPerNucl: 40, csdaRange: 1.529, stoppingPower: 14.48 }] }),
+        series({
+          points: [{ energyMeVPerNucl: 40, values: { csdaRange: 1.529, stoppingPower: 14.48 } }],
+        }),
       ],
     });
 
@@ -84,7 +86,7 @@ describe("renderAnswer — single (compareDim: none)", () => {
     });
     const r = result({
       quantity: "stoppingPower",
-      series: [series({ points: [{ energyMeVPerNucl: 100, stoppingPower: 7.289 }] })],
+      series: [series({ points: [{ energyMeVPerNucl: 100, values: { stoppingPower: 7.289 } }] })],
     });
 
     expect(renderAnswer(i, r)).toEqual([
@@ -101,7 +103,12 @@ describe("renderAnswer — single (compareDim: none)", () => {
     });
     const r = result({
       quantity: "stoppingPower",
-      series: [series({ density: 1, points: [{ energyMeVPerNucl: 100, stoppingPower: 7.289 }] })],
+      series: [
+        series({
+          density: 1,
+          points: [{ energyMeVPerNucl: 100, values: { stoppingPower: 7.289 } }],
+        }),
+      ],
     });
 
     expect(renderAnswer(i, r)).toEqual([
@@ -121,7 +128,7 @@ describe("renderAnswer — single (compareDim: none)", () => {
       series: [
         series({
           density: 1.19,
-          points: [{ energyMeVPerNucl: 40, csdaRange: 1.529, stoppingPower: 14.48 }],
+          points: [{ energyMeVPerNucl: 40, values: { csdaRange: 1.529, stoppingPower: 14.48 } }],
         }),
       ],
     });
@@ -143,7 +150,7 @@ describe("renderAnswer — single (compareDim: none)", () => {
       // No `density` override — the series() helper's base omits the key
       // entirely, matching a real getDensity() lookup that failed for this
       // material (exactOptionalPropertyTypes forbids an explicit `undefined`).
-      series: [series({ points: [{ energyMeVPerNucl: 40, csdaRange: 1.529 }] })],
+      series: [series({ points: [{ energyMeVPerNucl: 40, values: { csdaRange: 1.529 } }] })],
     });
 
     expect(renderAnswer(i, r)).toEqual([
@@ -161,7 +168,7 @@ describe("renderAnswer — single (compareDim: none)", () => {
     });
     const r = result({
       quantity: "energyFromRange",
-      series: [series({ points: [{ energyMeVPerNucl: 100, energy: 100 }] })],
+      series: [series({ points: [{ energyMeVPerNucl: 100, values: { energyFromRange: 100 } }] })],
     });
 
     expect(renderAnswer(i, r)).toEqual([
@@ -183,7 +190,7 @@ describe("renderAnswer — single (compareDim: none)", () => {
         series({
           particle: { id: 6, name: "Carbon", massNumber: 12, isotope: "¹²C" },
           program: { id: 16, name: "MSTAR" },
-          points: [{ energyMeVPerNucl: 12, energy: 12 }],
+          points: [{ energyMeVPerNucl: 12, values: { energyFromStp: 12 } }],
         }),
       ],
     });
@@ -208,7 +215,7 @@ describe("renderAnswer — single (compareDim: none)", () => {
       series: [
         series({
           particle: { id: 2, name: "Helium", massNumber: 4, isotope: "⁴He" },
-          points: [{ energyMeVPerNucl: 1.066, energy: 1.066 }],
+          points: [{ energyMeVPerNucl: 1.066, values: { energyFromRange: 1.066 } }],
         }),
       ],
     });
@@ -228,7 +235,7 @@ describe("renderAnswer — single (compareDim: none)", () => {
     });
     const r = result({
       quantity: "energyFromRange",
-      series: [series({ points: [{ energyMeVPerNucl: 100, energy: 100 }] })],
+      series: [series({ points: [{ energyMeVPerNucl: 100, values: { energyFromRange: 100 } }] })],
     });
 
     expect(renderAnswer(i, r)).toEqual([
@@ -266,7 +273,7 @@ describe("renderAnswer — single (compareDim: none)", () => {
     });
     const r = result({
       quantity: "csdaRange",
-      series: [series({ points: [{ energyMeVPerNucl: 40, csdaRange: Number.NaN }] })],
+      series: [series({ points: [{ energyMeVPerNucl: 40, values: { csdaRange: Number.NaN } }] })],
     });
 
     expect(renderAnswer(i, r)).toEqual(["Couldn't compute an answer for that query."]);
@@ -284,7 +291,7 @@ describe("renderAnswer — single (compareDim: none)", () => {
       series: [
         series({
           particle: { id: 6, name: "Carbon", massNumber: 12, isotope: "¹²C" },
-          points: [{ energyMeVPerNucl: 0.02, csdaRange: 0.0001234 }],
+          points: [{ energyMeVPerNucl: 0.02, values: { csdaRange: 0.0001234 } }],
         }),
       ],
       assumptions: ["carbon → ¹²C", "240 keV taken as total → 20 keV/nucl"],
@@ -312,12 +319,12 @@ describe("renderAnswer — comparisons", () => {
         series({
           material: { id: 276, name: "Water, Liquid" },
           program: { id: 16, name: "MSTAR" },
-          points: [{ energyMeVPerNucl: 100, stoppingPower: 8.5 }],
+          points: [{ energyMeVPerNucl: 100, values: { stoppingPower: 8.5 } }],
         }),
         series({
           material: { id: 104, name: "Air, Dry" },
           program: { id: 16, name: "MSTAR" },
-          points: [{ energyMeVPerNucl: 100, stoppingPower: 6.1 }],
+          points: [{ energyMeVPerNucl: 100, values: { stoppingPower: 6.1 } }],
         }),
       ],
     });
@@ -345,13 +352,13 @@ describe("renderAnswer — comparisons", () => {
           density: 1,
           material: { id: 276, name: "Water, Liquid" },
           program: { id: 16, name: "MSTAR" },
-          points: [{ energyMeVPerNucl: 100, stoppingPower: 8.5 }],
+          points: [{ energyMeVPerNucl: 100, values: { stoppingPower: 8.5 } }],
         }),
         series({
           density: 1.2,
           material: { id: 104, name: "Air, Dry" },
           program: { id: 16, name: "MSTAR" },
-          points: [{ energyMeVPerNucl: 100, stoppingPower: 6.1 }],
+          points: [{ energyMeVPerNucl: 100, values: { stoppingPower: 6.1 } }],
         }),
       ],
     });
@@ -377,11 +384,11 @@ describe("renderAnswer — comparisons", () => {
       series: [
         series({
           program: { id: 2, name: "PSTAR" },
-          points: [{ energyMeVPerNucl: 100, csdaRange: 7.7 }],
+          points: [{ energyMeVPerNucl: 100, values: { csdaRange: 7.7 } }],
         }),
         series({
           program: { id: 16, name: "MSTAR" },
-          points: [{ energyMeVPerNucl: 8.33, csdaRange: 0.28 }],
+          points: [{ energyMeVPerNucl: 8.33, values: { csdaRange: 0.28 } }],
         }),
       ],
     });
@@ -407,11 +414,11 @@ describe("renderAnswer — comparisons", () => {
       series: [
         series({
           program: { id: 2, name: "PSTAR" },
-          points: [{ energyMeVPerNucl: 100, csdaRange: 7.7 }],
+          points: [{ energyMeVPerNucl: 100, values: { csdaRange: 7.7 } }],
         }),
         series({
           program: { id: 6, name: "ICRU49" },
-          points: [{ energyMeVPerNucl: 100, csdaRange: 7.65 }],
+          points: [{ energyMeVPerNucl: 100, values: { csdaRange: 7.65 } }],
         }),
       ],
     });
@@ -440,8 +447,8 @@ describe("renderAnswer — comparisons", () => {
       series: [
         series({
           points: [
-            { energyMeVPerNucl: 50, stoppingPower: 12.45 },
-            { energyMeVPerNucl: 100, stoppingPower: 7.289 },
+            { energyMeVPerNucl: 50, values: { stoppingPower: 12.45 } },
+            { energyMeVPerNucl: 100, values: { stoppingPower: 7.289 } },
           ],
         }),
       ],
@@ -466,7 +473,7 @@ describe("renderAnswer — comparisons", () => {
       quantity: "stoppingPower",
       compareDim: "material",
       series: [
-        series({ points: [{ energyMeVPerNucl: 100, stoppingPower: 7.289 }] }),
+        series({ points: [{ energyMeVPerNucl: 100, values: { stoppingPower: 7.289 } }] }),
         series({ points: [], error: "Could not resolve material" }),
       ],
     });
@@ -515,8 +522,8 @@ describe("renderAnswer — comparisons", () => {
       quantity: "stoppingPower",
       compareDim: "material",
       series: [
-        series({ points: [{ energyMeVPerNucl: 100, stoppingPower: 7.289 }] }),
-        series({ points: [{ energyMeVPerNucl: 100, stoppingPower: Number.NaN }] }),
+        series({ points: [{ energyMeVPerNucl: 100, values: { stoppingPower: 7.289 } }] }),
+        series({ points: [{ energyMeVPerNucl: 100, values: { stoppingPower: Number.NaN } }] }),
       ],
     });
 
@@ -550,12 +557,12 @@ describe("issue #163 C1/C2/B8 — total→per-nucleon disclosure derived per ser
         series({
           particle: { id: 6, name: "Carbon", massNumber: 12, isotope: "¹²C" },
           program: { id: 15, name: "ICRU73" },
-          points: [{ energyMeVPerNucl: 400 / 12, csdaRange: 0.3626 }],
+          points: [{ energyMeVPerNucl: 400 / 12, values: { csdaRange: 0.3626 } }],
         }),
         series({
           particle: { id: 10, name: "Neon", massNumber: 20, isotope: "²⁰Ne" },
           program: { id: 15, name: "ICRU73" },
-          points: [{ energyMeVPerNucl: 400 / 20, csdaRange: 0.08914 }],
+          points: [{ energyMeVPerNucl: 400 / 20, values: { csdaRange: 0.08914 } }],
         }),
       ],
     });
@@ -582,7 +589,7 @@ describe("issue #163 C1/C2/B8 — total→per-nucleon disclosure derived per ser
         series({
           particle: { id: 6, name: "Carbon", massNumber: 12, isotope: "¹²C" },
           program: { id: 15, name: "ICRU73" },
-          points: [{ energyMeVPerNucl: 400 / 12, csdaRange: 0.3626 }],
+          points: [{ energyMeVPerNucl: 400 / 12, values: { csdaRange: 0.3626 } }],
         }),
       ],
       assumptions: [],
@@ -601,7 +608,7 @@ describe("issue #163 C1/C2/B8 — total→per-nucleon disclosure derived per ser
     });
     const r = result({
       quantity: "csdaRange",
-      series: [series({ points: [{ energyMeVPerNucl: 100, csdaRange: 7.7 }] })],
+      series: [series({ points: [{ energyMeVPerNucl: 100, values: { csdaRange: 7.7 } }] })],
     });
 
     expect(renderAnswer(i, r)).toEqual([

@@ -22,7 +22,7 @@ function series(partial: Partial<ComputeSeries> = {}): ComputeSeries {
     particle: { id: 1, name: "Hydrogen", massNumber: 1, isotope: "" },
     material: { id: 276, name: "Water, Liquid" },
     program: { id: 2, name: "PSTAR" },
-    points: [{ energyMeVPerNucl: 100, stoppingPower: 7.29 }],
+    points: [{ energyMeVPerNucl: 100, values: { stoppingPower: 7.29 } }],
     ...partial,
   };
 }

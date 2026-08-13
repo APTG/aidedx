@@ -22,7 +22,7 @@ import { LibdedxServiceImpl } from "../src/lib/wasm/libdedx.ts";
 import type { LibdedxModuleFactory, LibdedxService } from "../src/lib/wasm/types.ts";
 import { matchIntent } from "../src/lib/intent/matcher.ts";
 import type { Lang } from "../src/lib/intent/lang/types.ts";
-import { computeIntent, ComputeError } from "../src/lib/compute/compute.ts";
+import { computeIntent, ComputeError, type ComputePoint } from "../src/lib/compute/compute.ts";
 import { validateQueryIntent, type QueryIntent } from "../src/lib/intent/query-intent.ts";
 
 interface Candidate {
@@ -60,12 +60,13 @@ export async function loadService(): Promise<LibdedxService> {
   return service;
 }
 
-function summarizePoint(intent: QueryIntent, point: Record<string, unknown>): string {
+function summarizePoint(intent: QueryIntent, point: ComputePoint): string {
   const isInverse = intent.quantity === "energyFromRange" || intent.quantity === "energyFromStp";
-  if (isInverse) return `energy ≈ ${Number(point.energy).toPrecision(4)} MeV/nucl`;
+  const value = point.values[intent.quantity];
+  if (isInverse) return `energy ≈ ${Number(value).toPrecision(4)} MeV/nucl`;
   if (intent.quantity === "stoppingPower")
-    return `stoppingPower ≈ ${Number(point.stoppingPower).toPrecision(4)} MeV·cm²/g`;
-  return `csdaRange ≈ ${Number(point.csdaRange).toPrecision(4)} g/cm²`;
+    return `stoppingPower ≈ ${Number(value).toPrecision(4)} MeV·cm²/g`;
+  return `csdaRange ≈ ${Number(value).toPrecision(4)} g/cm²`;
 }
 
 /** Check one candidate. Never throws — failures are reported, not raised. */
@@ -141,19 +142,14 @@ export function checkCandidate(
     };
   }
 
-  // Every series must carry a finite, positive number in the field the quantity actually
-  // uses — "no exception raised" is not "meaningful output" (an energyFromStp target fed
-  // a unit the converter silently mis-scales would still produce *a* finite number).
-  const isInverse = intent.quantity === "energyFromRange" || intent.quantity === "energyFromStp";
+  // Every series must carry a finite, positive number for the quantity actually asked for —
+  // "no exception raised" is not "meaningful output" (an energyFromStp target fed a unit the
+  // converter silently mis-scales would still produce *a* finite number).
   for (const s of result.series) {
     const p = s.points[0];
     if (!p)
       return { id, text, ok: false, reason: `${s.label}: empty points`, intent, quantitySource };
-    const value = isInverse
-      ? p.energy
-      : intent.quantity === "stoppingPower"
-        ? p.stoppingPower
-        : p.csdaRange;
+    const value = p.values[intent.quantity];
     if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) {
       return {
         id,
@@ -166,7 +162,7 @@ export function checkCandidate(
     }
   }
 
-  const firstPoint = result.series[0]?.points[0] as Record<string, unknown> | undefined;
+  const firstPoint = result.series[0]?.points[0];
   return {
     id,
     text,
