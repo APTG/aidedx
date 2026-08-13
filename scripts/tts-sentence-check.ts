@@ -170,7 +170,9 @@ export function checkCandidate(
     intent,
     quantitySource,
     confidence: intent.confidence,
-    numericSummary: firstPoint ? summarizePoint(intent, firstPoint) : undefined,
+    // `exactOptionalPropertyTypes` treats an explicit `undefined` as distinct from an absent key —
+    // this must be omitted, not set, when there's no point to summarize.
+    ...(firstPoint ? { numericSummary: summarizePoint(intent, firstPoint) } : {}),
   };
 }
 

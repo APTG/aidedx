@@ -14,15 +14,16 @@ start with the [root README](../README.md) — this folder is the deep-dive mate
 
 Docs that map 1:1 to shipped code — read these when working on the corresponding piece.
 
-| Doc                                                        | Covers                                                                           |
-| ---------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| [`nlu.md`](./nlu.md)                                       | Deterministic NLU matcher (`src/lib/intent/matcher.ts`) + coverage harness.      |
-| [`aliases.md`](./aliases.md)                               | Material/particle alias tables (`src/lib/aliases/`) — provenance & regeneration. |
-| [`wasm.md`](./wasm.md)                                     | libdedx WASM wrapper (`src/lib/wasm/`) — vendored binaries & rebuild steps.      |
-| [`answer-pipeline.md`](./answer-pipeline.md)               | matcher → compute → NLG → UI state; unit conversion; error messages.             |
-| [`status-panel-design.md`](./status-panel-design.md)       | Model-status header, download-consent, and clear-cache UX.                       |
-| [`model-hosting-cyfronet.md`](./model-hosting-cyfronet.md) | Mirroring model weights to Cyfronet S3 instead of Hugging Face's CDN.            |
-| [`local-model-cache.md`](./local-model-cache.md)           | The `.hf-cache/` Node-side prefetch convention used by benchmark scripts.        |
+| Doc                                                        | Covers                                                                                                                       |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| [`nlu.md`](./nlu.md)                                       | Deterministic NLU matcher (`src/lib/intent/matcher.ts`) + coverage harness.                                                  |
+| [`aliases.md`](./aliases.md)                               | Material/particle alias tables (`src/lib/aliases/`) — provenance & regeneration.                                             |
+| [`coverage.md`](./coverage.md)                             | What aidedx can and cannot compute — generated from the alias tables + libdedx's own program/particle/material availability. |
+| [`wasm.md`](./wasm.md)                                     | libdedx WASM wrapper (`src/lib/wasm/`) — vendored binaries & rebuild steps.                                                  |
+| [`answer-pipeline.md`](./answer-pipeline.md)               | matcher → compute → NLG → UI state; unit conversion; error messages.                                                         |
+| [`status-panel-design.md`](./status-panel-design.md)       | Model-status header, download-consent, and clear-cache UX.                                                                   |
+| [`model-hosting-cyfronet.md`](./model-hosting-cyfronet.md) | Mirroring model weights to Cyfronet S3 instead of Hugging Face's CDN.                                                        |
+| [`local-model-cache.md`](./local-model-cache.md)           | The `.hf-cache/` Node-side prefetch convention used by benchmark scripts.                                                    |
 
 ## Research & benchmark reports
 

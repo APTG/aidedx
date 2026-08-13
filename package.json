@@ -24,6 +24,7 @@
     "bench:nlu": "node scripts/bench-nlu.ts",
     "llm:nlu-eval": "node scripts/llm-nlu-eval.ts",
     "generate:aliases": "node scripts/generate-aliases.ts",
+    "generate:coverage": "node scripts/generate-coverage-doc.ts",
     "generate:lexicon": "node scripts/generate-lexicon.ts",
     "bench:asr-browser": "node scripts/asr-browser-benchmark.mjs",
     "asr:transcribe": "node scripts/asr-transcribe.mjs",
