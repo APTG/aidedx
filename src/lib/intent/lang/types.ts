@@ -31,6 +31,26 @@ export interface LangPack {
 
   /** Words that never start/own a material phrase on their own. */
   MATERIAL_STOPWORDS: ReadonlySet<string>;
+  /**
+   * issue #163 C8 — the "in <phrase>" shape `detectUnresolvedMaterialPhrase()` in matcher.ts
+   * falls back to when no material was otherwise resolved (issue #163 B3). Capture group 1 must
+   * be the candidate phrase. Null when the language has no such fallback shape yet.
+   */
+  UNRESOLVED_MATERIAL_RE: RegExp | null;
+  /**
+   * issue #163 C8 — filler phrases matching `UNRESOLVED_MATERIAL_RE`'s shape that are not a
+   * material mention ("in general", "in theory"; Polish "w ogóle", "w teorii"). Lowercased,
+   * compared against the captured phrase.
+   */
+  UNRESOLVED_MATERIAL_FILLERS: ReadonlySet<string>;
+  /**
+   * issue #163 C8 — the "of <phrase> in ..." shape `detectUnresolvedParticlePhrase()` in
+   * matcher.ts falls back to when no particle was otherwise resolved (issue #163 B3). Capture
+   * group 1 must be the candidate phrase. Null when the language expresses this head-first
+   * instead (e.g. Polish's genitive "jon <particle>", already covered by `PARTICLE_HEAD_RE`, so
+   * there is no separate unresolved-particle shape to add).
+   */
+  UNRESOLVED_PARTICLE_RE: RegExp | null;
 
   /** Connector regex source between list members ("X, Y, and Z" / "X, Y i Z"). */
   LIST_SEP_SRC: string;

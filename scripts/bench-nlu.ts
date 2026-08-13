@@ -42,6 +42,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { correctTranscript } from "../src/lib/asr/correct/core.ts";
 import { formatReport, runCoverage } from "../src/lib/intent/coverage.ts";
+import { matchIntent } from "../src/lib/intent/matcher.ts";
 import {
   parseEvalRecords,
   type EnergyUnit,
@@ -134,6 +135,9 @@ const KEV_VALUES = [200, 300, 500, 800];
 const GEV_VALUES = [1, 2, 3, 5];
 const MEV_PER_NUCL_VALUES = [80, 100, 150, 200, 250, 300];
 const RANGE_TARGETS_CM = [2, 5, 8, 10, 12, 15, 20];
+/** Round hundreds only — every spelled-out form starts with "<word> hundred", the shape needed
+ * to reproduce issue #163 C5(b)'s adversarial input (see `spellOutHundredsSharedUnit()` below). */
+const HUNDREDS_MEV_VALUES = [100, 200, 300, 400, 500];
 const STP_TARGETS_KEVUM = [5, 10, 20, 50, 80, 100];
 const STP_TARGETS_MEVCM2G = [2, 5, 8, 10, 15];
 
@@ -183,6 +187,15 @@ function energyFor(particle: ParticlePool): EnergyDraw {
  * compareDim: "energy" is about the energy axis, not particle mass class). */
 function energyListForProtons(n: number): { draws: EnergyDraw[]; text: string } {
   const values = pickN(MEV_VALUES, n).sort((a, b) => a - b);
+  const draws = values.map((value) => ({ value, unit: "MeV" as const, text: `${value} MeV` }));
+  return { draws, text: joinList(draws.map((d) => d.text)) };
+}
+
+/** A two-item, round-hundreds energy list, protons only — digit form here, spelled out into the
+ * exact issue #163 C5(b) adversarial shape ("one hundred and two hundred MeV") by
+ * `spellOutHundredsSharedUnit()`'s mutation below. */
+function hundredsEnergyPairForProtons(): { draws: EnergyDraw[]; text: string } {
+  const values = pickN(HUNDREDS_MEV_VALUES, 2).sort((a, b) => a - b);
   const draws = values.map((value) => ({ value, unit: "MeV" as const, text: `${value} MeV` }));
   return { draws, text: joinList(draws.map((d) => d.text)) };
 }
@@ -549,6 +562,65 @@ for (const quantity of ["stoppingPower", "csdaRange"] as const) {
   });
 }
 
+// --- compare-energy, round hundreds (issue #163 C5(b) regression guard) -----------------------
+// Digit form here; `spellOutHundredsSharedUnit()`'s mutation below turns this into the exact
+// "one hundred and two hundred MeV" shape that used to collapse in `composeHundreds()`.
+for (const quantity of ["stoppingPower", "csdaRange"] as const) {
+  builders.push(() => {
+    const particle = PROTON;
+    const material = pick(MATERIALS);
+    const { draws, text: energyText } = hundredsEnergyPairForProtons();
+    const kw = quantity === "stoppingPower" ? "stopping power" : "range";
+    const text = `What are the ${kw} at ${energyText} for ${particle.listForm} in ${material}?`;
+    return makeExample(
+      text,
+      quantity,
+      [{ match: particle.listForm }],
+      [{ match: material }],
+      draws,
+      [
+        "direct",
+        `quantity-${quantity === "csdaRange" ? "csda-range" : "stopping-power"}`,
+        "compare-energy",
+        "round-hundreds",
+      ],
+    );
+  });
+}
+
+// --- unresolved-detector false-positive guards (issue #163 C4) ---------------------------------
+// No material named at all — `detectUnresolvedMaterialPhrase()` must not mistake the trailing
+// output-unit clause for an unresolved material mention (it used to, hard-dead-ending a query
+// that previously answered by defaulting to water). `expected.materials` is `[]` either way; the
+// regression this guards against only shows up in `matchIntent()`'s `unresolved` list, checked
+// separately in `main()` below, not in `compareIntent()`'s slot comparison.
+builders.push(() => {
+  const particle = PROTON;
+  const energy = energyFor(particle);
+  const text = `What is the stopping power of a ${energy.text} ${particle.phrase}, in MeV per cm?`;
+  return makeExample(
+    text,
+    "stoppingPower",
+    [{ match: particle.phrase }],
+    [],
+    [energy],
+    ["direct", "quantity-stopping-power", "single", "in-unit-tail"],
+  );
+});
+builders.push(() => {
+  const particle = PROTON;
+  const energy = energyFor(particle);
+  const text = `What is the range of a ${energy.text} ${particle.phrase}, in centimeters?`;
+  return makeExample(
+    text,
+    "csdaRange",
+    [{ match: particle.phrase }],
+    [],
+    [energy],
+    ["direct", "quantity-csda-range", "single", "in-unit-tail"],
+  );
+});
+
 // --- unit variants ------------------------------------------------------------------------------
 builders.push(() => {
   const particle = PROTON;
@@ -670,6 +742,22 @@ function dropListConnector(text: string): string {
   return text.replace(/ and /, " ");
 }
 
+/**
+ * issue #163 C5(b) regression guard — the mutation layer had no generator for the exact
+ * adversarial shape that used to collapse in `composeHundreds()`: two round-hundred energies
+ * joined by "and" sharing one trailing unit ("one hundred and two hundred MeV"), not each energy
+ * repeating its own unit the way `spell-out-numbers` alone would leave it. Only fires on the
+ * two-item, round-hundred "X MeV and Y MeV" text the "round-hundreds" compare-energy builder
+ * produces, collapsing the middle unit and spelling both numbers out the way an ASR transcript
+ * with no inverse-text-normalization actually would (issue #122).
+ */
+function spellOutHundredsSharedUnit(text: string): string {
+  return text.replace(
+    /\b(\d{3,})\s+MeV\s+and\s+(\d{3,})\s+MeV\b/,
+    (_m, a: string, b: string) => `${numberToWords(Number(a))} and ${numberToWords(Number(b))} MeV`,
+  );
+}
+
 const MUTATIONS: ReadonlyArray<{
   kind: string;
   fn: (t: string) => string;
@@ -680,6 +768,11 @@ const MUTATIONS: ReadonlyArray<{
   { kind: "glue-unit-to-number", fn: glueUnitToNumber },
   { kind: "split-unit-letters", fn: splitUnitLetters, onlyIf: (t) => /\b(MeV|keV|GeV)\b/.test(t) },
   { kind: "drop-list-connector", fn: dropListConnector, onlyIf: (t) => / and /.test(t) },
+  {
+    kind: "spell-out-hundreds-shared-unit",
+    fn: spellOutHundredsSharedUnit,
+    onlyIf: (t) => /\b\d{3,}\s+MeV\s+and\s+\d{3,}\s+MeV\b/.test(t),
+  },
 ];
 
 function applyMutations(canonical: EvalExample[]): EvalExample[] {
@@ -786,6 +879,21 @@ function main(): void {
         `${delta <= 0 ? "" : "+"}${delta.toFixed(1)}pp`,
     );
   }
+
+  // issue #163 C4 — `compareIntent()`'s slot comparison can't see a false unresolved-material
+  // entry (materials stays `[]` whether or not the bug is present), so this checks
+  // `matchIntent()`'s `unresolved` list directly for the "in <unit>" builders above.
+  const inUnitTail = canonical.filter((e) => e.tags.includes("in-unit-tail"));
+  const inUnitTailFalsePositives = inUnitTail.filter(
+    (e) => matchIntent(e.text).unresolved.length > 0,
+  );
+  console.log(
+    `\n"in <unit>" false-positive guard (issue #163 C4): ` +
+      `${inUnitTail.length - inUnitTailFalsePositives.length}/${inUnitTail.length} clean` +
+      (inUnitTailFalsePositives.length > 0
+        ? ` — REGRESSION: ${inUnitTailFalsePositives.map((e) => e.text).join(" | ")}`
+        : ""),
+  );
 
   // Reported metric: never gate CI.
   process.exit(0);

@@ -232,6 +232,42 @@ export const MATERIAL_STOPWORDS = new Set([
   "goes",
 ]);
 
+/**
+ * issue #163 B3/C8 — the word(s) immediately after "in", by far the dominant way a target
+ * material is phrased directly in this domain. Capped at two words by the capture group's own
+ * shape; the caller rejects a leading function word or a unit word (issue #163 C4) separately.
+ */
+export const UNRESOLVED_MATERIAL_RE = /\bin\s+([a-z][a-z-]*(?:\s+[a-z][a-z-]*)?)\b/gi;
+
+/** "in general"/"in theory"/"in this case" etc. are common filler this domain's queries also
+ * contain and are not material mentions — rejected before `UNRESOLVED_MATERIAL_RE`'s capture is
+ * accepted as a candidate phrase. */
+export const UNRESOLVED_MATERIAL_FILLERS = new Set([
+  "general",
+  "theory",
+  "practice",
+  "particular",
+  "fact",
+  "summary",
+  "short",
+  "addition",
+  "conclusion",
+  "reality",
+  "detail",
+  "total",
+  "comparison",
+  "this case",
+  "that case",
+  "other words",
+]);
+
+/**
+ * issue #163 B3/C8, particle side — "range of muons in water" / "stopping power of pions in
+ * water" shaped queries: the word(s) between "of" and "in", the shape every one of this domain's
+ * direct-phrasing queries already uses for the particle.
+ */
+export const UNRESOLVED_PARTICLE_RE = /\bof\s+([a-z][a-z-]*(?:\s+[a-z][a-z-]*)?)\s+in\b/gi;
+
 /** Connector between list members, allowing a serial-comma "X, Y, and Z". */
 export const LIST_SEP_SRC =
   "(?:\\s*,\\s*(?:and\\s+|or\\s+)?|\\s+and\\s+|\\s+or\\s+|\\s+versus\\s+|\\s+vs\\.?\\s+)";
