@@ -52,9 +52,15 @@ if (typeof window === "undefined") {
 
     const request =
       coepCredentialless && r.mode === "no-cors" ? new Request(r, { credentials: "omit" }) : r;
-    // issue #217: only same-origin GET responses go into the runtime cache —
-    // see the module-level comment above.
-    const isCacheableGet = r.method === "GET" && new URL(r.url).origin === self.location.origin;
+    // issue #217: writes into our own runtime cache stay same-origin-only —
+    // see the module-level comment above. The offline *read* fallback below
+    // is broader (any GET, same- or cross-origin): a cross-origin GET (e.g.
+    // the Cyfronet S3 model-weight mirror) still passes through this same
+    // fetch handler, and transformers.js's own "transformers-cache" bucket
+    // may already hold a cached response for it worth trying before giving
+    // up.
+    const isGet = r.method === "GET";
+    const isSameOriginGet = isGet && new URL(r.url).origin === self.location.origin;
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -77,7 +83,7 @@ if (typeof window === "undefined") {
                     headers: newHeaders,
                   });
                 })();
-          if (isCacheableGet) {
+          if (isSameOriginGet) {
             const toCache = withCoiHeaders.clone();
             caches
               .open(AIDEDX_RUNTIME_CACHE_NAME)
@@ -88,14 +94,17 @@ if (typeof window === "undefined") {
         })
         .catch(async (e) => {
           // issue #217: a live fetch failure (e.g. offline) isn't necessarily
-          // fatal — a prior successful fetch above may have already left
-          // this exact resource in Cache Storage, either in our own runtime
-          // cache or (for ONNX Runtime Web's wasm/mjs, when `env.useWasmCache`
-          // applies — see `models/download.ts`'s module comment) in
-          // transformers.js's own "transformers-cache" bucket. Search every
-          // bucket (unscoped `caches.match`) rather than just ours, so both
-          // count.
-          if (isCacheableGet) {
+          // fatal — a prior successful fetch above (same- or cross-origin)
+          // may have already left this exact resource in Cache Storage,
+          // either in our own runtime cache or (for the cross-origin model
+          // weights, and for ONNX Runtime Web's wasm/mjs when
+          // `env.useWasmCache` applies — see `models/download.ts`'s module
+          // comment) in transformers.js's own "transformers-cache" bucket.
+          // Search every bucket (unscoped `caches.match`) rather than just
+          // ours, so all of these count — and for any GET, not just
+          // same-origin ones, since only the *write* above is same-origin
+          // restricted.
+          if (isGet) {
             const cached = await caches.match(r);
             if (cached) return cached;
           }
