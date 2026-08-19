@@ -87,6 +87,6 @@ dependencies {
     // issue #136 goal 4 — a real (non-Android-stub) org.json so the matcher-vs-TS agreement
     // check (KotlinMatcherAgreementTest, a local JVM unit test — no device/emulator needed) can
     // parse the same static/aliases/*.json the app itself bundles as assets.
-    testImplementation 'org.json:json:20260719'
+    testImplementation 'org.json:json:20260814'
     testImplementation 'junit:junit:4.13.2'
 }
