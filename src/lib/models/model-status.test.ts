@@ -12,6 +12,8 @@ const mocks = vi.hoisted(() => ({
   detectHardware: vi.fn(),
   getMemoryEstimate: vi.fn(),
   detectCpuThreads: vi.fn(),
+  getService: vi.fn(),
+  asrPrewarm: vi.fn(),
 }));
 
 class FakeDownloadCancelledError extends Error {
@@ -43,6 +45,12 @@ vi.mock("$lib/system/memory.ts", () => ({
 vi.mock("$lib/system/threading.ts", () => ({
   detectCpuThreads: mocks.detectCpuThreads,
 }));
+vi.mock("$lib/wasm/sveltekit.ts", () => ({
+  getService: mocks.getService,
+}));
+vi.mock("$lib/asr/asr-status.svelte.ts", () => ({
+  asrStatus: { prewarm: mocks.asrPrewarm },
+}));
 
 const CPU_HARDWARE: HardwareInfo = { kind: "cpu", label: "CPU only" };
 
@@ -59,6 +67,8 @@ describe("modelStatus store", () => {
     mocks.detectCpuThreads
       .mockReset()
       .mockReturnValue({ logicalCores: null, threadsUsed: 1, crossOriginIsolated: false });
+    mocks.getService.mockReset().mockResolvedValue({});
+    mocks.asrPrewarm.mockReset();
   });
 
   afterEach(() => {
@@ -151,6 +161,46 @@ describe("modelStatus store", () => {
 
     expect(store.phase).toBe("ready");
     expect(store.diskUsedMB).toBe(92);
+  });
+
+  it("precaches the compute WASM service and warms the ASR worker after a successful download (issue #217)", async () => {
+    mocks.downloadModelWeights.mockResolvedValue(undefined);
+    const store = await loadStore();
+    await store.init();
+
+    await store.startDownload();
+
+    expect(mocks.getService).toHaveBeenCalledTimes(1);
+    expect(mocks.asrPrewarm).toHaveBeenCalledTimes(1);
+    expect(store.phase).toBe("ready");
+  });
+
+  it("still reaches ready when precaching getService() fails — model weights are already safely cached (issue #217)", async () => {
+    mocks.downloadModelWeights.mockResolvedValue(undefined);
+    mocks.getService.mockRejectedValue(new Error("wasm compile failed"));
+    const store = await loadStore();
+    await store.init();
+
+    await store.startDownload();
+
+    expect(store.phase).toBe("ready");
+    expect(store.errorMessage).toBeNull();
+    // Still attempted, even though getService() failed.
+    expect(mocks.asrPrewarm).toHaveBeenCalledTimes(1);
+  });
+
+  it("still reaches ready when prewarming the ASR worker throws (issue #217)", async () => {
+    mocks.downloadModelWeights.mockResolvedValue(undefined);
+    mocks.asrPrewarm.mockImplementation(() => {
+      throw new Error("Worker is not defined");
+    });
+    const store = await loadStore();
+    await store.init();
+
+    await store.startDownload();
+
+    expect(store.phase).toBe("ready");
+    expect(store.errorMessage).toBeNull();
   });
 
   it("reverts to fresh without setting an error message when the download is cancelled", async () => {
