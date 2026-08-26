@@ -66,8 +66,8 @@ importers:
         specifier: ^4.0.1
         version: 4.1.1(prettier@3.9.6)(svelte@5.56.8(@typescript-eslint/types@8.67.0))
       sherpa-onnx-node:
-        specifier: 1.13.4
-        version: 1.13.4
+        specifier: 1.13.6
+        version: 1.13.6
       svelte:
         specifier: ^5.56.8
         version: 5.56.8(@typescript-eslint/types@8.67.0)
@@ -1630,36 +1630,36 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  sherpa-onnx-darwin-arm64@1.13.4:
-    resolution: {integrity: sha512-QcYKzyrTzGSx6aKCD6hUODgRS1LetqfG57Z/+i5LCyfMlrgCvDc1lRcl9cdB+TozBsLha9QwLTlI0vmDcf5JKg==}
+  sherpa-onnx-darwin-arm64@1.13.6:
+    resolution: {integrity: sha512-m3QMOGUHVPUl7bAOPc7oJtmzOVdzQVQPsCuTjNuQ2N6zlYuXDZu9NdUR3Er3rxbhHa6SmWa94flUwmUsO1atow==}
     cpu: [arm64]
     os: [darwin]
 
-  sherpa-onnx-darwin-x64@1.13.4:
-    resolution: {integrity: sha512-6RGeis9K9gV/UQWOgd6Rf3iqXr2/YsBQswxHaCR4hrYkHfEIpHMfFmRWLt6nJJCOWgYW2xFxEd9yzjrafAV/Pw==}
+  sherpa-onnx-darwin-x64@1.13.6:
+    resolution: {integrity: sha512-3X5FQ9PpwlBmxLqtb2/uvl7/W2HXXzXHT0MLmB9c0TRMANLujzvIF7YbT6VW3k92ClL/1q9sbIOul0rHgxCTmw==}
     cpu: [x64]
     os: [darwin]
 
-  sherpa-onnx-linux-arm64@1.13.4:
-    resolution: {integrity: sha512-RMjMRqT82BgTXypNNGmLe6ZFYhc3WEvnAGl3DdkK7qB/kuXwkL3iHhV31wAecbnWPsnEpUoD+8cFovWSBzsCuw==}
+  sherpa-onnx-linux-arm64@1.13.6:
+    resolution: {integrity: sha512-xSzhqrGFbBrykpbEFt5dLXB3Sp3a8idNzjhf92uylDgUhupBSRHj3ISeYaL9ZZWTNSzszNXBKlM+xH36dHQjPg==}
     cpu: [arm64]
     os: [linux]
 
-  sherpa-onnx-linux-x64@1.13.4:
-    resolution: {integrity: sha512-WZh5NCkGPFHHpYSd78iN4OnmxQeSTGyt9uZskH+im/NFHQ7elQ7B0sLzCMeRpvJxiIKvd9C6WxIJ4hYaxClfsQ==}
+  sherpa-onnx-linux-x64@1.13.6:
+    resolution: {integrity: sha512-HiR3yolQDl3WoU1zSXn8L0MSXzF9PXLQpMv+Ptozg1y/DJU8HuvoXBasOarX4cer5d9kGimnOUGm0dl47PCN1A==}
     cpu: [x64]
     os: [linux]
 
-  sherpa-onnx-node@1.13.4:
-    resolution: {integrity: sha512-jHWWdY9f0dbvJpdsfR/C4WNhM57+jT9Os2RyC4/qUz8HKCtj2VYFmJ9s7tue9OCFRAmdoGBkgkqD6aBZ3I8BKw==}
+  sherpa-onnx-node@1.13.6:
+    resolution: {integrity: sha512-FjUSQSStTi/wcLqlScGFmNA7ySjW3QwquJcMRJ1yDkDpBp0BmWXkXoirDuEj8/v2/Cs4wLYJp2BKaMD9+1lDGA==}
 
-  sherpa-onnx-win-ia32@1.13.4:
-    resolution: {integrity: sha512-/JbPjldrfNv+t+uIS3MlkuhfIf5l3FHUGkRC2oRXgjRqOaVmEyP3vLlQ7dTa4J7raG5oB8c3GoPjuSWSqT9GOQ==}
+  sherpa-onnx-win-ia32@1.13.6:
+    resolution: {integrity: sha512-CN6rNQqn0wzdSp3XRHxdmNaLUMhP+BgsWVbaASU+V9CYBdx74uutoA/43ThUfh3S3CiArpp8OJtn8dJrPeGHnw==}
     cpu: [ia32]
     os: [win32]
 
-  sherpa-onnx-win-x64@1.13.4:
-    resolution: {integrity: sha512-R0PWby1VxC14TDZPq7GcfSyXSY6SAFO8Y4JwdCdqouFmeXkZ1L7Is9m98C9KxQ0dN7ZtDzhAmE/43FUs/elXRQ==}
+  sherpa-onnx-win-x64@1.13.6:
+    resolution: {integrity: sha512-bPMdURD1XCu1Zr3eYYlYx2obc5CMSQhEnd1GQuv7FXjdyOeMJ8jNbQEKFEIAyQdC481FgZvPBb2oSJXaLOOeVw==}
     cpu: [x64]
     os: [win32]
 
@@ -3297,31 +3297,31 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  sherpa-onnx-darwin-arm64@1.13.4:
+  sherpa-onnx-darwin-arm64@1.13.6:
     optional: true
 
-  sherpa-onnx-darwin-x64@1.13.4:
+  sherpa-onnx-darwin-x64@1.13.6:
     optional: true
 
-  sherpa-onnx-linux-arm64@1.13.4:
+  sherpa-onnx-linux-arm64@1.13.6:
     optional: true
 
-  sherpa-onnx-linux-x64@1.13.4:
+  sherpa-onnx-linux-x64@1.13.6:
     optional: true
 
-  sherpa-onnx-node@1.13.4:
+  sherpa-onnx-node@1.13.6:
     optionalDependencies:
-      sherpa-onnx-darwin-arm64: 1.13.4
-      sherpa-onnx-darwin-x64: 1.13.4
-      sherpa-onnx-linux-arm64: 1.13.4
-      sherpa-onnx-linux-x64: 1.13.4
-      sherpa-onnx-win-ia32: 1.13.4
-      sherpa-onnx-win-x64: 1.13.4
+      sherpa-onnx-darwin-arm64: 1.13.6
+      sherpa-onnx-darwin-x64: 1.13.6
+      sherpa-onnx-linux-arm64: 1.13.6
+      sherpa-onnx-linux-x64: 1.13.6
+      sherpa-onnx-win-ia32: 1.13.6
+      sherpa-onnx-win-x64: 1.13.6
 
-  sherpa-onnx-win-ia32@1.13.4:
+  sherpa-onnx-win-ia32@1.13.6:
     optional: true
 
-  sherpa-onnx-win-x64@1.13.4:
+  sherpa-onnx-win-x64@1.13.6:
     optional: true
 
   siginfo@2.0.0: {}
