@@ -36,6 +36,6 @@ configurations.all {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.8.0'
     implementation 'com.microsoft.onnxruntime:onnxruntime-android:1.28.0'
 }
