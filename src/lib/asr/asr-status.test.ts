@@ -280,4 +280,27 @@ describe("asrStatus", () => {
     expect(mocks.workerWarm).toHaveBeenCalledTimes(1);
     expect(store.phase).toBe("error");
   });
+
+  it("prewarm() warms the worker without touching the recorder or phase (issue #217)", async () => {
+    const store = await loadStore();
+
+    store.prewarm();
+
+    expect(mocks.workerWarm).toHaveBeenCalledTimes(1);
+    expect(mocks.recorderStart).not.toHaveBeenCalled();
+    expect(store.phase).toBe("idle");
+  });
+
+  it("prewarm() reuses the same worker client a later start()/stop() uses (issue #217)", async () => {
+    const store = await loadStore();
+
+    store.prewarm();
+    await store.start();
+    await store.stop();
+
+    // A second worker instance would mean the precache warmup was wasted —
+    // real transcription must reuse the same worker it warmed.
+    expect(mocks.createTranscribeWorkerClient).toHaveBeenCalledTimes(1);
+    expect(mocks.workerWarm).toHaveBeenCalledTimes(2); // prewarm() + start()
+  });
 });
