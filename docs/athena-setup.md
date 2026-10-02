@@ -158,11 +158,12 @@ only risk; being on the wrong kind of node in the first place is another). Quick
 
 ## module need `--experimental-strip-types` explicitly
 
-`module load nodejs/22.17.1` gives **Node 22.17.1** — CI (`.github/workflows/*.yml`) and local dev
-both run **Node 24**, where unflagged type stripping for `.ts` imports is the default (backported to
-22.18.0+ and 24.x, per Node's own release notes). 22.17.1 predates that backport, so a plain `.mjs`
-entry point that `import`s a `.ts` module (e.g. `scripts/generate-1000-sentences.mjs` importing
-`scripts/tts-sentence-check.ts` for inline validation) throws
+`module load nodejs/22.17.1` gives **Node 22.17.1** — CI (`.github/workflows/*.yml`) runs **Node
+26** and local dev runs **Node 24+** (`engines: >=24`), where unflagged type stripping for `.ts`
+imports is the default (backported to 22.18.0+ and 24.x, per Node's own release notes). 22.17.1
+predates that backport, so a plain `.mjs` entry point that `import`s a `.ts` module (e.g.
+`scripts/generate-1000-sentences.mjs` importing `scripts/tts-sentence-check.ts` for inline
+validation) throws
 `TypeError [ERR_UNKNOWN_FILE_EXTENSION]: Unknown file extension ".ts"` and crashes immediately, with
 no code from the `.mjs` file itself ever running — the crash happens at import resolution, before
 any of the script's own `console.log` calls execute (a confusing symptom if you're looking for a
@@ -184,5 +185,5 @@ node scripts/generate-1000-sentences.mjs ...` reproduces the crash; adding
 
 If you add a new `.mjs` script under `scripts/` that imports anything from `.ts` (directly or
 transitively, including via `src/lib/**/*.ts`), it needs this flag when invoked from an `sbatch`
-script — CI and local dev's Node 24 will hide the omission every time, since only Athena's older
-Node actually requires it.
+script — CI's Node 26 and local dev's Node 24+ will hide the omission every time, since only
+Athena's older Node actually requires it.

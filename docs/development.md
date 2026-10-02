@@ -11,7 +11,7 @@ short, narrative introduction for everyone else.
 - **Tailwind CSS v4**
 - **`@sveltejs/adapter-static`** — prerendered SPA, deployed to GitHub Pages
 - **Vitest** for unit tests
-- **Node 24 LTS**, package manager **pnpm**
+- **Node 26** in CI and deploy (`engines` still allows `>=24`), package manager **pnpm**
 
 ## Develop
 

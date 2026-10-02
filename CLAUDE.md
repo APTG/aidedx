@@ -5,7 +5,7 @@ Project context and conventions for Claude Code working in this repo.
 ## Stack at a glance
 
 - **SvelteKit + Svelte 5** (runes only), **TypeScript strict**, **Tailwind CSS v4**
-- **Vitest** for unit tests; **Node 24 LTS**; package manager **pnpm**
+- **Vitest** for unit tests; **Node 26** in CI + deploy (`engines: >=24`, so Node 24 LTS still works locally); package manager **pnpm**
 - Static site via `@sveltejs/adapter-static`, deployed to GitHub Pages
 - Scripts in `scripts/` run as plain TypeScript via Node's native type-stripping — no build step needed
 
