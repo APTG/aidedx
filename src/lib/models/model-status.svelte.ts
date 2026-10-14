@@ -12,6 +12,8 @@ import {
 } from "./manifest.ts";
 import { downloadModelWeights, DownloadCancelledError, type FileProgress } from "./download.ts";
 import { areModelsCached, groupCacheBreakdown, type CacheBreakdownItem } from "./status.ts";
+import { getService } from "$lib/wasm/sveltekit.ts";
+import { asrStatus } from "$lib/asr/asr-status.svelte.ts";
 import {
   CACHE_WARNING_THRESHOLD_MB,
   clearModelCache,
@@ -23,6 +25,12 @@ import { detectCpuThreads, type CpuInfo } from "$lib/system/threading.ts";
 import { formatEta, formatMegabytes } from "$lib/format.ts";
 
 export type ModelPhase = "checking" | "fresh" | "downloading" | "ready";
+
+/** Non-fatal precache failure (issue #217) — logged, not surfaced as `errorMessage`; see `#precacheComputeAndAsr`. */
+function logPrecacheFailure(what: string, error: unknown): void {
+  if (typeof console === "undefined") return;
+  console.warn(`[aidedx:model-download] failed to precache ${what} for offline use`, error);
+}
 
 class ModelStatusStore {
   phase: ModelPhase = $state("checking");
@@ -235,6 +243,39 @@ class ModelStatusStore {
     await this.#refreshDiskUsage();
   }
 
+  /**
+   * Precaches the compute/ASR code paths the "download models" flow itself
+   * never touches (issue #217): `getService()` dynamic-imports
+   * `wasm/libdedx.mjs` (+ its sibling `.wasm`), and `asrStatus.prewarm()`
+   * constructs the ASR worker and starts loading its ONNX Runtime Web
+   * pipeline. Both are otherwise deferred until a query first needs them
+   * (deliberately, to keep them out of the initial bundle — see
+   * `wasm/loader.ts`'s doc comment) — which meant a user who completed this
+   * consent flow and went straight offline hit an uncached dynamic
+   * import/Worker fetch and failed, even though the "download" step had
+   * just told them they were ready. `getService()` is awaited (so the WASM
+   * fetch actually gets a chance to land before "ready" shows) but, like
+   * `prewarm()` — which stays fire-and-forget, matching `asrStatus.start()`'s
+   * use of the same call, since its worker protocol has no completion
+   * response to await — a failure from either is only logged, never
+   * surfaced as `errorMessage` or allowed to revert `phase`: the model
+   * weights are already safely cached at this point, so a WASM/ASR hiccup
+   * here shouldn't send the user back to "fresh" and make them re-download
+   * everything.
+   */
+  async #precacheComputeAndAsr(): Promise<void> {
+    try {
+      await getService();
+    } catch (error) {
+      logPrecacheFailure("libdedx WASM", error);
+    }
+    try {
+      asrStatus.prewarm();
+    } catch (error) {
+      logPrecacheFailure("ASR worker", error);
+    }
+  }
+
   async startDownload(): Promise<void> {
     this.phase = "downloading";
     this.errorMessage = null;
@@ -245,6 +286,7 @@ class ModelStatusStore {
       await downloadModelWeights((fileId, progress) => {
         this.fileProgress = { ...this.fileProgress, [fileId]: progress };
       }, this.#abortController.signal);
+      await this.#precacheComputeAndAsr();
       this.phase = "ready";
       await this.#refreshDiskUsage();
     } catch (error) {

@@ -76,6 +76,20 @@ class AsrStore {
     return this.phase === "recording" || this.phase === "transcribing";
   }
 
+  /**
+   * Fire-and-forget: triggers the ASR worker's pipeline load without
+   * recording anything (issue #217). Called right after the "download
+   * models" consent flow finishes, so the worker script + ONNX Runtime Web
+   * wasm + session get fetched (and, for the worker script and ORT wasm,
+   * cached) as part of that flow instead of only on a user's first real
+   * query — which is what left offline-on-first-use broken. Uses the same
+   * `#getWorkerClient()` singleton `start()` does, so this doesn't spin up
+   * a throwaway worker that a later real transcription would duplicate.
+   */
+  prewarm(): void {
+    this.#getWorkerClient().warm();
+  }
+
   async start(): Promise<void> {
     if (this.isBusy) return;
     this.errorMessage = null;

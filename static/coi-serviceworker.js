@@ -9,6 +9,24 @@
 // cross-origin subresources (jsdelivr ORT wasm, the Cyfronet S3 weights mirror)
 // load without needing their own CORP header. See docs/threading-coop-coep.md.
 // Registered from app.html; remove both only if that decision is reversible.
+//
+// Offline Cache Storage fallback (issue #217): the original upstream fetch
+// handler re-throws unconditionally on a failed live fetch, so once this SW
+// is controlling the page, ANY resource it proxies — same-origin app code
+// included — hard-fails offline even if a prior successful fetch could have
+// served it from cache. That broke the app's own "works offline" claim on
+// first use: `wasm/libdedx.mjs` and the ASR worker script are dynamic
+// import()'d/`new Worker()`'d lazily on first query (see `wasm/loader.ts`,
+// `asr/worker-client.ts`), so a user who went offline right after finishing
+// the "download models" flow (before issue #217's `model-status.svelte.ts`
+// precache fix) had never fetched them at all. `AIDEDX_RUNTIME_CACHE_NAME`
+// gives every successful same-origin GET response proxied here a durable
+// Cache Storage copy, and the catch block below falls back to it. Kept
+// same-origin-only so this never duplicates the multi-hundred-MB model
+// weight downloads (Cyfronet S3, cross-origin — already cached separately
+// by transformers.js's own "transformers-cache" bucket, see
+// `models/download.ts`) into a second cache.
+const AIDEDX_RUNTIME_CACHE_NAME = "aidedx-coi-runtime-v1";
 let coepCredentialless = true;
 if (typeof window === "undefined") {
   self.addEventListener("install", () => self.skipWaiting());
@@ -34,24 +52,62 @@ if (typeof window === "undefined") {
 
     const request =
       coepCredentialless && r.mode === "no-cors" ? new Request(r, { credentials: "omit" }) : r;
+    // issue #217: writes into our own runtime cache stay same-origin-only —
+    // see the module-level comment above. The offline *read* fallback below
+    // is broader (any GET, same- or cross-origin): a cross-origin GET (e.g.
+    // the Cyfronet S3 model-weight mirror) still passes through this same
+    // fetch handler, and transformers.js's own "transformers-cache" bucket
+    // may already hold a cached response for it worth trying before giving
+    // up.
+    const isGet = r.method === "GET";
+    const isSameOriginGet = isGet && new URL(r.url).origin === self.location.origin;
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response.status === 0) return response;
-          const newHeaders = new Headers(response.headers);
-          newHeaders.set(
-            "Cross-Origin-Embedder-Policy",
-            coepCredentialless ? "credentialless" : "require-corp",
-          );
-          if (!coepCredentialless) newHeaders.set("Cross-Origin-Resource-Policy", "cross-origin");
-          newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
-          return new Response(response.body, {
-            status: response.status,
-            statusText: response.statusText,
-            headers: newHeaders,
-          });
+          const withCoiHeaders =
+            response.status === 0
+              ? response
+              : (() => {
+                  const newHeaders = new Headers(response.headers);
+                  newHeaders.set(
+                    "Cross-Origin-Embedder-Policy",
+                    coepCredentialless ? "credentialless" : "require-corp",
+                  );
+                  if (!coepCredentialless) {
+                    newHeaders.set("Cross-Origin-Resource-Policy", "cross-origin");
+                  }
+                  newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
+                  return new Response(response.body, {
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: newHeaders,
+                  });
+                })();
+          if (isSameOriginGet) {
+            const toCache = withCoiHeaders.clone();
+            caches
+              .open(AIDEDX_RUNTIME_CACHE_NAME)
+              .then((cache) => cache.put(r, toCache))
+              .catch((e) => console.error("[aidedx] runtime cache write failed", e));
+          }
+          return withCoiHeaders;
         })
-        .catch((e) => {
+        .catch(async (e) => {
+          // issue #217: a live fetch failure (e.g. offline) isn't necessarily
+          // fatal — a prior successful fetch above (same- or cross-origin)
+          // may have already left this exact resource in Cache Storage,
+          // either in our own runtime cache or (for the cross-origin model
+          // weights, and for ONNX Runtime Web's wasm/mjs when
+          // `env.useWasmCache` applies — see `models/download.ts`'s module
+          // comment) in transformers.js's own "transformers-cache" bucket.
+          // Search every bucket (unscoped `caches.match`) rather than just
+          // ours, so all of these count — and for any GET, not just
+          // same-origin ones, since only the *write* above is same-origin
+          // restricted.
+          if (isGet) {
+            const cached = await caches.match(r);
+            if (cached) return cached;
+          }
           // respondWith() requires a Response; returning undefined from a catch
           // would throw. Re-throw so the fetch surfaces as a normal network
           // error (same as if the SW hadn't intercepted it) instead.
